@@ -1,0 +1,182 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Flight Reference Scenario: Messages</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Agency &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Customer &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Connection &amp;2 of Carrier &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Carrier &amp;1 unkown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Supplement &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Invalid booking status &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Currency &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Travel key initial</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Enter begin date for travel &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Enter end date for travel &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Begin date &amp;1 must not be after end date &amp;2 for travel &amp;3</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>Travel &amp;1 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Travel &amp;1: Booking key initial</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Invalid booking date &amp;3</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>Flight Carrier &amp;1 Connection &amp;2 Date &amp;3 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Supplement &amp;3 does not exist</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Supplement key initial</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Record already exists</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Booking Supplement &amp;3: Record already exists</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>Travel &amp;1: Control data missing</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Control data missing</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>027</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Booking Supplement &amp;3: Control data missing</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>028</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Booking Suppl &amp;3: Supplement ID cannot be changed</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>029</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Booking Suppl &amp;3: Change price and currency</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>030</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Flight cannot be changed</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>031</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Change price and currency</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>032</MSGNR>
+     <TEXT>Travel &amp;1 is locked by &amp;2</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>
