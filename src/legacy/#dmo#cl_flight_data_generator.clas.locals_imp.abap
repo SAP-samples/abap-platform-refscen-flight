@@ -725,26 +725,26 @@ CLASS lcl_connection_data_generator IMPLEMENTATION.
 
   METHOD get_data.
     rt_data = VALUE tt_connection_additional_info(
-          ( carrier_id = 'SQ'  connection_id = '0001'  airport_from_id = 'SFO'  airport_to_id = 'SIN'  departure_time = '011500'  arrival_time = '115000'  distance = 13523  distance_unit = 'km'  weekday = 3 ) "1-7
-          ( carrier_id = 'SQ'  connection_id = '0002'  airport_from_id = 'SIN'  airport_to_id = 'SFO'  departure_time = '063000'  arrival_time = '091500'  distance = 13523  distance_unit = 'km'  weekday = 4 ) "1-7
-          ( carrier_id = 'SQ'  connection_id = '0011'  airport_from_id = 'NRT'  airport_to_id = 'SIN'  departure_time = '145500'  arrival_time = '205000'  distance =  5363  distance_unit = 'km'  weekday = 4 ) "1-7
-          ( carrier_id = 'SQ'  connection_id = '0012'  airport_from_id = 'SIN'  airport_to_id = 'NRT'  departure_time = '095300'  arrival_time = '175400'  distance =  5363  distance_unit = 'km'  weekday = 6 ) "1-7
-          ( carrier_id = 'UA'  connection_id = '0058'  airport_from_id = 'SFO'  airport_to_id = 'FRA'  departure_time = '134500'  arrival_time = '095500'  distance =  9608  distance_unit = 'km'  weekday = 1 ) "1-7
-          ( carrier_id = 'UA'  connection_id = '0059'  airport_from_id = 'FRA'  airport_to_id = 'SFO'  departure_time = '135500'  arrival_time = '163000'  distance =  9608  distance_unit = 'km'  weekday = 2 ) "1-7
-          ( carrier_id = 'UA'  connection_id = '1537'  airport_from_id = 'EWR'  airport_to_id = 'MIA'  departure_time = '215600'  arrival_time = '004700'  distance =  1752  distance_unit = 'km'  weekday = 5 ) "1-7
-          ( carrier_id = 'AA'  connection_id = '0322'  airport_from_id = 'MIA'  airport_to_id = 'EWR'  departure_time = '201700'  arrival_time = '231900'  distance =  1752  distance_unit = 'km'  weekday = 7 ) "1-7
-          ( carrier_id = 'AA'  connection_id = '0017'  airport_from_id = 'MIA'  airport_to_id = 'HAV'  departure_time = '071900'  arrival_time = '080300'  distance =   520  distance_unit = 'km'  weekday = 3 ) "1-7
-          ( carrier_id = 'AA'  connection_id = '2678'  airport_from_id = 'HAV'  airport_to_id = 'MIA'  departure_time = '061500'  arrival_time = '103000'  distance =   520  distance_unit = 'km'  weekday = 6 ) "1-7
-          ( carrier_id = 'AA'  connection_id = '0015'  airport_from_id = 'JFK'  airport_to_id = 'SFO'  departure_time = '071300'  arrival_time = '100400'  distance =  4156  distance_unit = 'km'  weekday = 5 ) "1-7
-          ( carrier_id = 'AA'  connection_id = '0018'  airport_from_id = 'SFO'  airport_to_id = 'JFK'  departure_time = '064000'  arrival_time = '150600'  distance =  4156  distance_unit = 'km'  weekday = 4 ) "1-7
-          ( carrier_id = 'LH'  connection_id = '0400'  airport_from_id = 'FRA'  airport_to_id = 'JFK'  departure_time = '101000'  arrival_time = '113400'  distance =  6162  distance_unit = 'km'  weekday = 6 ) "1-7
-          ( carrier_id = 'LH'  connection_id = '0401'  airport_from_id = 'JFK'  airport_to_id = 'FRA'  departure_time = '183000'  arrival_time = '074500'  distance =  6162  distance_unit = 'km'  weekday = 5 ) "1-7
-          ( carrier_id = 'LH'  connection_id = '0402'  airport_from_id = 'FRA'  airport_to_id = 'EWR'  departure_time = '133000'  arrival_time = '153500'  distance =  6217  distance_unit = 'km'  weekday = 1 ) "1-7
-          ( carrier_id = 'LH'  connection_id = '0403'  airport_from_id = 'EWR'  airport_to_id = 'FRA'  departure_time = '180900'  arrival_time = '073000'  distance =  6217  distance_unit = 'km'  weekday = 1 ) "1-7
-          ( carrier_id = 'JL'  connection_id = '0407'  airport_from_id = 'NRT'  airport_to_id = 'FRA'  departure_time = '132300'  arrival_time = '155600'  distance =  9379  distance_unit = 'km'  weekday = 5 ) "1-7
-          ( carrier_id = 'JL'  connection_id = '0408'  airport_from_id = 'FRA'  airport_to_id = 'NRT'  departure_time = '202500'  arrival_time = '154000'  distance =  9379  distance_unit = 'km'  weekday = 6 ) "1-7
-          ( carrier_id = 'AZ'  connection_id = '0788'  airport_from_id = 'VCE'  airport_to_id = 'NRT'  departure_time = '132500'  arrival_time = '101300'  distance =  9595  distance_unit = 'km'  weekday = 6 )
-          ( carrier_id = 'AZ'  connection_id = '0789'  airport_from_id = 'NRT'  airport_to_id = 'VCE'  departure_time = '142600'  arrival_time = '213100'  distance =  9595  distance_unit = 'km'  weekday = 5 )
+          ( carrier_id = 'SQ'  connection_id = '0001'  airport_from_id = 'SFO'  airport_to_id = 'SIN'  departure_time = '011500'  arrival_time = '115000'  distance = 13523  distance_unit = 'KM'  weekday = 3 ) "1-7
+          ( carrier_id = 'SQ'  connection_id = '0002'  airport_from_id = 'SIN'  airport_to_id = 'SFO'  departure_time = '063000'  arrival_time = '091500'  distance = 13523  distance_unit = 'KM'  weekday = 4 ) "1-7
+          ( carrier_id = 'SQ'  connection_id = '0011'  airport_from_id = 'NRT'  airport_to_id = 'SIN'  departure_time = '145500'  arrival_time = '205000'  distance =  5363  distance_unit = 'KM'  weekday = 4 ) "1-7
+          ( carrier_id = 'SQ'  connection_id = '0012'  airport_from_id = 'SIN'  airport_to_id = 'NRT'  departure_time = '095300'  arrival_time = '175400'  distance =  5363  distance_unit = 'KM'  weekday = 6 ) "1-7
+          ( carrier_id = 'UA'  connection_id = '0058'  airport_from_id = 'SFO'  airport_to_id = 'FRA'  departure_time = '134500'  arrival_time = '095500'  distance =  9608  distance_unit = 'KM'  weekday = 1 ) "1-7
+          ( carrier_id = 'UA'  connection_id = '0059'  airport_from_id = 'FRA'  airport_to_id = 'SFO'  departure_time = '135500'  arrival_time = '163000'  distance =  9608  distance_unit = 'KM'  weekday = 2 ) "1-7
+          ( carrier_id = 'UA'  connection_id = '1537'  airport_from_id = 'EWR'  airport_to_id = 'MIA'  departure_time = '215600'  arrival_time = '004700'  distance =  1752  distance_unit = 'KM'  weekday = 5 ) "1-7
+          ( carrier_id = 'AA'  connection_id = '0322'  airport_from_id = 'MIA'  airport_to_id = 'EWR'  departure_time = '201700'  arrival_time = '231900'  distance =  1752  distance_unit = 'KM'  weekday = 7 ) "1-7
+          ( carrier_id = 'AA'  connection_id = '0017'  airport_from_id = 'MIA'  airport_to_id = 'HAV'  departure_time = '071900'  arrival_time = '080300'  distance =   520  distance_unit = 'KM'  weekday = 3 ) "1-7
+          ( carrier_id = 'AA'  connection_id = '2678'  airport_from_id = 'HAV'  airport_to_id = 'MIA'  departure_time = '061500'  arrival_time = '103000'  distance =   520  distance_unit = 'KM'  weekday = 6 ) "1-7
+          ( carrier_id = 'AA'  connection_id = '0015'  airport_from_id = 'JFK'  airport_to_id = 'SFO'  departure_time = '071300'  arrival_time = '100400'  distance =  4156  distance_unit = 'KM'  weekday = 5 ) "1-7
+          ( carrier_id = 'AA'  connection_id = '0018'  airport_from_id = 'SFO'  airport_to_id = 'JFK'  departure_time = '064000'  arrival_time = '150600'  distance =  4156  distance_unit = 'KM'  weekday = 4 ) "1-7
+          ( carrier_id = 'LH'  connection_id = '0400'  airport_from_id = 'FRA'  airport_to_id = 'JFK'  departure_time = '101000'  arrival_time = '113400'  distance =  6162  distance_unit = 'KM'  weekday = 6 ) "1-7
+          ( carrier_id = 'LH'  connection_id = '0401'  airport_from_id = 'JFK'  airport_to_id = 'FRA'  departure_time = '183000'  arrival_time = '074500'  distance =  6162  distance_unit = 'KM'  weekday = 5 ) "1-7
+          ( carrier_id = 'LH'  connection_id = '0402'  airport_from_id = 'FRA'  airport_to_id = 'EWR'  departure_time = '133000'  arrival_time = '153500'  distance =  6217  distance_unit = 'KM'  weekday = 1 ) "1-7
+          ( carrier_id = 'LH'  connection_id = '0403'  airport_from_id = 'EWR'  airport_to_id = 'FRA'  departure_time = '180900'  arrival_time = '073000'  distance =  6217  distance_unit = 'KM'  weekday = 1 ) "1-7
+          ( carrier_id = 'JL'  connection_id = '0407'  airport_from_id = 'NRT'  airport_to_id = 'FRA'  departure_time = '132300'  arrival_time = '155600'  distance =  9379  distance_unit = 'KM'  weekday = 5 ) "1-7
+          ( carrier_id = 'JL'  connection_id = '0408'  airport_from_id = 'FRA'  airport_to_id = 'NRT'  departure_time = '202500'  arrival_time = '154000'  distance =  9379  distance_unit = 'KM'  weekday = 6 ) "1-7
+          ( carrier_id = 'AZ'  connection_id = '0788'  airport_from_id = 'VCE'  airport_to_id = 'NRT'  departure_time = '132500'  arrival_time = '101300'  distance =  9595  distance_unit = 'KM'  weekday = 6 )
+          ( carrier_id = 'AZ'  connection_id = '0789'  airport_from_id = 'NRT'  airport_to_id = 'VCE'  departure_time = '142600'  arrival_time = '213100'  distance =  9595  distance_unit = 'KM'  weekday = 5 )
       ).
   ENDMETHOD.
 

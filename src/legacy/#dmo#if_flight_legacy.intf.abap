@@ -8,7 +8,7 @@ INTERFACE /dmo/if_flight_legacy
 * Version information *
 ***********************
   CONSTANTS co_version_major TYPE int2 VALUE 1.
-  CONSTANTS co_version_minor TYPE int2 VALUE 1.
+  CONSTANTS co_version_minor TYPE int2 VALUE 2.
 
   " Please do NOT delete old comments
   " Version x.x  Date xx.xx.xxxx  Description ...
@@ -24,6 +24,8 @@ INTERFACE /dmo/if_flight_legacy
   "         0.962     18.09.2018  Removed ABAPDoc from FuBa, Switched Function Group to Unicode
   "         1.00      27.09.2018  No real change, only release
   "         1.01      28.09.2018  Minor text adjustments
+  "         1.02      22.10.2018  Data generator adjustment
+  "                               Unit Test moved from function group into separate ABAP class
 
 ******************************
 * Database table table types *
