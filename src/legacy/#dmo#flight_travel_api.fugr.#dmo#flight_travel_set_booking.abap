@@ -1,3 +1,8 @@
+"! API for Setting a Travel to <em>booked</em>.
+"!
+"! @parameter iv_travel_id          | Travel ID
+"! @parameter et_messages           | Table of occurred messages
+"!
 FUNCTION /DMO/FLIGHT_TRAVEL_SET_BOOKING.
 *"----------------------------------------------------------------------
 *"*"Local Interface:

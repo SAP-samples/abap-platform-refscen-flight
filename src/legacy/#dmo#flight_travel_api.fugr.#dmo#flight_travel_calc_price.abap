@@ -1,4 +1,4 @@
- "! <h1>Flight Price Engine</h1>
+"! <h1>Flight Price Engine</h1>
 "!
 "! If no parameters are applied, the price of every flight will be recalculated.
 "!

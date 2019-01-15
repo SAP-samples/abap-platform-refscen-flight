@@ -1,3 +1,18 @@
+"! <h1>API for Getting a Travel</h1>
+"!
+"! <p>
+"! Function module to get a single Travel instance with all related Bookings and
+"! Booking Supplements related to the importing Travel ID.
+"! </p>
+"!
+"!
+"! @parameter iv_travel_id          | Travel ID
+"! @parameter iv_include_buffer     | Include any changes that have not yet been committed
+"! @parameter es_travel             | Travel Data like /DMO/TRAVEL related to the importing Travel ID
+"! @parameter et_booking            | Table of Bookings like /DMO/BOOKING related to the importing Travel ID
+"! @parameter et_booking_supplement | Table of Booking Supplements like /DMO/BOOK_SUPPL related to the importing Travel ID
+"! @parameter et_messages           | Table of occurred messages
+"!
 FUNCTION /DMO/FLIGHT_TRAVEL_READ.
 *"----------------------------------------------------------------------
 *"*"Local Interface:
