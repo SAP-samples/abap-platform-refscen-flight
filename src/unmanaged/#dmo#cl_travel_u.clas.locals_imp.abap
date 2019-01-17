@@ -36,14 +36,14 @@ ENDCLASS.
 CLASS lcl_travel_create_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS modify FOR BEHAVIOR
+    METHODS create_travel FOR MODIFY
                             IMPORTING   it_travel_create    FOR CREATE travel.
 
 ENDCLASS.
 
 CLASS lcl_travel_create_handler IMPLEMENTATION.
 
-  METHOD modify.
+  METHOD create_travel.
 
     DATA lt_messages   TYPE /dmo/if_flight_legacy=>tt_message.
     DATA ls_travel_in  TYPE /dmo/if_flight_legacy=>ts_travel_in.
@@ -93,7 +93,7 @@ ENDCLASS.
 CLASS lcl_travel_update_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS modify FOR BEHAVIOR
+    METHODS update_travel FOR MODIFY
                             IMPORTING   it_travel_update    FOR UPDATE travel.
 
 
@@ -102,7 +102,7 @@ ENDCLASS.
 CLASS lcl_travel_update_handler IMPLEMENTATION.
 
 
-  METHOD modify.
+  METHOD update_travel.
 
     DATA lt_messages    TYPE /dmo/if_flight_legacy=>tt_message.
     DATA ls_travel      TYPE /dmo/if_flight_legacy=>ts_travel_in.
@@ -164,7 +164,7 @@ ENDCLASS.
 CLASS lcl_travel_read_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS read FOR BEHAVIOR
+    METHODS get_travel FOR READ
                             IMPORTING it_travel FOR READ travel RESULT et_travel.
 
 
@@ -172,7 +172,7 @@ ENDCLASS.
 
 CLASS lcl_travel_read_handler IMPLEMENTATION.
 
-  METHOD read.
+  METHOD get_travel.
     DATA: ls_travel_out TYPE /dmo/travel.
 
     LOOP AT it_travel INTO DATA(ls_travel_to_read).
@@ -208,14 +208,14 @@ ENDCLASS.
 CLASS lcl_travel_delete_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS modify FOR BEHAVIOR
+    METHODS delete_travel FOR MODIFY
                             IMPORTING   it_travel_delete    FOR DELETE travel.
 
 ENDCLASS.
 
 CLASS lcl_travel_delete_handler IMPLEMENTATION.
 
-  METHOD modify.
+  METHOD delete_travel.
 
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
     DATA ls_travel   TYPE /dmo/if_flight_legacy=>ts_travel_key.
@@ -258,7 +258,7 @@ ENDCLASS.
 CLASS lcl_travel_action_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS modify FOR BEHAVIOR
+    METHODS set_travel_status FOR MODIFY
                             IMPORTING it_travel_set_status_booked   FOR ACTION travel~set_status_booked
                                                                         RESULT et_travel_set_status_booked.
 
@@ -267,7 +267,7 @@ ENDCLASS.
 CLASS lcl_travel_action_handler IMPLEMENTATION.
 
 
-  METHOD modify.
+  METHOD set_travel_status.
 
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
     DATA ls_travel_out TYPE /dmo/travel.
@@ -312,7 +312,7 @@ ENDCLASS.
 CLASS lcl_booking_create_ba_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS modify FOR BEHAVIOR
+    METHODS create_booking FOR MODIFY
                             IMPORTING   it_booking_create_ba        FOR CREATE travel\_booking.
 
 
@@ -320,7 +320,7 @@ ENDCLASS.
 
 CLASS lcl_booking_create_ba_handler IMPLEMENTATION.
 
-  METHOD modify.
+  METHOD create_booking.
     DATA lt_messages        TYPE /dmo/if_flight_legacy=>tt_message.
     DATA lt_booking_old     TYPE /dmo/if_flight_legacy=>tt_booking.
     DATA ls_booking         TYPE LINE OF /dmo/if_flight_legacy=>tt_booking_in.

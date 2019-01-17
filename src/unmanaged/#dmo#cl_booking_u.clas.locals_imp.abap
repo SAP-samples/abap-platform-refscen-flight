@@ -53,7 +53,7 @@ CLASS lcl_update_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     TYPES tt_booking_update     TYPE TABLE FOR UPDATE    /dmo/i_booking_u.
 
-    METHODS modify FOR BEHAVIOR
+    METHODS update_booking FOR MODIFY
                             IMPORTING   it_booking_update       FOR UPDATE booking.
 
 
@@ -65,7 +65,7 @@ ENDCLASS.
 
 CLASS lcl_update_handler IMPLEMENTATION.
 
-  METHOD modify.
+  METHOD update_booking.
 
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
 
@@ -128,7 +128,7 @@ ENDCLASS.
 
 CLASS lcl_delete_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
-    METHODS modify FOR BEHAVIOR
+    METHODS delete_booking FOR MODIFY
                             IMPORTING   it_booking_delete       FOR DELETE booking.
 ENDCLASS.
 
@@ -139,7 +139,7 @@ ENDCLASS.
 
 CLASS lcl_delete_handler IMPLEMENTATION.
 
-  METHOD modify.
+  METHOD delete_booking.
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
 
     LOOP AT it_booking_delete INTO DATA(ls_booking_delete).
