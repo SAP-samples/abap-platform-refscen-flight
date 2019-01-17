@@ -1,0 +1,31 @@
+implementation unmanaged;
+
+// behavior defintion for the TRAVEL root entity
+define behavior for /DMO/I_Travel_U alias travel
+etag LastChangedAt
+
+{
+ field (read only) TravelID;
+ field (mandatory) AgencyID, CustomerID, BeginDate, EndDate;
+
+ create;
+ update;
+ delete;
+
+ action set_status_booked result [1] $self;
+
+ association _Booking { create; }
+
+}
+
+// behavior defintion for the BOOKING child entity
+define behavior for /DMO/I_Booking_U alias booking
+
+{
+  field (read only) TravelID, BookingID;
+  field (mandatory) BookingDate, CustomerID, AirlineID, ConnectionID, FlightDate;
+
+  create;
+  update;
+  delete;
+}
