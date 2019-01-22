@@ -5,7 +5,7 @@ CLASS lcl_message_helper DEFINITION CREATE PRIVATE.
     TYPES tt_travel_reported    TYPE TABLE FOR REPORTED /dmo/i_travel_u.
 
     CLASS-METHODS handle_travel_messages
-      IMPORTING iv_cid       TYPE abp_behv_cid OPTIONAL
+      IMPORTING iv_cid       TYPE string OPTIONAL
                 iv_travel_id TYPE /dmo/travel_id OPTIONAL
                 it_messages  TYPE /dmo/if_flight_legacy=>tt_message
       CHANGING
