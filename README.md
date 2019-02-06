@@ -20,7 +20,7 @@ Use the abapGit plug-in to install the Flight Reference Scenario by executing th
 * Once the cloning has finished, refresh your project tree
 
 ## Configuration
-The cloned content contains "legacy" logic only. This includes e.g. DDIC artifacts and Function Modules. The legacy content can be used together with the end-2end development guides (see [here](https://help.sap.com/viewer/7c86ef15136b40729462abc39425806d/Cloud) > Develop) to build e.g. a Fiori List Reporting and a Fiori Transactional Application.
+The cloned content contains "legacy" logic only. This includes e.g. DDIC artifacts and Function Modules. The legacy content can be used together with the end-2end development guides (see [here](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/3b77569ca8ee4226bdab4fcebd6f6ea6.html) > Develop) to build e.g. a Fiori List Reporting and a Fiori Transactional Application.
 
 Once cloned, run ABAP class `/DMO/CL_FLIGHT_DATA_GENERATOR` in ADT via `F9` (Run as Console Application) to generate some sample data.
 
