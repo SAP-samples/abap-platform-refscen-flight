@@ -28,4 +28,19 @@ define behavior for /DMO/I_Booking_U alias booking
   create;
   update;
   delete;
+
+  association _BookSupplement { create; }
+
+}
+
+// behavior defintion for the BOOKING SUPPLEMENT sub node
+define behavior for /DMO/I_BOOKINGSUPPLEMENT_U alias bookingsupplement
+{
+
+  field (read only) TravelID, BookingID, BookingSupplementID ;
+  field (mandatory) SupplementID, Price;
+
+  create;
+  update;
+  delete;
 }
