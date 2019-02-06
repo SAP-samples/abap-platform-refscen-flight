@@ -1,4 +1,4 @@
-@AbapCatalog.sqlViewName: '/DMO/CUSTOMER_RE'
+@AbapCatalog.sqlViewName: '/DMO/ICUSTOM_RE'
 @AbapCatalog.compiler.compareFilter: true
 @AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED

@@ -1,4 +1,4 @@
-@AbapCatalog.sqlViewName: '/DMO/CONNECT_R'
+@AbapCatalog.sqlViewName: '/DMO/ICONNECT_R'
 @AbapCatalog.compiler.compareFilter: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Connection View - CDS Data Model'

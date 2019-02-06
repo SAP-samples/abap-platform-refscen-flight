@@ -1,4 +1,4 @@
-@AbapCatalog.sqlViewName: '/DMO/FLIGHT_R'
+@AbapCatalog.sqlViewName: '/DMO/IFLIGHT_R'
 @AbapCatalog.compiler.compareFilter: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Carrier View - CDS Data Model'

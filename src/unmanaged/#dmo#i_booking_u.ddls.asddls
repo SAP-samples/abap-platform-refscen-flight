@@ -1,4 +1,4 @@
-@AbapCatalog.sqlViewName: '/DMO/BOOKING_U'
+@AbapCatalog.sqlViewName: '/DMO/IBOOKING_U'
 @AbapCatalog.compiler.compareFilter: true
 @AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
@@ -16,20 +16,26 @@ define view /DMO/I_Booking_U
   as select from /dmo/booking as Booking
   
   association to parent /DMO/I_Travel_U     as _Travel  on  $projection.TravelID = _Travel.TravelID
+  composition [0..*] of /DMO/I_BookingSupplement_U as _BookSupplement
  
   association [1..1] to /DMO/I_Customer     as _Customer     on  $projection.CustomerID     = _Customer.CustomerID
   association [1..1] to /DMO/I_Carrier      as _Carrier      on  $projection.AirlineID      = _Carrier.AirlineID
   association [1..1] to /DMO/I_Connection   as _Connection   on  $projection.AirlineID      = _Connection.AirlineID
                                                              and $projection.ConnectionID   = _Connection.ConnectionID
 {
- 
+                     
+                     
    @UI.facet: [ { id:            'Booking',
-                     purpose:       #STANDARD,
-                     type:          #IDENTIFICATION_REFERENCE,
-                     label:         'Booking',
-                     position:      10 }]
-
-
+                  purpose:       #STANDARD,
+                  type:          #IDENTIFICATION_REFERENCE,
+                  label:         'Booking',
+                  position:      10 },
+                { id:            'BookingSupplement',
+                  purpose:       #STANDARD,
+                  type:          #LINEITEM_REFERENCE,
+                  label:         'Booking Supplement',
+                  position:      20,
+                  targetElement: '_BookSupplement'} ]
 
 
   key Booking.travel_id             as TravelID,
@@ -86,6 +92,7 @@ define view /DMO/I_Booking_U
       
       /* Associations */
       _Travel,
+      _BookSupplement,
       _Customer,   
       _Carrier,
       _Connection

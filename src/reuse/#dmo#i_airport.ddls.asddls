@@ -1,4 +1,4 @@
-@AbapCatalog.sqlViewName: '/DMO/AIRPORT_RE'
+@AbapCatalog.sqlViewName: '/DMO/IAIRPORT_RE'
 @AbapCatalog.compiler.compareFilter: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Airport View - CDS Data Model'

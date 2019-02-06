@@ -1,4 +1,4 @@
-@AbapCatalog.sqlViewName: '/DMO/FLIGHT_RE'
+@AbapCatalog.sqlViewName: '/DMO/IFLIGHT_RE'
 @AbapCatalog.compiler.compareFilter: true
 @AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #CHECK

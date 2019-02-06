@@ -7,22 +7,25 @@ PUBLIC SECTION.
 
 
 *   Type definition for import parameters --------------------------
-    TYPES tt_travel_create      TYPE TABLE FOR CREATE   /dmo/i_travel_u.
-    TYPES tt_travel_update      TYPE TABLE FOR UPDATE   /dmo/i_travel_u.
-    TYPES tt_travel_delete      TYPE TABLE FOR DELETE   /dmo/i_travel_u.
+    TYPES tt_travel_create              TYPE TABLE FOR CREATE   /dmo/i_travel_u.
+    TYPES tt_travel_update              TYPE TABLE FOR UPDATE   /dmo/i_travel_u.
+    TYPES tt_travel_delete              TYPE TABLE FOR DELETE   /dmo/i_travel_u.
 
-    TYPES tt_travel_failed      TYPE TABLE FOR FAILED   /dmo/i_travel_u.
-    TYPES tt_travel_mapped      TYPE TABLE FOR MAPPED   /dmo/i_travel_u.
-    TYPES tt_travel_reported    TYPE TABLE FOR REPORTED /dmo/i_travel_u.
+    TYPES tt_travel_failed              TYPE TABLE FOR FAILED   /dmo/i_travel_u.
+    TYPES tt_travel_mapped              TYPE TABLE FOR MAPPED   /dmo/i_travel_u.
+    TYPES tt_travel_reported            TYPE TABLE FOR REPORTED /dmo/i_travel_u.
 
+    TYPES tt_booking_create             TYPE TABLE FOR CREATE    /dmo/i_booking_u.
+    TYPES tt_booking_update             TYPE TABLE FOR UPDATE    /dmo/i_booking_u.
+    TYPES tt_booking_delete             TYPE TABLE FOR DELETE    /dmo/i_booking_u.
 
-    TYPES tt_booking_create     TYPE TABLE FOR CREATE    /dmo/i_booking_u.
-    TYPES tt_booking_update     TYPE TABLE FOR UPDATE    /dmo/i_booking_u.
-    TYPES tt_booking_delete     TYPE TABLE FOR DELETE    /dmo/i_booking_u.
+    TYPES tt_booking_failed             TYPE TABLE FOR FAILED    /dmo/i_booking_u.
+    TYPES tt_booking_mapped             TYPE TABLE FOR MAPPED    /dmo/i_booking_u.
+    TYPES tt_booking_reported           TYPE TABLE FOR REPORTED  /dmo/i_booking_u.
 
-    TYPES tt_booking_failed     TYPE TABLE FOR FAILED    /dmo/i_booking_u.
-    TYPES tt_booking_mapped     TYPE TABLE FOR MAPPED    /dmo/i_booking_u.
-    TYPES tt_booking_reported   TYPE TABLE FOR REPORTED  /dmo/i_booking_u.
+    TYPES tt_bookingsupplement_failed   TYPE TABLE FOR FAILED    /dmo/i_bookingsupplement_u.
+    TYPES tt_bookingsupplement_mapped   TYPE TABLE FOR MAPPED    /dmo/i_bookingsupplement_u.
+    TYPES tt_bookingsupplement_reported TYPE TABLE FOR REPORTED  /dmo/i_bookingsupplement_u.
 
 
     CLASS-METHODS map_travel_cds_to_db
@@ -52,18 +55,33 @@ PUBLIC SECTION.
                             RETURNING VALUE(rs_report)      TYPE LINE OF tt_booking_reported.
 
 
+    CLASS-METHODS map_bookingsupplemnt_cds_to_db
+                            IMPORTING is_i_bookingsupplement      TYPE /dmo/i_bookingsupplement_u
+                            RETURNING VALUE(rs_bookingsupplement) TYPE /dmo/if_flight_legacy=>ts_booking_supplement_in.
+
+
+
+    CLASS-METHODS map_bookingsupplemnt_message
+                            IMPORTING iv_cid                  TYPE string OPTIONAL
+                                      iv_travel_id            TYPE /dmo/travel_id OPTIONAL
+                                      iv_booking_id           TYPE /dmo/booking_id OPTIONAL
+                                      iv_bookingsupplement_id TYPE /dmo/booking_supplement_id OPTIONAL
+                                      is_message              TYPE LINE OF /dmo/if_flight_legacy=>tt_message
+                            RETURNING VALUE(rs_report)        TYPE LINE OF tt_bookingsupplement_reported.
 
 PROTECTED SECTION.
+
 PRIVATE SECTION.
 
-    CLASS-METHODS new_message IMPORTING id         TYPE symsgid
-                                        number     TYPE symsgno
-                                        severity   TYPE if_abap_behv_message=>t_severity
-                                        v1         TYPE simple OPTIONAL
-                                        v2         TYPE simple OPTIONAL
-                                        v3         TYPE simple OPTIONAL
-                                        v4         TYPE simple OPTIONAL
-                              RETURNING VALUE(obj) TYPE REF TO if_abap_behv_message .
+    CLASS-METHODS new_message
+                            IMPORTING id                    TYPE symsgid
+                                      number                TYPE symsgno
+                                      severity              TYPE if_abap_behv_message=>t_severity
+                                      v1                    TYPE simple OPTIONAL
+                                      v2                    TYPE simple OPTIONAL
+                                      v3                    TYPE simple OPTIONAL
+                                      v4                    TYPE simple OPTIONAL
+                              RETURNING VALUE(obj)          TYPE REF TO if_abap_behv_message .
 
 
 
@@ -130,6 +148,32 @@ CLASS /dmo/cl_travel_auxiliary IMPLEMENTATION.
     rs_report-bookingid = iv_booking_id.
     rs_report-%msg      = lo.
   ENDMETHOD.
+
+
+  METHOD map_bookingsupplemnt_cds_to_db.
+    rs_bookingsupplement = CORRESPONDING #( is_i_bookingsupplement MAPPING  booking_id             = bookingid
+                                                                            booking_supplement_id  = bookingsupplementid
+                                                                            supplement_id          = supplementid
+                                                                            price                  = price
+                                                                            currency_code          = currencycode  ).
+  ENDMETHOD.
+
+  METHOD map_bookingsupplemnt_message.
+ DATA(lo) = new_message( id       = is_message-msgid
+                            number   = is_message-msgno
+                            severity = if_abap_behv_message=>severity-error
+                            v1       = is_message-msgv1
+                            v2       = is_message-msgv2
+                            v3       = is_message-msgv3
+                            v4       = is_message-msgv4 ).
+    rs_report-%cid      = iv_cid.
+    rs_report-travelid  = iv_travel_id.
+    rs_report-bookingid = iv_booking_id.
+    rs_report-bookingSupplementid = iv_bookingsupplement_id.
+    rs_report-%msg      = lo.
+  ENDMETHOD.
+
+
 
 
   METHOD new_message.

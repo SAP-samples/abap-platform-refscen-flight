@@ -260,7 +260,16 @@ CLASS /dmo/cx_flight_legacy DEFINITION
         attr2 TYPE scx_attrname VALUE 'MV_UNAME',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF travel_lock.
+      END OF travel_lock,
+
+      BEGIN OF travel_already_exists,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '033',
+        attr1 TYPE scx_attrname VALUE 'MV_TRAVEL_ID',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF travel_already_exists.
 
     METHODS constructor
       IMPORTING
