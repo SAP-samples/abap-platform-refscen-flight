@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <SRVD>
-    <NAME>/DMO/UI_TRAVEL_U_SD</NAME>
+    <NAME>/DMO/TRAVEL_U</NAME>
     <VERSION>active</VERSION>
     <DESCRIPTION>Service Definition for Managing Travels</DESCRIPTION>
     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
