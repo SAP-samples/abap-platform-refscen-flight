@@ -346,13 +346,17 @@ CLASS lcl_booking_create_ba_handler IMPLEMENTATION.
           lv_last_booking_id = lt_booking_old[ lines( lt_booking_old ) ]-booking_id.
         ENDIF.
 
-        SELECT MAX( b~bookingid ) FROM @<fs_booking_create_ba>-%target AS b INTO @DATA(lv_max_booking_id).
-        lv_last_booking_id = COND #( WHEN lv_last_booking_id >= lv_max_booking_id THEN lv_last_booking_id ELSE lv_max_booking_id ).
-
         LOOP AT <fs_booking_create_ba>-%target ASSIGNING FIELD-SYMBOL(<fs_booking_create>).
+          IF <fs_booking_create>-BookingID > lv_last_booking_id.
+            lv_last_booking_id = <fs_booking_create>-BookingID.
+          ENDIF.
+        ENDLOOP.
+
+        LOOP AT <fs_booking_create_ba>-%target ASSIGNING <fs_booking_create>.
           ls_booking = CORRESPONDING #( /dmo/cl_travel_auxiliary=>map_booking_cds_to_db( CORRESPONDING #( <fs_booking_create> ) ) ).
 
-            ls_booking-booking_id = lv_last_booking_id + 1.
+          lv_last_booking_id += 1.
+          ls_booking-booking_id = lv_last_booking_id.
 
           CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
             EXPORTING
