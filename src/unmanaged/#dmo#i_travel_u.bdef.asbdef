@@ -29,7 +29,7 @@ define behavior for /DMO/I_Booking_U alias booking
   update;
   delete;
 
-  association _BookSupplement { create; }
+  association _BookSupplement abbreviation _Supplement { create; }
 
 }
 
