@@ -1,4 +1,4 @@
-CLASS /dmo/cl_travel_u DEFINITION
+CLASS /dmo/bp_travel_u DEFINITION
   PUBLIC
   ABSTRACT
   FINAL
@@ -11,5 +11,5 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cl_travel_u IMPLEMENTATION.
+CLASS /dmo/bp_travel_u IMPLEMENTATION.
 ENDCLASS.

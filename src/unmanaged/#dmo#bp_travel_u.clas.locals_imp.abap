@@ -1,5 +1,10 @@
-
+**********************************************************************
+*
+* Local class for handling travel messages
+*
+**********************************************************************
 CLASS lcl_message_helper DEFINITION CREATE PRIVATE.
+
   PUBLIC SECTION.
     TYPES tt_travel_failed      TYPE TABLE FOR FAILED   /dmo/i_travel_u.
     TYPES tt_travel_reported    TYPE TABLE FOR REPORTED /dmo/i_travel_u.
@@ -30,19 +35,38 @@ ENDCLASS.
 
 **********************************************************************
 *
-* Handler for creation of travel instances
+* Handler class for managing travels
 *
 **********************************************************************
-CLASS lcl_travel_create_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
+
   PRIVATE SECTION.
 
-    METHODS create_travel FOR MODIFY
-                            IMPORTING   it_travel_create    FOR CREATE travel.
+    METHODS:
+        create_travel       FOR MODIFY
+                                IMPORTING it_travel_create               FOR CREATE travel,
+        update_travel       FOR MODIFY
+                                IMPORTING it_travel_update               FOR UPDATE travel,
+        delete_travel       FOR MODIFY
+                                IMPORTING it_travel_delete               FOR DELETE travel,
+        read_travel         FOR READ
+                                IMPORTING it_travel                      FOR READ travel
+                                RESULT et_travel,
+        set_travel_status   FOR MODIFY
+                                IMPORTING it_travel_set_status_booked    FOR ACTION travel~set_status_booked
+                                RESULT et_travel_set_status_booked,
+        cba_booking   FOR MODIFY
+                                IMPORTING it_booking_create_ba           FOR CREATE travel\_booking.
 
 ENDCLASS.
 
-CLASS lcl_travel_create_handler IMPLEMENTATION.
 
+CLASS lhc_travel IMPLEMENTATION.
+**********************************************************************
+*
+* Create travel instances
+*
+**********************************************************************
   METHOD create_travel.
 
     DATA lt_messages   TYPE /dmo/if_flight_legacy=>tt_message.
@@ -81,27 +105,12 @@ CLASS lcl_travel_create_handler IMPLEMENTATION.
 
   ENDMETHOD.
 
-ENDCLASS.
-
-
 
 **********************************************************************
 *
-* Handler for updating travel data
+* Update data of existing travel instances
 *
 **********************************************************************
-CLASS lcl_travel_update_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-
-    METHODS update_travel FOR MODIFY
-                            IMPORTING   it_travel_update    FOR UPDATE travel.
-
-
-ENDCLASS.
-
-CLASS lcl_travel_update_handler IMPLEMENTATION.
-
-
   METHOD update_travel.
 
     DATA lt_messages    TYPE /dmo/if_flight_legacy=>tt_message.
@@ -151,70 +160,13 @@ CLASS lcl_travel_update_handler IMPLEMENTATION.
 
   ENDMETHOD.
 
-ENDCLASS.
-
-
 
 
 **********************************************************************
 *
-* Handler that implements read access
+* Delete of travel instances
 *
 **********************************************************************
-CLASS lcl_travel_read_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-
-    METHODS get_travel FOR READ
-                            IMPORTING it_travel FOR READ travel RESULT et_travel.
-
-
-ENDCLASS.
-
-CLASS lcl_travel_read_handler IMPLEMENTATION.
-
-  METHOD get_travel.
-    DATA: ls_travel_out TYPE /dmo/travel.
-
-    LOOP AT it_travel INTO DATA(ls_travel_to_read).
-      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
-        EXPORTING
-          iv_travel_id = ls_travel_to_read-travelid
-        IMPORTING
-          es_travel    = ls_travel_out.
-
-      INSERT VALUE #( travelid      = ls_travel_to_read-travelid
-                      agencyid      = ls_travel_out-agency_id
-                      customerid    = ls_travel_out-customer_id
-                      begindate     = ls_travel_out-begin_date
-                      enddate       = ls_travel_out-end_date
-                      bookingfee    = ls_travel_out-booking_fee
-                      totalprice    = ls_travel_out-total_price
-                      currencycode  = ls_travel_out-currency_code
-                      memo          = ls_travel_out-description
-                      status        = ls_travel_out-status
-                      lastchangedat = ls_travel_out-lastchangedat ) INTO TABLE et_travel.
-    ENDLOOP.
-
-  ENDMETHOD.
-
-ENDCLASS.
-
-
-**********************************************************************
-*
-* Handler class for deletion of travel instances
-*
-**********************************************************************
-CLASS lcl_travel_delete_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-
-    METHODS delete_travel FOR MODIFY
-                            IMPORTING   it_travel_delete    FOR DELETE travel.
-
-ENDCLASS.
-
-CLASS lcl_travel_delete_handler IMPLEMENTATION.
-
   METHOD delete_travel.
 
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
@@ -246,26 +198,42 @@ CLASS lcl_travel_delete_handler IMPLEMENTATION.
 
   ENDMETHOD.
 
-ENDCLASS.
+**********************************************************************
+*
+* Read travel data from buffer
+*
+**********************************************************************
+  METHOD read_travel.
+    DATA: ls_travel_out TYPE /dmo/travel.
 
+    LOOP AT it_travel INTO DATA(ls_travel_to_read).
+      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
+        EXPORTING
+          iv_travel_id = ls_travel_to_read-travelid
+        IMPORTING
+          es_travel    = ls_travel_out.
+
+      INSERT VALUE #( travelid      = ls_travel_to_read-travelid
+                      agencyid      = ls_travel_out-agency_id
+                      customerid    = ls_travel_out-customer_id
+                      begindate     = ls_travel_out-begin_date
+                      enddate       = ls_travel_out-end_date
+                      bookingfee    = ls_travel_out-booking_fee
+                      totalprice    = ls_travel_out-total_price
+                      currencycode  = ls_travel_out-currency_code
+                      memo          = ls_travel_out-description
+                      status        = ls_travel_out-status
+                      lastchangedat = ls_travel_out-lastchangedat ) INTO TABLE et_travel.
+    ENDLOOP.
+
+  ENDMETHOD.
 
 
 **********************************************************************
 *
-* Handler that implements travel action(s) (in our case: for setting travel status)
+* Implement travel action(s) (in our case: for setting travel status)
 *
 **********************************************************************
-CLASS lcl_travel_action_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-
-    METHODS set_travel_status FOR MODIFY
-                            IMPORTING it_travel_set_status_booked   FOR ACTION travel~set_status_booked
-                                                                        RESULT et_travel_set_status_booked.
-
-ENDCLASS.
-
-CLASS lcl_travel_action_handler IMPLEMENTATION.
-
 
   METHOD set_travel_status.
 
@@ -300,27 +268,13 @@ CLASS lcl_travel_action_handler IMPLEMENTATION.
 
   ENDMETHOD.
 
-ENDCLASS.
-
-
 
 **********************************************************************
 *
-* Handler for creation of associated booking instances
+* Create associated booking instances
 *
 **********************************************************************
-CLASS lcl_booking_create_ba_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-
-    METHODS create_booking FOR MODIFY
-                            IMPORTING   it_booking_create_ba        FOR CREATE travel\_booking.
-
-
-ENDCLASS.
-
-CLASS lcl_booking_create_ba_handler IMPLEMENTATION.
-
-  METHOD create_booking.
+  METHOD cba_booking.
     DATA lt_messages        TYPE /dmo/if_flight_legacy=>tt_message.
     DATA lt_booking_old     TYPE /dmo/if_flight_legacy=>tt_booking.
     DATA ls_booking         TYPE LINE OF /dmo/if_flight_legacy=>tt_booking_in.
@@ -404,13 +358,12 @@ CLASS lcl_booking_create_ba_handler IMPLEMENTATION.
 ENDCLASS.
 
 
-
 **********************************************************************
 *
 * Saver class implements the save sequence for data persistence
 *
 **********************************************************************
-CLASS lcl_saver DEFINITION INHERITING FROM cl_abap_behavior_saver.
+CLASS lsc_saver DEFINITION INHERITING FROM cl_abap_behavior_saver.
   PROTECTED SECTION.
     METHODS finalize          REDEFINITION.
     METHODS check_before_save REDEFINITION.
@@ -418,7 +371,7 @@ CLASS lcl_saver DEFINITION INHERITING FROM cl_abap_behavior_saver.
     METHODS cleanup           REDEFINITION.
 ENDCLASS.
 
-CLASS lcl_saver IMPLEMENTATION.
+CLASS lsc_saver IMPLEMENTATION.
   METHOD finalize.
   ENDMETHOD.
 

@@ -3,11 +3,10 @@
 * Local class for handling messages of booking supplements
 *
 **********************************************************************
-
 CLASS lcl_message_helper DEFINITION CREATE PRIVATE.
   PUBLIC SECTION.
-    TYPES tt_bookingsupplement_failed     TYPE TABLE FOR FAILED   /dmo/i_bookingsupplement_u.
-    TYPES tt_bookingsupplement_reported   TYPE TABLE FOR REPORTED /dmo/i_bookingsupplement_u.
+    TYPES tt_bookingsupplement_failed   TYPE TABLE FOR FAILED   /dmo/i_bookingsupplement_u.
+    TYPES tt_bookingsupplement_reported TYPE TABLE FOR REPORTED /dmo/i_bookingsupplement_u.
 
     CLASS-METHODS handle_bookingsuppl_messages
       IMPORTING iv_cid                  TYPE string OPTIONAL
@@ -31,10 +30,10 @@ CLASS lcl_message_helper IMPLEMENTATION.
                       bookingsupplementid = iv_bookingsupplement_id ) INTO TABLE failed.
 
       INSERT /dmo/cl_travel_auxiliary=>map_bookingsupplemnt_message(
-                                          iv_travel_id  = iv_travel_id
-                                          iv_booking_id = iv_booking_id
-                                          iv_bookingsupplement_id = iv_bookingsupplement_id
-                                          is_message    = ls_message )
+                                          iv_travel_id              = iv_travel_id
+                                          iv_booking_id             = iv_booking_id
+                                          iv_bookingsupplement_id   = iv_bookingsupplement_id
+                                          is_message                = ls_message )
                                       INTO TABLE reported.
 
     ENDLOOP.
@@ -46,42 +45,46 @@ ENDCLASS.
 
 **********************************************************************
 *
-* Handler class implements UPDATE for booking supplement instances
+* Handler class implements UPDATE and DELETE for booking supplements
 *
 **********************************************************************
-CLASS lcl_update_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lhc_supplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
   PRIVATE SECTION.
- TYPES tt_booking_update     TYPE TABLE FOR UPDATE    /dmo/i_booking_u.
-    TYPES tt_bookingsupplement_update     TYPE TABLE FOR UPDATE    /dmo/i_bookingsupplement_u.
 
-    METHODS update_bookingsupplement FOR MODIFY
-      IMPORTING it_bookingsupplement_update FOR UPDATE bookingsupplement.
+    TYPES:
+        tt_booking_update               TYPE TABLE FOR UPDATE    /dmo/i_booking_u,
+        tt_bookingsupplement_update     TYPE TABLE FOR UPDATE    /dmo/i_bookingsupplement_u.
 
-
+    METHODS:
+        update_bookingsupplement FOR MODIFY
+                                    IMPORTING it_bookingsupplement_update FOR UPDATE bookingsupplement,
+        delete_bookingsupplement FOR MODIFY
+                                    IMPORTING it_bookingsupplement_delete FOR DELETE bookingsupplement.
 
     METHODS _fill_bookingsupplement_inx
-      IMPORTING is_bookingsupplement_update     TYPE LINE OF tt_bookingsupplement_update
-      RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/if_flight_legacy=>ts_booking_supplement_inx.
-
+                                IMPORTING is_bookingsupplement_update     TYPE LINE OF tt_bookingsupplement_update
+                                RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/if_flight_legacy=>ts_booking_supplement_inx.
 ENDCLASS.
 
-CLASS lcl_update_handler IMPLEMENTATION.
 
+CLASS lhc_supplement IMPLEMENTATION.
+
+
+**********************************************************************
+*
+* Implements the UPDATE operation for a set of booking supplements
+*
+**********************************************************************
   METHOD update_bookingsupplement.
 
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
 
-**********************************************************************
-* Implements the UPDATE operation for a set of booking supplement instances
-**********************************************************************
     LOOP AT it_bookingsupplement_update ASSIGNING FIELD-SYMBOL(<fs_bookingsupplement_update>).
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
           is_travel              = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = <fs_bookingsupplement_update>-travelid )
           is_travelx             = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = <fs_bookingsupplement_update>-travelid )
-*          it_booking             = VALUE /dmo/if_flight_legacy=>tt_booking_in( ( /dmo/cl_travel_auxiliary=>map_booking_cds_to_db( CORRESPONDING #( <fs_bookingsupplement_update> ) ) ) )
-*          it_bookingx            = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( _fill_bookingsupplement_inx( <fs_bookingsupplement_update> ) )
           it_booking_supplement  = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_in( ( /dmo/cl_travel_auxiliary=>map_bookingsupplemnt_cds_to_db( CORRESPONDING #( <fs_bookingsupplement_update> ) ) ) )
           it_booking_supplementx = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_inx( ( _fill_bookingsupplement_inx( <fs_bookingsupplement_update> ) ) )
         IMPORTING
@@ -121,29 +124,14 @@ CLASS lcl_update_handler IMPLEMENTATION.
     rs_bookingsupplement_inx-currency_code = xsdbool( is_bookingsupplement_update-%control-currencycode = cl_abap_behv=>flag_changed ).
   ENDMETHOD.
 
-ENDCLASS.
-
 
 **********************************************************************
 *
-* Handler class implements DELETE for booking supplement instances
+* Implements the DELETE operation for a set of booking supplements
 *
 **********************************************************************
-
-CLASS lcl_delete_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-    METHODS delete_bookingsupplement FOR MODIFY
-      IMPORTING it_bookingsupplement_delete FOR DELETE bookingsupplement.
-ENDCLASS.
-
-
-**********************************************************************
-* Implements the DELETE operation for a set of booking instances
-**********************************************************************
-
-CLASS lcl_delete_handler IMPLEMENTATION.
-
   METHOD delete_bookingsupplement.
+
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
 
     LOOP AT it_bookingsupplement_delete INTO DATA(ls_bookingsupplement_delete).

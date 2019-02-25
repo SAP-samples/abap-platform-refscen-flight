@@ -1,4 +1,4 @@
-CLASS /dmo/cl_bookingsupplement_u DEFINITION
+CLASS /dmo/bp_booking_u DEFINITION
   PUBLIC
   ABSTRACT
   FINAL
@@ -11,5 +11,5 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cl_bookingsupplement_u IMPLEMENTATION.
+CLASS /dmo/bp_booking_u IMPLEMENTATION.
 ENDCLASS.

@@ -3,75 +3,88 @@
 * Local class for handling messages of bookings
 *
 **********************************************************************
-
 CLASS lcl_message_helper DEFINITION CREATE PRIVATE.
+
   PUBLIC SECTION.
     TYPES tt_booking_failed     TYPE TABLE FOR FAILED   /dmo/i_booking_u.
     TYPES tt_booking_reported   TYPE TABLE FOR REPORTED /dmo/i_booking_u.
 
     CLASS-METHODS handle_booking_messages
-      IMPORTING iv_cid          TYPE string OPTIONAL
-                iv_travel_id    TYPE /dmo/travel_id OPTIONAL
-                iv_booking_id   TYPE /dmo/booking_id OPTIONAL
-                it_messages     TYPE /dmo/if_flight_legacy=>tt_message
+      IMPORTING iv_cid        TYPE string OPTIONAL
+                iv_travel_id  TYPE /dmo/travel_id OPTIONAL
+                iv_booking_id TYPE /dmo/booking_id OPTIONAL
+                it_messages   TYPE /dmo/if_flight_legacy=>tt_message
       CHANGING
-                failed       TYPE tt_booking_failed
-                reported     TYPE tt_booking_reported.
+                failed        TYPE tt_booking_failed
+                reported      TYPE tt_booking_reported.
+
 ENDCLASS.
 
 CLASS lcl_message_helper IMPLEMENTATION.
 
   METHOD handle_booking_messages.
 
-      LOOP AT it_messages INTO DATA(ls_message) WHERE msgty = 'E' OR msgty = 'A'.
-        INSERT VALUE #( %cid = iv_cid
-                        travelid    = iv_travel_id
-                        bookingid   = iv_booking_id ) INTO TABLE failed.
+    LOOP AT it_messages INTO DATA(ls_message) WHERE msgty = 'E' OR msgty = 'A'.
+      INSERT VALUE #( %cid      = iv_cid
+                      travelid  = iv_travel_id
+                      bookingid = iv_booking_id ) INTO TABLE failed.
 
-        INSERT /dmo/cl_travel_auxiliary=>map_booking_message(
-                                            iv_travel_id  = iv_travel_id
-                                            iv_booking_id = iv_booking_id
-                                            is_message    = ls_message )
-                                        INTO TABLE reported.
+      INSERT /dmo/cl_travel_auxiliary=>map_booking_message(
+                                          iv_travel_id  = iv_travel_id
+                                          iv_booking_id = iv_booking_id
+                                          is_message    = ls_message )
+                                      INTO TABLE reported.
 
-      ENDLOOP.
+    ENDLOOP.
 
   ENDMETHOD.
 
 ENDCLASS.
 
 
-
 **********************************************************************
 *
-* Handler class implements UPDATE for booking instances
+* Handler class for managing bookings
 *
 **********************************************************************
-CLASS lcl_update_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
   PRIVATE SECTION.
 
-    TYPES tt_booking_update     TYPE TABLE FOR UPDATE    /dmo/i_booking_u.
+    TYPES:
+        tt_booking_update                       TYPE TABLE FOR UPDATE  /dmo/i_booking_u,
+        tt_bookingsupplement_create             TYPE TABLE FOR CREATE  /dmo/i_bookingsupplement_u.
 
-    METHODS update_booking FOR MODIFY
-                            IMPORTING   it_booking_update       FOR UPDATE booking.
+    METHODS:
+        update_booking      FOR MODIFY
+                                IMPORTING   it_booking_update       FOR UPDATE booking,
+        delete_booking      FOR MODIFY
+                                IMPORTING   it_booking_delete       FOR DELETE booking,
+        cba_supplement      FOR MODIFY
+                                IMPORTING   it_supplement_create_ba FOR CREATE booking\_booksupplement.
 
-
-    METHODS _fill_booking_inx
-                            IMPORTING is_booking_update     TYPE LINE OF tt_booking_update
-                            RETURNING VALUE(rs_booking_inx) TYPE /dmo/if_flight_legacy=>ts_booking_inx.
+    METHODS:
+        _fill_booking_inx
+                IMPORTING is_booking_update     TYPE LINE OF tt_booking_update
+                RETURNING VALUE(rs_booking_inx) TYPE /dmo/if_flight_legacy=>ts_booking_inx,
+        _fill_bookingsupplement_inx
+                IMPORTING is_bookingsupplement_create     TYPE LINE OF tt_bookingsupplement_create
+                RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/if_flight_legacy=>ts_booking_supplement_inx.
 
 ENDCLASS.
 
-CLASS lcl_update_handler IMPLEMENTATION.
 
+CLASS lhc_booking IMPLEMENTATION.
+
+**********************************************************************
+*
+* Implements the UPDATE operation for a set of booking instances
+*
+**********************************************************************
   METHOD update_booking.
 
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
 
-**********************************************************************
-* Implements the UPDATE operation for a set of booking instances
-**********************************************************************
     LOOP AT it_booking_update ASSIGNING FIELD-SYMBOL(<fs_booking_update>).
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
@@ -95,13 +108,13 @@ CLASS lcl_update_handler IMPLEMENTATION.
 
     ENDLOOP.
 
-ENDMETHOD.
+  ENDMETHOD.
 
 **********************************************************************
 * Helper method:
 * Indicates the booking fields that have been changed by the client
+*
 **********************************************************************
-
   METHOD _fill_booking_inx.
 
     CLEAR rs_booking_inx.
@@ -117,29 +130,14 @@ ENDMETHOD.
     rs_booking_inx-currency_code = xsdbool( is_booking_update-%control-currencycode = cl_abap_behv=>flag_changed ).
   ENDMETHOD.
 
-ENDCLASS.
-
 
 **********************************************************************
 *
-* Handler class implements DELETE for booking instances
-*
-**********************************************************************
-
-CLASS lcl_delete_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-    METHODS delete_booking FOR MODIFY
-                            IMPORTING   it_booking_delete       FOR DELETE booking.
-ENDCLASS.
-
-
-**********************************************************************
 * Implements the DELETE operation for a set of booking instances
+*
 **********************************************************************
-
-CLASS lcl_delete_handler IMPLEMENTATION.
-
   METHOD delete_booking.
+
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
 
     LOOP AT it_booking_delete INTO DATA(ls_booking_delete).
@@ -154,17 +152,17 @@ CLASS lcl_delete_handler IMPLEMENTATION.
         IMPORTING
           et_messages = lt_messages.
 
-       IF lt_messages IS NOT INITIAL.
+      IF lt_messages IS NOT INITIAL.
 
-       lcl_message_helper=>handle_booking_messages(
-        EXPORTING
-          iv_cid       = ls_booking_delete-%cid_ref
-          iv_travel_id = ls_booking_delete-travelid
-          iv_booking_id = ls_booking_delete-bookingid
-          it_messages  = lt_messages
-        CHANGING
-          failed       = failed-booking
-          reported     = reported-booking ).
+        lcl_message_helper=>handle_booking_messages(
+         EXPORTING
+           iv_cid        = ls_booking_delete-%cid_ref
+           iv_travel_id  = ls_booking_delete-travelid
+           iv_booking_id = ls_booking_delete-bookingid
+           it_messages   = lt_messages
+         CHANGING
+           failed        = failed-booking
+           reported      = reported-booking ).
 
       ENDIF.
 
@@ -172,48 +170,17 @@ CLASS lcl_delete_handler IMPLEMENTATION.
 
   ENDMETHOD.
 
-ENDCLASS.
-
-
 ***********************************************************************
-**
-** Handler for creation of associated booking  supplements
-**
-***********************************************************************
-CLASS lcl_suppl_create_ba_handler DEFINITION INHERITING FROM cl_abap_behavior_handler.
-  PRIVATE SECTION.
-    TYPES tt_bookingsupplement_create     TYPE TABLE FOR CREATE   /dmo/i_bookingsupplement_u.
-
-    METHODS create_booking_supplement FOR MODIFY
-                IMPORTING   it_supplement_create_ba    FOR CREATE booking\_booksupplement.
-
-    METHODS _fill_bookingsupplement_inx
-      IMPORTING is_bookingsupplement_create     TYPE LINE OF tt_bookingsupplement_create
-      RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/if_flight_legacy=>ts_booking_supplement_inx.
-
-
-ENDCLASS.
-
-CLASS lcl_suppl_create_ba_handler IMPLEMENTATION.
-
- METHOD _fill_bookingsupplement_inx.
 *
-    CLEAR rs_bookingsupplement_inx.
-    rs_bookingsupplement_inx-booking_supplement_id    = is_bookingsupplement_create-bookingsupplementid.
-    rs_bookingsupplement_inx-action_code   = /dmo/if_flight_legacy=>action_code-create.
-    rs_bookingsupplement_inx-booking_id = is_bookingsupplement_create-bookingid.
+* Create associated booking supplements
+*
+***********************************************************************
+  METHOD cba_supplement.
 
-    rs_bookingsupplement_inx-supplement_id  = xsdbool( is_bookingsupplement_create-%control-supplementid  = cl_abap_behv=>flag_changed ).
-    rs_bookingsupplement_inx-price   = xsdbool( is_bookingsupplement_create-%control-price   = cl_abap_behv=>flag_changed ).
-    rs_bookingsupplement_inx-currency_code = xsdbool( is_bookingsupplement_create-%control-currencycode = cl_abap_behv=>flag_changed ).
-  ENDMETHOD.
-
-
-  METHOD create_booking_supplement.
     DATA lt_messages                TYPE /dmo/if_flight_legacy=>tt_message.
     DATA lt_booksupplement_old      TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
     DATA ls_booksupplement          TYPE LINE OF /dmo/if_flight_legacy=>tt_booking_supplement_in.
-    DATA lv_last_booksupplement_id  TYPE /DMO/BOOKING_SUPPLEMENT_ID VALUE '0'.
+    DATA lv_last_booksupplement_id  TYPE /dmo/booking_supplement_id VALUE '0'.
 
     LOOP AT it_supplement_create_ba ASSIGNING FIELD-SYMBOL(<fs_supplement_create_ba>).
 
@@ -257,14 +224,14 @@ CLASS lcl_suppl_create_ba_handler IMPLEMENTATION.
 
           CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
             EXPORTING
-              is_travel   = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = lv_travelid )
-              is_travelx  = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = lv_travelid )
-              it_bookingx = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( booking_id  = ls_booksupplement-booking_id
-                                                                           action_code = /dmo/if_flight_legacy=>action_code-update ) )
+              is_travel              = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = lv_travelid )
+              is_travelx             = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = lv_travelid )
+              it_bookingx            = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( booking_id  = ls_booksupplement-booking_id
+                                                                                      action_code = /dmo/if_flight_legacy=>action_code-update ) )
               it_booking_supplement  = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_in( ( /dmo/cl_travel_auxiliary=>map_bookingsupplemnt_cds_to_db( CORRESPONDING #( ls_supplement_create ) ) ) )
               it_booking_supplementx = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_inx( ( _fill_bookingsupplement_inx( ls_supplement_create ) ) )
             IMPORTING
-              et_messages = lt_messages.
+              et_messages            = lt_messages.
 
           IF lt_messages IS INITIAL.
             INSERT VALUE #( %cid = ls_supplement_create-%cid
@@ -302,5 +269,24 @@ CLASS lcl_suppl_create_ba_handler IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
+
+**********************************************************************
+* Helper method:
+* Indicates the booking supplemnt fields that have been changed by the client
+*
+**********************************************************************
+  METHOD _fill_bookingsupplement_inx.
+
+    CLEAR rs_bookingsupplement_inx.
+    rs_bookingsupplement_inx-booking_supplement_id  = is_bookingsupplement_create-bookingsupplementid.
+    rs_bookingsupplement_inx-action_code            = /dmo/if_flight_legacy=>action_code-create.
+    rs_bookingsupplement_inx-booking_id             = is_bookingsupplement_create-bookingid.
+
+    rs_bookingsupplement_inx-supplement_id          = xsdbool( is_bookingsupplement_create-%control-supplementid  = cl_abap_behv=>flag_changed ).
+    rs_bookingsupplement_inx-price                  = xsdbool( is_bookingsupplement_create-%control-price   = cl_abap_behv=>flag_changed ).
+    rs_bookingsupplement_inx-currency_code          = xsdbool( is_bookingsupplement_create-%control-currencycode = cl_abap_behv=>flag_changed ).
+
+  ENDMETHOD.
+
 
 ENDCLASS.

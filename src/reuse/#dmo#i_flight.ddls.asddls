@@ -4,9 +4,10 @@
 @AccessControl.authorizationCheck: #CHECK
 @EndUserText.label: 'Flight View - CDS Data Model'
 
-define view /DMO/I_Flight as select from /dmo/flight as Flight
+define view /DMO/I_Flight 
+as select from /dmo/flight as Flight
+
 { 
- 
 key Flight.carrier_id          as AirlineID, 
 key Flight.connection_id       as ConnectionID, 
 key Flight.flight_date         as FlightDate, 
