@@ -5,7 +5,8 @@ CLASS /dmo/cl_flight_legacy DEFINITION
   GLOBAL FRIENDS /dmo/cl_flight_data_generator.
 
   PUBLIC SECTION.
-    INTERFACES: /dmo/if_flight_legacy.
+    INTERFACES /dmo/if_flight_legacy.
+    INTERFACES if_amdp_marker_hdb.
 
     TYPES: BEGIN OF ENUM ty_change_mode STRUCTURE change_mode," Key checks are done separately
              create,
@@ -95,6 +96,11 @@ CLASS /dmo/cl_flight_legacy DEFINITION
                                         iv_currency_code_target TYPE /dmo/currency_code
                                         iv_amount               TYPE /dmo/total_price
                               RETURNING VALUE(rv_amount)        TYPE /dmo/total_price.
+    CLASS-METHODS _convert_currency_amdp IMPORTING VALUE(iv_amount)               TYPE /dmo/total_price
+                                                   VALUE(iv_currency_code_source) TYPE /dmo/currency_code
+                                                   VALUE(iv_currency_code_target) TYPE /dmo/currency_code
+                                                   VALUE(iv_exchange_rate_date)   TYPE d
+                                         EXPORTING VALUE(ev_amount)               TYPE /dmo/total_price.
 ENDCLASS.
 
 
@@ -491,15 +497,31 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD _convert_currency_amdp BY DATABASE PROCEDURE FOR HDB LANGUAGE SQLSCRIPT OPTIONS READ-ONLY .
+    tab = SELECT CONVERT_CURRENCY( amount         => :iv_amount,
+                                   source_unit    => :iv_currency_code_source,
+                                   target_unit    => :iv_currency_code_target,
+                                   reference_date => :iv_exchange_rate_date,
+                                   schema         => CURRENT_SCHEMA,
+                                   error_handling => 'set to null',
+                                   steps          => 'shift,convert,shift_back',
+                                   client         => SESSION_CONTEXT( 'CLIENT' )
+                                ) AS target_value
+              FROM dummy ;
+    ev_amount = :tab.target_value[1];
+  ENDMETHOD.
+
   METHOD _convert_currency.
     DATA(lv_exchange_rate_date) = cl_abap_context_info=>get_system_date( )." Do not buffer: Current date may change during lifetime of session
-    SELECT convertedamount FROM /dmo/currency_helper( amount             = @iv_amount,
-                                                      source_currency    = @iv_currency_code_source,
-                                                      target_currency    = @iv_currency_code_target,
-                                                      exchange_rate_date = @lv_exchange_rate_date )
-       INTO @rv_amount
-       UP TO 1 ROWS.
-    ENDSELECT.
+    _convert_currency_amdp(
+      EXPORTING
+        iv_amount               = iv_amount
+        iv_currency_code_source = iv_currency_code_source
+        iv_currency_code_target = iv_currency_code_target
+        iv_exchange_rate_date   = lv_exchange_rate_date
+      IMPORTING
+        ev_amount               = rv_amount
+    ).
   ENDMETHOD.
 
 
