@@ -9,6 +9,8 @@
                      title: { type: #STANDARD, label: 'Booking Supplement', value: 'BookingSupplementID' } } }
 @EndUserText.label: 'Booking Supplement view - CDS data model'
 
+@Search.searchable: true
+
 define view /DMO/I_BookingSupplement_U
   as select from /dmo/book_suppl as BookingSupplement
 
@@ -30,8 +32,10 @@ define view /DMO/I_BookingSupplement_U
                       label:           'Price',
                       position:        20 } ]
 
+  @Search.defaultSearchElement: true
   key BookingSupplement.travel_id              as TravelID,
-
+  
+  @Search.defaultSearchElement: true
   key BookingSupplement.booking_id             as BookingID,
 
       @UI: { lineItem:       [ { position: 10, importance: #HIGH } ],

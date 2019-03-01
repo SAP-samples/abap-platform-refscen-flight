@@ -12,6 +12,8 @@
   }
 }
 
+@Search.searchable: true
+
 define view /DMO/I_Booking_U
   as select from /dmo/booking as Booking
   
@@ -36,12 +38,13 @@ define view /DMO/I_Booking_U
                   label:         'Booking Supplement',
                   position:      20,
                   targetElement: '_BookSupplement'} ]
-
-
-  key Booking.travel_id             as TravelID,
-  
-  @UI: { lineItem:  [ { position: 20, importance: #HIGH } ], identification: [{position: 20 }] } 
-  key Booking.booking_id            as BookingID,
+    
+      @Search.defaultSearchElement: true
+      key Booking.travel_id         as TravelID,
+      
+      @UI: { lineItem:  [ { position: 20, importance: #HIGH } ], identification: [{position: 20 }] } 
+      @Search.defaultSearchElement: true
+      key Booking.booking_id        as BookingID,
   
       @UI: { lineItem:  [ { position: 30, importance: #HIGH } ], 
              identification: [ { position: 30 } ] }  
@@ -50,6 +53,7 @@ define view /DMO/I_Booking_U
       @UI: { lineItem:  [ { position: 40, importance: #HIGH } ],
              identification: [ { position: 40 } ] }
       @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Customer', element: 'CustomerID' }}]
+      @Search.defaultSearchElement: true
       Booking.customer_id           as CustomerID,
       
       @UI: { lineItem:       [ { position: 50, importance: #HIGH } ],

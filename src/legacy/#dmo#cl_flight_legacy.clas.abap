@@ -583,23 +583,31 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
       " Total Price = Booking Fee + Booking Flight Prices + Booking Supplement Prices
       cs_travel-total_price   = cs_travel-booking_fee.
       cs_travel-currency_code = lv_currency_code_target.
-      LOOP AT ct_booking ASSIGNING <s_booking>.
-        IF <s_booking>-currency_code = lv_currency_code_target.
-          lv_add = <s_booking>-flight_price.
-        ELSE.
-          lv_add = _convert_currency( iv_currency_code_source = <s_booking>-currency_code
+      LOOP AT ct_booking ASSIGNING <s_booking>
+          GROUP BY <s_booking>-currency_code INTO DATA(booking_currency_code).
+
+        lv_add = REDUCE #( INIT sum = 0
+                           FOR b IN GROUP booking_currency_code
+                           NEXT  sum = sum + b-flight_price  ).
+
+        IF booking_currency_code <> lv_currency_code_target.
+          lv_add = _convert_currency( iv_currency_code_source = booking_currency_code
                                       iv_currency_code_target = lv_currency_code_target
-                                      iv_amount               = <s_booking>-flight_price ).
+                                      iv_amount               = lv_add ).
         ENDIF.
         cs_travel-total_price = cs_travel-total_price + lv_add.
       ENDLOOP.
-      LOOP AT ct_booking_supplement ASSIGNING <s_booking_supplement>.
-        IF <s_booking_supplement>-currency_code = lv_currency_code_target.
-          lv_add = <s_booking_supplement>-price.
-        ELSE.
-          lv_add = _convert_currency( iv_currency_code_source = <s_booking_supplement>-currency_code
+      LOOP AT ct_booking_supplement ASSIGNING <s_booking_supplement>
+          GROUP BY <s_booking_supplement>-currency_code INTO DATA(supplement_currency_code).
+
+        lv_add = REDUCE #( INIT sum = 0
+                           FOR s IN GROUP supplement_currency_code
+                           NEXT  sum = sum + s-price  ).
+
+        IF supplement_currency_code <> lv_currency_code_target.
+          lv_add = _convert_currency( iv_currency_code_source = supplement_currency_code
                                       iv_currency_code_target = lv_currency_code_target
-                                      iv_amount               = <s_booking_supplement>-price ).
+                                      iv_amount               = lv_add ).
         ENDIF.
         cs_travel-total_price = cs_travel-total_price + lv_add.
       ENDLOOP.

@@ -5,6 +5,7 @@
 
 
 @EndUserText.label: 'Agency View - CDS Data Model'
+@Search.searchable: true
 define view /DMO/I_Agency
 
   as select from /dmo/agency as Agency 
@@ -15,6 +16,8 @@ define view /DMO/I_Agency
 
     key Agency.agency_id        as AgencyID,
     @Semantics.text: true
+    @Search.defaultSearchElement: true
+    @Search.fuzzinessThreshold: 0.8
     Agency.name                 as Name,
     Agency.street               as Street,
     Agency.postal_code          as PostalCode,

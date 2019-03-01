@@ -10,6 +10,9 @@
 }
 
 @EndUserText.label: 'Travel view - CDS data model'
+
+@Search.searchable: true
+
 define root view /DMO/I_Travel_U
   as select from /dmo/travel as Travel -- the travel table is the data source for this view
 
@@ -37,18 +40,22 @@ define root view /DMO/I_Travel_U
 
 
     @UI: {
-        lineItem: [ { position: 10, importance: #HIGH } ], identification:[ { position: 10 } ] }
+        lineItem: [ { position: 10, importance: #HIGH } ], identification:[ { position: 10 } ], selectionField: [ { position: 10 } ] }
+    @Search.defaultSearchElement: true     
     key Travel.travel_id    as TravelID,
  
-    @UI: { lineItem: [ { position: 20, importance: #HIGH } ], identification:[ { position: 20 } ] }
+    @UI: { 
+        lineItem: [ { position: 20, importance: #HIGH } ], identification:[ { position: 20 } ], selectionField: [ { position: 20 } ] }
     @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency', element: 'AgencyID'  } }]
-    @ObjectModel.text.association: '_Agency'        
+    @ObjectModel.text.association: '_Agency'
+    @Search.defaultSearchElement: true         
     Travel.agency_id        as AgencyID,
             
     @UI: {
-        lineItem: [ { position: 30, importance: #HIGH } ], identification:[ { position: 30 } ] }
+        lineItem: [ { position: 30, importance: #HIGH } ], identification:[ { position: 30 } ], selectionField: [ { position: 30 } ] }
     @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Customer', element: 'CustomerID'  } }]
-    @ObjectModel.text.association: '_Customer'            
+    @ObjectModel.text.association: '_Customer'
+    @Search.defaultSearchElement: true             
     Travel.customer_id      as CustomerID,
 
     @UI: {

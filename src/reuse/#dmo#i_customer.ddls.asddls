@@ -3,7 +3,7 @@
 @AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Customer View - CDS Data Model'
-
+@Search.searchable: true
 
 define view /DMO/I_Customer 
   as select from /dmo/customer as Customer 
@@ -15,6 +15,8 @@ define view /DMO/I_Customer
     key Customer.customer_id    as CustomerID, 
     Customer.first_name         as FirstName, 
     @Semantics.text: true
+    @Search.defaultSearchElement: true
+    @Search.fuzzinessThreshold: 0.8    
     Customer.last_name          as LastName, 
     Customer.title              as Title, 
     Customer.street             as Street, 
