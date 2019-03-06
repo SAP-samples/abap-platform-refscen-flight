@@ -31,7 +31,7 @@ define view /DMO/I_Connection_R
         ]
 
         @UI.lineItem: [ { position: 10, label: 'Airline'} ]
-        @UI: { identification:[ { position: 10, label: 'Airline' } ] }
+        @UI: { identification:[ { position: 10, label: 'Airline' } ]}
         @EndUserText.quickInfo: 'Airline that operates the flight.'
         @ObjectModel.text.association: '_Airline'
         @Search.defaultSearchElement: true
