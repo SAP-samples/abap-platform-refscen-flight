@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <SRVD>
-    <NAME>/DMO/UI_FLIGHT_R_SD</NAME>
+    <NAME>/DMO/FLIGHT_R</NAME>
     <VERSION>active</VERSION>
     <DESCRIPTION>Service Definition for Managing Flight</DESCRIPTION>
     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
