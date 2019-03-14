@@ -14,7 +14,7 @@ Use the abapGit plug-in to install the <em>Flight Reference Scenario</em> by exe
 2. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, click `Window` > `Show View` > `Other...` from the menu bar and choose `abapGit Repositories`.
 3. In the <em>abapGit Repositories</em> view, click the `+` icon to clone an abapGit repository.
 4. Enter the following URL of this repository: `https://github.com/SAP/abap-platform-refscen-flight.git` and choose <em>Next</em>.
-5. Select the master branch and enter the newly created package `/DMO/FLIGHT` as the target package.
+5. Select the <em>master</em> branch and enter the newly created package `/DMO/FLIGHT` as the target package.
 6. Create a new transport request that you only use for this demo content installation (recommendation) and choose <em>Finish</em> to start the cloning of the repository contents. Note that this procedure may take a few minutes.
 7. Once the cloning has finished, refresh your project tree.
 
