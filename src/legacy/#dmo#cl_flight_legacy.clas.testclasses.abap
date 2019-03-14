@@ -3328,7 +3328,7 @@ CLASS ltc_booking_supplement IMPLEMENTATION.
 
     " Check travel
     DATA(lv_exchange_rate_date) = cl_abap_context_info=>get_system_date( ).
-    gr_cut->_convert_currency_amdp(
+    /dmo/cl_flight_amdp=>convert_currency(
       EXPORTING
         iv_amount               = '30.00'
         iv_currency_code_source = 'USD'
