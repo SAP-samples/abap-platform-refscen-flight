@@ -2,7 +2,7 @@
 The ABAP RESTful programming model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP Cloud Platform ABAP Environment. It supports the development of all types of Fiori applications as well as A2X services. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
 
 ## Prerequisites
-Please make sure to fulfill the following requirements:
+Make sure to fulfill the following requirements:
 * You have access to an SAP Cloud Platform ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
 * You have downloaded and installed ABAP Development Tools (ADT). Make sure to use the most recent version as indicated on the [installation page](https://tools.hana.ondemand.com/#abap). 
 * You have created an ABAP Cloud Project in ADT that allows you to access your SAP Cloud Platform ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for additional information).
@@ -24,8 +24,7 @@ As a result of the installation procedure above, the ABAP system creates an inac
 * `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/a1243bff462b4ee3a03e2bb6fc30e015.html)).
 * `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/971e03cd952a47458e57f87fc566a8f3.html)).
 
-Please note:  
-The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service. 
+NOTE: The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service. 
 Then you can run the e.g. UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
 ## Configuration
