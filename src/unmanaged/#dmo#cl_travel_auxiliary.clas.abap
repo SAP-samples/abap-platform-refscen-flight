@@ -159,7 +159,7 @@ CLASS /dmo/cl_travel_auxiliary IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD map_bookingsupplemnt_message.
- DATA(lo) = new_message( id       = is_message-msgid
+    DATA(lo) = new_message( id       = is_message-msgid
                             number   = is_message-msgno
                             severity = if_abap_behv_message=>severity-error
                             v1       = is_message-msgv1

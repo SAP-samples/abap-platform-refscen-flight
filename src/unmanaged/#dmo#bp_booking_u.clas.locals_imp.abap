@@ -184,11 +184,6 @@ CLASS lhc_booking IMPLEMENTATION.
     LOOP AT it_supplement_create_ba ASSIGNING FIELD-SYMBOL(<fs_supplement_create_ba>).
       DATA(ls_parent_key) = <fs_supplement_create_ba>-%key.
 
-      " ToDo: Clerify if statemenet required or not?
-*      IF ls_parent_key is INITIAL.
-*        ls_parent_key = mapped-booking[ %cid = <fs_supplement_create_ba>-%cid_ref ]-%key.
-*      ENDIF.
-
       " Retrieve booking supplements related to the imported travel ID
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
         EXPORTING

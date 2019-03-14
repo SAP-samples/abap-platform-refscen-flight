@@ -13,8 +13,8 @@ CLASS lcl_message_helper DEFINITION CREATE PRIVATE.
       IMPORTING iv_cid       TYPE string OPTIONAL
                 iv_travel_id TYPE /dmo/travel_id OPTIONAL
                 it_messages  TYPE /dmo/if_flight_legacy=>tt_message
-      CHANGING failed   TYPE tt_travel_failed
-               reported TYPE tt_travel_reported.
+      CHANGING  failed       TYPE tt_travel_failed
+                reported     TYPE tt_travel_reported.
 ENDCLASS.
 
 CLASS lcl_message_helper IMPLEMENTATION.
@@ -74,7 +74,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
     LOOP AT it_travel_create ASSIGNING FIELD-SYMBOL(<fs_travel_create>).
       CLEAR ls_travel_in.
-      ls_travel_in = CORRESPONDING #( /DMO/CL_TRAVEL_AUXILIARY=>map_travel_cds_to_db( CORRESPONDING #( <fs_travel_create> ) ) ).
+      ls_travel_in = CORRESPONDING #( /dmo/cl_travel_auxiliary=>map_travel_cds_to_db( CORRESPONDING #( <fs_travel_create> ) ) ).
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_CREATE'
         EXPORTING
@@ -90,13 +90,13 @@ CLASS lhc_travel IMPLEMENTATION.
                        INTO TABLE mapped-travel.
       ELSE.
 
-      lcl_message_helper=>handle_travel_messages(
-        EXPORTING
-          iv_cid       = <fs_travel_create>-%cid
-          it_messages  = lt_messages
-        CHANGING
-          failed       = failed-travel
-          reported     = reported-travel ).
+        lcl_message_helper=>handle_travel_messages(
+          EXPORTING
+            iv_cid       = <fs_travel_create>-%cid
+            it_messages  = lt_messages
+          CHANGING
+            failed       = failed-travel
+            reported     = reported-travel ).
 
       ENDIF.
 
@@ -114,12 +114,12 @@ CLASS lhc_travel IMPLEMENTATION.
 
     DATA lt_messages    TYPE /dmo/if_flight_legacy=>tt_message.
     DATA ls_travel      TYPE /dmo/if_flight_legacy=>ts_travel_in.
-    DATA ls_travelx     TYPE /dmo/if_flight_legacy=>ts_travel_inx. "refers to x structure (> BAPIs)
+    DATA ls_travelx TYPE /dmo/if_flight_legacy=>ts_travel_inx. "refers to x structure (> BAPIs)
 
     LOOP AT it_travel_update ASSIGNING FIELD-SYMBOL(<fs_travel_update>).
 
       CLEAR ls_travel.
-      ls_travel = CORRESPONDING #( /DMO/CL_TRAVEL_AUXILIARY=>map_travel_cds_to_db( CORRESPONDING #( <fs_travel_update> ) ) ).
+      ls_travel = CORRESPONDING #( /dmo/cl_travel_auxiliary=>map_travel_cds_to_db( CORRESPONDING #( <fs_travel_update> ) ) ).
 
       IF <fs_travel_update>-travelid IS INITIAL OR <fs_travel_update>-travelid = ''.
         ls_travel-travel_id = mapped-travel[ %cid = <fs_travel_update>-%cid_ref ]-travelid.
@@ -254,14 +254,20 @@ CLASS lhc_travel IMPLEMENTATION.
         IMPORTING
           et_messages  = lt_messages.
 
-      lcl_message_helper=>handle_travel_messages(
-        EXPORTING
-          iv_cid       = <fs_travel_set_status_booked>-%cid_ref
-          iv_travel_id = lv_travelid
-          it_messages  = lt_messages
-        CHANGING
-          failed       = failed-travel
-          reported     = reported-travel ).
+      IF lt_messages IS INITIAL.
+        APPEND VALUE #( travelid        = lv_travelid
+                        %param-travelid = lv_travelid )
+               TO et_travel_set_status_booked.
+      ELSE.
+        lcl_message_helper=>handle_travel_messages(
+          EXPORTING
+            iv_cid       = <fs_travel_set_status_booked>-%cid_ref
+            iv_travel_id = lv_travelid
+            it_messages  = lt_messages
+          CHANGING
+            failed       = failed-travel
+            reported     = reported-travel ).
+      ENDIF.
 
     ENDLOOP.
 
@@ -282,10 +288,6 @@ CLASS lhc_travel IMPLEMENTATION.
     LOOP AT it_booking_create_ba ASSIGNING FIELD-SYMBOL(<fs_booking_create_ba>).
 
       DATA(lv_travelid) = <fs_booking_create_ba>-travelid.
-
-*      IF lv_travelid IS INITIAL OR lv_travelid = ''.
-*        lv_travelid = mapped-travel[ %cid = <fs_booking_create_ba>-%cid_ref ]-travelid.
-*      ENDIF.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
         EXPORTING

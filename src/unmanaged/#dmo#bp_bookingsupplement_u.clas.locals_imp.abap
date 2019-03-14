@@ -136,19 +136,15 @@ CLASS lhc_supplement IMPLEMENTATION.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
-          is_travel             = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = ls_bookingsupplement_delete-travelid )
-          is_travelx            = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = ls_bookingsupplement_delete-travelid )
-          it_booking            = VALUE /dmo/if_flight_legacy=>tt_booking_in( ( booking_id = ls_bookingsupplement_delete-bookingid ) )
-          it_bookingx           = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( booking_id  = ls_bookingsupplement_delete-bookingid
-*                                                                       action_code = /dmo/if_flight_legacy=>action_code-delete
-                                                                        ) )
-         it_booking_supplement  = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_in( ( booking_supplement_id = ls_bookingsupplement_delete-bookingSupplementid
-                                                                                          booking_id = ls_bookingsupplement_delete-BookingID
-                                                                                            ) )
-         it_booking_supplementx = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_inx( ( booking_supplement_id = ls_bookingsupplement_delete-bookingsupplementid
-                                                                                           booking_id = ls_bookingsupplement_delete-bookingid
-                                                                                           action_code = /dmo/if_flight_legacy=>action_code-delete
-                                                                                            ) )
+          is_travel              = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = ls_bookingsupplement_delete-travelid )
+          is_travelx             = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = ls_bookingsupplement_delete-travelid )
+          it_booking             = VALUE /dmo/if_flight_legacy=>tt_booking_in( ( booking_id = ls_bookingsupplement_delete-bookingid ) )
+          it_bookingx            = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( booking_id  = ls_bookingsupplement_delete-bookingid ) )
+          it_booking_supplement  = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_in( (  booking_supplement_id = ls_bookingsupplement_delete-bookingSupplementid
+                                                                                             booking_id            = ls_bookingsupplement_delete-BookingID ) )
+          it_booking_supplementx = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_inx( ( booking_supplement_id = ls_bookingsupplement_delete-bookingsupplementid
+                                                                                             booking_id            = ls_bookingsupplement_delete-bookingid
+                                                                                             action_code           = /dmo/if_flight_legacy=>action_code-delete ) )
         IMPORTING
           et_messages = lt_messages.
 
