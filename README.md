@@ -9,7 +9,7 @@ Please make sure to fulfill the following requirements:
 * You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the update site `http://eclipse.abapgit.org/updatesite/`.
 
 ## Download
-Use the abapGit plug-in to install the Flight Reference Scenario by executing the following steps:
+Use the abapGit plug-in to install the <em>Flight Reference Scenario</em> by executing the following steps:
 1. In your ABAP cloud project, create the ABAP package `/DMO/FLIGHT` (using the superpackage `/DMO/SAP`) as the target package for the demo content to be downloaded (leave the suggested values unchanged when following the steps in the package creation wizard).
 2. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, click `Window` > `Show View` > `Other...` from the menu bar and choose `abapGit Repositories`.
 3. In the <em>abapGit Repositories</em> view, click the `+` icon to clone an abapGit repository.
