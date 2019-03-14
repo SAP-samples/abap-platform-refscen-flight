@@ -4,7 +4,7 @@ The ABAP RESTful programming model defines the architecture for efficient end-to
 ## Prerequisites
 Please make sure to fulfill the following requirements:
 * You have access to an SAP Cloud Platform ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
-* You have downloaded and installed the front end components of [ABAP Development Tools](https://tools.hana.ondemand.com/#abap) (ADT).
+* You have downloaded and installed [ABAP Development Tools](https://tools.hana.ondemand.com/#abap) (ADT). Make sure to use the most recent version as indicated in the installation page. 
 * You have created an ABAP Cloud Project in ADT that allows you to access your SAP Cloud Platform ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for additional information).
 * You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the update site `http://eclipse.abapgit.org/updatesite/`.
 
@@ -12,7 +12,7 @@ Please make sure to fulfill the following requirements:
 Use the abapGit plug-in to install the Flight Reference Scenario by executing the following steps:
 1. In your ABAP cloud project, create the ABAP package `/DMO/FLIGHT` (using the superpackage `/DMO/SAP`) as the target package for the demo content to be downloaded (leave the suggested values unchanged when following the steps in the package creation wizard).
 2. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, click `Window` > `Show View` > `Other...` from the menu bar and choose `abapGit Repositories`.
-3. In the <em>abapGit Repositories</em> view, click the `+` icon to clone a abapGit repository.
+3. In the <em>abapGit Repositories</em> view, click the `+` icon to clone an abapGit repository.
 4. Enter the following URL of this repository: `https://github.com/SAP/abap-platform-refscen-flight.git` and choose <em>Next</em>.
 5. Select the master branch and enter the newly created package `/DMO/FLIGHT` as the target package.
 6. Create a new transport request that you only use for this demo content installation (recommendation) and choose <em>Finish</em> to start the cloning of the repository contents. Note that this procedure may take a few minutes.
