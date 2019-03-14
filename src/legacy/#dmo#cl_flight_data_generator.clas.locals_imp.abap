@@ -33,7 +33,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
   METHOD get_data.
     rt_data = VALUE tt_agency(
           ( agency_id = '070001'
-            name      = 'Sunshne Travel'
+            name      = 'Sunshine Travel'
             street    = '134 West Street          '
             postal_code  = '54323                    '
             city      = 'Rochester                '

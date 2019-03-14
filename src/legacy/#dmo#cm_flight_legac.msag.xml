@@ -176,6 +176,12 @@
      <MSGNR>032</MSGNR>
      <TEXT>Travel &amp;1 is locked by &amp;2</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>033</MSGNR>
+     <TEXT>Travel &amp;1 already exists</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

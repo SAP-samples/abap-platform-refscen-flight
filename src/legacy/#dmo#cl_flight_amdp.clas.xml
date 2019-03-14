@@ -3,18 +3,14 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <VSEOCLASS>
-    <CLSNAME>/DMO/TC_FLIGHT_TRAVEL_API</CLSNAME>
+    <CLSNAME>/DMO/CL_FLIGHT_AMDP</CLSNAME>
     <VERSION>1</VERSION>
     <LANGU>E</LANGU>
-    <DESCRIPT>Test function modules of /DMO/FLIGHT_TRAVEL_API</DESCRIPT>
-    <CATEGORY>05</CATEGORY>
+    <DESCRIPT>AMDP Helper Class with e.g. Currency Conversion</DESCRIPT>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
     <UNICODE>X</UNICODE>
-    <WITH_UNIT_TESTS>X</WITH_UNIT_TESTS>
-    <DURATION_TYPE>24</DURATION_TYPE>
-    <RISK_LEVEL>11</RISK_LEVEL>
    </VSEOCLASS>
   </asx:values>
  </asx:abap>

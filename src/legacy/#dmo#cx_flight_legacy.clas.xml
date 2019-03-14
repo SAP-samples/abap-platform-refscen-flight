@@ -8,9 +8,7 @@
     <LANGU>E</LANGU>
     <DESCRIPT>Flight Reference Scenario: Legacy Business Logic Exceptions</DESCRIPT>
     <CATEGORY>40</CATEGORY>
-    <EXPOSURE>2</EXPOSURE>
     <STATE>1</STATE>
-    <CLSFINAL>X</CLSFINAL>
     <CLSCCINCL>X</CLSCCINCL>
     <FIXPT>X</FIXPT>
     <UNICODE>5</UNICODE>

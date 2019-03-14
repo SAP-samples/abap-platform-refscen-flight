@@ -1,3 +1,8 @@
+"! <h1>Flight Price Engine</h1>
+"!
+"! If no parameters are applied, the price of every flight will be recalculated.
+"!
+"! @parameter it_flight | Set of Flights which should be recalculate prices
 FUNCTION /DMO/FLIGHT_TRAVEL_CALC_PRICE.
 *"----------------------------------------------------------------------
 *"*"Local Interface:

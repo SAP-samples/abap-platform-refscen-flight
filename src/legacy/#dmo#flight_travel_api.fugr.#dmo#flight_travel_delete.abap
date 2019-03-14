@@ -1,3 +1,13 @@
+"! <h1>API for Deleting a Travel</h1>
+"!
+"! <p>
+"! Function module to delete a single Travel instance.
+"! It will also delete all related subnodes of Booking and Booking Supplement.
+"! </p>
+"!
+"! @parameter iv_travel_id          | ID of the Travel to be deleted
+"! @parameter et_messages           | Table of occurred messages
+"!
 FUNCTION /DMO/FLIGHT_TRAVEL_DELETE.
 *"----------------------------------------------------------------------
 *"*"Local Interface:

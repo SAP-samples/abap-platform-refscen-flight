@@ -53,9 +53,9 @@ CLASS ltc_travel DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
 
     "! Create and check a single travel
     METHODS create                      FOR TESTING RAISING cx_static_check.
-    "! Try to create a travel with an unkown agency -> ERROR
+    "! Try to create a travel with an unknown agency -> ERROR
     METHODS c_agency_unknown            FOR TESTING RAISING cx_static_check.
-    "! Try to create a travel with an unkown customer -> ERROR
+    "! Try to create a travel with an unknown customer -> ERROR
     METHODS c_customer_unknown          FOR TESTING RAISING cx_static_check.
     "! Create 2 travels in the same LUW
     METHODS create_mutiple_calls        FOR TESTING RAISING cx_static_check.
@@ -3328,13 +3328,15 @@ CLASS ltc_booking_supplement IMPLEMENTATION.
 
     " Check travel
     DATA(lv_exchange_rate_date) = cl_abap_context_info=>get_system_date( ).
-    SELECT convertedamount FROM /dmo/currency_helper( amount             = '30.00',
-                                                      source_currency    = 'USD',
-                                                      target_currency    = 'EUR',
-                                                      exchange_rate_date = @lv_exchange_rate_date )
-       INTO @DATA(lv_30_usd_as_eur)
-       UP TO 1 ROWS.
-    ENDSELECT.
+    /dmo/cl_flight_amdp=>convert_currency(
+      EXPORTING
+        iv_amount               = '30.00'
+        iv_currency_code_source = 'USD'
+        iv_currency_code_target = 'EUR'
+        iv_exchange_rate_date   = lv_exchange_rate_date
+      IMPORTING
+        ev_amount               = data(lv_30_usd_as_eur)
+    ).
     cl_abap_unit_assert=>assert_not_initial( lv_30_usd_as_eur ).
     DATA ls_travel_sel TYPE /dmo/travel.
     SELECT SINGLE agency_id, customer_id, total_price, currency_code, description FROM /dmo/travel WHERE travel_id = @ls_travel-travel_id INTO CORRESPONDING FIELDS OF @ls_travel_sel.
