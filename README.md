@@ -22,7 +22,7 @@ As a result of the installation procedure above, the ABAP system creates an inac
 * `/DMO/FLIGHT_LEGACY`
 * `/DMO/FLIGHT_REUSE`
 * `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/a1243bff462b4ee3a03e2bb6fc30e015.html)).
-* `/DMO/FLIGHT_UNMANAGED` – represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/971e03cd952a47458e57f87fc566a8f3.html)).
+* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/971e03cd952a47458e57f87fc566a8f3.html)).
 
 Please note:  
 The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service. 
