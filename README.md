@@ -33,7 +33,7 @@ To activate all development objects from the `/DMO/FLIGHT` package:
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
 2. In the dialog that appears, select all development objects in the transport request (that you created for the demo content installation) and choose `Activate`.
 
-To create a <em>service binding</em> for the read-only list reporting app (package /DMO/FLIGHT_READONLY):
+To create a <em>service binding</em> for the read-only list reporting app (package `/DMO/FLIGHT_READONLY`):
 1. Right-click the service definition `/DMO/FLIGHT_R` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/6709cab6cb5b4c01b28463d760429a9a.html) for additional information). 
 2. Specify your own package and your own namespace when following the steps in the creation wizard.
 
@@ -43,7 +43,7 @@ To create a <em>service binding</em> for the transactional app with implementati
 1. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/9cda72a7bd9e476b8696f625da404605.html) for additional information). 
 2. Create the service binding in your own package and your own namespace. 
 
-To populate the demo content with sample business data:
+To fill the demo database tables with sample business data:
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
 2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
 
