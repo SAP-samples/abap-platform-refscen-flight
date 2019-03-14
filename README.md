@@ -25,7 +25,7 @@ As a result of the installation procedure above, the ABAP system creates an inac
 * `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/971e03cd952a47458e57f87fc566a8f3.html)).
 
 NOTE: The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service. 
-Then you can run the e.g. UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
+Then you can run, for exmaple, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
 ## Configuration
 To activate all development objects from the `/DMO/FLIGHT` package: 
