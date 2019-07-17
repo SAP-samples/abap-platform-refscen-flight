@@ -269,7 +269,71 @@ CLASS /dmo/cx_flight_legacy DEFINITION
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF travel_already_exists.
+      END OF travel_already_exists,
+
+      BEGIN OF status_is_not_valid,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '037',
+        attr1 TYPE scx_attrname VALUE 'MV_STATUS',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF status_is_not_valid,
+
+      BEGIN OF begin_date_before_system_date,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '038',
+        attr1 TYPE scx_attrname VALUE 'MV_BEGIN_DATE',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF begin_date_before_system_date,
+
+      BEGIN OF end_date_before_system_date,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '039',
+        attr1 TYPE scx_attrname VALUE 'MV_BEGIN_DATE',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF end_date_before_system_date,
+
+      BEGIN OF booking_enter_booking_date,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '040',
+        attr1 TYPE scx_attrname VALUE 'MV_TRAVEL_ID',
+        attr2 TYPE scx_attrname VALUE 'MV_BOOKING_ID',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF booking_enter_booking_date,
+
+      BEGIN OF currency_code_is_initial,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '041',
+        attr1 TYPE scx_attrname VALUE 'MV_TRAVEL_ID',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF currency_code_is_initial,
+
+      BEGIN OF flight_date_befor_booking_date,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '042',
+        attr1 TYPE scx_attrname VALUE 'MV_TRAVEL_ID',
+        attr2 TYPE scx_attrname VALUE 'MV_BOOKING_ID',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF flight_date_befor_booking_date,
+
+      BEGIN OF BOOKING_date_befor_system_date,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '043',
+        attr1 TYPE scx_attrname VALUE 'MV_TRAVEL_ID',
+        attr2 TYPE scx_attrname VALUE 'MV_BOOKING_ID',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF BOOKING_date_befor_system_date.
+
 
     METHODS constructor
       IMPORTING
@@ -290,6 +354,7 @@ CLASS /dmo/cx_flight_legacy DEFINITION
         status                TYPE /dmo/travel_status OPTIONAL
         currency_code         TYPE /dmo/currency_code OPTIONAL
         uname                 TYPE syuname OPTIONAL.
+
 
     DATA: mv_travel_id             TYPE /dmo/travel_id,
           mv_booking_id            TYPE /dmo/booking_id,

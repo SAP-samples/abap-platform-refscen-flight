@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SRVD" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SRVD>
+    <NAME>/DMO/UI_TRAVEL_PROCESSOR_M</NAME>
+    <VERSION>active</VERSION>
+    <DESCRIPTION>Service definition for managing travels - managed impl type</DESCRIPTION>
+    <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+    <DT_UUID>E86A1F64A93511E9A2A32A2AE2DBCCE4</DT_UUID>
+    <SOURCE_ORIGIN_DESCRIPTION>ABAP Development Tools</SOURCE_ORIGIN_DESCRIPTION>
+    <SRVD_SOURCE_TYPE>S</SRVD_SOURCE_TYPE>
+    <SRVD_SOURCE_TYPE_DESC>Service Definition</SRVD_SOURCE_TYPE_DESC>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+   </SRVD>
+  </asx:values>
+ </asx:abap>
+</abapGit>

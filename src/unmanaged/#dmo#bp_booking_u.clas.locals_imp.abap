@@ -119,13 +119,13 @@ CLASS lhc_booking IMPLEMENTATION.
     rs_booking_inx-booking_id    = is_booking_update-bookingid.
     rs_booking_inx-action_code   = /dmo/if_flight_legacy=>action_code-update.
 
-    rs_booking_inx-booking_date  = xsdbool( is_booking_update-%control-bookingdate  = cl_abap_behv=>flag_changed ).
-    rs_booking_inx-customer_id   = xsdbool( is_booking_update-%control-customerid   = cl_abap_behv=>flag_changed ).
-    rs_booking_inx-carrier_id    = xsdbool( is_booking_update-%control-airlineid    = cl_abap_behv=>flag_changed ).
-    rs_booking_inx-connection_id = xsdbool( is_booking_update-%control-connectionid = cl_abap_behv=>flag_changed ).
-    rs_booking_inx-flight_date   = xsdbool( is_booking_update-%control-flightdate   = cl_abap_behv=>flag_changed ).
-    rs_booking_inx-flight_price  = xsdbool( is_booking_update-%control-flightprice  = cl_abap_behv=>flag_changed ).
-    rs_booking_inx-currency_code = xsdbool( is_booking_update-%control-currencycode = cl_abap_behv=>flag_changed ).
+    rs_booking_inx-booking_date  = xsdbool( is_booking_update-%control-bookingdate  = if_abap_behv=>mk-on ).
+    rs_booking_inx-customer_id   = xsdbool( is_booking_update-%control-customerid   = if_abap_behv=>mk-on ).
+    rs_booking_inx-carrier_id    = xsdbool( is_booking_update-%control-airlineid    = if_abap_behv=>mk-on ).
+    rs_booking_inx-connection_id = xsdbool( is_booking_update-%control-connectionid = if_abap_behv=>mk-on ).
+    rs_booking_inx-flight_date   = xsdbool( is_booking_update-%control-flightdate   = if_abap_behv=>mk-on ).
+    rs_booking_inx-flight_price  = xsdbool( is_booking_update-%control-flightprice  = if_abap_behv=>mk-on ).
+    rs_booking_inx-currency_code = xsdbool( is_booking_update-%control-currencycode = if_abap_behv=>mk-on ).
   ENDMETHOD.
 
 
@@ -273,9 +273,9 @@ CLASS lhc_booking IMPLEMENTATION.
     rs_bookingsupplement_inx-action_code           = /dmo/if_flight_legacy=>action_code-create.
     rs_bookingsupplement_inx-booking_id            = is_bookingsupplement_create-bookingid.
 
-    rs_bookingsupplement_inx-supplement_id         = xsdbool( is_bookingsupplement_create-%control-supplementid = cl_abap_behv=>flag_changed ).
-    rs_bookingsupplement_inx-price                 = xsdbool( is_bookingsupplement_create-%control-price = cl_abap_behv=>flag_changed ).
-    rs_bookingsupplement_inx-currency_code         = xsdbool( is_bookingsupplement_create-%control-currencycode = cl_abap_behv=>flag_changed ).
+    rs_bookingsupplement_inx-supplement_id         = xsdbool( is_bookingsupplement_create-%control-supplementid = if_abap_behv=>mk-on ).
+    rs_bookingsupplement_inx-price                 = xsdbool( is_bookingsupplement_create-%control-price = if_abap_behv=>mk-on ).
+    rs_bookingsupplement_inx-currency_code         = xsdbool( is_bookingsupplement_create-%control-currencycode = if_abap_behv=>mk-on ).
 
   ENDMETHOD.
 

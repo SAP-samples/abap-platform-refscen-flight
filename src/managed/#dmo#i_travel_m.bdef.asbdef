@@ -1,0 +1,101 @@
+managed;
+
+define behavior for /DMO/I_Travel_M alias travel
+implementation in class /DMO/BP_TRAVEL_M unique
+persistent table /DMO/TRAVEL_M
+etag last_changed_at
+lock master
+//authorization master(instance)
+
+{
+  // administrative fields: read only
+  field ( readonly ) last_changed_at, last_changed_by, created_at, created_by;
+
+  // mandatory fields that are required to create a travel
+  field ( mandatory ) agency_id, overall_status, booking_fee, currency_code;
+
+  // dynamic field control
+  field (features : instance ) travel_id;
+
+  // standard operations for travel entity
+  create;
+  update;
+  delete;
+
+  // instance action and dynamic action control
+//action  ( features: instance, authorization : none ) acceptTravel result [1] $self;
+  action  ( features: instance ) acceptTravel result [1] $self;
+  action  ( features: instance ) rejectTravel result [1] $self;
+
+//  // instance action for copying travel instances
+//  //action ( authorization : none ) createTravelByTemplate result [1] $self;
+  action createTravelByTemplate result [1] $self;
+
+  // validations
+  validation validateCustomer on save { field customer_id; }
+  validation validateDates    on save { field begin_date, end_date; }
+  validation validateStatus   on save { field overall_status; }
+
+  // create booking by association
+  association _Booking { create; }
+
+  // instance action as workaround for create by association
+  //action ( authorization : none ) createBooking result [1] $self;
+  action createBooking result [1] $self;
+}
+
+define behavior for /DMO/I_Booking_M alias booking
+implementation in class /DMO/BP_BOOKING_M unique
+persistent table /DMO/BOOKING_M
+etag last_changed_at
+lock dependent( travel_id = travel_id )
+//authorization dependent( travel_id = travel_id )
+
+{
+  // static field control
+  field ( mandatory ) carrier_id, connection_id, flight_date, booking_status;
+  field ( readonly ) travel_id;
+
+  // dynamic field control
+  field (features : instance ) booking_id, booking_date, customer_id;
+
+  // standard operations for booking entity
+  update;
+
+  // create booking supplement by association
+  association _BookSupplement { create; }
+
+  // instance action as workaround for create by association
+  action createBookingSupplement result [1] $self;
+
+ // validations
+  validation validateStatus on save { field booking_status; }
+
+  // determination for calculation of total flight price
+  determination calculateTotalFlightPrice on modify { field flight_price, currency_code; }
+
+}
+
+
+define behavior for /DMO/I_BookSuppl_M alias booksuppl
+implementation in class /DMO/BP_BOOKINGSUPPLEMENT_M unique
+persistent table /DMO/BOOKSUPPL_M
+etag last_changed_at
+lock dependent( travel_id = travel_id )
+//authorization dependent( travel_id = travel_id )
+
+{
+  // static field control
+  field ( mandatory ) supplement_id, price;
+  field ( readonly ) travel_id, booking_id;
+
+  // dynamic field control
+  field (features : instance ) booking_supplement_id;
+
+  // standard operations for booking supplement entity
+  update;
+
+  // determination for calculation of total suppl. price
+  determination calculateTotalSupplmPrice on modify { field price, currency_code; }
+
+}

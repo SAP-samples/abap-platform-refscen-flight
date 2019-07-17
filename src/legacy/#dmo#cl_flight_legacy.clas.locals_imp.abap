@@ -17,7 +17,7 @@ CLASS lcl_common_checks IMPLEMENTATION.
     CLEAR rv_is_valid.
     IF mt_currency_code IS INITIAL.
       " We should use TCURC, but this is not released for "ABAP for SAP Cloud Platform"
-      SELECT DISTINCT currency FROM i_currency INTO TABLE @mt_currency_code.
+      SELECT DISTINCT currency FROM i_currency INTO TABLE @mt_currency_code. "#EC CI_NOWHERE
     ENDIF.
     READ TABLE mt_currency_code TRANSPORTING NO FIELDS WITH TABLE KEY table_line = iv_currency_code.
     IF sy-subrc = 0.
@@ -32,7 +32,7 @@ CLASS lcl_common_checks IMPLEMENTATION.
     CLEAR rv_is_valid.
     IF mt_customer_id IS INITIAL.
       " There may be very many customers, but we only store the ID in the internal table
-      SELECT DISTINCT customer_id FROM /dmo/customer INTO TABLE @mt_customer_id.
+      SELECT DISTINCT customer_id FROM /dmo/customer INTO TABLE @mt_customer_id. "#EC CI_NOWHERE
     ENDIF.
     READ TABLE mt_customer_id TRANSPORTING NO FIELDS WITH TABLE KEY table_line = iv_customer_id.
     IF sy-subrc = 0.
@@ -528,7 +528,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
 
     SELECT * FROM /dmo/book_suppl FOR ALL ENTRIES IN @it_booking_supplement WHERE travel_id  = @it_booking_supplement-travel_id
                                                                               AND booking_id = @it_booking_supplement-booking_id
-      INTO TABLE @et_booking_supplement ##SELECT_FAE_WITH_LOB[DESCRIPTION].
+      INTO TABLE @et_booking_supplement ##SELECT_FAE_WITH_LOB[DESCRIPTION]. "#EC CI_SEL_DEL
 
     IF iv_include_buffer = abap_true.
       LOOP AT it_booking_supplement ASSIGNING FIELD-SYMBOL(<s_booking_supplement>).
@@ -543,7 +543,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
         LOOP AT mt_delete_buffer ASSIGNING FIELD-SYMBOL(<s_delete_buffer>) WHERE travel_id = <s_booking_supplement>-travel_id AND booking_id = <s_booking_supplement>-booking_id.
           DELETE et_booking_supplement WHERE travel_id             = <s_delete_buffer>-travel_id
                                          AND booking_id            = <s_delete_buffer>-booking_id
-                                         AND booking_supplement_id = <s_delete_buffer>-booking_supplement_id.
+                                         AND booking_supplement_id = <s_delete_buffer>-booking_supplement_id. "#EC CI_SEL_DEL
         ENDLOOP.
       ENDLOOP.
     ENDIF.
@@ -553,7 +553,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
         LOOP AT mt_create_buffer_2 ASSIGNING <s_create_buffer> WHERE travel_id = <s_booking_supplement>-travel_id AND booking_id = <s_booking_supplement>-booking_id.
           DELETE et_booking_supplement WHERE travel_id             = <s_create_buffer>-travel_id
                                          AND booking_id            = <s_create_buffer>-booking_id
-                                         AND booking_supplement_id = <s_create_buffer>-booking_supplement_id.
+                                         AND booking_supplement_id = <s_create_buffer>-booking_supplement_id. "#EC CI_SEL_DEL
           INSERT <s_create_buffer> INTO TABLE et_booking_supplement.
         ENDLOOP.
 
@@ -564,7 +564,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
         LOOP AT mt_delete_buffer_2 ASSIGNING <s_delete_buffer> WHERE travel_id = <s_booking_supplement>-travel_id AND booking_id = <s_booking_supplement>-booking_id.
           DELETE et_booking_supplement WHERE travel_id             = <s_delete_buffer>-travel_id
                                          AND booking_id            = <s_delete_buffer>-booking_id
-                                         AND booking_supplement_id = <s_delete_buffer>-booking_supplement_id.
+                                         AND booking_supplement_id = <s_delete_buffer>-booking_supplement_id. "#EC CI_SEL_DEL
         ENDLOOP.
       ENDLOOP.
     ENDIF.
@@ -575,7 +575,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
     rv_is_valid = abap_true.
     IF iv_change_mode = /dmo/cl_flight_legacy=>change_mode-create OR ( iv_change_mode = /dmo/cl_flight_legacy=>change_mode-update AND is_booking_supplementx-supplement_id = abap_true ).
       IF mt_supplement IS INITIAL.
-        SELECT * FROM /dmo/supplement INTO TABLE @mt_supplement.
+        SELECT * FROM /dmo/supplement INTO TABLE @mt_supplement. "#EC CI_NOWHERE
       ENDIF.
       READ TABLE mt_supplement TRANSPORTING NO FIELDS WITH TABLE KEY supplement_id = is_booking_supplement-supplement_id.
       IF sy-subrc <> 0.
@@ -600,7 +600,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
       " Derive price and currency code if one of the fields is initial
       IF cs_booking_supplement-price IS INITIAL OR cs_booking_supplement-currency_code IS INITIAL.
         IF mt_supplement IS INITIAL.
-          SELECT * FROM /dmo/supplement INTO TABLE @mt_supplement.
+          SELECT * FROM /dmo/supplement INTO TABLE @mt_supplement. "#EC CI_NOWHERE
         ENDIF.
         READ TABLE mt_supplement ASSIGNING FIELD-SYMBOL(<s_supplement>) WITH TABLE KEY supplement_id = cs_booking_supplement-supplement_id.
         ASSERT sy-subrc = 0. " Check has been done before
@@ -1066,7 +1066,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
     CHECK it_booking IS NOT INITIAL.
 
     SELECT * FROM /dmo/booking FOR ALL ENTRIES IN @it_booking WHERE travel_id  = @it_booking-travel_id
-      INTO TABLE @et_booking ##SELECT_FAE_WITH_LOB[DESCRIPTION].
+      INTO TABLE @et_booking ##SELECT_FAE_WITH_LOB[DESCRIPTION]. "#EC CI_ALL_FIELDS_NEEDED "#EC CI_SEL_DEL
 
     IF iv_include_buffer = abap_true.
       LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<s_booking>).
@@ -1079,7 +1079,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
         ENDLOOP.
 
         LOOP AT mt_delete_buffer ASSIGNING FIELD-SYMBOL(<s_delete_buffer>) WHERE travel_id = <s_booking>-travel_id.
-          DELETE et_booking WHERE travel_id = <s_delete_buffer>-travel_id AND booking_id = <s_delete_buffer>-booking_id.
+          DELETE et_booking WHERE travel_id = <s_delete_buffer>-travel_id AND booking_id = <s_delete_buffer>-booking_id. "#EC CI_SEL_DEL
         ENDLOOP.
       ENDLOOP.
     ENDIF.
@@ -1087,7 +1087,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
     IF iv_include_temp_buffer = abap_true.
       LOOP AT it_booking ASSIGNING <s_booking>.
         LOOP AT mt_create_buffer_2 ASSIGNING <s_create_buffer> WHERE travel_id = <s_booking>-travel_id.
-          DELETE et_booking WHERE travel_id = <s_create_buffer>-travel_id AND booking_id = <s_create_buffer>-booking_id.
+          DELETE et_booking WHERE travel_id = <s_create_buffer>-travel_id AND booking_id = <s_create_buffer>-booking_id. "#EC CI_SEL_DEL
           INSERT <s_create_buffer> INTO TABLE et_booking.
         ENDLOOP.
 
@@ -1096,7 +1096,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
         ENDLOOP.
 
         LOOP AT mt_delete_buffer_2 ASSIGNING <s_delete_buffer> WHERE travel_id = <s_booking>-travel_id.
-          DELETE et_booking WHERE travel_id = <s_delete_buffer>-travel_id AND booking_id = <s_delete_buffer>-booking_id.
+          DELETE et_booking WHERE travel_id = <s_delete_buffer>-travel_id AND booking_id = <s_delete_buffer>-booking_id. "#EC CI_SEL_DEL
         ENDLOOP.
       ENDLOOP.
     ENDIF.
@@ -1164,7 +1164,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
       OR ( iv_change_mode = /dmo/cl_flight_legacy=>change_mode-update
         AND ( is_bookingx-carrier_id = abap_true OR is_bookingx-connection_id = abap_true OR is_bookingx-flight_date = abap_true ) ).
       IF mt_flight_key IS INITIAL.
-        SELECT carrier_id, connection_id, flight_date FROM /dmo/flight INTO CORRESPONDING FIELDS OF TABLE @mt_flight_key.
+        SELECT carrier_id, connection_id, flight_date FROM /dmo/flight INTO CORRESPONDING FIELDS OF TABLE @mt_flight_key. "#EC CI_NOWHERE
       ENDIF.
       READ TABLE mt_flight_key TRANSPORTING NO FIELDS WITH TABLE KEY carrier_id = is_booking-carrier_id  connection_id = is_booking-connection_id  flight_date = is_booking-flight_date.
       IF sy-subrc <> 0.
@@ -1299,7 +1299,7 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
 
     DATA lv_travel_id_max TYPE /dmo/travel_id.
     IF lcl_travel_buffer=>get_instance( )->mt_create_buffer IS INITIAL.
-      SELECT FROM /dmo/travel FIELDS MAX( travel_id ) INTO @lv_travel_id_max.
+      SELECT FROM /dmo/travel FIELDS MAX( travel_id ) INTO @lv_travel_id_max. "#EC CI_NOWHERE
     ELSE.
       LOOP AT mt_create_buffer ASSIGNING FIELD-SYMBOL(<s_buffer_travel_create>).
         IF <s_buffer_travel_create>-travel_id > lv_travel_id_max.
@@ -1665,7 +1665,8 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
 
     CHECK it_travel IS NOT INITIAL.
 
-    SELECT * FROM /dmo/travel FOR ALL ENTRIES IN @it_travel WHERE travel_id = @it_travel-travel_id INTO TABLE @et_travel ##SELECT_FAE_WITH_LOB[DESCRIPTION].
+    SELECT * FROM /dmo/travel FOR ALL ENTRIES IN @it_travel WHERE travel_id = @it_travel-travel_id
+      INTO TABLE @et_travel ##SELECT_FAE_WITH_LOB[DESCRIPTION]. "#EC CI_ALL_FIELDS_NEEDED "#EC CI_SEL_DEL
 
     IF iv_include_buffer = abap_true.
       LOOP AT it_travel ASSIGNING FIELD-SYMBOL(<s_travel>).
@@ -1681,7 +1682,7 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
 
         READ TABLE mt_delete_buffer TRANSPORTING NO FIELDS WITH TABLE KEY travel_id = <s_travel>-travel_id.
         IF sy-subrc = 0.
-          DELETE et_travel WHERE travel_id = <s_travel>-travel_id.
+          DELETE et_travel WHERE travel_id = <s_travel>-travel_id. "#EC CI_SEL_DEL
         ENDIF.
       ENDLOOP.
     ENDIF.
@@ -1690,7 +1691,7 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
       LOOP AT it_travel ASSIGNING <s_travel>.
         READ TABLE mt_create_buffer_2 ASSIGNING <s_create_buffer> WITH TABLE KEY travel_id = <s_travel>-travel_id.
         IF sy-subrc = 0.
-          DELETE et_travel WHERE travel_id = <s_travel>-travel_id.
+          DELETE et_travel WHERE travel_id = <s_travel>-travel_id. "#EC CI_SEL_DEL
           INSERT <s_create_buffer> INTO TABLE et_travel.
         ENDIF.
 
@@ -1701,7 +1702,7 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
 
         READ TABLE mt_delete_buffer_2 TRANSPORTING NO FIELDS WITH TABLE KEY travel_id = <s_travel>-travel_id.
         IF sy-subrc = 0.
-          DELETE et_travel WHERE travel_id = <s_travel>-travel_id.
+          DELETE et_travel WHERE travel_id = <s_travel>-travel_id. "#EC CI_SEL_DEL
         ENDIF.
       ENDLOOP.
     ENDIF.
@@ -1752,7 +1753,7 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
     rv_is_valid = abap_true.
     IF iv_change_mode = /dmo/cl_flight_legacy=>change_mode-create OR ( iv_change_mode = /dmo/cl_flight_legacy=>change_mode-update AND is_travelx-agency_id = abap_true ).
       IF mt_agency_id IS INITIAL.
-        SELECT DISTINCT agency_id FROM /dmo/agency INTO TABLE @mt_agency_id.
+        SELECT DISTINCT agency_id FROM /dmo/agency INTO TABLE @mt_agency_id. "#EC CI_NOWHERE
       ENDIF.
       READ TABLE mt_agency_id TRANSPORTING NO FIELDS WITH TABLE KEY table_line = is_travel-agency_id.
       IF sy-subrc <> 0.

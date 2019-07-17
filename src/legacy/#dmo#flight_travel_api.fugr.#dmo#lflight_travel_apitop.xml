@@ -4,7 +4,6 @@
   <asx:values>
    <PROGDIR>
     <NAME>/DMO/LFLIGHT_TRAVEL_APITOP</NAME>
-    <STATE>A</STATE>
     <DBAPL>S</DBAPL>
     <DBNA>D$</DBNA>
     <SUBC>I</SUBC>

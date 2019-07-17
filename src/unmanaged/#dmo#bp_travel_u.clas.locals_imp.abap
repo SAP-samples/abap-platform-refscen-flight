@@ -121,21 +121,17 @@ CLASS lhc_travel IMPLEMENTATION.
       CLEAR ls_travel.
       ls_travel = CORRESPONDING #( /dmo/cl_travel_auxiliary=>map_travel_cds_to_db( CORRESPONDING #( <fs_travel_update> ) ) ).
 
-      IF <fs_travel_update>-travelid IS INITIAL OR <fs_travel_update>-travelid = ''.
-        ls_travel-travel_id = mapped-travel[ %cid = <fs_travel_update>-%cid_ref ]-travelid.
-      ENDIF.
-
       ls_travelx-travel_id     = ls_travel-travel_id.
 
-      ls_travelx-agency_id     = xsdbool( <fs_travel_update>-%control-agencyid     = cl_abap_behv=>flag_changed ).
-      ls_travelx-customer_id   = xsdbool( <fs_travel_update>-%control-customerid   = cl_abap_behv=>flag_changed ).
-      ls_travelx-begin_date    = xsdbool( <fs_travel_update>-%control-begindate    = cl_abap_behv=>flag_changed ).
-      ls_travelx-end_date      = xsdbool( <fs_travel_update>-%control-enddate      = cl_abap_behv=>flag_changed ).
-      ls_travelx-booking_fee   = xsdbool( <fs_travel_update>-%control-bookingfee   = cl_abap_behv=>flag_changed ).
-      ls_travelx-total_price   = xsdbool( <fs_travel_update>-%control-totalprice   = cl_abap_behv=>flag_changed ).
-      ls_travelx-currency_code = xsdbool( <fs_travel_update>-%control-currencycode = cl_abap_behv=>flag_changed ).
-      ls_travelx-description   = xsdbool( <fs_travel_update>-%control-memo         = cl_abap_behv=>flag_changed ).
-      ls_travelx-status        = xsdbool( <fs_travel_update>-%control-status       = cl_abap_behv=>flag_changed ).
+      ls_travelx-agency_id     = xsdbool( <fs_travel_update>-%control-agencyid     = if_abap_behv=>mk-on ).
+      ls_travelx-customer_id   = xsdbool( <fs_travel_update>-%control-customerid   = if_abap_behv=>mk-on ).
+      ls_travelx-begin_date    = xsdbool( <fs_travel_update>-%control-begindate    = if_abap_behv=>mk-on ).
+      ls_travelx-end_date      = xsdbool( <fs_travel_update>-%control-enddate      = if_abap_behv=>mk-on ).
+      ls_travelx-booking_fee   = xsdbool( <fs_travel_update>-%control-bookingfee   = if_abap_behv=>mk-on ).
+      ls_travelx-total_price   = xsdbool( <fs_travel_update>-%control-totalprice   = if_abap_behv=>mk-on ).
+      ls_travelx-currency_code = xsdbool( <fs_travel_update>-%control-currencycode = if_abap_behv=>mk-on ).
+      ls_travelx-description   = xsdbool( <fs_travel_update>-%control-memo         = if_abap_behv=>mk-on ).
+      ls_travelx-status        = xsdbool( <fs_travel_update>-%control-status       = if_abap_behv=>mk-on ).
 
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
@@ -169,25 +165,19 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD delete_travel.
 
     DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
-    DATA ls_travel   TYPE /dmo/if_flight_legacy=>ts_travel_key.
 
     LOOP AT it_travel_delete ASSIGNING FIELD-SYMBOL(<fs_travel_delete>).
-      IF <fs_travel_delete>-travelid IS INITIAL OR <fs_travel_delete>-travelid = ''.
-        ls_travel-travel_id = mapped-travel[ %cid = <fs_travel_delete>-%cid_ref ]-travelid.
-      ELSE.
-        ls_travel-travel_id = <fs_travel_delete>-travelid.
-      ENDIF.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_DELETE'
         EXPORTING
-          iv_travel_id = ls_travel-travel_id
+          iv_travel_id = <fs_travel_delete>-travelid
         IMPORTING
           et_messages  = lt_messages.
 
       lcl_message_helper=>handle_travel_messages(
         EXPORTING
           iv_cid       = <fs_travel_delete>-%cid_ref
-          iv_travel_id = ls_travel-travel_id
+          iv_travel_id = <fs_travel_delete>-travelid
           it_messages  = lt_messages
         CHANGING
           failed       = failed-travel
@@ -242,11 +232,8 @@ CLASS lhc_travel IMPLEMENTATION.
     CLEAR et_travel_set_status_booked.
 
     LOOP AT it_travel_set_status_booked ASSIGNING FIELD-SYMBOL(<fs_travel_set_status_booked>).
-      DATA(lv_travelid) = <fs_travel_set_status_booked>-travelid.
 
-      IF lv_travelid IS INITIAL OR lv_travelid = ''.
-        lv_travelid = mapped-travel[ %cid = <fs_travel_set_status_booked>-%cid_ref ]-travelid.
-      ENDIF.
+      DATA(lv_travelid) = <fs_travel_set_status_booked>-travelid.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_SET_BOOKING'
         EXPORTING
