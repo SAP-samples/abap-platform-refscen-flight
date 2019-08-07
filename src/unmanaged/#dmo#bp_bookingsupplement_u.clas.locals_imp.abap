@@ -117,9 +117,9 @@ CLASS lhc_supplement IMPLEMENTATION.
     rs_bookingsupplement_inx-action_code           = /dmo/if_flight_legacy=>action_code-update.
     rs_bookingsupplement_inx-booking_id            = is_bookingsupplement_update-bookingid.
 
-    rs_bookingsupplement_inx-supplement_id         = xsdbool( is_bookingsupplement_update-%control-supplementid = cl_abap_behv=>flag_changed ).
-    rs_bookingsupplement_inx-price                 = xsdbool( is_bookingsupplement_update-%control-price        = cl_abap_behv=>flag_changed ).
-    rs_bookingsupplement_inx-currency_code         = xsdbool( is_bookingsupplement_update-%control-currencycode = cl_abap_behv=>flag_changed ).
+    rs_bookingsupplement_inx-supplement_id         = xsdbool( is_bookingsupplement_update-%control-supplementid = if_abap_behv=>mk-on ).
+    rs_bookingsupplement_inx-price                 = xsdbool( is_bookingsupplement_update-%control-price        = if_abap_behv=>mk-on ).
+    rs_bookingsupplement_inx-currency_code         = xsdbool( is_bookingsupplement_update-%control-currencycode = if_abap_behv=>mk-on ).
   ENDMETHOD.
 
 

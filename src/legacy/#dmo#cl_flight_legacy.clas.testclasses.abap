@@ -134,10 +134,10 @@ CLASS ltc_travel IMPLEMENTATION.
 *     gv_customer_id_unknown = '99'.
     ELSE.
       DATA lt_agency_id TYPE SORTED TABLE OF /dmo/agency_id     WITH UNIQUE KEY table_line.
-      SELECT DISTINCT agency_id FROM /dmo/agency     ORDER BY agency_id   DESCENDING INTO TABLE @lt_agency_id .
+      SELECT DISTINCT agency_id FROM /dmo/agency     ORDER BY agency_id   DESCENDING INTO TABLE @lt_agency_id . "#EC CI_NOWHERE
 
       DATA lt_customer_id TYPE SORTED TABLE OF /dmo/customer_id WITH UNIQUE KEY table_line.
-      SELECT DISTINCT customer_id FROM /dmo/customer ORDER BY customer_id DESCENDING INTO TABLE @lt_customer_id .
+      SELECT DISTINCT customer_id FROM /dmo/customer ORDER BY customer_id DESCENDING INTO TABLE @lt_customer_id . "#EC CI_NOWHERE
 
       " Select 2 known agency IDs
       IF lines( lt_agency_id ) < 2.
@@ -181,19 +181,19 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
   METHOD setup.
-    SELECT COUNT( * ) FROM /dmo/travel     INTO @mv_travel_count.
-    SELECT COUNT( * ) FROM /dmo/booking    INTO @mv_booking_count.
-    SELECT COUNT( * ) FROM /dmo/book_suppl INTO @mv_booking_supplement_count.
+    SELECT COUNT( * ) FROM /dmo/travel     INTO @mv_travel_count. "#EC CI_NOWHERE
+    SELECT COUNT( * ) FROM /dmo/booking    INTO @mv_booking_count. "#EC CI_NOWHERE
+    SELECT COUNT( * ) FROM /dmo/book_suppl INTO @mv_booking_supplement_count. "#EC CI_NOWHERE
   ENDMETHOD.
 
 
   METHOD teardown.
     " Ensure proper cleanup of each individual test method
-    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_travel_count).
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_travel_count). "#EC CI_NOWHERE
     cl_abap_unit_assert=>assert_equals( act = lv_travel_count  exp = mv_travel_count ).
-    SELECT COUNT( * ) FROM /dmo/booking INTO @DATA(lv_booking_count).
+    SELECT COUNT( * ) FROM /dmo/booking INTO @DATA(lv_booking_count). "#EC CI_NOWHERE
     cl_abap_unit_assert=>assert_equals( act = lv_booking_count  exp = mv_booking_count ).
-    SELECT COUNT( * ) FROM /dmo/book_suppl INTO @DATA(lv_booking_supplement_count).
+    SELECT COUNT( * ) FROM /dmo/book_suppl INTO @DATA(lv_booking_supplement_count). "#EC CI_NOWHERE
     cl_abap_unit_assert=>assert_equals( act = lv_booking_supplement_count  exp = mv_booking_supplement_count ).
   ENDMETHOD.
 
@@ -206,7 +206,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
   METHOD create.
-    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count1).
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count1). "#EC CI_NOWHERE
 
     DATA lv_start TYPE timestampl.
     GET TIME STAMP FIELD lv_start.
@@ -221,7 +221,7 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA lv_end TYPE timestampl.
     GET TIME STAMP FIELD lv_end.
 
-    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2).
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2). "#EC CI_NOWHERE
     cl_abap_unit_assert=>assert_equals( msg = 'create should add a travel'  exp = 1  act = lv_count2 - lv_count1 ).
 
     SELECT * FROM /dmo/travel WHERE travel_id = @ls_travel_new-travel_id INTO TABLE @DATA(lt_travel).
@@ -276,7 +276,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
   METHOD c_agency_unknown.
-    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count1).
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count1). "#EC CI_NOWHERE
 
     gr_cut->create_travel( EXPORTING is_travel   = VALUE #( agency_id = gv_agency_id_unknown  customer_id = gv_customer_id_2 )
                            IMPORTING es_travel   = DATA(ls_travel)
@@ -285,7 +285,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
     gr_cut->save( ).
 
-    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2).
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2). "#EC CI_NOWHERE
     cl_abap_unit_assert=>assert_equals( msg = 'should not create bad travel'  exp = lv_count1  act = lv_count2 ).
 
     DATA lv_msg_found TYPE abap_bool.
@@ -299,7 +299,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
   METHOD c_customer_unknown.
-    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count1).
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count1). "#EC CI_NOWHERE
 
     gr_cut->create_travel( EXPORTING is_travel   = VALUE #( agency_id = gv_agency_id_1  customer_id = gv_customer_id_unknown )
                            IMPORTING es_travel   = DATA(ls_travel)
@@ -308,7 +308,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
     gr_cut->save( ).
 
-    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2).
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2). "#EC CI_NOWHERE
     cl_abap_unit_assert=>assert_equals( msg = 'should not create bad travel'  exp = lv_count1  act = lv_count2 ).
 
     DATA lv_msg_found TYPE abap_bool.
@@ -325,7 +325,7 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA lv_timestampl TYPE timestampl.
     GET TIME STAMP FIELD lv_timestampl.
 
-    SELECT MAX( travel_id ) FROM /dmo/travel INTO @DATA(lv_travel_id_max).
+    SELECT MAX( travel_id ) FROM /dmo/travel INTO @DATA(lv_travel_id_max). "#EC CI_NOWHERE
     DATA lv_travel_id_1 TYPE /dmo/travel_id.
     DATA lv_travel_id_2 TYPE /dmo/travel_id.
     lv_travel_id_1 = lv_travel_id_max + 1.
@@ -1158,12 +1158,12 @@ CLASS ltc_booking IMPLEMENTATION.
     ELSE.
       " Select 2 different Flight Dates with their prices
       SELECT SINGLE carrier_id, connection_id, flight_date, price, currency_code FROM /dmo/flight
-        INTO CORRESPONDING FIELDS OF @gs_flight_1 ##WARN_OK.
+        INTO CORRESPONDING FIELDS OF @gs_flight_1 ##WARN_OK. "#EC CI_NOORDER
       IF sy-subrc <> 0.
         cl_abap_unit_assert=>abort( |No flight data!| ).
       ENDIF.
       SELECT SINGLE carrier_id, connection_id, flight_date, price, currency_code FROM /dmo/flight WHERE carrier_id <> @gs_flight_1-carrier_id AND connection_id <> @gs_flight_1-connection_id
-        INTO CORRESPONDING FIELDS OF @gs_flight_2  ##WARN_OK.
+        INTO CORRESPONDING FIELDS OF @gs_flight_2  ##WARN_OK. "#EC CI_NOORDER
       IF sy-subrc <> 0.
         cl_abap_unit_assert=>abort( |No flight data!| ).
       ENDIF.
@@ -1220,7 +1220,8 @@ CLASS ltc_booking IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( act = ls_booking-carrier_id     exp = gs_flight_1-carrier_id ).
     cl_abap_unit_assert=>assert_equals( act = ls_booking-connection_id  exp = gs_flight_1-connection_id ).
 
-    SELECT SINGLE * FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO @DATA(ls_booking_sel).
+    DATA ls_booking_sel TYPE /dmo/booking.
+    SELECT SINGLE customer_id FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO CORRESPONDING FIELDS OF @ls_booking_sel.
     cl_abap_unit_assert=>assert_subrc( ).
     cl_abap_unit_assert=>assert_equals( act = ls_booking_sel-customer_id  exp = ls_booking-customer_id ).
 
@@ -1234,13 +1235,13 @@ CLASS ltc_booking IMPLEMENTATION.
     gr_cut->save( ).
 
     CLEAR ls_booking_sel.
-    SELECT SINGLE * FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO @ls_booking_sel.
+    SELECT SINGLE carrier_id, booking_date FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO CORRESPONDING FIELDS OF @ls_booking_sel.
     cl_abap_unit_assert=>assert_subrc( ).
     cl_abap_unit_assert=>assert_equals( act = ls_booking_sel-carrier_id    exp = ls_booking-carrier_id ).
     cl_abap_unit_assert=>assert_equals( act = ls_booking_sel-booking_date  exp = lv_booking_date ).
 
     _delete_existing_booking( iv_travel_id = mv_travel_id  iv_booking_id = ls_booking-booking_id ).
-    SELECT SINGLE * FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO @ls_booking_sel.
+    SELECT SINGLE @abap_true FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO @DATA(lv_found).
     cl_abap_unit_assert=>assert_subrc( exp = 4 ).
   ENDMETHOD.
 
@@ -1268,13 +1269,14 @@ CLASS ltc_booking IMPLEMENTATION.
 
     gr_cut->save( ).
 
-    SELECT SINGLE * FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO @DATA(ls_booking_sel).
+    DATA ls_booking_sel TYPE /dmo/booking.
+    SELECT SINGLE carrier_id, booking_date FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO CORRESPONDING FIELDS OF @ls_booking_sel.
     cl_abap_unit_assert=>assert_subrc( ).
     cl_abap_unit_assert=>assert_equals( act = ls_booking_sel-carrier_id    exp = ls_booking-carrier_id ).
     cl_abap_unit_assert=>assert_equals( act = ls_booking_sel-booking_date  exp = lv_booking_date ).
 
     _delete_existing_booking( iv_travel_id = mv_travel_id  iv_booking_id = ls_booking-booking_id ).
-    SELECT SINGLE * FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO @ls_booking_sel.
+    SELECT SINGLE @abap_true FROM /dmo/booking WHERE travel_id = @mv_travel_id AND booking_id = @ls_booking-booking_id INTO @DATA(lv_found).
     cl_abap_unit_assert=>assert_subrc( exp = 4 ).
   ENDMETHOD.
 
@@ -2342,14 +2344,14 @@ CLASS ltc_booking_supplement IMPLEMENTATION.
 *     gv_supplement_id_unknown      = 'XX-999'.
     ELSE.
       " Select any valid combination of Supplement ID, Price, Currency Code
-      SELECT SINGLE supplement_id, price, currency_code FROM /dmo/supplement INTO ( @gs_supplement_1-supplement_id, @gs_supplement_1-price, @gs_supplement_1-currency_code ) ##WARN_OK.
+      SELECT SINGLE supplement_id, price, currency_code FROM /dmo/supplement INTO ( @gs_supplement_1-supplement_id, @gs_supplement_1-price, @gs_supplement_1-currency_code ) ##WARN_OK. "#EC CI_NOORDER
       IF sy-subrc <> 0.
         cl_abap_unit_assert=>abort( 'No supplement data!' ).
       ENDIF.
 
       " Select a different valid combination of Supplement ID, Price, Currency Code
       SELECT SINGLE supplement_id, price, currency_code FROM /dmo/supplement WHERE supplement_id <> @gs_supplement_1-supplement_id
-        INTO ( @gs_supplement_2-supplement_id, @gs_supplement_2-price, @gs_supplement_2-currency_code ) ##WARN_OK.
+        INTO ( @gs_supplement_2-supplement_id, @gs_supplement_2-price, @gs_supplement_2-currency_code ) ##WARN_OK. "#EC CI_NOORDER
       IF sy-subrc <> 0.
         cl_abap_unit_assert=>abort( 'No supplement data!' ).
       ENDIF.

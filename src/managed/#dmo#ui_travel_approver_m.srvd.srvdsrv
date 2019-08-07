@@ -1,0 +1,8 @@
+@EndUserText.label: 'Service definition for managing travels'
+define service /DMO/UI_TRAVEL_Approver_M {
+  expose /DMO/C_Travel_Approver_M as Travel;
+  expose /DMO/C_Booking_Approver_M as Booking;
+  expose /DMO/I_Customer as Passenger;
+  expose /DMO/I_Agency as TravelAgency;
+  expose I_Currency as Currency;
+}

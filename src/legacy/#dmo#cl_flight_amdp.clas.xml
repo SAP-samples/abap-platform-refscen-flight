@@ -4,7 +4,6 @@
   <asx:values>
    <VSEOCLASS>
     <CLSNAME>/DMO/CL_FLIGHT_AMDP</CLSNAME>
-    <VERSION>1</VERSION>
     <LANGU>E</LANGU>
     <DESCRIPT>AMDP Helper Class with e.g. Currency Conversion</DESCRIPT>
     <STATE>1</STATE>

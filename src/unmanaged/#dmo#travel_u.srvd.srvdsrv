@@ -12,4 +12,5 @@ define service /DMO/TRAVEL_U {
   expose /DMO/I_Carrier as Airline;
   expose /DMO/I_Connection as FlightConnection;
   expose /DMO/I_Flight as Flight;
+  expose /DMO/I_Airport as Airport;
 }

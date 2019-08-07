@@ -182,6 +182,54 @@
      <MSGNR>033</MSGNR>
      <TEXT>Travel &amp;1 already exists</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>036</MSGNR>
+     <TEXT>Travel ID is initial for travel &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>037</MSGNR>
+     <TEXT>Travel status not valid for travel &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>038</MSGNR>
+     <TEXT>Begin date &amp;1 must be on or after system date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>039</MSGNR>
+     <TEXT>End date &amp;1 must be on or after begin date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>040</MSGNR>
+     <TEXT>Travel &amp;1:Enter begin date for booking &amp;2</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>041</MSGNR>
+     <TEXT>Currency code is initial and total price is provided for travel &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>042</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Flight date must be on or after booking date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>043</MSGNR>
+     <TEXT>Travel &amp;1: Booking &amp;2: Booking date must be on or after actual date</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

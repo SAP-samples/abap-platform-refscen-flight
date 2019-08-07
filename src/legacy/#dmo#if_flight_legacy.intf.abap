@@ -7,7 +7,7 @@ INTERFACE /dmo/if_flight_legacy
 ***********************
 * Version information *
 ***********************
-  CONSTANTS co_version_major TYPE int2 VALUE 2.
+  CONSTANTS co_version_major TYPE int2 VALUE 3.
   CONSTANTS co_version_minor TYPE int2 VALUE 0.
 
   " Please do NOT delete old comments
@@ -29,6 +29,8 @@ INTERFACE /dmo/if_flight_legacy
   "         2.00      05.03.2019  Added ReadOnly and Unmanaged Content
   "                               Added AMDP class with Currency Conversion
   "                               (Re-)Added ABAPDoc to FuBa
+  "         3.00      06.08.2019  Cloud Platform 1908
+  "                               Added Managed sub package
 
 ******************************
 * Database table table types *

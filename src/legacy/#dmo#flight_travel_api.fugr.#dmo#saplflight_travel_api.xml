@@ -4,8 +4,6 @@
   <asx:values>
    <PROGDIR>
     <NAME>/DMO/SAPLFLIGHT_TRAVEL_API</NAME>
-    <STATE>A</STATE>
-    <VARCL>X</VARCL>
     <DBAPL>S</DBAPL>
     <DBNA>D$</DBNA>
     <SUBC>F</SUBC>
