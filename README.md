@@ -7,7 +7,7 @@ The Flight Reference Scenario provides sample data and services as well as legac
 ## SAP Cloud Platform ABAP Environment
 To import the reference scenario into your SAP Cloud Platform ABAP Environment, follow the steps in the [READ-ME](https://github.com/SAP/abap-platform-refscen-flight/blob/Cloud-Platform/README.md) file of the branch <em>Cloud-Platform</em> and download the sources from this branch. 
 
-Note: If you have already linked the repository’s master branch to <em>abapGit</em>, unlink the repository in the abapGit plugIn first and then link to the `Cloud-Platform` branch to import the latest sources. 
+Note: If you have already linked the repository’s master branch to <em>abapGit</em>, unlink the repository in the abapGit plugIn first and then link to the <em>Cloud-Platform</em> branch to import the latest sources. 
 
 For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/289477a81eec4d4e84c0302fb6835035.html).
 
