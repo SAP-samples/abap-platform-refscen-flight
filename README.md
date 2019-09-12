@@ -1,66 +1,20 @@
 # Flight Reference Scenario for the ABAP RESTful Programming Model 
-The ABAP RESTful programming model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP Cloud Platform ABAP Environment. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+The ABAP RESTful programming model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP Cloud Platform ABAP Environment and on Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+
 
 The Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
-For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/4e33c3f591cb41e2a176d94ea4ba2f3f.html).
+## SAP Cloud Platform ABAP Environment
+To import the reference scenario into your SAP Cloud Platform ABAP Environment, follow the steps in the [READ-ME](https://raw.githubusercontent.com/SAP/abap-platform-refscen-flight/Cloud-Platform/README.md) file of the branch <em>Cloud-Platform</em> and download the sources from this branch. 
 
-## Prerequisites
-Make sure to fulfill the following requirements:
-* You have access to an SAP Cloud Platform ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
-* You have downloaded and installed ABAP Development Tools (ADT). Make sure to use the most recent version as indicated on the [installation page](https://tools.hana.ondemand.com/#abap). 
-* You have created an ABAP Cloud Project in ADT that allows you to access your SAP Cloud Platform ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for additional information). Your log-on language is English.
-* You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the update site `http://eclipse.abapgit.org/updatesite/`.
+Note: If you have already linked the repository’s master branch to <em>abapGit</em>, unlink the repository in the abapGit plugIn first and then link to the `Cloud-Platform` branch to import the latest sources. 
 
-## Download
-Use the abapGit plug-in to install the <em>Flight Reference Scenario</em> by executing the following steps:
-1. In your ABAP cloud project, create the ABAP package `/DMO/FLIGHT` (using the superpackage `/DMO/SAP`) as the target package for the demo content to be downloaded (leave the suggested values unchanged when following the steps in the package creation wizard).
-2. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, click `Window` > `Show View` > `Other...` from the menu bar and choose `abapGit Repositories`.
-3. In the <em>abapGit Repositories</em> view, click the `+` icon to clone an abapGit repository.
-4. Enter the following URL of this repository: `https://github.com/SAP/abap-platform-refscen-flight.git` and choose <em>Next</em>.
-5. Select the branch <em>Cloud-Platform</em> and enter the newly created package `/DMO/FLIGHT` as the target package.
-6. Create a new transport request that you only use for this demo content installation (recommendation) and choose <em>Finish</em> to link the Git repository to your ABAP cloud project. The repository appears in the abapGit Repositories View with status <em>Linked</em>.
-7. Right-click on the new ABAP repository and choose `pull` to start the cloning of the repository contents. Note that this procedure may take a few minutes. 
-8. Once the cloning has finished, the status is set to `Imported`. Then refresh your project tree. 
+For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/289477a81eec4d4e84c0302fb6835035.html).
 
-As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
-* `/DMO/FLIGHT_LEGACY`
-* `/DMO/FLIGHT_REUSE`
-* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/a1243bff462b4ee3a03e2bb6fc30e015.html)).
-* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/971e03cd952a47458e57f87fc566a8f3.html)).
-* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/46369300f27741588aabe66ca8341914.html)).
+## Application Server ABAP On-Premise
+To import the reference scenario into your on-premise ABAP system, follow the steps in the [READ-ME](https://raw.githubusercontent.com/SAP/abap-platform-refscen-flight/On-Premise-1909/README.md) file  of the branch <em>On-Premise-1909</em> and download the sources from this branch. 
 
-NOTE: The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
-
-## Configuration
-To activate all development objects from the `/DMO/FLIGHT` package: 
-1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
-2. In the dialog that appears, select all development objects in the transport request (that you created for the demo content installation) and choose `Activate`.
-
-To fill the demo database tables for the read-only and the unmanaged scenario with sample business data: 
-1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
-2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
-
-To create a <em>service binding</em> for the read-only list reporting app (package `/DMO/FLIGHT_READONLY`):
-1. Right-click the service definition `/DMO/FLIGHT_R` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/6709cab6cb5b4c01b28463d760429a9a.html) for additional information). 
-2. Specify your own package and your own namespace when following the steps in the creation wizard.
-
-To create a <em>service binding</em> for the transactional app with implementation type unmanaged (package `/DMO/FLIGHT_UNMANAGED`): 
-1. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/9cda72a7bd9e476b8696f625da404605.html) for additional information). 
-2. Create the service binding in your own package and your own namespace. 
-
-To create <em>service bindings</em> for the transactional app with implementation type managed (package `/DMO/FLIGHT_MANAGED`): 
-1. Right-click the service definition `/DMO/UI_TRAVEL_PROCESSOR_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/DRAFT/c0d02c4330c34b3abca88bdd57eaccfc/Dev/en-US/f3e608ace2a64aada33bdd3e2419113a.html) for additional information). 
-2. Create the service binding in your own package and your own namespace. 
-3. Right-click the service definition `/DMO/UI_TRAVEL_APPROVER_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/DRAFT/c0d02c4330c34b3abca88bdd57eaccfc/Dev/en-US/f3e608ace2a64aada33bdd3e2419113a.html) for additional information). 
-4. Create the service binding in your own package and your own namespace. 
-
-NOTE: The database tables for transactional processing in the managed scenario do not contain any business data. Instead you create your business data from scratch.  
-
-NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downloaded demo content, do not use the namespace /DMO/ and do not create any development objects in the downloaded packages. You can access the development objects in /DMO/ from your own namespace.
-
-## Limitations
-The abapGit plug-in currently only supports to download content. It's not possible to upload any changes.
+For more information about the Flight Reference Scenario, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/201909.000/en-US/def316685ad14033b051fc4b88db07c8.html).
 
 ## How to obtain support
 This project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
