@@ -1,8 +1,0 @@
-CLASS /dmo/bp_booking_m DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF /dmo/i_travel_m.
-ENDCLASS.
-
-
-CLASS /dmo/bp_booking_m IMPLEMENTATION.
-
-
-ENDCLASS.
