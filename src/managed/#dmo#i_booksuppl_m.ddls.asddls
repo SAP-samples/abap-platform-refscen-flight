@@ -3,6 +3,8 @@
 @AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 
+@EndUserText.label: 'Booking Supplement View - CDS data model'
+
 @Metadata.ignorePropagatedAnnotations:true 
 
 define view /DMO/I_BookSuppl_M 

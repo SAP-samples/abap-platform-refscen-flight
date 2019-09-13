@@ -26,7 +26,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
 ********************************************************************************
 *
-* Implements the dynamic feature handling for booking suppl. instances
+* Implements the dynamic feature handling for booking supplement instances
 *
 ********************************************************************************
   METHOD get_features.

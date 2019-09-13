@@ -79,8 +79,7 @@ define root view entity /DMO/C_Travel_Processor_M
       @UI: {
           lineItem:       [ { position: 50, importance: #HIGH },
                             { type: #FOR_ACTION, dataAction: 'createTravelByTemplate', label: 'Create Travel by Template' } ],
-          identification: [ { position: 45, label: 'Status [O(Open)|A(Accepted)|X(Canceled)]' },
-                            { type: #FOR_ACTION, dataAction: 'createBooking', label: 'Add Booking' } ] }
+          identification: [ { position: 45, label: 'Status [O(Open)|A(Accepted)|X(Canceled)]' } ] }
       overall_status     as TravelStatus,
 
       @UI: {

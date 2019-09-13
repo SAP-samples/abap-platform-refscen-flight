@@ -15,8 +15,6 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
 *    METHODS check_authority_for_travel FOR AUTHORIZATION IMPORTING it_travel_key REQUEST is_request FOR travel RESULT result.
 
-    " Workaround
-    METHODS create_booking             FOR MODIFY IMPORTING keys   FOR ACTION travel~createBooking             RESULT result.
 
 ENDCLASS.
 
@@ -272,72 +270,9 @@ CLASS lhc_travel IMPLEMENTATION.
 
   ENDMETHOD.
 
-
 ********************************************************************************
 *
-* Workaround for missing "Fiori UI + button" when implementing "create by association"
-*
-********************************************************************************
-  METHOD create_booking.
-
-    DATA: lv_next_booking_id TYPE /dmo/booking_id.
-
-    LOOP AT keys INTO DATA(ls_cba).
-
-      READ ENTITY /dmo/i_travel_m BY \_booking
-      FROM VALUE #( ( travel_id = ls_cba-travel_id
-                      %control  = VALUE #( travel_id = if_abap_behv=>mk-on ) ) )
-           RESULT   DATA(lt_read_result)
-           FAILED   DATA(ls_read_failed)
-           REPORTED DATA(ls_read_reported).
-
-      IF lt_read_result IS INITIAL.
-        lv_next_booking_id = '0001'.
-      ELSE.
-        SORT lt_read_result BY booking_id DESCENDING.
-        lv_next_booking_id = lt_read_result[ 1 ]-booking_id + 1.
-      ENDIF.
-
-      MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
-      ENTITY  travel CREATE BY \_booking FROM VALUE #( ( travel_id = ls_cba-travel_id
-                                                           %target = VALUE #( ( travel_id               = ls_cba-travel_id    "full key is required
-                                                                                booking_id              = lv_next_booking_id  "full key is required
-                                                                                booking_date            = cl_abap_context_info=>get_system_date( )
-                                                                                customer_id             = '000007'
-                                                                                carrier_id              = 'UA'
-                                                                                connection_id           = '1537'
-                                                                                flight_date             = cl_abap_context_info=>get_system_date( ) + 5
-                                                                                flight_price            = '422.00'
-                                                                                currency_code           = 'EUR'
-                                                                                booking_status          = 'N'
-                                                                                %control-travel_id      = if_abap_behv=>mk-on
-                                                                                %control-booking_id     = if_abap_behv=>mk-on
-                                                                                %control-booking_date   = if_abap_behv=>mk-on
-                                                                                %control-customer_id    = if_abap_behv=>mk-on
-                                                                                %control-carrier_id     = if_abap_behv=>mk-on
-                                                                                %control-connection_id  = if_abap_behv=>mk-on
-                                                                                %control-flight_date    = if_abap_behv=>mk-on
-                                                                                %control-flight_price   = if_abap_behv=>mk-on
-                                                                                %control-currency_code  = if_abap_behv=>mk-on
-                                                                                %control-booking_status = if_abap_behv=>mk-on
-                                                                                ) ) ) )
-      FAILED   DATA(ls_failed)
-      MAPPED   DATA(ls_mapped)
-      REPORTED DATA(ls_reported).
-
-      APPEND LINES OF ls_failed-booking   TO failed-booking.
-      APPEND LINES OF ls_reported-booking TO reported-booking.
-
-      APPEND VALUE #( travel_id        = ls_cba-travel_id
-                      %param-travel_id = ls_cba-travel_id ) TO result.
-    ENDLOOP.
-
-  ENDMETHOD.
-
-
-********************************************************************************
-*
-* Implements what opearations and actions are not allowed for travel instances
+* Implements what operations and actions are not allowed for travel instances
 *
 ********************************************************************************
 *  METHOD check_authority_for_travel.

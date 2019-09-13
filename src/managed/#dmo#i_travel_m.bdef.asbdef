@@ -39,9 +39,6 @@ lock master
   // create booking by association
   association _Booking { create; }
 
-  // instance action as workaround for create by association
-  //action ( authorization : none ) createBooking result [1] $self;
-  action createBooking result [1] $self;
 }
 
 define behavior for /DMO/I_Booking_M alias booking
@@ -64,9 +61,6 @@ lock dependent( travel_id = travel_id )
 
   // create booking supplement by association
   association _BookSupplement { create; }
-
-  // instance action as workaround for create by association
-  action createBookingSupplement result [1] $self;
 
  // validations
   validation validateStatus on save { field booking_status; }

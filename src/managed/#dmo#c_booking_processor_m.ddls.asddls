@@ -27,8 +27,7 @@ define view entity /DMO/C_Booking_Processor_M
   key travel_id          as TravelID,
 
       @UI: { lineItem:       [ { position: 20, importance: #HIGH } ],
-             identification: [ { position: 20 },
-                               { type: #FOR_ACTION, dataAction: 'createBookingSupplement', label: 'Add Supplement' } ] }
+             identification: [ { position: 20 } ] }
       @Search.defaultSearchElement: true
   key booking_id         as BookingID,
 

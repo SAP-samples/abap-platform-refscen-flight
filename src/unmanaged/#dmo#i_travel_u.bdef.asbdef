@@ -6,17 +6,32 @@ implementation in class /DMO/BP_TRAVEL_U unique
 etag LastChangedAt
 
 {
- field (read only) TravelID;
- field (mandatory) AgencyID, CustomerID, BeginDate, EndDate;
+  field ( read only ) TravelID;
+  field ( mandatory ) AgencyID, CustomerID, BeginDate, EndDate;
 
- create;
- update;
- delete;
+  create;
+  update;
+  delete;
 
- action set_status_booked result [1] $self;
+  action ( features : instance ) set_status_booked result [1] $self;
 
- association _Booking { create; }
+  association _Booking { create; }
 
+
+  mapping for /dmo/travel
+  {
+    AgencyID      = agency_id;
+    BeginDate     = begin_date;
+    BookingFee    = booking_fee;
+    CurrencyCode  = currency_code;
+    CustomerID    = customer_id;
+    EndDate       = end_date;
+    LastChangedAt = lastchangedat;
+    Memo          = description;
+    Status        = status;
+    TotalPrice    = total_price;
+    TravelID      = travel_id;
+  }
 }
 
 // behavior defintion for the BOOKING child entity
@@ -24,27 +39,50 @@ define behavior for /DMO/I_Booking_U alias booking
 implementation in class /DMO/BP_BOOKING_U unique
 
 {
-  field (read only) TravelID, BookingID;
-  field (mandatory) BookingDate, CustomerID, AirlineID, ConnectionID, FlightDate;
+  field ( read only ) TravelID, BookingID;
+  field ( mandatory ) BookingDate, CustomerID, AirlineID, ConnectionID, FlightDate;
 
-  create;
+
   update;
   delete;
 
   association _BookSupplement abbreviation _Supplement { create; }
 
+  mapping for /dmo/booking
+  {
+    AirlineID    = carrier_id;
+    BookingDate  = booking_date;
+    BookingID    = booking_id;
+    ConnectionID = connection_id;
+    CurrencyCode = currency_code;
+    CustomerID   = customer_id;
+    FlightDate   = flight_date;
+    FlightPrice  = flight_price;
+    TravelID     = travel_id;
+  }
+
 }
 
 // behavior defintion for the BOOKING SUPPLEMENT sub node
-define behavior for /DMO/I_BOOKINGSUPPLEMENT_U alias bookingsupplement
+define behavior for /DMO/I_BookingSupplement_U alias bookingsupplement
 implementation in class /DMO/BP_BOOKINGSUPPLEMENT_U unique
 
 {
 
-  field (read only) TravelID, BookingID, BookingSupplementID ;
-  field (mandatory) SupplementID, Price;
+  field ( read only ) TravelID, BookingID, BookingSupplementID;
+  field ( mandatory ) SupplementID, Price;
 
-  create;
+
   update;
   delete;
+
+  mapping for /dmo/book_suppl
+  {
+    BookingID           = booking_id;
+    BookingSupplementID = booking_supplement_id;
+    CurrencyCode        = currency_code;
+    Price               = price;
+    SupplementID        = supplement_id;
+    TravelID            = travel_id;
+  }
 }

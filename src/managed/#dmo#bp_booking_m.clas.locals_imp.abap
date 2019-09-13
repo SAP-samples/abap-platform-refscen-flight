@@ -4,7 +4,6 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS calculate_total_flight_price FOR DETERMINATION booking~calculateTotalFlightPrice IMPORTING keys FOR booking.
     METHODS validate_booking_status      FOR VALIDATION booking~validateStatus   IMPORTING keys FOR booking.
     METHODS get_features                 FOR FEATURES IMPORTING keys REQUEST requested_features FOR booking RESULT result.
-    METHODS create_booking_supplement    FOR MODIFY IMPORTING keys FOR ACTION booking~createBookingSupplement RESULT result.
 
 *    METHODS check_authority_for_booking  FOR AUTHORIZATION IMPORTING it_booking_key REQUEST is_request FOR booking RESULT result.
 
@@ -89,68 +88,11 @@ CLASS lhc_travel IMPLEMENTATION.
 
   ENDMETHOD.
 
-
 ********************************************************************************
 *
-* Workaround
+* Implements what operations and actions are not allowed for booking instances
 *
 ********************************************************************************
-  METHOD create_booking_supplement.
-
-    DATA: lv_next_booksuppl_id TYPE /dmo/booking_supplement_id.
-
-    LOOP AT keys INTO DATA(ls_cba).
-
-      READ ENTITY /DMO/I_Booking_M BY \_BookSupplement
-      FROM VALUE #( ( travel_id  = ls_cba-travel_id
-                      booking_id = ls_cba-booking_id
-                      %control  = VALUE #( travel_id  = if_abap_behv=>mk-on
-                                           booking_id = if_abap_behv=>mk-on ) ) )
-           RESULT   DATA(lt_read_result)
-           FAILED   DATA(ls_read_failed)
-           REPORTED DATA(ls_read_reported).
-
-      IF lt_read_result IS INITIAL.
-        lv_next_booksuppl_id = '01'.
-      ELSE.
-        SORT lt_read_result BY booking_supplement_id DESCENDING.
-        lv_next_booksuppl_id = lt_read_result[ 1 ]-booking_supplement_id + 1.
-      ENDIF.
-
-      "MODIFY ENTITY /DMO/I_Booking_M
-      MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
-        ENTITY booking
-          CREATE BY \_BookSupplement FROM VALUE #( ( travel_id  = ls_cba-travel_id
-                                                     booking_id = ls_cba-booking_id
-                                                     %target    = VALUE #( ( travel_id                      = ls_cba-travel_id    "full key is required
-                                                                             booking_id                     = ls_cba-booking_id   "full key is required
-                                                                             booking_supplement_id          = lv_next_booksuppl_id
-                                                                             supplement_id                  = 'ML-0012'
-                                                                             price                          = '17.00'
-                                                                             currency_code                  = 'EUR'
-                                                                             %control-travel_id             = if_abap_behv=>mk-on
-                                                                             %control-booking_id            = if_abap_behv=>mk-on
-                                                                             %control-booking_supplement_id = if_abap_behv=>mk-on
-                                                                             %control-supplement_id         = if_abap_behv=>mk-on
-                                                                             %control-price                 = if_abap_behv=>mk-on
-                                                                             %control-currency_code         = if_abap_behv=>mk-on ) ) ) )
-          FAILED   DATA(ls_failed)
-          MAPPED   DATA(ls_mapped)
-          REPORTED DATA(ls_reported).
-
-      APPEND LINES OF ls_failed-booksuppl   TO failed-booksuppl.
-      APPEND LINES OF ls_reported-booksuppl TO reported-booksuppl.
-
-      APPEND VALUE #( travel_id         = ls_cba-travel_id
-                      booking_id        = ls_cba-booking_id
-                      %param-travel_id  = ls_cba-travel_id
-                      %param-booking_id = ls_cba-booking_id ) TO result.
-    ENDLOOP.
-
-  ENDMETHOD.
-
-
-
 
 *  METHOD check_authority_for_booking.
 *

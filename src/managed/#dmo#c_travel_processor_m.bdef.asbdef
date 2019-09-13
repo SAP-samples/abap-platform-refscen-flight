@@ -14,9 +14,6 @@ use etag
 
   use association _BOOKING { create; }
 
-  // Workaround
-  use action createBooking;
-
 }
 
 define behavior for /DMO/C_Booking_Processor_M alias BookingProcessor
@@ -26,11 +23,8 @@ use etag
 //  use delete; // workaround for missing determination on delete
 
   use association _BOOKSUPPLEMENT { create; }
-
-  // Workaround
-  use action createBookingSupplement;
-
 }
+
 
 define behavior for /DMO/C_BookSuppl_Processor_M alias BookSupplProcessor
 use etag
