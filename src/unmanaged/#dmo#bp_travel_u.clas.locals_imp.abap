@@ -229,9 +229,25 @@ CLASS lhc_travel IMPLEMENTATION.
           et_messages  = lt_messages.
 
       IF lt_messages IS INITIAL.
-        APPEND VALUE #( travelid        = lv_travelid
-                        %param-travelid = lv_travelid )
-               TO et_travel_set_status_booked.
+        CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
+          EXPORTING
+            iv_travel_id = lv_travelid
+          IMPORTING
+            es_travel    = ls_travel_out.
+
+        APPEND VALUE #( travelid = lv_travelid
+                        %param   = VALUE #( travelid      = lv_travelid
+                                            agencyid      = ls_travel_out-agency_id
+                                            customerid    = ls_travel_out-customer_id
+                                            begindate     = ls_travel_out-begin_date
+                                            enddate       = ls_travel_out-end_date
+                                            bookingfee    = ls_travel_out-booking_fee
+                                            totalprice    = ls_travel_out-total_price
+                                            currencycode  = ls_travel_out-currency_code
+                                            memo          = ls_travel_out-description
+                                            status        = ls_travel_out-status
+                                            lastchangedat = ls_travel_out-lastchangedat )
+                      ) TO et_travel_set_status_booked.
       ELSE.
 
         /dmo/cl_travel_auxiliary=>handle_travel_messages(

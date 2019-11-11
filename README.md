@@ -3,7 +3,7 @@ The ABAP RESTful programming model defines the architecture for efficient end-to
 
 The Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
-For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/4e33c3f591cb41e2a176d94ea4ba2f3f.html).
+For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/def316685ad14033b051fc4b88db07c8.html).
 
 ## Prerequisites
 Make sure to fulfill the following requirements:
@@ -21,7 +21,7 @@ Use the abapGit plug-in to install the <em>Flight Reference Scenario</em> by exe
 5. Select the branch <em>Cloud-Platform</em> and enter the newly created package `/DMO/FLIGHT` as the target package.
 6. Create a new transport request that you only use for this demo content installation (recommendation) and choose <em>Finish</em> to link the Git repository to your ABAP cloud project. The repository appears in the abapGit Repositories View with status <em>Linked</em>.
 7. Right-click on the new ABAP repository and choose `pull` to start the cloning of the repository contents. Note that this procedure may take a few minutes. 
-8. Once the cloning has finished, the status is set to `Imported`. Then refresh your project tree. 
+8. Once the cloning has finished, the status is set to `Pulled Successfully`. Then refresh your project tree. 
 
 As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
@@ -32,7 +32,14 @@ As a result of the installation procedure above, the ABAP system creates an inac
 
 NOTE: The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
+NOTE: All development objects except for metadata extensions are written on the transport request that you created for the import. Metadata Extension must be added to the transport request manually.  
+
 ## Configuration
+To include the metadata extensions on the transport request 
+1. Open the metadata extension `/DMO/C_TRAVEL_U` and do a dummy change (enter space in an uncritical position). 
+2. Chosse the `Save`button in the ADT tool bar (Ctrl+S) and select the transport request that you used for the import. 
+3. Repeat the steps for the metadata extensions `/DMO/C_BOOKING_U` and `/DMO/C_BOOKINGSUPPLEMENT_U`. 
+
 To activate all development objects from the `/DMO/FLIGHT` package: 
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
 2. In the dialog that appears, select all development objects in the transport request (that you created for the demo content installation) and choose `Activate`.
@@ -42,17 +49,17 @@ To fill the demo database tables for the read-only and the unmanaged scenario wi
 2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
 
 To create a <em>service binding</em> for the read-only list reporting app (package `/DMO/FLIGHT_READONLY`):
-1. Right-click the service definition `/DMO/FLIGHT_R` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/6709cab6cb5b4c01b28463d760429a9a.html) for additional information). 
+1. Right-click the service definition `/DMO/FLIGHT_R` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/777e027f61c3490dba0433443d9143a6.html) for additional information). 
 2. Specify your own package and your own namespace when following the steps in the creation wizard.
 
 To create a <em>service binding</em> for the transactional app with implementation type unmanaged (package `/DMO/FLIGHT_UNMANAGED`): 
-1. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/9cda72a7bd9e476b8696f625da404605.html) for additional information). 
+1. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/4ff7c4780ec542b0ae6504ddd8d6c84e.html) for additional information). 
 2. Create the service binding in your own package and your own namespace. 
 
 To create <em>service bindings</em> for the transactional app with implementation type managed (package `/DMO/FLIGHT_MANAGED`): 
-1. Right-click the service definition `/DMO/UI_TRAVEL_PROCESSOR_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/DRAFT/c0d02c4330c34b3abca88bdd57eaccfc/Dev/en-US/f3e608ace2a64aada33bdd3e2419113a.html) for additional information). 
+1. Right-click the service definition `/DMO/UI_TRAVEL_PROCESSOR_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/4bad0d7280b742a68dd2d42b1441f09a.html) for additional information). 
 2. Create the service binding in your own package and your own namespace. 
-3. Right-click the service definition `/DMO/UI_TRAVEL_APPROVER_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/DRAFT/c0d02c4330c34b3abca88bdd57eaccfc/Dev/en-US/f3e608ace2a64aada33bdd3e2419113a.html) for additional information). 
+3. Right-click the service definition `/DMO/UI_TRAVEL_APPROVER_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/4bad0d7280b742a68dd2d42b1441f09a.html) for additional information). 
 4. Create the service binding in your own package and your own namespace. 
 
 NOTE: The database tables for transactional processing in the managed scenario do not contain any business data. Instead you create your business data from scratch.  

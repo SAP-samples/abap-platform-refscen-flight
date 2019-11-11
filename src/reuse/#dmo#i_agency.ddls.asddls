@@ -27,7 +27,7 @@ define view /DMO/I_Agency
 
       Agency.city          as City,
 
-      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'country' } }]
+      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'Country' } }]
       Agency.country_code  as CountryCode,
 
       Agency.phone_number  as PhoneNumber,

@@ -23,7 +23,6 @@
       <RSFDO>
        <PARAMETER>IT_FLIGHT</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 001</INDEX>
       </RSFDO>
      </DOCUMENTATION>
     </item>
@@ -75,37 +74,30 @@
       <RSFDO>
        <PARAMETER>IS_TRAVEL</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 001</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IT_BOOKING</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 002</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IT_BOOKING_SUPPLEMENT</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 003</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ES_TRAVEL</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 004</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_BOOKING</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 005</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_BOOKING_SUPPLEMENT</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 006</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_MESSAGES</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 007</INDEX>
       </RSFDO>
      </DOCUMENTATION>
     </item>
@@ -130,12 +122,10 @@
       <RSFDO>
        <PARAMETER>IV_TRAVEL_ID</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 001</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_MESSAGES</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 002</INDEX>
       </RSFDO>
      </DOCUMENTATION>
     </item>
@@ -186,32 +176,26 @@
       <RSFDO>
        <PARAMETER>IV_TRAVEL_ID</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 001</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IV_INCLUDE_BUFFER</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 002</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ES_TRAVEL</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 003</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_BOOKING</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 004</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_BOOKING_SUPPLEMENT</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 005</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_MESSAGES</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 006</INDEX>
       </RSFDO>
      </DOCUMENTATION>
     </item>
@@ -240,12 +224,10 @@
       <RSFDO>
        <PARAMETER>IV_TRAVEL_ID</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 001</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_MESSAGES</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 002</INDEX>
       </RSFDO>
      </DOCUMENTATION>
     </item>
@@ -314,52 +296,42 @@
       <RSFDO>
        <PARAMETER>IS_TRAVEL</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 001</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IS_TRAVELX</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 002</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IT_BOOKING</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 003</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IT_BOOKINGX</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 004</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IT_BOOKING_SUPPLEMENT</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 005</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>IT_BOOKING_SUPPLEMENTX</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 006</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ES_TRAVEL</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 007</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_BOOKING</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 008</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_BOOKING_SUPPLEMENT</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 009</INDEX>
       </RSFDO>
       <RSFDO>
        <PARAMETER>ET_MESSAGES</PARAMETER>
        <KIND>P</KIND>
-       <INDEX> 010</INDEX>
       </RSFDO>
      </DOCUMENTATION>
     </item>

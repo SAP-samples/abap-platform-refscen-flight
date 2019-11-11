@@ -3,6 +3,7 @@ managed;
 define behavior for /DMO/I_Travel_M alias travel
 implementation in class /DMO/BP_TRAVEL_M unique
 persistent table /DMO/TRAVEL_M
+with additional save
 etag last_changed_at
 lock master
 //authorization master(instance)
@@ -17,18 +18,21 @@ lock master
   // dynamic field control
   field (features : instance ) travel_id;
 
+  // mapping entity's field types with table field types
+  mapping for /DMO/TRAVEL_M corresponding;
+
   // standard operations for travel entity
   create;
   update;
   delete;
 
   // instance action and dynamic action control
-//action  ( features: instance, authorization : none ) acceptTravel result [1] $self;
+  //action  ( features: instance, authorization : none ) acceptTravel result [1] $self;
   action  ( features: instance ) acceptTravel result [1] $self;
   action  ( features: instance ) rejectTravel result [1] $self;
 
-//  // instance action for copying travel instances
-//  //action ( authorization : none ) createTravelByTemplate result [1] $self;
+  // instance action for copying travel instances
+  //action ( authorization : none ) createTravelByTemplate result [1] $self;
   action createTravelByTemplate result [1] $self;
 
   // validations
@@ -38,6 +42,8 @@ lock master
 
   // create booking by association
   association _Booking { create; }
+
+
 
 }
 
@@ -52,6 +58,9 @@ lock dependent( travel_id = travel_id )
   // static field control
   field ( mandatory ) carrier_id, connection_id, flight_date, booking_status;
   field ( readonly ) travel_id;
+
+  // mapping entity's field types with table field types
+  mapping for /DMO/BOOKING_M corresponding;
 
   // dynamic field control
   field (features : instance ) booking_id, booking_date, customer_id;
@@ -73,7 +82,8 @@ lock dependent( travel_id = travel_id )
 
 define behavior for /DMO/I_BookSuppl_M alias booksuppl
 implementation in class /DMO/BP_BOOKINGSUPPLEMENT_M unique
-persistent table /DMO/BOOKSUPPL_M
+//persistent table /DMO/BOOKSUPPL_M
+with unmanaged save
 etag last_changed_at
 lock dependent( travel_id = travel_id )
 //authorization dependent( travel_id = travel_id )
@@ -85,6 +95,9 @@ lock dependent( travel_id = travel_id )
 
   // dynamic field control
   field (features : instance ) booking_supplement_id;
+
+  // mapping entity's field types with table field types
+  mapping for /DMO/BOOKSUPPL_M corresponding;
 
   // standard operations for booking supplement entity
   update;

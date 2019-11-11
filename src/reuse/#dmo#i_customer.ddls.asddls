@@ -14,7 +14,7 @@ define view /DMO/I_Customer
 {
       @ObjectModel.text.element: ['LastName']
   key Customer.customer_id   as CustomerID,
-
+ 
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
       Customer.first_name    as FirstName,
@@ -32,7 +32,7 @@ define view /DMO/I_Customer
 
       Customer.city          as City,
 
-      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'country' } }]
+      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'Country' } }]
       Customer.country_code  as CountryCode,
 
       Customer.phone_number  as PhoneNumber,

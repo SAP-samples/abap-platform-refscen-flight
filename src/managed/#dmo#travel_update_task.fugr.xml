@@ -1,0 +1,62 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_FUGR" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <AREAT>Flight Update Task FG</AREAT>
+   <INCLUDES>
+    <SOBJ_NAME>/DMO/LTRAVEL_UPDATE_TASKTOP</SOBJ_NAME>
+    <SOBJ_NAME>/DMO/SAPLTRAVEL_UPDATE_TASK</SOBJ_NAME>
+   </INCLUDES>
+   <FUNCTIONS>
+    <item>
+     <FUNCNAME>/DMO/FLIGHT_BOOKSUPPL_C</FUNCNAME>
+     <SHORT_TEXT>Create for booking supplements</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>VALUES</PARAMETER>
+       <TYP>/DMO/TT_BOOKSUPPL_M</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>VALUES</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>/DMO/FLIGHT_BOOKSUPPL_D</FUNCNAME>
+     <SHORT_TEXT>Delete for booking supplements</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>VALUES</PARAMETER>
+       <TYP>/DMO/TT_BOOKSUPPL_M</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>VALUES</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+    <item>
+     <FUNCNAME>/DMO/FLIGHT_BOOKSUPPL_U</FUNCNAME>
+     <SHORT_TEXT>Update for booking supplements</SHORT_TEXT>
+     <IMPORT>
+      <RSIMP>
+       <PARAMETER>VALUES</PARAMETER>
+       <TYP>/DMO/TT_BOOKSUPPL_M</TYP>
+      </RSIMP>
+     </IMPORT>
+     <DOCUMENTATION>
+      <RSFDO>
+       <PARAMETER>VALUES</PARAMETER>
+       <KIND>P</KIND>
+      </RSFDO>
+     </DOCUMENTATION>
+    </item>
+   </FUNCTIONS>
+  </asx:values>
+ </asx:abap>
+</abapGit>

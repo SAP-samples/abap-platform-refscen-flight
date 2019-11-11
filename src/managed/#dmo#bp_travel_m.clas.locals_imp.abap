@@ -226,6 +226,31 @@ CLASS lhc_travel IMPLEMENTATION.
            FAILED   failed
            REPORTED reported.
 
+    " Read changed data for action result
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+         ENTITY travel
+         FROM VALUE #( for key in keys (  travel_id = key-travel_id
+                                          %control = VALUE #(
+                                            agency_id       = if_abap_behv=>mk-on
+                                            customer_id     = if_abap_behv=>mk-on
+                                            begin_date      = if_abap_behv=>mk-on
+                                            end_date        = if_abap_behv=>mk-on
+                                            booking_fee     = if_abap_behv=>mk-on
+                                            total_price     = if_abap_behv=>mk-on
+                                            currency_code   = if_abap_behv=>mk-on
+                                            overall_status  = if_abap_behv=>mk-on
+                                            description     = if_abap_behv=>mk-on
+                                            created_by      = if_abap_behv=>mk-on
+                                            created_at      = if_abap_behv=>mk-on
+                                            last_changed_by = if_abap_behv=>mk-on
+                                            last_changed_at = if_abap_behv=>mk-on
+                                          ) ) )
+         RESULT DATA(lt_travel).
+
+    result = VALUE #( for travel in lt_travel ( travel_id = travel-travel_id
+                                                %param    = travel
+                                              ) ).
+
   ENDMETHOD.
 
 ********************************************************************************
@@ -242,6 +267,31 @@ CLASS lhc_travel IMPLEMENTATION.
                                                      %control-overall_status = if_abap_behv=>mk-on ) )
            FAILED   failed
            REPORTED reported.
+
+    " read changed data for result
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+         ENTITY travel
+         FROM VALUE #( for key in keys (  travel_id = key-travel_id
+                                          %control = VALUE #(
+                                            agency_id       = if_abap_behv=>mk-on
+                                            customer_id     = if_abap_behv=>mk-on
+                                            begin_date      = if_abap_behv=>mk-on
+                                            end_date        = if_abap_behv=>mk-on
+                                            booking_fee     = if_abap_behv=>mk-on
+                                            total_price     = if_abap_behv=>mk-on
+                                            currency_code   = if_abap_behv=>mk-on
+                                            overall_status  = if_abap_behv=>mk-on
+                                            description     = if_abap_behv=>mk-on
+                                            created_by      = if_abap_behv=>mk-on
+                                            created_at      = if_abap_behv=>mk-on
+                                            last_changed_by = if_abap_behv=>mk-on
+                                            last_changed_at = if_abap_behv=>mk-on
+                                          ) ) )
+         RESULT DATA(lt_travel).
+
+    result = VALUE #( for travel in lt_travel ( travel_id = travel-travel_id
+                                                %param    = travel
+                                              ) ).
 
   ENDMETHOD.
 
@@ -286,5 +336,221 @@ CLASS lhc_travel IMPLEMENTATION.
 *    ENDLOOP.
 *
 *  ENDMETHOD.
+
+ENDCLASS.
+
+
+CLASS lcl_save DEFINITION INHERITING FROM cl_abap_behavior_saver.
+
+  PROTECTED SECTION.
+    METHODS save_modified REDEFINITION.
+
+ENDCLASS.
+
+
+CLASS lcl_save IMPLEMENTATION.
+
+  METHOD save_modified.
+
+
+********************************************************************************
+*
+* Implements additional save
+*
+********************************************************************************
+
+    DATA lt_travel_log   TYPE STANDARD TABLE OF /dmo/log_travel.
+    DATA lt_travel_log_c TYPE STANDARD TABLE OF /dmo/log_travel.
+    DATA lt_travel_log_u TYPE STANDARD TABLE OF /dmo/log_travel.
+
+    " (1) Get instance data of all instances that have been created
+    IF create-travel IS NOT INITIAL.
+      " Creates internal table with instance data
+      lt_travel_log = CORRESPONDING #( create-travel ).
+
+      LOOP AT lt_travel_log ASSIGNING FIELD-SYMBOL(<fs_travel_log_c>).
+        <fs_travel_log_c>-changing_operation = 'CREATE'.
+
+        " Generate time stamp
+        GET TIME STAMP FIELD <fs_travel_log_c>-created_at.
+
+        " Read travel instance data into ls_travel that includes %control structure
+        READ TABLE create-travel WITH TABLE KEY entity COMPONENTS travel_id = <fs_travel_log_c>-travel_id INTO DATA(ls_travel).
+        IF sy-subrc = 0.
+
+          " If new value of the booking_fee field created
+          IF ls_travel-%control-booking_fee = cl_abap_behv=>flag_changed.
+            " Generate uuid as value of the change_id field
+            TRY.
+                <fs_travel_log_c>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+              CATCH cx_uuid_error.
+                "handle exception
+            ENDTRY.
+            <fs_travel_log_c>-changed_field_name = 'booking_fee'.
+            <fs_travel_log_c>-changed_value = ls_travel-booking_fee.
+            APPEND <fs_travel_log_c> TO lt_travel_log_c.
+          ENDIF.
+
+          " If new value of the overal_status field created
+          IF ls_travel-%control-overall_status = cl_abap_behv=>flag_changed.
+            " Generate uuid as value of the change_id field
+            TRY.
+                <fs_travel_log_c>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+              CATCH cx_uuid_error.
+                "handle exception
+            ENDTRY.
+            <fs_travel_log_c>-changed_field_name = 'overal_status'.
+            <fs_travel_log_c>-changed_value = ls_travel-overall_status.
+            APPEND <fs_travel_log_c> TO lt_travel_log_c.
+          ENDIF.
+
+          " IF  ls_travel-%control-...
+
+        ENDIF.
+
+      ENDLOOP.
+
+      " Inserts rows specified in lt_travel_log into the DB table /dmo/log_travel
+      INSERT /dmo/log_travel FROM TABLE @lt_travel_log_c.
+
+    ENDIF.
+
+
+    " (2) Get instance data of all instances that have been updated during the transaction
+    IF update-travel IS NOT INITIAL.
+      lt_travel_log = CORRESPONDING #( update-travel ).
+
+      LOOP AT update-travel ASSIGNING FIELD-SYMBOL(<fs_travel_log_u>).
+
+        ASSIGN lt_travel_log[ travel_id = <fs_travel_log_u>-travel_id ] TO FIELD-SYMBOL(<fs_travel_db>).
+
+        <fs_travel_db>-changing_operation = 'UPDATE'.
+
+        " Generate time stamp
+        GET TIME STAMP FIELD <fs_travel_db>-created_at.
+
+
+        IF <fs_travel_log_u>-%control-customer_id = if_abap_behv=>mk-on.
+          <fs_travel_db>-changed_value = <fs_travel_log_u>-customer_id.
+          " Generate uuid as value of the change_id field
+          TRY.
+              <fs_travel_db>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+            CATCH cx_uuid_error.
+              "handle exception
+          ENDTRY.
+
+          <fs_travel_db>-changed_field_name = 'customer_id'.
+
+          APPEND <fs_travel_db> TO lt_travel_log_u.
+
+        ENDIF.
+
+        IF <fs_travel_log_u>-%control-description = if_abap_behv=>mk-on.
+          <fs_travel_db>-changed_value = <fs_travel_log_u>-description.
+
+          " Generate uuid as value of the change_id field
+          TRY.
+              <fs_travel_db>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+            CATCH cx_uuid_error.
+              "handle exception
+          ENDTRY.
+
+          <fs_travel_db>-changed_field_name = 'description'.
+
+          APPEND <fs_travel_db> TO lt_travel_log_u.
+
+        ENDIF.
+
+        "IF <fs_travel_log_u>-%control-...
+
+      ENDLOOP.
+
+      " Inserts rows specified in lt_travel_log into the DB table /dmo/log_travel
+      INSERT /dmo/log_travel FROM TABLE @lt_travel_log_u.
+
+    ENDIF.
+
+    " (3) Get keys of all travel instances that have been deleted during the transaction
+    IF delete-travel IS NOT INITIAL.
+      lt_travel_log = CORRESPONDING #( delete-travel ).
+      LOOP AT lt_travel_log ASSIGNING FIELD-SYMBOL(<fs_travel_log_d>).
+        <fs_travel_log_d>-changing_operation = 'DELETE'.
+        " Generate time stamp
+        GET TIME STAMP FIELD <fs_travel_log_d>-created_at.
+        " Generate uuid as value of the change_id field
+        TRY.
+            <fs_travel_log_d>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+          CATCH cx_uuid_error.
+            "handle exception
+        ENDTRY.
+
+      ENDLOOP.
+
+      " Inserts rows specified in lt_travel_log into the DB table /dmo/log_travel
+      INSERT /dmo/log_travel FROM TABLE @lt_travel_log.
+
+    ENDIF.
+
+
+********************************************************************************
+*
+* Implements unmanaged save
+*
+********************************************************************************
+    DATA lt_booksuppl_db TYPE STANDARD TABLE OF /DMO/BOOKSUPPL_M.
+
+    " (1) Get instance data of all instances that have been created
+    IF create-booksuppl IS NOT INITIAL.
+      lt_booksuppl_db = CORRESPONDING #( create-booksuppl ).
+
+      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_C' EXPORTING values = lt_booksuppl_db .
+
+    ENDIF.
+
+    " (2) Get instance data of all instances that have been updated during the transaction
+    IF update-booksuppl IS NOT INITIAL.
+      lt_booksuppl_db = CORRESPONDING #( update-booksuppl ).
+
+      " Read all field values from database
+      SELECT * FROM /dmo/booksuppl_m FOR ALL ENTRIES IN @lt_booksuppl_db
+               WHERE booking_supplement_id = @lt_booksuppl_db-booking_supplement_id
+               INTO TABLE @lt_booksuppl_db .
+
+      " Take over field values that have been changed during the transaction
+      LOOP AT update-booksuppl ASSIGNING FIELD-SYMBOL(<ls_unmanaged_booksuppl>).
+        ASSIGN lt_booksuppl_db[ travel_id  = <ls_unmanaged_booksuppl>-travel_id
+                                booking_id = <ls_unmanaged_booksuppl>-booking_id
+                     booking_supplement_id = <ls_unmanaged_booksuppl>-booking_supplement_id
+                       ] TO FIELD-SYMBOL(<ls_booksuppl_db>).
+
+        IF <ls_unmanaged_booksuppl>-%control-supplement_id = if_abap_behv=>mk-on.
+          <ls_booksuppl_db>-supplement_id = <ls_unmanaged_booksuppl>-supplement_id.
+        ENDIF.
+
+        IF <ls_unmanaged_booksuppl>-%control-price = if_abap_behv=>mk-on.
+          <ls_booksuppl_db>-price = <ls_unmanaged_booksuppl>-price.
+        ENDIF.
+
+        IF <ls_unmanaged_booksuppl>-%control-currency_code = if_abap_behv=>mk-on.
+          <ls_booksuppl_db>-currency_code = <ls_unmanaged_booksuppl>-currency_code.
+        ENDIF.
+
+      ENDLOOP.
+
+      " Update the complete instance data
+      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_U' EXPORTING values = lt_booksuppl_db .
+
+    ENDIF.
+
+    " (3) Get keys of all travel instances that have been deleted during the transaction
+    IF delete-booksuppl IS NOT INITIAL.
+      lt_booksuppl_db = CORRESPONDING #( delete-booksuppl ).
+
+      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_D' EXPORTING values = lt_booksuppl_db .
+
+    ENDIF.
+
+
+  ENDMETHOD.
 
 ENDCLASS.
