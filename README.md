@@ -9,7 +9,7 @@ To import the reference scenario into your SAP Cloud Platform ABAP Environment, 
 
 Note: If you have already linked the repository’s master branch to <em>abapGit</em>, unlink the repository in the abapGit plugIn first and then link to the <em>Cloud-Platform</em> branch to import the latest sources. 
 
-For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/289477a81eec4d4e84c0302fb6835035.html).
+For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/def316685ad14033b051fc4b88db07c8.html).
 
 ## Application Server ABAP On-Premise
 To import the reference scenario into your on-premise ABAP system, follow the steps in the [READ-ME](../On-Premise-1909/README.md) file  of the branch <em>On-Premise-1909</em> and download the sources from this branch. 
