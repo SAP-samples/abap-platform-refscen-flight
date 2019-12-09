@@ -26,17 +26,14 @@ Use the abapGit plug-in to install the <em>Flight Reference Scenario</em> by exe
 As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
 * `/DMO/FLIGHT_REUSE`
-* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/a1243bff462b4ee3a03e2bb6fc30e015.html)).
-* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/971e03cd952a47458e57f87fc566a8f3.html)).
-* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](/c0d02c4330c34b3abca88bdd57eaccfc/Cloud/en-US/46369300f27741588aabe66ca8341914.html)).
+* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/504035c0850f44f787f5b81e35791d10.html)).
+* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
+* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide]https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
+
 
 NOTE: The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
 ## Configuration
-To include the metadata extensions on the transport request 
-1. Open the metadata extension `/DMO/C_TRAVEL_U` and do a dummy change (enter space in an uncritical position). 
-2. Chosse the `Save`button in the ADT tool bar (Ctrl+S) and select the transport request that you used for the import. 
-3. Repeat the steps for the metadata extensions `/DMO/C_BOOKING_U` and `/DMO/C_BOOKINGSUPPLEMENT_U`. 
 
 To activate all development objects from the `/DMO/FLIGHT` package: 
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
