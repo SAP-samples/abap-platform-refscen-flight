@@ -31,11 +31,10 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-      READ ENTITY /dmo/i_booksuppl_m FROM VALUE #( FOR keyval IN keys
-                                                      (  %key                           = keyval-%key
-                                                         %control-booking_supplement_id = if_abap_behv=>mk-on
-                                                      ) )
-                                                      RESULT  DATA(lt_booksupppl_result).
+      READ ENTITY /dmo/i_booksuppl_m
+           FIELDS ( booking_supplement_id )
+             WITH VALUE #( FOR keyval IN keys ( %key = keyval-%key ) )
+           RESULT  DATA(lt_booksupppl_result).
 
 
     result = VALUE #( FOR ls_travel IN lt_booksupppl_result

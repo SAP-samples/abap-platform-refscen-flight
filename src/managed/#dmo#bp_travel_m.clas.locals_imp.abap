@@ -27,10 +27,9 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_customer.
 
-  READ ENTITY /DMO/I_Travel_M\\travel FROM VALUE #(
-        FOR <root_key> IN keys ( %key     = <root_key>
-                                 %control = VALUE #( customer_id = if_abap_behv=>mk-on ) ) )
-        RESULT DATA(lt_travel).
+  READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( customer_id ) WITH
+      VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
+      RESULT DATA(lt_travel).
 
     DATA lt_customer TYPE SORTED TABLE OF /dmo/customer WITH UNIQUE KEY customer_id.
 
@@ -69,10 +68,8 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_dates.
 
-    READ ENTITY /DMO/I_Travel_M\\travel FROM VALUE #(
-        FOR <root_key> IN keys ( %key     = <root_key>
-                                 %control = VALUE #( begin_date = if_abap_behv=>mk-on
-                                                     end_date   = if_abap_behv=>mk-on ) ) )
+    READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( begin_date end_date )  WITH
+        VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
         RESULT DATA(lt_travel_result).
 
     LOOP AT lt_travel_result INTO DATA(ls_travel_result).
@@ -116,10 +113,9 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_travel_status.
 
-   READ ENTITY /DMO/I_Travel_M\\travel FROM VALUE #(
-      FOR <root_key> IN keys ( %key     = <root_key>
-                               %control = VALUE #( overall_status = if_abap_behv=>mk-on ) ) )
-      RESULT DATA(lt_travel_result).
+   READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( overall_status ) WITH
+       VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
+       RESULT DATA(lt_travel_result).
 
    LOOP AT lt_travel_result INTO DATA(ls_travel_result).
       CASE ls_travel_result-overall_status.
@@ -151,18 +147,17 @@ CLASS lhc_travel IMPLEMENTATION.
 
     SELECT MAX( travel_id ) FROM /dmo/travel_m INTO @DATA(lv_travel_id).
 
-    READ ENTITY /dmo/i_travel_m FROM VALUE #( FOR travel IN keys
-                                                    (  %key                                = travel-%key
-                                                       %control = VALUE #( travel_id       = if_abap_behv=>mk-on
-                                                                           agency_id       = if_abap_behv=>mk-on
-                                                                           customer_id     = if_abap_behv=>mk-on
-                                                                           booking_fee     = if_abap_behv=>mk-on
-                                                                           total_price     = if_abap_behv=>mk-on
-                                                                           currency_code   = if_abap_behv=>mk-on
-                                                                         ) ) )
-                RESULT    DATA(lt_read_result)
-                FAILED    failed
-                REPORTED  reported.
+    READ ENTITY /dmo/i_travel_m
+         FIELDS ( travel_id
+                  agency_id
+                  customer_id
+                  booking_fee
+                  total_price
+                  currency_code )
+           WITH VALUE #( FOR travel IN keys (  %key = travel-%key ) )
+         RESULT    DATA(lt_read_result)
+         FAILED    failed
+         REPORTED  reported.
 
     DATA(lv_today) = cl_abap_context_info=>get_system_date( ).
 
@@ -178,25 +173,26 @@ CLASS lhc_travel IMPLEMENTATION.
                                total_price    = row-total_price
                                currency_code  = row-currency_code
                                description    = 'Enter your comments here'
-                               overall_status = 'O' " Open
-                               %control       = VALUE #( travel_id      = if_abap_behv=>mk-on
-                                                         agency_id      = if_abap_behv=>mk-on
-                                                         customer_id    = if_abap_behv=>mk-on
-                                                         begin_date     = if_abap_behv=>mk-on
-                                                         end_date       = if_abap_behv=>mk-on
-                                                         booking_fee    = if_abap_behv=>mk-on
-                                                         total_price    = if_abap_behv=>mk-on
-                                                         currency_code  = if_abap_behv=>mk-on
-                                                         description    = if_abap_behv=>mk-on
-                                                         overall_status = if_abap_behv=>mk-on ) ) ) .
+                               overall_status = 'O' ) ). " Open
 
-*    MODIFY ENTITY /DMO/I_Travel_M\\travel
+
      MODIFY ENTITIES OF /DMO/I_TRAVEL_M IN LOCAL MODE
-           ENTITY travel
-        CREATE FROM lt_create
+         ENTITY travel
+            CREATE FIELDS (    travel_id
+                               agency_id
+                               customer_id
+                               begin_date
+                               end_date
+                               booking_fee
+                               total_price
+                               currency_code
+                               description
+                               overall_status )
+            WITH lt_create
           MAPPED   mapped
           FAILED   failed
           REPORTED reported.
+
 
     result = VALUE #( FOR create IN  lt_create INDEX INTO idx
                              ( %cid_ref = keys[ idx ]-%cid_ref
@@ -220,36 +216,33 @@ CLASS lhc_travel IMPLEMENTATION.
     " Modify in local mode: BO-related updates that are not relevant for authorization checks
     MODIFY ENTITIES OF /DMO/I_TRAVEL_M IN LOCAL MODE
            ENTITY travel
-              UPDATE FROM VALUE #( for key in keys ( travel_id = key-travel_id
-                                                     overall_status = 'A' " Accepted
-                                                     %control-overall_status = if_abap_behv=>mk-on ) )
+              UPDATE FIELDS ( overall_status )
+                 WITH VALUE #( for key in keys ( travel_id      = key-travel_id
+                                                 overall_status = 'A' ) ) " Accepted
            FAILED   failed
            REPORTED reported.
 
     " Read changed data for action result
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
          ENTITY travel
-         FROM VALUE #( for key in keys (  travel_id = key-travel_id
-                                          %control = VALUE #(
-                                            agency_id       = if_abap_behv=>mk-on
-                                            customer_id     = if_abap_behv=>mk-on
-                                            begin_date      = if_abap_behv=>mk-on
-                                            end_date        = if_abap_behv=>mk-on
-                                            booking_fee     = if_abap_behv=>mk-on
-                                            total_price     = if_abap_behv=>mk-on
-                                            currency_code   = if_abap_behv=>mk-on
-                                            overall_status  = if_abap_behv=>mk-on
-                                            description     = if_abap_behv=>mk-on
-                                            created_by      = if_abap_behv=>mk-on
-                                            created_at      = if_abap_behv=>mk-on
-                                            last_changed_by = if_abap_behv=>mk-on
-                                            last_changed_at = if_abap_behv=>mk-on
-                                          ) ) )
+           FIELDS ( agency_id
+                    customer_id
+                    begin_date
+                    end_date
+                    booking_fee
+                    total_price
+                    currency_code
+                    overall_status
+                    description
+                    created_by
+                    created_at
+                    last_changed_at
+                    last_changed_by )
+             WITH VALUE #( for key in keys ( travel_id = key-travel_id ) )
          RESULT DATA(lt_travel).
 
     result = VALUE #( for travel in lt_travel ( travel_id = travel-travel_id
-                                                %param    = travel
-                                              ) ).
+                                                %param    = travel ) ).
 
   ENDMETHOD.
 
@@ -269,24 +262,22 @@ CLASS lhc_travel IMPLEMENTATION.
            REPORTED reported.
 
     " read changed data for result
-    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+        READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
          ENTITY travel
-         FROM VALUE #( for key in keys (  travel_id = key-travel_id
-                                          %control = VALUE #(
-                                            agency_id       = if_abap_behv=>mk-on
-                                            customer_id     = if_abap_behv=>mk-on
-                                            begin_date      = if_abap_behv=>mk-on
-                                            end_date        = if_abap_behv=>mk-on
-                                            booking_fee     = if_abap_behv=>mk-on
-                                            total_price     = if_abap_behv=>mk-on
-                                            currency_code   = if_abap_behv=>mk-on
-                                            overall_status  = if_abap_behv=>mk-on
-                                            description     = if_abap_behv=>mk-on
-                                            created_by      = if_abap_behv=>mk-on
-                                            created_at      = if_abap_behv=>mk-on
-                                            last_changed_by = if_abap_behv=>mk-on
-                                            last_changed_at = if_abap_behv=>mk-on
-                                          ) ) )
+           FIELDS ( agency_id
+                    customer_id
+                    begin_date
+                    end_date
+                    booking_fee
+                    total_price
+                    currency_code
+                    overall_status
+                    description
+                    created_by
+                    created_at
+                    last_changed_at
+                    last_changed_by )
+             WITH VALUE #( for key in keys ( travel_id = key-travel_id ) )
          RESULT DATA(lt_travel).
 
     result = VALUE #( for travel in lt_travel ( travel_id = travel-travel_id
@@ -302,11 +293,10 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-    READ ENTITY /dmo/i_travel_m FROM VALUE #( FOR keyval IN keys
-                                                      (  %key                    = keyval-%key
-                                                         %control-travel_id      = if_abap_behv=>mk-on
-                                                         %control-overall_status = if_abap_behv=>mk-on ) )
-                                RESULT DATA(lt_travel_result).
+    READ ENTITY /dmo/i_travel_m
+         FIELDS (  travel_id overall_status )
+           WITH VALUE #( FOR keyval IN keys (  %key = keyval-%key ) )
+         RESULT DATA(lt_travel_result).
 
 
     result = VALUE #( FOR ls_travel IN lt_travel_result
@@ -327,12 +317,14 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
 *  METHOD check_authority_for_travel.
 *
+*    DATA ls_result LIKE LINE OF result.
 *    LOOP AT it_travel_key INTO DATA(ls_travel_key).
-*      result = VALUE #( ( travel_id            = ls_travel_key-travel_id
+*      ls_result = VALUE #( travel_id            = ls_travel_key-travel_id
 *                          %update              = if_abap_behv=>auth-allowed       "Default setting
 *                          %delete              = if_abap_behv=>auth-unauthorized
 *                          %action-rejectTravel = if_abap_behv=>auth-unauthorized
-*                      ) ).
+*                         ).
+*      APPEND ls_result to result.
 *    ENDLOOP.
 *
 *  ENDMETHOD.

@@ -36,10 +36,10 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_booking_status.
 
-    READ ENTITY /DMO/I_Travel_M\\booking FROM VALUE #(
-      FOR <root_key> IN keys ( %key     = <root_key>
-                               %control = VALUE #( booking_status = if_abap_behv=>mk-on ) ) )
-      RESULT DATA(lt_booking_result).
+    READ ENTITY /DMO/I_Travel_M\\booking
+         FIELDS ( booking_status )
+           WITH VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
+         RESULT DATA(lt_booking_result).
 
     LOOP AT lt_booking_result INTO DATA(ls_booking_result).
       CASE ls_booking_result-booking_status.
@@ -70,13 +70,10 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-    READ ENTITY /dmo/i_booking_m FROM VALUE #( FOR keyval IN keys
-                                                      (  %key                  = keyval-%key
-                                                         %control-booking_id   = if_abap_behv=>mk-on
-                                                         %control-booking_date = if_abap_behv=>mk-on
-                                                         %control-customer_id  = if_abap_behv=>mk-on
-                                                      ) )
-                                 RESULT    DATA(lt_booking_result).
+    READ ENTITY /dmo/i_booking_m
+         FIELDS ( booking_id booking_date customer_id )
+           WITH VALUE #( FOR keyval IN keys ( %key = keyval-%key ) )
+         RESULT    DATA(lt_booking_result).
 
     result = VALUE #( FOR ls_travel IN lt_booking_result
                        ( %key                = ls_travel-%key

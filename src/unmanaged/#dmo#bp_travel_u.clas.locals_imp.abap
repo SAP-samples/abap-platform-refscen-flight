@@ -19,10 +19,18 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
         IMPORTING it_travel_delete FOR DELETE travel,
       read_travel       FOR READ
         IMPORTING it_travel FOR READ travel
-        RESULT    et_travel,
+        RESULT    et_travel
+        ,
       set_travel_status FOR MODIFY
         IMPORTING it_travel_set_status_booked FOR ACTION travel~set_status_booked
         RESULT    et_travel_set_status_booked,
+
+      read_booking_ba   FOR READ
+        IMPORTING it_travel  FOR READ travel\_Booking
+        FULL iv_full_requested
+        RESULT    et_booking
+        LINK et_link_table,
+
       cba_booking       FOR MODIFY
         IMPORTING it_booking_create_ba FOR CREATE travel\_booking,
 
@@ -180,26 +188,44 @@ CLASS lhc_travel IMPLEMENTATION.
 *
 **********************************************************************
   METHOD read_travel.
-    DATA: ls_travel_out TYPE /dmo/travel.
+    DATA: ls_travel_out TYPE /dmo/travel,
+          lt_message    TYPE /dmo/if_flight_legacy=>tt_message.
 
     LOOP AT it_travel INTO DATA(ls_travel_to_read).
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
         EXPORTING
           iv_travel_id = ls_travel_to_read-travelid
         IMPORTING
-          es_travel    = ls_travel_out.
+          es_travel    = ls_travel_out
+          et_messages  = lt_message.
 
-      INSERT VALUE #( travelid      = ls_travel_to_read-travelid
-                      agencyid      = ls_travel_out-agency_id
-                      customerid    = ls_travel_out-customer_id
-                      begindate     = ls_travel_out-begin_date
-                      enddate       = ls_travel_out-end_date
-                      bookingfee    = ls_travel_out-booking_fee
-                      totalprice    = ls_travel_out-total_price
-                      currencycode  = ls_travel_out-currency_code
-                      memo          = ls_travel_out-description
-                      status        = ls_travel_out-status
-                      lastchangedat = ls_travel_out-lastchangedat ) INTO TABLE et_travel.
+      IF lt_message IS INITIAL.
+        "fill result parameter with flagged fields
+        INSERT
+            VALUE #( travelid      = ls_travel_out-travel_id
+                     agencyid      = COND #( WHEN ls_travel_to_read-%control-AgencyID      = cl_abap_behv=>flag_changed THEN ls_travel_out-agency_id )
+                     customerid    = COND #( WHEN ls_travel_to_read-%control-CustomerID    = cl_abap_behv=>flag_changed THEN ls_travel_out-customer_id )
+                     begindate     = COND #( WHEN ls_travel_to_read-%control-BeginDate     = cl_abap_behv=>flag_changed THEN ls_travel_out-begin_date )
+                     enddate       = COND #( WHEN ls_travel_to_read-%control-EndDate       = cl_abap_behv=>flag_changed THEN ls_travel_out-end_date )
+                     bookingfee    = COND #( WHEN ls_travel_to_read-%control-BookingFee    = cl_abap_behv=>flag_changed THEN ls_travel_out-booking_fee )
+                     totalprice    = COND #( WHEN ls_travel_to_read-%control-TotalPrice    = cl_abap_behv=>flag_changed THEN ls_travel_out-total_price )
+                     currencycode  = COND #( WHEN ls_travel_to_read-%control-CurrencyCode  = cl_abap_behv=>flag_changed THEN ls_travel_out-currency_code )
+                     memo          = COND #( WHEN ls_travel_to_read-%control-Memo          = cl_abap_behv=>flag_changed THEN ls_travel_out-description )
+                     status        = COND #( WHEN ls_travel_to_read-%control-Status        = cl_abap_behv=>flag_changed THEN ls_travel_out-status )
+                     lastchangedat = COND #( WHEN ls_travel_to_read-%control-LastChangedAt = cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat ) )
+            INTO TABLE et_travel.
+
+
+      ELSE.
+        "fill failed table in case of error
+        failed-travel = VALUE #(  BASE failed-travel
+                                  FOR msg IN lt_message (  %key = ls_travel_to_read-%key
+                                                           %fail-cause = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                                                 THEN if_abap_behv=>cause-not_found
+                                                                                 ELSE if_abap_behv=>cause-unspecific ) ) ).
+
+      ENDIF.
+
     ENDLOOP.
 
   ENDMETHOD.
@@ -381,7 +407,68 @@ CLASS lhc_travel IMPLEMENTATION.
 
 
 
+**********************************************************************
+*
+* Read booking data by association from buffer
+*
+**********************************************************************
+  METHOD read_booking_ba.
+    DATA: ls_travel_out  TYPE /dmo/travel,
+          lt_booking_out TYPE /dmo/if_flight_legacy=>tt_booking,
+          lt_message     TYPE /dmo/if_flight_legacy=>tt_message.
+
+
+    LOOP AT it_travel ASSIGNING FIELD-SYMBOL(<fs_travel_rba>).
+
+      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
+        EXPORTING
+          iv_travel_id = <fs_travel_rba>-travelid
+        IMPORTING
+          es_travel    = ls_travel_out
+          et_booking   = lt_booking_out
+          et_messages  = lt_message.
+
+      IF lt_message IS INITIAL.
+        LOOP AT lt_booking_out ASSIGNING FIELD-SYMBOL(<fs_booking>).
+          "fill link table with key fields
+          INSERT
+           VALUE #( source-%key = <fs_travel_rba>-%key
+                                   target-%key = VALUE #( TravelID = <fs_booking>-travel_id
+                                                          BookingID = <fs_booking>-booking_id ) )
+          INTO TABLE et_link_table.
+
+          "fill result parameter with flagged fields
+          IF iv_full_requested = abap_true.
+            INSERT
+                VALUE #( travelid      = COND #( WHEN <fs_travel_rba>-%control-TravelID      = cl_abap_behv=>flag_changed THEN <fs_booking>-travel_id )
+                         bookingid     = COND #( WHEN <fs_travel_rba>-%control-BookingID     = cl_abap_behv=>flag_changed THEN <fs_booking>-booking_id )
+                         bookingdate   = COND #( WHEN <fs_travel_rba>-%control-BookingDate   = cl_abap_behv=>flag_changed THEN <fs_booking>-booking_date )
+                         customerid    = COND #( WHEN <fs_travel_rba>-%control-CustomerID    = cl_abap_behv=>flag_changed THEN <fs_booking>-customer_id )
+                         airlineid     = COND #( WHEN <fs_travel_rba>-%control-AirlineID     = cl_abap_behv=>flag_changed THEN <fs_booking>-carrier_id )
+                         connectionid  = COND #( WHEN <fs_travel_rba>-%control-ConnectionID  = cl_abap_behv=>flag_changed THEN <fs_booking>-connection_id )
+                         flightdate    = COND #( WHEN <fs_travel_rba>-%control-FlightDate    = cl_abap_behv=>flag_changed THEN <fs_booking>-flight_date )
+                         flightprice   = COND #( WHEN <fs_travel_rba>-%control-FlightPrice   = cl_abap_behv=>flag_changed THEN <fs_booking>-flight_price )
+                         currencycode  = COND #( WHEN <fs_travel_rba>-%control-CurrencyCode  = cl_abap_behv=>flag_changed THEN <fs_booking>-currency_code )
+                         lastchangedat = COND #( WHEN <fs_travel_rba>-%control-LastChangedAt = cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat ) )
+                         INTO TABLE et_booking.
+          ENDIF.
+        ENDLOOP.
+
+      ELSE.
+        "fill failed table in case of error
+        failed-travel = VALUE #(  BASE failed-travel
+                                    FOR msg IN lt_message (  %key = <fs_travel_rba>-TravelID
+                                                             %fail-cause = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                                                   THEN if_abap_behv=>cause-not_found
+                                                                                   ELSE if_abap_behv=>cause-unspecific ) ) ).
+      ENDIF.
+
+    ENDLOOP.
+
+  ENDMETHOD.
+
 ENDCLASS.
+
 
 
 **********************************************************************
