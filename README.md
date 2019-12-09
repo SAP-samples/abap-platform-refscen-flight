@@ -32,8 +32,6 @@ As a result of the installation procedure above, the ABAP system creates an inac
 
 NOTE: The demo packages do not include <em>service bindings</em>. They must be created in your own namespace to complete the service (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
-NOTE: All development objects except for metadata extensions are written on the transport request that you created for the import. Metadata Extension must be added to the transport request manually.  
-
 ## Configuration
 To include the metadata extensions on the transport request 
 1. Open the metadata extension `/DMO/C_TRAVEL_U` and do a dummy change (enter space in an uncritical position). 
