@@ -5,6 +5,7 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
     TYPES tt_travel_update TYPE TABLE FOR UPDATE /DMO/I_Travel_M.
 
     METHODS validate_customer          FOR VALIDATION travel~validateCustomer IMPORTING keys FOR travel.
+    METHODS validate_agency            FOR VALIDATION travel~validateAgency   IMPORTING keys FOR travel.
     METHODS validate_dates             FOR VALIDATION travel~validateDates    IMPORTING keys FOR travel.
     METHODS validate_travel_status     FOR VALIDATION travel~validateStatus   IMPORTING keys FOR travel.
 
@@ -26,43 +27,91 @@ CLASS lhc_travel IMPLEMENTATION.
 *
 **********************************************************************
   METHOD validate_customer.
-
-  READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( customer_id ) WITH
-      VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
-      RESULT DATA(lt_travel).
+    " Read relevant travel instance data
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+    ENTITY travel
+     FIELDS ( customer_id )
+     WITH CORRESPONDING #(  keys )
+    RESULT DATA(lt_travel).
 
     DATA lt_customer TYPE SORTED TABLE OF /dmo/customer WITH UNIQUE KEY customer_id.
 
     " Optimization of DB select: extract distinct non-initial customer IDs
     lt_customer = CORRESPONDING #( lt_travel DISCARDING DUPLICATES MAPPING customer_id = customer_id EXCEPT * ).
     DELETE lt_customer WHERE customer_id IS INITIAL.
-    CHECK lt_customer IS NOT INITIAL.
+    IF lt_customer IS NOT INITIAL.
 
-    " Check if customer ID exist
-    SELECT FROM /dmo/customer FIELDS customer_id
-      FOR ALL ENTRIES IN @lt_customer
-      WHERE customer_id = @lt_customer-customer_id
-      INTO TABLE @DATA(lt_customer_db).
-
-    " Raise msg for non existing customer id
+      " Check if customer ID exists
+      SELECT FROM /dmo/customer FIELDS customer_id
+        FOR ALL ENTRIES IN @lt_customer
+        WHERE customer_id = @lt_customer-customer_id
+        INTO TABLE @DATA(lt_customer_db).
+    ENDIF.
+    " Raise msg for non existing and initial customer id
     LOOP AT lt_travel INTO DATA(ls_travel).
-      IF ls_travel-customer_id IS NOT INITIAL AND NOT line_exists( lt_customer_db[ customer_id = ls_travel-customer_id ] ).
+      IF ls_travel-customer_id IS INITIAL
+         OR NOT line_exists( lt_customer_db[ customer_id = ls_travel-customer_id ] ).
+
         APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed.
         APPEND VALUE #(  travel_id = ls_travel-travel_id
-                         %msg      = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                  number   = '002'
-                                                  v1       = ls_travel-customer_id
-                                                  severity = if_abap_behv_message=>severity-error )
-                         %element-customer_id = if_abap_behv=>mk-on ) TO reported.
+                         %msg = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
+                                             number    = '002'
+                                             v1        = ls_travel-customer_id
+                                             severity  = if_abap_behv_message=>severity-error )
+                         %element-customer_id = if_abap_behv=>mk-on )
+          TO reported.
       ENDIF.
+    ENDLOOP.
 
+  ENDMETHOD.
+
+**********************************************************************
+*
+* Validate agency data when saving travel data
+*
+**********************************************************************
+
+ METHOD validate_agency.
+    " Read relevant travel instance data
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+    ENTITY travel
+     FIELDS ( agency_id )
+     WITH CORRESPONDING #(  keys )
+    RESULT DATA(lt_travel).
+
+    DATA lt_agency TYPE SORTED TABLE OF /dmo/agency WITH UNIQUE KEY agency_id.
+
+    " Optimization of DB select: extract distinct non-initial agency IDs
+    lt_agency = CORRESPONDING #(  lt_travel DISCARDING DUPLICATES MAPPING agency_id = agency_id EXCEPT * ).
+    DELETE lt_agency WHERE agency_id IS INITIAL.
+    IF  lt_agency IS NOT INITIAL.
+
+      " check if agency ID exist
+      SELECT FROM /dmo/agency FIELDS agency_id
+        FOR ALL ENTRIES IN @lt_agency
+        WHERE agency_id = @lt_agency-agency_id
+        INTO TABLE @DATA(lt_agency_db).
+    ENDIF.
+
+    " Raise msg for non existing and initial agency id
+    LOOP AT lt_travel INTO DATA(ls_travel).
+      IF ls_travel-agency_id IS INITIAL
+         OR NOT line_exists( lt_agency_db[ agency_id = ls_travel-agency_id ] ).
+        APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed.
+        APPEND VALUE #(  travel_id = ls_travel-travel_id
+                         %msg = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
+                                             number    = '002'
+                                             v1        = ls_travel-agency_id
+                                             severity  = if_abap_behv_message=>severity-error )
+                         %element-agency_id = if_abap_behv=>mk-on )
+          TO reported.
+      ENDIF.
     ENDLOOP.
 
   ENDMETHOD.
 
 
 **********************************************************************
-*
 * Check validity of date
 *
 **********************************************************************
@@ -113,11 +162,11 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_travel_status.
 
-   READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( overall_status ) WITH
-       VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
-       RESULT DATA(lt_travel_result).
+    READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( overall_status ) WITH
+        VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
+        RESULT DATA(lt_travel_result).
 
-   LOOP AT lt_travel_result INTO DATA(ls_travel_result).
+    LOOP AT lt_travel_result INTO DATA(ls_travel_result).
       CASE ls_travel_result-overall_status.
         WHEN 'O'.  " Open
         WHEN 'X'.  " Cancelled
@@ -176,22 +225,22 @@ CLASS lhc_travel IMPLEMENTATION.
                                overall_status = 'O' ) ). " Open
 
 
-     MODIFY ENTITIES OF /DMO/I_TRAVEL_M IN LOCAL MODE
-         ENTITY travel
-            CREATE FIELDS (    travel_id
-                               agency_id
-                               customer_id
-                               begin_date
-                               end_date
-                               booking_fee
-                               total_price
-                               currency_code
-                               description
-                               overall_status )
-            WITH lt_create
-          MAPPED   mapped
-          FAILED   failed
-          REPORTED reported.
+    MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+        ENTITY travel
+           CREATE FIELDS (    travel_id
+                              agency_id
+                              customer_id
+                              begin_date
+                              end_date
+                              booking_fee
+                              total_price
+                              currency_code
+                              description
+                              overall_status )
+           WITH lt_create
+         MAPPED   mapped
+         FAILED   failed
+         REPORTED reported.
 
 
     result = VALUE #( FOR create IN  lt_create INDEX INTO idx
@@ -214,10 +263,10 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD set_status_completed.
 
     " Modify in local mode: BO-related updates that are not relevant for authorization checks
-    MODIFY ENTITIES OF /DMO/I_TRAVEL_M IN LOCAL MODE
+    MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
            ENTITY travel
               UPDATE FIELDS ( overall_status )
-                 WITH VALUE #( for key in keys ( travel_id      = key-travel_id
+                 WITH VALUE #( FOR key IN keys ( travel_id      = key-travel_id
                                                  overall_status = 'A' ) ) " Accepted
            FAILED   failed
            REPORTED reported.
@@ -238,10 +287,10 @@ CLASS lhc_travel IMPLEMENTATION.
                     created_at
                     last_changed_at
                     last_changed_by )
-             WITH VALUE #( for key in keys ( travel_id = key-travel_id ) )
+             WITH VALUE #( FOR key IN keys ( travel_id = key-travel_id ) )
          RESULT DATA(lt_travel).
 
-    result = VALUE #( for travel in lt_travel ( travel_id = travel-travel_id
+    result = VALUE #( FOR travel IN lt_travel ( travel_id = travel-travel_id
                                                 %param    = travel ) ).
 
   ENDMETHOD.
@@ -253,34 +302,34 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD set_status_cancelled.
 
-    MODIFY ENTITIES OF /DMO/I_TRAVEL_M IN LOCAL MODE
+    MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
            ENTITY travel
-              UPDATE FROM VALUE #( for key in keys ( travel_id = key-travel_id
+              UPDATE FROM VALUE #( FOR key IN keys ( travel_id = key-travel_id
                                                      overall_status = 'X'   " Canceled
                                                      %control-overall_status = if_abap_behv=>mk-on ) )
            FAILED   failed
            REPORTED reported.
 
     " read changed data for result
-        READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
-         ENTITY travel
-           FIELDS ( agency_id
-                    customer_id
-                    begin_date
-                    end_date
-                    booking_fee
-                    total_price
-                    currency_code
-                    overall_status
-                    description
-                    created_by
-                    created_at
-                    last_changed_at
-                    last_changed_by )
-             WITH VALUE #( for key in keys ( travel_id = key-travel_id ) )
-         RESULT DATA(lt_travel).
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+     ENTITY travel
+       FIELDS ( agency_id
+                customer_id
+                begin_date
+                end_date
+                booking_fee
+                total_price
+                currency_code
+                overall_status
+                description
+                created_by
+                created_at
+                last_changed_at
+                last_changed_by )
+         WITH VALUE #( FOR key IN keys ( travel_id = key-travel_id ) )
+     RESULT DATA(lt_travel).
 
-    result = VALUE #( for travel in lt_travel ( travel_id = travel-travel_id
+    result = VALUE #( FOR travel IN lt_travel ( travel_id = travel-travel_id
                                                 %param    = travel
                                               ) ).
 
@@ -489,7 +538,7 @@ CLASS lcl_save IMPLEMENTATION.
 * Implements unmanaged save
 *
 ********************************************************************************
-    DATA lt_booksuppl_db TYPE STANDARD TABLE OF /DMO/BOOKSUPPL_M.
+    DATA lt_booksuppl_db TYPE STANDARD TABLE OF /dmo/booksuppl_m.
 
     " (1) Get instance data of all instances that have been created
     IF create-booksuppl IS NOT INITIAL.

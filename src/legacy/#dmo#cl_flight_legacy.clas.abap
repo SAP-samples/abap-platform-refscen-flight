@@ -22,22 +22,22 @@ CLASS /dmo/cl_flight_legacy DEFINITION
     METHODS set_status_to_booked IMPORTING iv_travel_id TYPE /dmo/travel_id
                                  EXPORTING et_messages  TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
 
-    METHODS create_travel IMPORTING is_travel             TYPE /dmo/if_flight_legacy=>ts_travel_in
-                                    it_booking            TYPE /dmo/if_flight_legacy=>tt_booking_in OPTIONAL
-                                    it_booking_supplement TYPE /dmo/if_flight_legacy=>tt_booking_supplement_in OPTIONAL
+    METHODS create_travel IMPORTING is_travel             TYPE /dmo/s_travel_in
+                                    it_booking            TYPE /dmo/t_booking_in OPTIONAL
+                                    it_booking_supplement TYPE /dmo/t_booking_supplement_in OPTIONAL
                           EXPORTING es_travel             TYPE /dmo/travel
-                                    et_booking            TYPE /dmo/if_flight_legacy=>tt_booking
-                                    et_booking_supplement TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+                                    et_booking            TYPE /dmo/t_booking
+                                    et_booking_supplement TYPE /dmo/t_booking_supplement
                                     et_messages           TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
-    METHODS update_travel IMPORTING is_travel              TYPE /dmo/if_flight_legacy=>ts_travel_in
-                                    is_travelx             TYPE /dmo/if_flight_legacy=>ts_travel_inx
-                                    it_booking             TYPE /dmo/if_flight_legacy=>tt_booking_in OPTIONAL
-                                    it_bookingx            TYPE /dmo/if_flight_legacy=>tt_booking_inx OPTIONAL
-                                    it_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement_in OPTIONAL
-                                    it_booking_supplementx TYPE /dmo/if_flight_legacy=>tt_booking_supplement_inx OPTIONAL
+    METHODS update_travel IMPORTING is_travel              TYPE /dmo/s_travel_in
+                                    is_travelx             TYPE /dmo/s_travel_inx
+                                    it_booking             TYPE /dmo/t_booking_in OPTIONAL
+                                    it_bookingx            TYPE /dmo/t_booking_inx OPTIONAL
+                                    it_booking_supplement  TYPE /dmo/t_booking_supplement_in OPTIONAL
+                                    it_booking_supplementx TYPE /dmo/t_booking_supplement_inx OPTIONAL
                           EXPORTING es_travel              TYPE /dmo/travel
-                                    et_booking             TYPE /dmo/if_flight_legacy=>tt_booking
-                                    et_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+                                    et_booking             TYPE /dmo/t_booking
+                                    et_booking_supplement  TYPE /dmo/t_booking_supplement
                                     et_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
     METHODS delete_travel IMPORTING iv_travel_id TYPE /dmo/travel_id
                           EXPORTING et_messages  TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
@@ -45,13 +45,13 @@ CLASS /dmo/cl_flight_legacy DEFINITION
                                  iv_include_buffer      TYPE abap_boolean
                                  iv_include_temp_buffer TYPE abap_boolean OPTIONAL
                        EXPORTING es_travel              TYPE /dmo/travel
-                                 et_booking             TYPE /dmo/if_flight_legacy=>tt_booking
-                                 et_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+                                 et_booking             TYPE /dmo/t_booking
+                                 et_booking_supplement  TYPE /dmo/t_booking_supplement
                                  et_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
     METHODS save.
     METHODS initialize.
     METHODS convert_messages IMPORTING it_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message
-                             EXPORTING et_messages TYPE /dmo/if_flight_legacy=>tt_message.
+                             EXPORTING et_messages TYPE /dmo/t_message.
   PROTECTED SECTION.
   PRIVATE SECTION.
     CLASS-DATA go_instance TYPE REF TO /dmo/cl_flight_legacy.
@@ -85,11 +85,11 @@ CLASS /dmo/cl_flight_legacy DEFINITION
     "! Final determinations / derivations after all levels have been prepared, e.g. bottom-up derivations
     METHODS _determine EXPORTING et_messages           TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                        CHANGING  cs_travel             TYPE /dmo/travel
-                                 ct_booking            TYPE /dmo/if_flight_legacy=>tt_booking
-                                 ct_booking_supplement TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
+                                 ct_booking            TYPE /dmo/t_booking
+                                 ct_booking_supplement TYPE /dmo/t_booking_supplement.
     METHODS _determine_travel_total_price CHANGING cs_travel             TYPE /dmo/travel
-                                                   ct_booking            TYPE /dmo/if_flight_legacy=>tt_booking
-                                                   ct_booking_supplement TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+                                                   ct_booking            TYPE /dmo/t_booking
+                                                   ct_booking_supplement TYPE /dmo/t_booking_supplement
                                                    ct_messages           TYPE /dmo/if_flight_legacy=>tt_if_t100_message ##NEEDED.
     METHODS _convert_currency IMPORTING iv_currency_code_source TYPE /dmo/currency_code
                                         iv_currency_code_target TYPE /dmo/currency_code
@@ -99,7 +99,7 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
+CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
 
 
   METHOD calculate_flight_price.
@@ -143,8 +143,8 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
 
     " Bookings
     IF et_messages IS INITIAL.
-      DATA lt_booking  TYPE /dmo/if_flight_legacy=>tt_booking.
-      DATA lt_bookingx TYPE /dmo/if_flight_legacy=>tt_bookingx.
+      DATA lt_booking  TYPE /dmo/t_booking.
+      DATA lt_bookingx TYPE /dmo/t_bookingx.
       LOOP AT it_booking INTO DATA(ls_booking_in).
         DATA ls_booking TYPE /dmo/booking.
         ls_booking = CORRESPONDING #( ls_booking_in ).
@@ -161,8 +161,8 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
 
     " Booking Supplements
     IF et_messages IS INITIAL.
-      DATA lt_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
-      DATA lt_booking_supplementx TYPE /dmo/if_flight_legacy=>tt_booking_supplementx.
+      DATA lt_booking_supplement  TYPE /dmo/t_booking_supplement.
+      DATA lt_booking_supplementx TYPE /dmo/t_booking_supplementx.
       LOOP AT it_booking_supplement INTO DATA(ls_booking_supplement_in).
         DATA ls_booking_supplement TYPE /dmo/book_suppl.
         ls_booking_supplement = CORRESPONDING #( ls_booking_supplement_in ).
@@ -344,7 +344,7 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
       APPEND NEW /dmo/cx_flight_legacy( textid = /dmo/cx_flight_legacy=>travel_no_key ) TO et_messages.
       RETURN.
     ENDIF.
-    DATA ls_travelx TYPE /dmo/if_flight_legacy=>ts_travelx.
+    DATA ls_travelx TYPE /dmo/s_travelx.
     ls_travelx = CORRESPONDING #( is_travelx ).
     ls_travelx-action_code = /dmo/if_flight_legacy=>action_code-update.
     lcl_travel_buffer=>get_instance( )->cud_prep( EXPORTING it_travel   = VALUE #( ( CORRESPONDING #( is_travel ) ) )
@@ -362,8 +362,8 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
     " Bookings
     IF et_messages IS INITIAL.
       " Ignore provided Travel ID of subnode tables
-      DATA lt_booking  TYPE /dmo/if_flight_legacy=>tt_booking.
-      DATA lt_bookingx TYPE /dmo/if_flight_legacy=>tt_bookingx.
+      DATA lt_booking  TYPE /dmo/t_booking.
+      DATA lt_bookingx TYPE /dmo/t_bookingx.
       LOOP AT it_booking INTO DATA(ls_booking_in).
         DATA ls_booking TYPE /dmo/booking.
         ls_booking = CORRESPONDING #( ls_booking_in ).
@@ -371,7 +371,7 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
         INSERT ls_booking INTO TABLE lt_booking.
       ENDLOOP.
       LOOP AT it_bookingx INTO DATA(ls_booking_inx).
-        DATA ls_bookingx TYPE /dmo/if_flight_legacy=>ts_bookingx.
+        DATA ls_bookingx TYPE /dmo/s_bookingx.
         ls_bookingx = CORRESPONDING #( ls_booking_inx ).
         ls_bookingx-travel_id = is_travel-travel_id.
         INSERT ls_bookingx INTO TABLE lt_bookingx.
@@ -386,8 +386,8 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
     " Booking Supplements
     IF et_messages IS INITIAL.
       " Ignore provided Travel ID of subnode tables
-      DATA lt_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
-      DATA lt_booking_supplementx TYPE /dmo/if_flight_legacy=>tt_booking_supplementx.
+      DATA lt_booking_supplement  TYPE /dmo/t_booking_supplement.
+      DATA lt_booking_supplementx TYPE /dmo/t_booking_supplementx.
       LOOP AT it_booking_supplement INTO DATA(ls_booking_supplement_in).
         DATA ls_booking_supplement TYPE /dmo/book_suppl.
         ls_booking_supplement = CORRESPONDING #( ls_booking_supplement_in ).
@@ -401,7 +401,7 @@ CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
       ENDLOOP.
       IF et_messages IS INITIAL.
         LOOP AT it_booking_supplementx INTO DATA(ls_booking_supplement_inx).
-          DATA ls_booking_supplementx TYPE /dmo/if_flight_legacy=>ts_booking_supplementx.
+          DATA ls_booking_supplementx TYPE /dmo/s_booking_supplementx.
           ls_booking_supplementx = CORRESPONDING #( ls_booking_supplement_inx ).
           ls_booking_supplementx-travel_id = is_travel-travel_id.
           INSERT ls_booking_supplementx INTO TABLE lt_booking_supplementx.

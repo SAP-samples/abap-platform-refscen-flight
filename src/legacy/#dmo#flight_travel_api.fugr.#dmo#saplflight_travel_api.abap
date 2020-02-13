@@ -12,3 +12,4 @@
 * INCLUDE /DMO/LFLIGHT_TRAVEL_APII...        " PAI-Modules
 * INCLUDE /DMO/LFLIGHT_TRAVEL_APIE...        " Events
 * INCLUDE /DMO/LFLIGHT_TRAVEL_APIP...        " Local class implement.
+* INCLUDE /DMO/LFLIGHT_TRAVEL_APIT99.        " ABAP Unit tests

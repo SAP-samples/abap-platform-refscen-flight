@@ -13,7 +13,7 @@
 "! @parameter et_booking_supplement | Table of Booking Supplements like /DMO/BOOK_SUPPL related to the importing Travel ID
 "! @parameter et_messages           | Table of occurred messages
 "!
-FUNCTION /DMO/FLIGHT_TRAVEL_READ.
+FUNCTION /dmo/flight_travel_read.
 *"----------------------------------------------------------------------
 *"*"Local Interface:
 *"  IMPORTING
@@ -22,11 +22,11 @@ FUNCTION /DMO/FLIGHT_TRAVEL_READ.
 *"       ABAP_TRUE
 *"  EXPORTING
 *"     REFERENCE(ES_TRAVEL) TYPE  /DMO/TRAVEL
-*"     REFERENCE(ET_BOOKING) TYPE  /DMO/IF_FLIGHT_LEGACY=>TT_BOOKING
-*"     REFERENCE(ET_BOOKING_SUPPLEMENT) TYPE
-*"        /DMO/IF_FLIGHT_LEGACY=>TT_BOOKING_SUPPLEMENT
-*"     REFERENCE(ET_MESSAGES) TYPE  /DMO/IF_FLIGHT_LEGACY=>TT_MESSAGE
+*"     REFERENCE(ET_BOOKING) TYPE  /DMO/T_BOOKING
+*"     REFERENCE(ET_BOOKING_SUPPLEMENT) TYPE  /DMO/T_BOOKING_SUPPLEMENT
+*"     REFERENCE(ET_MESSAGES) TYPE  /DMO/T_MESSAGE
 *"----------------------------------------------------------------------
+
   CLEAR es_travel.
   CLEAR et_booking.
   CLEAR et_booking_supplement.

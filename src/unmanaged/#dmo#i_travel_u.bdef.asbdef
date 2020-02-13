@@ -18,7 +18,7 @@ etag LastChangedAt
   association _Booking { create; }
 
 
-  mapping for /dmo/travel
+  mapping for /dmo/travel control /dmo/s_travel_intx
   {
     AgencyID      = agency_id;
     BeginDate     = begin_date;
@@ -34,7 +34,7 @@ etag LastChangedAt
   }
 }
 
-// behavior defintion for the BOOKING child entity
+// behavior definition for the BOOKING child entity
 define behavior for /DMO/I_Booking_U alias booking
 implementation in class /DMO/BP_BOOKING_U unique
 
@@ -48,7 +48,7 @@ implementation in class /DMO/BP_BOOKING_U unique
 
   association _BookSupplement abbreviation _Supplement { create; }
 
-  mapping for /dmo/booking
+  mapping for /dmo/booking control /dmo/s_booking_intx
   {
     AirlineID    = carrier_id;
     BookingDate  = booking_date;
@@ -76,7 +76,7 @@ implementation in class /DMO/BP_BOOKINGSUPPLEMENT_U unique
   update;
   delete;
 
-  mapping for /dmo/book_suppl
+  mapping for /dmo/book_suppl control /dmo/s_booking_supplement_intx
   {
     BookingID           = booking_id;
     BookingSupplementID = booking_supplement_id;

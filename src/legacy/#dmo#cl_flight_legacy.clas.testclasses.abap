@@ -36,7 +36,7 @@ CLASS ltc_travel DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
     CLASS-DATA gv_customer_id_2            TYPE /dmo/customer_id.
     CLASS-DATA gv_customer_id_unknown      TYPE /dmo/customer_id.
 
-    METHODS _create_travel IMPORTING is_travel        TYPE /dmo/if_flight_legacy=>ts_travel_in
+    METHODS _create_travel IMPORTING is_travel        TYPE /dmo/s_travel_in
                                      iv_save          TYPE abap_bool DEFAULT abap_true
                            RETURNING VALUE(rs_travel) TYPE /dmo/travel.
     METHODS _delete_existing_travel IMPORTING iv_travel_id TYPE /dmo/travel_id.
@@ -1066,7 +1066,7 @@ CLASS ltc_booking DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS INHE
     DATA mv_travel_id_unknown TYPE /dmo/travel_id.
 
     METHODS _create_booking IMPORTING iv_travel_id      TYPE /dmo/travel_id
-                                      is_booking        TYPE /dmo/if_flight_legacy=>ts_booking_in
+                                      is_booking        TYPE /dmo/s_booking_in
                                       iv_save           TYPE abap_bool DEFAULT abap_true
                             RETURNING VALUE(rs_booking) TYPE /dmo/booking.
     METHODS _delete_existing_booking IMPORTING iv_travel_id  TYPE /dmo/travel_id
@@ -2323,7 +2323,7 @@ CLASS ltc_booking_supplement DEFINITION FINAL FOR TESTING DURATION SHORT RISK LE
     METHODS u_currency_code_unknown  FOR TESTING RAISING cx_static_check.
 
     METHODS _create_booking_suppl IMPORTING iv_travel_id                 TYPE /dmo/travel_id
-                                            is_booking_supplement        TYPE /dmo/if_flight_legacy=>ts_booking_supplement_in
+                                            is_booking_supplement        TYPE /dmo/s_booking_supplement_in
                                             iv_save                      TYPE abap_bool DEFAULT abap_true
                                   RETURNING VALUE(rs_booking_supplement) TYPE /dmo/book_suppl.
 ENDCLASS.

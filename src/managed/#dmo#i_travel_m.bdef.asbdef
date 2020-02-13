@@ -37,6 +37,7 @@ lock master
 
   // validations
   validation validateCustomer on save { field customer_id; }
+  validation validateAgency   on save { field agency_id; }
   validation validateDates    on save { field begin_date, end_date; }
   validation validateStatus   on save { field overall_status; }
 

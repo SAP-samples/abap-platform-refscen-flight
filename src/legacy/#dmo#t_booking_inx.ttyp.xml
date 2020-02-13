@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_TTYP" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD40V>
+    <TYPENAME>/DMO/T_BOOKING_INX</TYPENAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <ROWTYPE>/DMO/S_BOOKING_INX</ROWTYPE>
+    <ROWKIND>S</ROWKIND>
+    <DATATYPE>STRU</DATATYPE>
+    <ACCESSMODE>S</ACCESSMODE>
+    <KEYDEF>K</KEYDEF>
+    <KEYKIND>U</KEYKIND>
+    <KEYFDCOUNT>0001</KEYFDCOUNT>
+    <DDTEXT>Input table for flags for node Booking</DDTEXT>
+   </DD40V>
+   <DD42V>
+    <DD42V>
+     <TYPENAME>/DMO/T_BOOKING_INX</TYPENAME>
+     <KEYFDPOS>0001</KEYFDPOS>
+     <ROWTYPEPOS>0001</ROWTYPEPOS>
+     <KEYFIELD>BOOKING_ID</KEYFIELD>
+    </DD42V>
+   </DD42V>
+  </asx:values>
+ </asx:abap>
+</abapGit>

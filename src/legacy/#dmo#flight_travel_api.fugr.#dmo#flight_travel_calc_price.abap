@@ -3,13 +3,13 @@
 "! If no parameters are applied, the price of every flight will be recalculated.
 "!
 "! @parameter it_flight | Set of Flights which should be recalculate prices
-FUNCTION /DMO/FLIGHT_TRAVEL_CALC_PRICE.
+FUNCTION /dmo/flight_travel_calc_price.
 *"----------------------------------------------------------------------
 *"*"Local Interface:
 *"  IMPORTING
-*"     REFERENCE(IT_FLIGHT) TYPE  /DMO/IF_FLIGHT_LEGACY=>TT_FLIGHT
-*"       OPTIONAL
+*"     REFERENCE(IT_FLIGHT) TYPE  /DMO/T_FLIGHT OPTIONAL
 *"----------------------------------------------------------------------
+
   TYPES BEGIN OF ty_seats_occupied.
   INCLUDE TYPE /dmo/flight.
   TYPES   distance       TYPE /dmo/connection-distance.

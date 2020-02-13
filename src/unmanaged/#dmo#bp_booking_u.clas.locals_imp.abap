@@ -25,12 +25,12 @@ CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.
       read_supplement_ba FOR READ
         IMPORTING it_booking   FOR READ booking\_booksupplement FULL ev_full_requested
         RESULT    et_booksuppl
-        LINK et_link_table.
+                    LINK et_link_table.
 
-    METHODS:
-      _fill_booking_inx
-        IMPORTING is_booking_update     TYPE LINE OF tt_booking_update
-        RETURNING VALUE(rs_booking_inx) TYPE /dmo/if_flight_legacy=>ts_booking_inx.
+*    METHODS:
+*      _fill_booking_inx
+*        IMPORTING is_booking_update     TYPE LINE OF tt_booking_update
+*        RETURNING VALUE(rs_booking_inx) TYPE /dmo/s_booking_inx.
 
 ENDCLASS.
 
@@ -44,18 +44,23 @@ CLASS lhc_booking IMPLEMENTATION.
 **********************************************************************
   METHOD update_booking.
 
-    DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
-    DATA it_booking TYPE /dmo/booking.
+    DATA lt_messages TYPE /dmo/t_message.
+    DATA ls_booking  TYPE /dmo/booking.
+    DATA ls_bookingx TYPE /dmo/s_booking_inx.
 
     LOOP AT it_booking_update ASSIGNING FIELD-SYMBOL(<fs_booking_update>).
-      it_booking = CORRESPONDING #( <fs_booking_update> MAPPING FROM ENTITY ).
+
+      ls_booking = CORRESPONDING #( <fs_booking_update> MAPPING FROM ENTITY ).
+
+      ls_bookingx-booking_id = <fs_booking_update>-BookingID.
+      ls_bookingx-_intx      = CORRESPONDING #( <fs_booking_update> MAPPING FROM ENTITY ).
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
-          is_travel   = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = <fs_booking_update>-travelid )
-          is_travelx  = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = <fs_booking_update>-travelid )
-          it_booking  = VALUE /dmo/if_flight_legacy=>tt_booking_in( ( CORRESPONDING #( it_booking ) ) )
-          it_bookingx = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( _fill_booking_inx( <fs_booking_update> ) ) )
+          is_travel   = VALUE /dmo/s_travel_in( travel_id = <fs_booking_update>-travelid )
+          is_travelx  = VALUE /dmo/s_travel_inx( travel_id = <fs_booking_update>-travelid )
+          it_booking  = VALUE /dmo/t_booking_in( ( CORRESPONDING #( ls_booking ) ) )
+          it_bookingx = VALUE /dmo/t_booking_inx( ( ls_bookingx ) )
         IMPORTING
           et_messages = lt_messages.
 
@@ -74,25 +79,25 @@ CLASS lhc_booking IMPLEMENTATION.
 
   ENDMETHOD.
 
-**********************************************************************
-* Helper method:
-* Indicates the booking fields that have been changed by the client
+***********************************************************************
+** Helper method:
+** Indicates the booking fields that have been changed by the client
+**
+***********************************************************************
+*  METHOD _fill_booking_inx.
 *
-**********************************************************************
-  METHOD _fill_booking_inx.
-
-    CLEAR rs_booking_inx.
-    rs_booking_inx-booking_id    = is_booking_update-bookingid.
-    rs_booking_inx-action_code   = /dmo/if_flight_legacy=>action_code-update.
-
-    rs_booking_inx-booking_date  = xsdbool( is_booking_update-%control-bookingdate  = if_abap_behv=>mk-on ).
-    rs_booking_inx-customer_id   = xsdbool( is_booking_update-%control-customerid   = if_abap_behv=>mk-on ).
-    rs_booking_inx-carrier_id    = xsdbool( is_booking_update-%control-airlineid    = if_abap_behv=>mk-on ).
-    rs_booking_inx-connection_id = xsdbool( is_booking_update-%control-connectionid = if_abap_behv=>mk-on ).
-    rs_booking_inx-flight_date   = xsdbool( is_booking_update-%control-flightdate   = if_abap_behv=>mk-on ).
-    rs_booking_inx-flight_price  = xsdbool( is_booking_update-%control-flightprice  = if_abap_behv=>mk-on ).
-    rs_booking_inx-currency_code = xsdbool( is_booking_update-%control-currencycode = if_abap_behv=>mk-on ).
-  ENDMETHOD.
+*    CLEAR rs_booking_inx.
+*    rs_booking_inx-booking_id    = is_booking_update-bookingid.
+*    rs_booking_inx-action_code   = /dmo/if_flight_legacy=>action_code-update.
+*
+*    rs_booking_inx-booking_date  = xsdbool( is_booking_update-%control-bookingdate  = if_abap_behv=>mk-on ).
+*    rs_booking_inx-customer_id   = xsdbool( is_booking_update-%control-customerid   = if_abap_behv=>mk-on ).
+*    rs_booking_inx-carrier_id    = xsdbool( is_booking_update-%control-airlineid    = if_abap_behv=>mk-on ).
+*    rs_booking_inx-connection_id = xsdbool( is_booking_update-%control-connectionid = if_abap_behv=>mk-on ).
+*    rs_booking_inx-flight_date   = xsdbool( is_booking_update-%control-flightdate   = if_abap_behv=>mk-on ).
+*    rs_booking_inx-flight_price  = xsdbool( is_booking_update-%control-flightprice  = if_abap_behv=>mk-on ).
+*    rs_booking_inx-currency_code = xsdbool( is_booking_update-%control-currencycode = if_abap_behv=>mk-on ).
+*  ENDMETHOD.
 
 
 **********************************************************************
@@ -102,17 +107,17 @@ CLASS lhc_booking IMPLEMENTATION.
 **********************************************************************
   METHOD delete_booking.
 
-    DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
+    DATA lt_messages TYPE /dmo/t_message.
 
     LOOP AT it_booking_delete INTO DATA(ls_booking_delete).
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
-          is_travel   = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = ls_booking_delete-travelid )
-          is_travelx  = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = ls_booking_delete-travelid )
-          it_booking  = VALUE /dmo/if_flight_legacy=>tt_booking_in( ( booking_id = ls_booking_delete-bookingid ) )
-          it_bookingx = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( booking_id  = ls_booking_delete-bookingid
-                                                                       action_code = /dmo/if_flight_legacy=>action_code-delete ) )
+          is_travel   = VALUE /dmo/s_travel_in( travel_id = ls_booking_delete-travelid )
+          is_travelx  = VALUE /dmo/s_travel_inx( travel_id = ls_booking_delete-travelid )
+          it_booking  = VALUE /dmo/t_booking_in( ( booking_id = ls_booking_delete-bookingid ) )
+          it_bookingx = VALUE /dmo/t_booking_inx( ( booking_id  = ls_booking_delete-bookingid
+                                                    action_code = /dmo/if_flight_legacy=>action_code-delete ) )
         IMPORTING
           et_messages = lt_messages.
 
@@ -143,8 +148,8 @@ CLASS lhc_booking IMPLEMENTATION.
   METHOD read_booking.
 
     DATA: ls_travel_out  TYPE /dmo/travel,
-          lt_booking_out TYPE /dmo/if_flight_legacy=>tt_booking,
-          lt_message     TYPE /dmo/if_flight_legacy=>tt_message.
+          lt_booking_out TYPE /dmo/t_booking,
+          lt_message     TYPE /dmo/t_message.
 
     "Only one function call for each requested travelid
     LOOP AT it_booking_read ASSIGNING FIELD-SYMBOL(<fs_travel_read>)
@@ -213,8 +218,8 @@ CLASS lhc_booking IMPLEMENTATION.
 ***********************************************************************
   METHOD cba_supplement.
 
-    DATA lt_messages               TYPE /dmo/if_flight_legacy=>tt_message.
-    DATA lt_booksupplement_old     TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
+    DATA lt_messages               TYPE /dmo/t_message.
+    DATA lt_booksupplement_old     TYPE /dmo/t_booking_supplement.
     DATA ls_booksupplement         TYPE /dmo/book_suppl.
     DATA lv_last_booksupplement_id TYPE /dmo/booking_supplement_id.
 
@@ -257,10 +262,10 @@ CLASS lhc_booking IMPLEMENTATION.
           " Create a new booking supplement and update a booking instance
           CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
             EXPORTING
-              is_travel              = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = ls_parent_key-travelid )
-              is_travelx             = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = ls_parent_key-travelid )
-              it_booking_supplement  = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_in( ( CORRESPONDING #( ls_booksupplement ) ) )
-              it_booking_supplementx = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_inx( ( VALUE #(
+              is_travel              = VALUE /dmo/s_travel_in( travel_id = ls_parent_key-travelid )
+              is_travelx             = VALUE /dmo/s_travel_inx( travel_id = ls_parent_key-travelid )
+              it_booking_supplement  = VALUE /dmo/t_booking_supplement_in( ( CORRESPONDING #( ls_booksupplement ) ) )
+              it_booking_supplementx = VALUE /dmo/t_booking_supplement_inx( ( VALUE #(
                                                                                                              booking_id = ls_booksupplement-booking_id
                                                                                                              booking_supplement_id = ls_booksupplement-booking_supplement_id
                                                                                                              action_code = /dmo/if_flight_legacy=>action_code-create )
@@ -327,8 +332,8 @@ CLASS lhc_booking IMPLEMENTATION.
 **********************************************************************
   METHOD read_supplement_ba.
     DATA: ls_travel_out    TYPE /dmo/travel,
-          lt_booksuppl_out TYPE /dmo/if_flight_legacy=>tt_booking_supplement,
-          lt_message       TYPE /dmo/if_flight_legacy=>tt_message.
+          lt_booksuppl_out TYPE /dmo/t_booking_supplement,
+          lt_message       TYPE /dmo/t_message.
 
     "Only one function call for each travelid
     LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<fs_travel>)

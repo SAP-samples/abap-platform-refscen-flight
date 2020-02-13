@@ -23,13 +23,15 @@ ENDCLASS.
 
 
 
-CLASS /dmo/tc_flight_travel_api IMPLEMENTATION.
+CLASS /DMO/TC_FLIGHT_TRAVEL_API IMPLEMENTATION.
+
+
   METHOD class_setup.
     DATA lt_agency_id TYPE SORTED TABLE OF /dmo/agency_id     WITH UNIQUE KEY table_line.
-    SELECT DISTINCT agency_id FROM /dmo/agency     ORDER BY agency_id   DESCENDING INTO TABLE @lt_agency_id .
+    SELECT DISTINCT agency_id FROM /dmo/agency     ORDER BY agency_id   DESCENDING INTO TABLE @lt_agency_id . "#EC CI_NOWHERE
 
     DATA lt_customer_id TYPE SORTED TABLE OF /dmo/customer_id WITH UNIQUE KEY table_line.
-    SELECT DISTINCT customer_id FROM /dmo/customer ORDER BY customer_id DESCENDING INTO TABLE @lt_customer_id .
+    SELECT DISTINCT customer_id FROM /dmo/customer ORDER BY customer_id DESCENDING INTO TABLE @lt_customer_id . "#EC CI_NOWHERE
 
     " Select 2 known agency IDs
     IF lines( lt_agency_id ) < 2.
@@ -70,10 +72,10 @@ CLASS /dmo/tc_flight_travel_api IMPLEMENTATION.
 
 
   METHOD cuerd_travel.
-    DATA ls_travel_in  TYPE /dmo/if_flight_legacy=>ts_travel_in.
-    DATA ls_travel_inx TYPE /dmo/if_flight_legacy=>ts_travel_inx.
+    DATA ls_travel_in  TYPE /dmo/s_travel_in.
+    DATA ls_travel_inx TYPE /dmo/s_travel_inx.
     DATA ls_travel     TYPE /dmo/travel.
-    DATA lt_messages   TYPE /dmo/if_flight_legacy=>tt_message.
+    DATA lt_messages   TYPE /dmo/t_message.
 
     " Create Travel and Commit
     ls_travel_in-agency_id   = gv_agency_id_1.

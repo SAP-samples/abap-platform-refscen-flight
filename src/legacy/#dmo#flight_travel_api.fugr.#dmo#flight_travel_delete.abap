@@ -8,13 +8,13 @@
 "! @parameter iv_travel_id          | ID of the Travel to be deleted
 "! @parameter et_messages           | Table of occurred messages
 "!
-FUNCTION /DMO/FLIGHT_TRAVEL_DELETE.
+FUNCTION /dmo/flight_travel_delete.
 *"----------------------------------------------------------------------
 *"*"Local Interface:
 *"  IMPORTING
 *"     REFERENCE(IV_TRAVEL_ID) TYPE  /DMO/TRAVEL_ID
 *"  EXPORTING
-*"     REFERENCE(ET_MESSAGES) TYPE  /DMO/IF_FLIGHT_LEGACY=>TT_MESSAGE
+*"     REFERENCE(ET_MESSAGES) TYPE  /DMO/T_MESSAGE
 *"----------------------------------------------------------------------
   CLEAR et_messages.
 

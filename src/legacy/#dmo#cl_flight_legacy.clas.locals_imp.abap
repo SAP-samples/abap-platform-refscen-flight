@@ -52,57 +52,57 @@ CLASS lcl_booking_supplement_buffer DEFINITION FINAL CREATE PRIVATE.
     "! Prepare changes in a temporary buffer
     "! @parameter iv_no_delete_check | In some cases we do not need to check the existence of a record to be deleted, as this check has been done before.
     "!                               | E.g. delete all subnodes of a node to be deleted.  In this case we have read the subnodes to get their keys.
-    METHODS cud_prep IMPORTING it_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement
-                               it_booking_supplementx TYPE /dmo/if_flight_legacy=>tt_booking_supplementx
+    METHODS cud_prep IMPORTING it_booking_supplement  TYPE /dmo/t_booking_supplement
+                               it_booking_supplementx TYPE /dmo/t_booking_supplementx
                                iv_no_delete_check     TYPE abap_bool OPTIONAL
-                     EXPORTING et_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+                     EXPORTING et_booking_supplement  TYPE /dmo/t_booking_supplement
                                et_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
     "! Add content of the temporary buffer to the real buffer and clear the temporary buffer
     METHODS cud_copy.
     "! Discard content of the temporary buffer
     METHODS cud_disc.
     "! Get all Booking Supplements for given Bookings
-    METHODS get IMPORTING it_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+    METHODS get IMPORTING it_booking_supplement  TYPE /dmo/t_booking_supplement
                           iv_include_buffer      TYPE abap_boolean
                           iv_include_temp_buffer TYPE abap_boolean
-                EXPORTING et_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
+                EXPORTING et_booking_supplement  TYPE /dmo/t_booking_supplement.
 
   PRIVATE SECTION.
     CLASS-DATA go_instance TYPE REF TO lcl_booking_supplement_buffer.
     " Main buffer
-    DATA: mt_create_buffer TYPE /dmo/if_flight_legacy=>tt_booking_supplement,
-          mt_update_buffer TYPE /dmo/if_flight_legacy=>tt_booking_supplement,
-          mt_delete_buffer TYPE /dmo/if_flight_legacy=>tt_booking_supplement_key.
+    DATA: mt_create_buffer TYPE /dmo/t_booking_supplement,
+          mt_update_buffer TYPE /dmo/t_booking_supplement,
+          mt_delete_buffer TYPE /dmo/t_booking_supplement_key.
     " Temporary buffer valid during create / update / delete Travel
-    DATA: mt_create_buffer_2 TYPE /dmo/if_flight_legacy=>tt_booking_supplement,
-          mt_update_buffer_2 TYPE /dmo/if_flight_legacy=>tt_booking_supplement,
-          mt_delete_buffer_2 TYPE /dmo/if_flight_legacy=>tt_booking_supplement_key.
+    DATA: mt_create_buffer_2 TYPE /dmo/t_booking_supplement,
+          mt_update_buffer_2 TYPE /dmo/t_booking_supplement,
+          mt_delete_buffer_2 TYPE /dmo/t_booking_supplement_key.
 
     DATA mt_supplement TYPE SORTED TABLE OF /dmo/supplement WITH UNIQUE KEY supplement_id.
 
-    METHODS _create IMPORTING it_booking_supplement TYPE /dmo/if_flight_legacy=>tt_booking_supplement
-                    EXPORTING et_booking_supplement TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+    METHODS _create IMPORTING it_booking_supplement TYPE /dmo/t_booking_supplement
+                    EXPORTING et_booking_supplement TYPE /dmo/t_booking_supplement
                               et_messages           TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
-    METHODS _update IMPORTING it_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement
-                              it_booking_supplementx TYPE /dmo/if_flight_legacy=>tt_booking_supplementx
-                    EXPORTING et_booking_supplement  TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+    METHODS _update IMPORTING it_booking_supplement  TYPE /dmo/t_booking_supplement
+                              it_booking_supplementx TYPE /dmo/t_booking_supplementx
+                    EXPORTING et_booking_supplement  TYPE /dmo/t_booking_supplement
                               et_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
-    METHODS _delete IMPORTING it_booking_supplement TYPE /dmo/if_flight_legacy=>tt_booking_supplement
+    METHODS _delete IMPORTING it_booking_supplement TYPE /dmo/t_booking_supplement
                               iv_no_delete_check    TYPE abap_bool
                     EXPORTING et_messages           TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
 
     METHODS _check IMPORTING is_booking_supplement  TYPE /dmo/book_suppl
-                             is_booking_supplementx TYPE /dmo/if_flight_legacy=>ts_booking_supplementx OPTIONAL
+                             is_booking_supplementx TYPE /dmo/s_booking_supplementx OPTIONAL
                              iv_change_mode         TYPE /dmo/cl_flight_legacy=>ty_change_mode
                    CHANGING  ct_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                    RETURNING VALUE(rv_is_valid)     TYPE abap_bool.
     METHODS _check_supplement IMPORTING is_booking_supplement  TYPE /dmo/book_suppl
-                                        is_booking_supplementx TYPE /dmo/if_flight_legacy=>ts_booking_supplementx OPTIONAL
+                                        is_booking_supplementx TYPE /dmo/s_booking_supplementx OPTIONAL
                                         iv_change_mode         TYPE /dmo/cl_flight_legacy=>ty_change_mode
                               CHANGING  ct_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                               RETURNING VALUE(rv_is_valid)     TYPE abap_bool.
     METHODS _check_currency_code IMPORTING is_booking_supplement  TYPE /dmo/book_suppl
-                                           is_booking_supplementx TYPE /dmo/if_flight_legacy=>ts_booking_supplementx OPTIONAL
+                                           is_booking_supplementx TYPE /dmo/s_booking_supplementx OPTIONAL
                                            iv_change_mode         TYPE /dmo/cl_flight_legacy=>ty_change_mode
                                  CHANGING  ct_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                                  RETURNING VALUE(rv_is_valid)     TYPE abap_bool.
@@ -367,7 +367,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
     ENDLOOP.
 
     IF iv_no_delete_check = abap_false.
-      DATA lt_book_suppl_db TYPE /dmo/if_flight_legacy=>tt_booking_supplement_key.
+      DATA lt_book_suppl_db TYPE /dmo/t_booking_supplement_key.
       SELECT travel_id, booking_id, booking_supplement_id FROM /dmo/book_suppl FOR ALL ENTRIES IN @lt_booking_supplement
         WHERE travel_id = @lt_booking_supplement-travel_id AND booking_id = @lt_booking_supplement-booking_id AND booking_supplement_id = @lt_booking_supplement-booking_supplement_id INTO CORRESPONDING FIELDS OF TABLE @lt_book_suppl_db.
     ENDIF.
@@ -433,10 +433,10 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
 
     CHECK it_booking_supplement IS NOT INITIAL.
 
-    DATA lt_booking_supplement_c  TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
-    DATA lt_booking_supplement_u  TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
-    DATA lt_booking_supplement_d  TYPE /dmo/if_flight_legacy=>tt_booking_supplement.
-    DATA lt_booking_supplementx_u TYPE /dmo/if_flight_legacy=>tt_booking_supplementx.
+    DATA lt_booking_supplement_c  TYPE /dmo/t_booking_supplement.
+    DATA lt_booking_supplement_u  TYPE /dmo/t_booking_supplement.
+    DATA lt_booking_supplement_d  TYPE /dmo/t_booking_supplement.
+    DATA lt_booking_supplementx_u TYPE /dmo/t_booking_supplementx.
     LOOP AT it_booking_supplement ASSIGNING FIELD-SYMBOL(<s_booking_supplement>).
       READ TABLE it_booking_supplementx ASSIGNING FIELD-SYMBOL(<s_booking_supplementx>) WITH TABLE KEY travel_id             = <s_booking_supplement>-travel_id
                                                                                                        booking_id            = <s_booking_supplement>-booking_id
@@ -624,31 +624,31 @@ CLASS lcl_booking_buffer DEFINITION FINAL CREATE PRIVATE.
     "! Prepare changes in a temporary buffer
     "! @parameter iv_no_delete_check | In some cases we do not need to check the existence of a record to be deleted, as this check has been done before.
     "!                               | E.g. delete all subnodes of a node to be deleted.  In this case we have read the subnodes to get their keys.
-    METHODS cud_prep IMPORTING it_booking         TYPE /dmo/if_flight_legacy=>tt_booking
-                               it_bookingx        TYPE /dmo/if_flight_legacy=>tt_bookingx
+    METHODS cud_prep IMPORTING it_booking         TYPE /dmo/t_booking
+                               it_bookingx        TYPE /dmo/t_bookingx
                                iv_no_delete_check TYPE abap_bool OPTIONAL
-                     EXPORTING et_booking         TYPE /dmo/if_flight_legacy=>tt_booking
+                     EXPORTING et_booking         TYPE /dmo/t_booking
                                et_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
     "! Add content of the temporary buffer to the real buffer and clear the temporary buffer
     METHODS cud_copy.
     "! Discard content of the temporary buffer
     METHODS cud_disc.
     "! Get all Bookings for given Travels
-    METHODS get IMPORTING it_booking             TYPE /dmo/if_flight_legacy=>tt_booking
+    METHODS get IMPORTING it_booking             TYPE /dmo/t_booking
                           iv_include_buffer      TYPE abap_boolean
                           iv_include_temp_buffer TYPE abap_boolean
-                EXPORTING et_booking             TYPE /dmo/if_flight_legacy=>tt_booking.
+                EXPORTING et_booking             TYPE /dmo/t_booking.
 
   PRIVATE SECTION.
     CLASS-DATA go_instance TYPE REF TO lcl_booking_buffer.
     " Main buffer
-    DATA: mt_create_buffer TYPE /dmo/if_flight_legacy=>tt_booking,
-          mt_update_buffer TYPE /dmo/if_flight_legacy=>tt_booking,
-          mt_delete_buffer TYPE /dmo/if_flight_legacy=>tt_booking_key.
+    DATA: mt_create_buffer TYPE /dmo/t_booking,
+          mt_update_buffer TYPE /dmo/t_booking,
+          mt_delete_buffer TYPE /dmo/t_booking_key.
     " Temporary buffer valid during create / update / delete Travel
-    DATA: mt_create_buffer_2 TYPE /dmo/if_flight_legacy=>tt_booking,
-          mt_update_buffer_2 TYPE /dmo/if_flight_legacy=>tt_booking,
-          mt_delete_buffer_2 TYPE /dmo/if_flight_legacy=>tt_booking_key.
+    DATA: mt_create_buffer_2 TYPE /dmo/t_booking,
+          mt_update_buffer_2 TYPE /dmo/t_booking,
+          mt_delete_buffer_2 TYPE /dmo/t_booking_key.
 
     TYPES: BEGIN OF ts_flight_key,
              carrier_id    TYPE /dmo/carrier_id,
@@ -658,39 +658,39 @@ CLASS lcl_booking_buffer DEFINITION FINAL CREATE PRIVATE.
     TYPES tt_flight_key TYPE SORTED TABLE OF ts_flight_key WITH UNIQUE KEY carrier_id  connection_id  flight_date.
     DATA mt_flight_key TYPE tt_flight_key.
 
-    METHODS _create IMPORTING it_booking  TYPE /dmo/if_flight_legacy=>tt_booking
-                    EXPORTING et_booking  TYPE /dmo/if_flight_legacy=>tt_booking
+    METHODS _create IMPORTING it_booking  TYPE /dmo/t_booking
+                    EXPORTING et_booking  TYPE /dmo/t_booking
                               et_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
-    METHODS _update IMPORTING it_booking  TYPE /dmo/if_flight_legacy=>tt_booking
-                              it_bookingx TYPE /dmo/if_flight_legacy=>tt_bookingx
-                    EXPORTING et_booking  TYPE /dmo/if_flight_legacy=>tt_booking
+    METHODS _update IMPORTING it_booking  TYPE /dmo/t_booking
+                              it_bookingx TYPE /dmo/t_bookingx
+                    EXPORTING et_booking  TYPE /dmo/t_booking
                               et_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
-    METHODS _delete IMPORTING it_booking         TYPE /dmo/if_flight_legacy=>tt_booking
+    METHODS _delete IMPORTING it_booking         TYPE /dmo/t_booking
                               iv_no_delete_check TYPE abap_bool
                     EXPORTING et_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
 
     METHODS _check IMPORTING is_booking         TYPE /dmo/booking
-                             is_bookingx        TYPE /dmo/if_flight_legacy=>ts_bookingx OPTIONAL
+                             is_bookingx        TYPE /dmo/s_bookingx OPTIONAL
                              iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                    CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                    RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_booking_date IMPORTING is_booking         TYPE /dmo/booking
-                                          is_bookingx        TYPE /dmo/if_flight_legacy=>ts_bookingx OPTIONAL
+                                          is_bookingx        TYPE /dmo/s_bookingx OPTIONAL
                                           iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                                 CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                                 RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_customer IMPORTING is_booking         TYPE /dmo/booking
-                                      is_bookingx        TYPE /dmo/if_flight_legacy=>ts_bookingx OPTIONAL
+                                      is_bookingx        TYPE /dmo/s_bookingx OPTIONAL
                                       iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                             CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                             RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_flight IMPORTING is_booking         TYPE /dmo/booking
-                                    is_bookingx        TYPE /dmo/if_flight_legacy=>ts_bookingx OPTIONAL
+                                    is_bookingx        TYPE /dmo/s_bookingx OPTIONAL
                                     iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                           CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                           RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_currency_code IMPORTING is_booking         TYPE /dmo/booking
-                                           is_bookingx        TYPE /dmo/if_flight_legacy=>ts_bookingx OPTIONAL
+                                           is_bookingx        TYPE /dmo/s_bookingx OPTIONAL
                                            iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                                  CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                                  RETURNING VALUE(rv_is_valid) TYPE abap_bool.
@@ -910,7 +910,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
     ENDLOOP.
 
     IF iv_no_delete_check = abap_false.
-      DATA lt_booking_db TYPE /dmo/if_flight_legacy=>tt_booking_key.
+      DATA lt_booking_db TYPE /dmo/t_booking_key.
       SELECT travel_id, booking_id FROM /dmo/booking FOR ALL ENTRIES IN @lt_booking WHERE travel_id = @lt_booking-travel_id AND booking_id = @lt_booking-booking_id INTO CORRESPONDING FIELDS OF TABLE @lt_booking_db.
     ENDIF.
 
@@ -987,10 +987,10 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
 
     CHECK it_booking IS NOT INITIAL.
 
-    DATA lt_booking_c  TYPE /dmo/if_flight_legacy=>tt_booking.
-    DATA lt_booking_u  TYPE /dmo/if_flight_legacy=>tt_booking.
-    DATA lt_booking_d  TYPE /dmo/if_flight_legacy=>tt_booking.
-    DATA lt_bookingx_u TYPE /dmo/if_flight_legacy=>tt_bookingx.
+    DATA lt_booking_c  TYPE /dmo/t_booking.
+    DATA lt_booking_u  TYPE /dmo/t_booking.
+    DATA lt_booking_d  TYPE /dmo/t_booking.
+    DATA lt_bookingx_u TYPE /dmo/t_bookingx.
     LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<s_booking>).
       READ TABLE it_bookingx ASSIGNING FIELD-SYMBOL(<s_bookingx>) WITH TABLE KEY travel_id = <s_booking>-travel_id  booking_id = <s_booking>-booking_id.
       IF sy-subrc <> 0.
@@ -1212,71 +1212,71 @@ CLASS lcl_travel_buffer DEFINITION FINAL CREATE PRIVATE.
     "! Prepare changes in a temporary buffer
     "! @parameter iv_no_delete_check | In some cases we do not need to check the existence of a record to be deleted, as this check has been done before.
     "!                               | E.g. delete all subnodes of a node to be deleted.  In this case we have read the subnodes to get their keys.
-    METHODS cud_prep IMPORTING it_travel          TYPE /dmo/if_flight_legacy=>tt_travel
-                               it_travelx         TYPE /dmo/if_flight_legacy=>tt_travelx
+    METHODS cud_prep IMPORTING it_travel          TYPE /dmo/t_travel
+                               it_travelx         TYPE /dmo/t_travelx
                                iv_no_delete_check TYPE abap_bool OPTIONAL
-                     EXPORTING et_travel          TYPE /dmo/if_flight_legacy=>tt_travel
+                     EXPORTING et_travel          TYPE /dmo/t_travel
                                et_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
     "! Add content of the temporary buffer to the real buffer and clear the temporary buffer
     METHODS cud_copy.
     "! Discard content of the temporary buffer
     METHODS cud_disc.
-    METHODS get IMPORTING it_travel              TYPE /dmo/if_flight_legacy=>tt_travel
+    METHODS get IMPORTING it_travel              TYPE /dmo/t_travel
                           iv_include_buffer      TYPE abap_boolean
                           iv_include_temp_buffer TYPE abap_boolean
-                EXPORTING et_travel              TYPE /dmo/if_flight_legacy=>tt_travel.
+                EXPORTING et_travel              TYPE /dmo/t_travel.
 
   PRIVATE SECTION.
     CLASS-DATA go_instance TYPE REF TO lcl_travel_buffer.
     " Main buffer
-    DATA: mt_create_buffer TYPE /dmo/if_flight_legacy=>tt_travel,
-          mt_update_buffer TYPE /dmo/if_flight_legacy=>tt_travel,
-          mt_delete_buffer TYPE /dmo/if_flight_legacy=>tt_travel_key.
+    DATA: mt_create_buffer TYPE /dmo/t_travel,
+          mt_update_buffer TYPE /dmo/t_travel,
+          mt_delete_buffer TYPE /dmo/t_travel_key.
     " Temporary buffer valid during create / update / delete Travel
-    DATA: mt_create_buffer_2 TYPE /dmo/if_flight_legacy=>tt_travel,
-          mt_update_buffer_2 TYPE /dmo/if_flight_legacy=>tt_travel,
-          mt_delete_buffer_2 TYPE /dmo/if_flight_legacy=>tt_travel_key.
+    DATA: mt_create_buffer_2 TYPE /dmo/t_travel,
+          mt_update_buffer_2 TYPE /dmo/t_travel,
+          mt_delete_buffer_2 TYPE /dmo/t_travel_key.
 
     DATA mt_agency_id   TYPE SORTED TABLE OF /dmo/agency_id   WITH UNIQUE KEY table_line.
 
-    METHODS _create IMPORTING it_travel   TYPE /dmo/if_flight_legacy=>tt_travel
-                    EXPORTING et_travel   TYPE /dmo/if_flight_legacy=>tt_travel
+    METHODS _create IMPORTING it_travel   TYPE /dmo/t_travel
+                    EXPORTING et_travel   TYPE /dmo/t_travel
                               et_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
-    METHODS _update IMPORTING it_travel   TYPE /dmo/if_flight_legacy=>tt_travel
-                              it_travelx  TYPE /dmo/if_flight_legacy=>tt_travelx
-                    EXPORTING et_travel   TYPE /dmo/if_flight_legacy=>tt_travel
+    METHODS _update IMPORTING it_travel   TYPE /dmo/t_travel
+                              it_travelx  TYPE /dmo/t_travelx
+                    EXPORTING et_travel   TYPE /dmo/t_travel
                               et_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
-    METHODS _delete IMPORTING it_travel          TYPE /dmo/if_flight_legacy=>tt_travel
+    METHODS _delete IMPORTING it_travel          TYPE /dmo/t_travel
                               iv_no_delete_check TYPE abap_bool
                     EXPORTING et_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
 
     METHODS _check IMPORTING is_travel          TYPE /dmo/travel
-                             is_travelx         TYPE /dmo/if_flight_legacy=>ts_travelx OPTIONAL
+                             is_travelx         TYPE /dmo/s_travelx OPTIONAL
                              iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                    CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                    RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_agency IMPORTING is_travel          TYPE /dmo/travel
-                                    is_travelx         TYPE /dmo/if_flight_legacy=>ts_travelx OPTIONAL
+                                    is_travelx         TYPE /dmo/s_travelx OPTIONAL
                                     iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                           CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                           RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_customer IMPORTING is_travel          TYPE /dmo/travel
-                                      is_travelx         TYPE /dmo/if_flight_legacy=>ts_travelx OPTIONAL
+                                      is_travelx         TYPE /dmo/s_travelx OPTIONAL
                                       iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                             CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                             RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_dates IMPORTING is_travel          TYPE /dmo/travel
-                                   is_travelx         TYPE /dmo/if_flight_legacy=>ts_travelx OPTIONAL
+                                   is_travelx         TYPE /dmo/s_travelx OPTIONAL
                                    iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                          CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                          RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_status IMPORTING is_travel          TYPE /dmo/travel
-                                    is_travelx         TYPE /dmo/if_flight_legacy=>ts_travelx OPTIONAL
+                                    is_travelx         TYPE /dmo/s_travelx OPTIONAL
                                     iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                           CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                           RETURNING VALUE(rv_is_valid) TYPE abap_bool.
     METHODS _check_currency_code IMPORTING is_travel          TYPE /dmo/travel
-                                           is_travelx         TYPE /dmo/if_flight_legacy=>ts_travelx OPTIONAL
+                                           is_travelx         TYPE /dmo/s_travelx OPTIONAL
                                            iv_change_mode     TYPE /dmo/cl_flight_legacy=>ty_change_mode
                                  CHANGING  ct_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message
                                  RETURNING VALUE(rv_is_valid) TYPE abap_bool.
@@ -1586,10 +1586,10 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
 
     CHECK it_travel IS NOT INITIAL.
 
-    DATA lt_travel_c  TYPE /dmo/if_flight_legacy=>tt_travel.
-    DATA lt_travel_u  TYPE /dmo/if_flight_legacy=>tt_travel.
-    DATA lt_travel_d  TYPE /dmo/if_flight_legacy=>tt_travel.
-    DATA lt_travelx_u TYPE /dmo/if_flight_legacy=>tt_travelx.
+    DATA lt_travel_c  TYPE /dmo/t_travel.
+    DATA lt_travel_u  TYPE /dmo/t_travel.
+    DATA lt_travel_d  TYPE /dmo/t_travel.
+    DATA lt_travelx_u TYPE /dmo/t_travelx.
     LOOP AT it_travel ASSIGNING FIELD-SYMBOL(<s_travel>).
       READ TABLE it_travelx ASSIGNING FIELD-SYMBOL(<s_travelx>) WITH TABLE KEY travel_id = <s_travel>-travel_id.
       IF sy-subrc <> 0.

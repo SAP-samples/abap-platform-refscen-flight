@@ -36,7 +36,7 @@ PUBLIC SECTION.
       IMPORTING
         iv_cid       TYPE string   OPTIONAL
         iv_travel_id TYPE /dmo/travel_id OPTIONAL
-        it_messages  TYPE /dmo/if_flight_legacy=>tt_message
+        it_messages  TYPE /dmo/t_message
       CHANGING
         failed       TYPE tt_travel_failed
         reported     TYPE tt_travel_reported.
@@ -47,7 +47,7 @@ PUBLIC SECTION.
         iv_cid        TYPE string OPTIONAL
         iv_travel_id  TYPE /dmo/travel_id OPTIONAL
         iv_booking_id TYPE /dmo/booking_id OPTIONAL
-        it_messages   TYPE /dmo/if_flight_legacy=>tt_message
+        it_messages   TYPE /dmo/t_message
       CHANGING
         failed        TYPE tt_booking_failed
         reported      TYPE tt_booking_reported.
@@ -59,7 +59,7 @@ PUBLIC SECTION.
         iv_travel_id            TYPE /dmo/travel_id OPTIONAL
         iv_booking_id           TYPE /dmo/booking_id OPTIONAL
         iv_bookingsupplement_id TYPE /dmo/booking_supplement_id OPTIONAL
-        it_messages             TYPE /dmo/if_flight_legacy=>tt_message
+        it_messages             TYPE /dmo/t_message
       CHANGING
         failed                  TYPE tt_bookingsupplement_failed
         reported                TYPE tt_bookingsupplement_reported.
@@ -78,30 +78,17 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cl_travel_auxiliary IMPLEMENTATION.
+CLASS /DMO/CL_TRAVEL_AUXILIARY IMPLEMENTATION.
 
 
-  METHOD handle_travel_messages.
+  METHOD get_message_object.
 
-    LOOP AT it_messages INTO DATA(ls_message) WHERE msgty = 'E' OR msgty = 'A'.
-      APPEND VALUE #( %cid = iv_cid  travelid = iv_travel_id )
-             TO failed.
-
-      APPEND VALUE #( %msg      = get_message_object( )->new_message( id       = ls_message-msgid
-                                               number   = ls_message-msgno
-                                               severity = if_abap_behv_message=>severity-error
-                                               v1       = ls_message-msgv1
-                                               v2       = ls_message-msgv2
-                                               v3       = ls_message-msgv3
-                                               v4       = ls_message-msgv4 )
-                      %key-TravelID = iv_travel_id
-                      %cid          = iv_cid
-                      TravelID      = iv_travel_id )
-             TO reported.
-    ENDLOOP.
+     IF obj IS INITIAL.
+       CREATE OBJECT obj.
+     ENDIF.
+     r_result = obj.
 
   ENDMETHOD.
-
 
 
   METHOD handle_booking_messages.
@@ -127,8 +114,6 @@ CLASS /dmo/cl_travel_auxiliary IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
-
-
 
 
   METHOD handle_booksupplement_messages.
@@ -158,17 +143,24 @@ CLASS /dmo/cl_travel_auxiliary IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD handle_travel_messages.
 
+    LOOP AT it_messages INTO DATA(ls_message) WHERE msgty = 'E' OR msgty = 'A'.
+      APPEND VALUE #( %cid = iv_cid  travelid = iv_travel_id )
+             TO failed.
 
-
-  METHOD get_message_object.
-
-     IF obj IS INITIAL.
-       CREATE OBJECT obj.
-     ENDIF.
-     r_result = obj.
+      APPEND VALUE #( %msg      = get_message_object( )->new_message( id       = ls_message-msgid
+                                               number   = ls_message-msgno
+                                               severity = if_abap_behv_message=>severity-error
+                                               v1       = ls_message-msgv1
+                                               v2       = ls_message-msgv2
+                                               v3       = ls_message-msgv3
+                                               v4       = ls_message-msgv4 )
+                      %key-TravelID = iv_travel_id
+                      %cid          = iv_cid
+                      TravelID      = iv_travel_id )
+             TO reported.
+    ENDLOOP.
 
   ENDMETHOD.
-
-
 ENDCLASS.

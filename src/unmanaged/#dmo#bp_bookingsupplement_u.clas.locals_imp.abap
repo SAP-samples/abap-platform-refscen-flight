@@ -26,7 +26,7 @@ CLASS lhc_supplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS _fill_bookingsupplement_inx
                                     IMPORTING is_bookingsupplement_update     TYPE LINE OF tt_bookingsupplement_update
-                                    RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/if_flight_legacy=>ts_booking_supplement_inx.
+                                    RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/s_booking_supplement_inx.
 ENDCLASS.
 
 
@@ -41,7 +41,7 @@ CLASS lhc_supplement IMPLEMENTATION.
 **********************************************************************
   METHOD update_bookingsupplement.
 
-    DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
+    DATA lt_messages TYPE /dmo/t_message.
     DATA lt_book_supplement TYPE /dmo/book_suppl.
 
     LOOP AT it_bookingsupplement_update ASSIGNING FIELD-SYMBOL(<fs_bookingsupplement_update>).
@@ -49,10 +49,10 @@ CLASS lhc_supplement IMPLEMENTATION.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
-          is_travel              = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = <fs_bookingsupplement_update>-travelid )
-          is_travelx             = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = <fs_bookingsupplement_update>-travelid )
-          it_booking_supplement  = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_in( ( CORRESPONDING #( lt_book_supplement ) ) )
-          it_booking_supplementx = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_inx( ( _fill_bookingsupplement_inx( <fs_bookingsupplement_update> ) ) )
+          is_travel              = VALUE /dmo/s_travel_in( travel_id = <fs_bookingsupplement_update>-travelid )
+          is_travelx             = VALUE /dmo/s_travel_inx( travel_id = <fs_bookingsupplement_update>-travelid )
+          it_booking_supplement  = VALUE /dmo/t_booking_supplement_in( ( CORRESPONDING #( lt_book_supplement ) ) )
+          it_booking_supplementx = VALUE /dmo/t_booking_supplement_inx( ( _fill_bookingsupplement_inx( <fs_bookingsupplement_update> ) ) )
         IMPORTING
           et_messages = lt_messages.
 
@@ -98,21 +98,21 @@ CLASS lhc_supplement IMPLEMENTATION.
 **********************************************************************
   METHOD delete_bookingsupplement.
 
-    DATA lt_messages TYPE /dmo/if_flight_legacy=>tt_message.
+    DATA lt_messages TYPE /dmo/t_message.
 
     LOOP AT it_bookingsupplement_delete INTO DATA(ls_bookingsupplement_delete).
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
-          is_travel              = VALUE /dmo/if_flight_legacy=>ts_travel_in( travel_id = ls_bookingsupplement_delete-travelid )
-          is_travelx             = VALUE /dmo/if_flight_legacy=>ts_travel_inx( travel_id = ls_bookingsupplement_delete-travelid )
-          it_booking             = VALUE /dmo/if_flight_legacy=>tt_booking_in( ( booking_id = ls_bookingsupplement_delete-bookingid ) )
-          it_bookingx            = VALUE /dmo/if_flight_legacy=>tt_booking_inx( ( booking_id  = ls_bookingsupplement_delete-bookingid ) )
-          it_booking_supplement  = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_in( (  booking_supplement_id = ls_bookingsupplement_delete-bookingSupplementid
-                                                                                             booking_id            = ls_bookingsupplement_delete-BookingID ) )
-          it_booking_supplementx = VALUE /dmo/if_flight_legacy=>tt_booking_supplement_inx( ( booking_supplement_id = ls_bookingsupplement_delete-bookingsupplementid
-                                                                                             booking_id            = ls_bookingsupplement_delete-bookingid
-                                                                                             action_code           = /dmo/if_flight_legacy=>action_code-delete ) )
+          is_travel              = VALUE /dmo/s_travel_in(     travel_id  = ls_bookingsupplement_delete-travelid )
+          is_travelx             = VALUE /dmo/s_travel_inx(    travel_id  = ls_bookingsupplement_delete-travelid )
+          it_booking             = VALUE /dmo/t_booking_in(  ( booking_id = ls_bookingsupplement_delete-bookingid ) )
+          it_bookingx            = VALUE /dmo/t_booking_inx( ( booking_id = ls_bookingsupplement_delete-bookingid ) )
+          it_booking_supplement  = VALUE /dmo/t_booking_supplement_in( (  booking_supplement_id = ls_bookingsupplement_delete-bookingSupplementid
+                                                                          booking_id            = ls_bookingsupplement_delete-BookingID ) )
+          it_booking_supplementx = VALUE /dmo/t_booking_supplement_inx( ( booking_supplement_id = ls_bookingsupplement_delete-bookingsupplementid
+                                                                          booking_id            = ls_bookingsupplement_delete-bookingid
+                                                                          action_code           = /dmo/if_flight_legacy=>action_code-delete ) )
         IMPORTING
           et_messages = lt_messages.
 
@@ -143,8 +143,8 @@ CLASS lhc_supplement IMPLEMENTATION.
   METHOD read_bookingsupplement.
 
     DATA: ls_travel_out    TYPE /dmo/travel,
-          lt_booksuppl_out TYPE /dmo/if_flight_legacy=>tt_booking_supplement,
-          lt_message       TYPE /dmo/if_flight_legacy=>tt_message.
+          lt_booksuppl_out TYPE /dmo/t_booking_supplement,
+          lt_message       TYPE /dmo/t_message.
 
     LOOP AT it_bookingsupplement_read ASSIGNING FIELD-SYMBOL(<fs_travel_read>)
                                       GROUP BY <fs_travel_read>-TravelID.

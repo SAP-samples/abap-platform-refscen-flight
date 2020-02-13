@@ -6,8 +6,9 @@
     <CTEXT>Flight Reference Scenario</CTEXT>
     <COMP_POSID>BC-SRV-NWD-XBR</COMP_POSID>
     <COMPONENT>BYI3000542</COMPONENT>
+    <TPCLASS>X</TPCLASS>
+    <PACKKIND>5</PACKKIND>
     <RESTRICTED>X</RESTRICTED>
-    <MAINPACK>X</MAINPACK>
    </DEVC>
   </asx:values>
  </asx:abap>
