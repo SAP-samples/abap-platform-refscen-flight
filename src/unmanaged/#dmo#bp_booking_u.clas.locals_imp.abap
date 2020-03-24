@@ -54,6 +54,7 @@ CLASS lhc_booking IMPLEMENTATION.
 
       ls_bookingx-booking_id = <fs_booking_update>-BookingID.
       ls_bookingx-_intx      = CORRESPONDING #( <fs_booking_update> MAPPING FROM ENTITY ).
+      ls_bookingx-action_code = /dmo/if_flight_legacy=>action_code-update.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
