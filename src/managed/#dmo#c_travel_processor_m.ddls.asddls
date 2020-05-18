@@ -24,7 +24,8 @@ define root view entity /DMO/C_Travel_Processor_M
 
 
       @UI: {
-          lineItem:       [ { position: 10, importance: #HIGH } ],
+          lineItem:       [ { position: 10, importance: #HIGH } ,
+                          { type: #FOR_ACTION, dataAction: 'createTravelByTemplate', label: 'Create Travel by Template' } ],
           identification: [ { position: 10, label: 'Travel ID [1,...,99999999]' } ] }
       @Search.defaultSearchElement: true
   key travel_id          as TravelID,
@@ -77,8 +78,7 @@ define root view entity /DMO/C_Travel_Processor_M
       currency_code      as CurrencyCode,
 
       @UI: {
-          lineItem:       [ { position: 50, importance: #HIGH },
-                            { type: #FOR_ACTION, dataAction: 'createTravelByTemplate', label: 'Create Travel by Template' } ],
+          lineItem:       [ { position: 50, importance: #HIGH } ],
           identification: [ { position: 45, label: 'Status [O(Open)|A(Accepted)|X(Canceled)]' } ] }
       overall_status     as TravelStatus,
 

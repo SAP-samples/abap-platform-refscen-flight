@@ -11,22 +11,26 @@ CLASS lhc_supplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
     TYPES tt_bookingsupplement_reported TYPE TABLE FOR REPORTED /dmo/i_bookingsupplement_u.
 
     TYPES:
-        tt_booking_update           TYPE TABLE FOR UPDATE    /dmo/i_booking_u,
-        tt_bookingsupplement_update TYPE TABLE FOR UPDATE    /dmo/i_bookingsupplement_u.
+      tt_booking_update           TYPE TABLE FOR UPDATE    /dmo/i_booking_u,
+      tt_bookingsupplement_update TYPE TABLE FOR UPDATE    /dmo/i_bookingsupplement_u.
 
 
     METHODS:
-        update_bookingsupplement FOR MODIFY
-                                    IMPORTING it_bookingsupplement_update FOR UPDATE bookingsupplement,
-        delete_bookingsupplement FOR MODIFY
-                                    IMPORTING it_bookingsupplement_delete FOR DELETE bookingsupplement,
+      update_bookingsupplement FOR MODIFY
+        IMPORTING it_bookingsupplement_update FOR UPDATE bookingsupplement,
+      delete_bookingsupplement FOR MODIFY
+        IMPORTING it_bookingsupplement_delete FOR DELETE bookingsupplement,
       read_bookingsupplement FOR READ
         IMPORTING it_bookingsupplement_read FOR READ bookingsupplement
-        RESULT    et_bookingsupplement.
+        RESULT    et_bookingsupplement,
+      read_travel_ba FOR READ
+        IMPORTING it_bookingsupplmement FOR READ bookingsupplement\_Travel FULL iv_full_requested
+        RESULT    et_travel LINK et_link_table.
+
 
     METHODS _fill_bookingsupplement_inx
-                                    IMPORTING is_bookingsupplement_update     TYPE LINE OF tt_bookingsupplement_update
-                                    RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/s_booking_supplement_inx.
+      IMPORTING is_bookingsupplement_update     TYPE LINE OF tt_bookingsupplement_update
+      RETURNING VALUE(rs_bookingsupplement_inx) TYPE /dmo/s_booking_supplement_inx.
 ENDCLASS.
 
 
@@ -45,7 +49,7 @@ CLASS lhc_supplement IMPLEMENTATION.
     DATA lt_book_supplement TYPE /dmo/book_suppl.
 
     LOOP AT it_bookingsupplement_update ASSIGNING FIELD-SYMBOL(<fs_bookingsupplement_update>).
-    lt_book_supplement = CORRESPONDING  #( <fs_bookingsupplement_update> MAPPING FROM ENTITY ).
+      lt_book_supplement = CORRESPONDING  #( <fs_bookingsupplement_update> MAPPING FROM ENTITY ).
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
@@ -54,7 +58,7 @@ CLASS lhc_supplement IMPLEMENTATION.
           it_booking_supplement  = VALUE /dmo/t_booking_supplement_in( ( CORRESPONDING #( lt_book_supplement ) ) )
           it_booking_supplementx = VALUE /dmo/t_booking_supplement_inx( ( _fill_bookingsupplement_inx( <fs_bookingsupplement_update> ) ) )
         IMPORTING
-          et_messages = lt_messages.
+          et_messages            = lt_messages.
 
 
       /dmo/cl_travel_auxiliary=>handle_booksupplement_messages(
@@ -104,9 +108,9 @@ CLASS lhc_supplement IMPLEMENTATION.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
-          is_travel              = VALUE /dmo/s_travel_in(     travel_id  = ls_bookingsupplement_delete-travelid )
-          is_travelx             = VALUE /dmo/s_travel_inx(    travel_id  = ls_bookingsupplement_delete-travelid )
-          it_booking             = VALUE /dmo/t_booking_in(  ( booking_id = ls_bookingsupplement_delete-bookingid ) )
+          is_travel              = VALUE /dmo/s_travel_in( travel_id = ls_bookingsupplement_delete-travelid )
+          is_travelx             = VALUE /dmo/s_travel_inx( travel_id = ls_bookingsupplement_delete-travelid )
+          it_booking             = VALUE /dmo/t_booking_in( ( booking_id = ls_bookingsupplement_delete-bookingid ) )
           it_bookingx            = VALUE /dmo/t_booking_inx( ( booking_id = ls_bookingsupplement_delete-bookingid ) )
           it_booking_supplement  = VALUE /dmo/t_booking_supplement_in( (  booking_supplement_id = ls_bookingsupplement_delete-bookingSupplementid
                                                                           booking_id            = ls_bookingsupplement_delete-BookingID ) )
@@ -114,7 +118,7 @@ CLASS lhc_supplement IMPLEMENTATION.
                                                                           booking_id            = ls_bookingsupplement_delete-bookingid
                                                                           action_code           = /dmo/if_flight_legacy=>action_code-delete ) )
         IMPORTING
-          et_messages = lt_messages.
+          et_messages            = lt_messages.
 
       IF lt_messages IS NOT INITIAL.
 
@@ -172,7 +176,7 @@ CLASS lhc_supplement IMPLEMENTATION.
                         supplementid        = COND #( WHEN <fs_bookingsuppl_read>-%control-SupplementID        = cl_abap_behv=>flag_changed THEN ls_bookingsuppl-supplement_id  )
                         price               = COND #( WHEN <fs_bookingsuppl_read>-%control-Price               = cl_abap_behv=>flag_changed THEN ls_bookingsuppl-price  )
                         currencycode        = COND #( WHEN <fs_bookingsuppl_read>-%control-CurrencyCode        = cl_abap_behv=>flag_changed THEN ls_bookingsuppl-currency_code  )
-                        lastchangedat       = COND #( WHEN <fs_bookingsuppl_read>-%control-LastChangedAt       = cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat   )
+*                        lastchangedat       = COND #( WHEN <fs_bookingsuppl_read>-%control-LastChangedAt       = cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat   )
                       ) INTO TABLE et_bookingsupplement.
 
 
@@ -204,6 +208,52 @@ CLASS lhc_supplement IMPLEMENTATION.
 
     ENDLOOP.
 
+
+  ENDMETHOD.
+**********************************************************************
+*
+* Read travel  by association
+*
+**********************************************************************
+  METHOD read_travel_ba.
+    DATA: ls_travel_out TYPE /dmo/travel,
+          ls_travel     LIKE LINE OF et_travel,
+          lt_message    TYPE /dmo/t_message.
+
+    LOOP AT it_bookingsupplmement ASSIGNING FIELD-SYMBOL(<fs_travel>)
+                                            GROUP BY <fs_travel>-TravelID.
+
+      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
+        EXPORTING
+          iv_travel_id = <fs_travel>-%key-TravelID
+        IMPORTING
+          es_travel    = ls_travel_out
+          et_messages  = lt_message.
+
+      IF lt_message IS INITIAL.
+        LOOP AT GROUP <fs_travel> ASSIGNING FIELD-SYMBOL(<fs_bookingsupplement>).
+          INSERT VALUE #( source-%key = <fs_bookingsupplement>-%key
+                          target-%key = ls_travel_out-travel_id )
+          INTO TABLE et_link_table.
+
+          IF iv_full_requested = abap_true.
+            ls_travel = CORRESPONDING #(  ls_travel_out MAPPING TO ENTITY ).
+            INSERT ls_travel INTO TABLE et_travel.
+          ENDIF.
+
+        ENDLOOP.
+
+      ELSE. "fill failed table in case of error
+        failed-bookingsupplement = VALUE #(  BASE failed-bookingsupplement
+                              FOR msg IN lt_message ( %key-TravelID            = <fs_travel>-%key-TravelID
+                                                      %key-BookingID           = <fs_travel>-%key-BookingID
+                                                      %key-BookingSupplementID = <fs_travel>-%key-BookingSupplementID
+                                                      %fail-cause              = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                                                         THEN if_abap_behv=>cause-not_found
+                                                                                         ELSE if_abap_behv=>cause-unspecific ) ) ).
+      ENDIF.
+
+    ENDLOOP.
 
   ENDMETHOD.
 

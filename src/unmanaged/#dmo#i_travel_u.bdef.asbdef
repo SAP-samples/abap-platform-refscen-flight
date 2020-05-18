@@ -3,7 +3,9 @@ implementation unmanaged;
 // behavior defintion for the TRAVEL root entity
 define behavior for /DMO/I_Travel_U alias travel
 implementation in class /DMO/BP_TRAVEL_U unique
-etag LastChangedAt
+etag master LastChangedAt
+lock master
+
 
 {
   field ( read only ) TravelID;
@@ -15,7 +17,7 @@ etag LastChangedAt
 
   action ( features : instance ) set_status_booked result [1] $self;
 
-  association _Booking { create; }
+  association _Booking { create (features: instance); }
 
 
   mapping for /dmo/travel control /dmo/s_travel_intx
@@ -37,6 +39,9 @@ etag LastChangedAt
 // behavior definition for the BOOKING child entity
 define behavior for /DMO/I_Booking_U alias booking
 implementation in class /DMO/BP_BOOKING_U unique
+etag dependent by _Travel
+lock dependent by _Travel
+
 
 {
   field ( read only ) TravelID, BookingID;
@@ -47,6 +52,7 @@ implementation in class /DMO/BP_BOOKING_U unique
   delete;
 
   association _BookSupplement abbreviation _Supplement { create; }
+  association _Travel;
 
   mapping for /dmo/booking control /dmo/s_booking_intx
   {
@@ -66,6 +72,8 @@ implementation in class /DMO/BP_BOOKING_U unique
 // behavior defintion for the BOOKING SUPPLEMENT sub node
 define behavior for /DMO/I_BookingSupplement_U alias bookingsupplement
 implementation in class /DMO/BP_BOOKINGSUPPLEMENT_U unique
+etag dependent by _Travel
+lock dependent by _Travel
 
 {
 
@@ -75,6 +83,8 @@ implementation in class /DMO/BP_BOOKINGSUPPLEMENT_U unique
 
   update;
   delete;
+
+  association _Travel;
 
   mapping for /dmo/book_suppl control /dmo/s_booking_supplement_intx
   {

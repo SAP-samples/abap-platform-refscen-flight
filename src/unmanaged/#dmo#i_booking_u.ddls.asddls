@@ -6,7 +6,7 @@
 
 
 define view /DMO/I_Booking_U
-  as select from /dmo/booking as Booking
+  as select from /dmo/booking as Booking 
 
   association        to parent /DMO/I_Travel_U     as _Travel     on  $projection.TravelID = _Travel.TravelID
   composition [0..*] of /DMO/I_BookingSupplement_U as _BookSupplement
@@ -37,7 +37,7 @@ define view /DMO/I_Booking_U
       @Semantics.currencyCode: true
       Booking.currency_code as CurrencyCode,
 
-      _Travel.LastChangedAt as LastChangedAt, -- Take over ETag from parent
+//      _Travel.LastChangedAt as LastChangedAt, -- Take over ETag from parent
 
       /* Associations */
       _Travel,

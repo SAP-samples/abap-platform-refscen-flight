@@ -3,7 +3,7 @@
 @AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 
-@Metadata.ignorePropagatedAnnotations:true
+//@Metadata.ignorePropagatedAnnotations:true
 
 @EndUserText.label: 'Booking view'
 
@@ -32,8 +32,9 @@ define view /DMO/I_Booking_M
       @Semantics.currencyCode: true
       currency_code,
       booking_status,
-      @UI.hidden: true
-      _Travel.last_changed_at,
+      
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at,                -- used as etag field
 
       /* Associations */
       _Travel,

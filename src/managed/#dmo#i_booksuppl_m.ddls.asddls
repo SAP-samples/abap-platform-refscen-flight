@@ -5,8 +5,6 @@
 
 @EndUserText.label: 'Booking Supplement View - CDS data model'
 
-@Metadata.ignorePropagatedAnnotations:true 
-
 define view /DMO/I_BookSuppl_M 
   as select from /dmo/booksuppl_m as BookingSupplement
 
@@ -25,13 +23,13 @@ define view /DMO/I_BookSuppl_M
       price,
       @Semantics.currencyCode: true
       currency_code,
-
-      @UI.hidden
-      _Travel.last_changed_at,  
+      
+      @Semantics.systemDateTime.lastChangedAt: true
+      last_changed_at,                -- used as etag field
 
       /* Associations */
       _Travel, 
       _Booking,
       _Product, 
-      _SupplementText
-}
+      _SupplementText    
+} 

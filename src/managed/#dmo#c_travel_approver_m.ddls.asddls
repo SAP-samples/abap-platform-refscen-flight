@@ -87,10 +87,11 @@ define root view entity /DMO/C_Travel_Approver_M
           lineItem: [ { position: 45, importance: #MEDIUM } ],
           identification:[ { position: 45 } ] }
       description        as Description,
-
+      
       /* Admininstrative fields */
       @UI.hidden: true
       last_changed_at    as LastChangedAt,
+
 
       /* Associations */
       _Booking : redirected to composition child /DMO/C_Booking_Approver_M,

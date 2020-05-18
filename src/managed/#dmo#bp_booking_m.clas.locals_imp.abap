@@ -5,6 +5,7 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS validate_booking_status      FOR VALIDATION booking~validateStatus   IMPORTING keys FOR booking.
     METHODS get_features                 FOR FEATURES IMPORTING keys REQUEST requested_features FOR booking RESULT result.
 
+
 *    METHODS check_authority_for_booking  FOR AUTHORIZATION IMPORTING it_booking_key REQUEST is_request FOR booking RESULT result.
 
 
@@ -71,15 +72,17 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD get_features.
 
     READ ENTITY /dmo/i_booking_m
-         FIELDS ( booking_id booking_date customer_id )
+         FIELDS ( booking_id booking_date customer_id booking_status )
            WITH VALUE #( FOR keyval IN keys ( %key = keyval-%key ) )
          RESULT    DATA(lt_booking_result).
 
     result = VALUE #( FOR ls_travel IN lt_booking_result
-                       ( %key                = ls_travel-%key
-                         %field-booking_id   = if_abap_behv=>fc-f-read_only
-                         %field-booking_date = if_abap_behv=>fc-f-read_only
-                         %field-customer_id  = if_abap_behv=>fc-f-read_only
+                       ( %key                   = ls_travel-%key
+                         %field-booking_id      = if_abap_behv=>fc-f-read_only
+                         %field-booking_date    = if_abap_behv=>fc-f-read_only
+                         %field-customer_id     = if_abap_behv=>fc-f-read_only
+                         %assoc-_BookSupplement = COND #( WHEN ls_travel-booking_status = 'B'
+                                                          THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
                          "%features-%delete   = if_abap_behv=>fc-o-disabled  " Workaround for missing determinations OnDelete
                       ) ).
 
@@ -103,5 +106,7 @@ CLASS lhc_travel IMPLEMENTATION.
 *    ENDLOOP.
 *
 *  ENDMETHOD.
+
+
 
 ENDCLASS.

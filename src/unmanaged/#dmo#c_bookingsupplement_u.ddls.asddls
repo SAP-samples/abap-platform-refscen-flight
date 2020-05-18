@@ -30,11 +30,12 @@ define view entity /DMO/C_BookingSupplement_U
                                                       element: 'Currency' } } ]
       CurrencyCode,
 
-      LastChangedAt,
+//      LastChangedAt,
 
       /* Associations */
       ///DMO/I_BookingSupplement_U
       _Booking : redirected to parent /DMO/C_Booking_U,
+      _Travel  : redirected to /DMO/C_Travel_U ,         
       _Product,
       _SupplementText
 

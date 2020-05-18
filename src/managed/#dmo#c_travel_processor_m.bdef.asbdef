@@ -2,6 +2,7 @@ projection;
 
 define behavior for /DMO/C_Travel_Processor_M alias TravelProcessor
 use etag
+
 {
   field ( readonly ) TotalPrice;
   field ( mandatory ) BeginDate, EndDate, CustomerID;
@@ -23,6 +24,7 @@ use etag
 //  use delete; // workaround for missing determination on delete
 
   use association _BOOKSUPPLEMENT { create; }
+  use association _Travel { }
 }
 
 
@@ -31,4 +33,5 @@ use etag
 {
   use update;
 //  use delete; // workaround for missing determination on delete
+  use association _Travel { }
 }

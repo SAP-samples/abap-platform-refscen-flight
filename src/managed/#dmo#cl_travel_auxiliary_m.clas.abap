@@ -3,31 +3,31 @@ CLASS /dmo/cl_travel_auxiliary_m DEFINITION
   FINAL
   CREATE PUBLIC .
 
-PUBLIC SECTION.
+  PUBLIC SECTION.
 
 *   Type definition for import parameters --------------------------
-     TYPES tt_travel_id                 TYPE TABLE OF /dmo/travel_id.
+    TYPES tt_travel_id                 TYPE TABLE OF /dmo/travel_id.
     TYPES tt_travel_reported            TYPE TABLE FOR REPORTED /dmo/i_travel_m.
     TYPES tt_booking_reported           TYPE TABLE FOR REPORTED  /dmo/i_booking_m.
     TYPES tt_bookingsupplement_reported TYPE TABLE FOR REPORTED  /dmo/i_booksuppl_m.
 
 *   Method for price calculation (used in determination calls) --------
     CLASS-METHODS calculate_price
-                            IMPORTING it_travel_id          TYPE tt_travel_id.
+      IMPORTING it_travel_id TYPE tt_travel_id.
 
-PROTECTED SECTION.
+  PROTECTED SECTION.
 
-PRIVATE SECTION.
+  PRIVATE SECTION.
 
     CLASS-METHODS new_message
-                            IMPORTING id                    TYPE symsgid
-                                      number                TYPE symsgno
-                                      severity              TYPE if_abap_behv_message=>t_severity
-                                      v1                    TYPE simple OPTIONAL
-                                      v2                    TYPE simple OPTIONAL
-                                      v3                    TYPE simple OPTIONAL
-                                      v4                    TYPE simple OPTIONAL
-                              RETURNING VALUE(obj)          TYPE REF TO if_abap_behv_message .
+      IMPORTING id         TYPE symsgid
+                number     TYPE symsgno
+                severity   TYPE if_abap_behv_message=>t_severity
+                v1         TYPE simple OPTIONAL
+                v2         TYPE simple OPTIONAL
+                v3         TYPE simple OPTIONAL
+                v4         TYPE simple OPTIONAL
+      RETURNING VALUE(obj) TYPE REF TO if_abap_behv_message .
 
 ENDCLASS.
 
@@ -35,6 +35,9 @@ ENDCLASS.
 CLASS /dmo/cl_travel_auxiliary_m IMPLEMENTATION.
 
   METHOD calculate_price.
+
+    DATA: total_book_price_by_trav_curr  TYPE /dmo/total_price,
+          total_suppl_price_by_trav_curr TYPE /dmo/total_price.
 
     IF it_travel_id IS INITIAL.
       RETURN.
@@ -58,6 +61,7 @@ CLASS /dmo/cl_travel_auxiliary_m IMPLEMENTATION.
                         %control-currency_code = if_abap_behv=>mk-on ) )
          RESULT   DATA(lt_read_booking_by_travel).
 
+
     LOOP AT lt_read_booking_by_travel INTO DATA(ls_booking)
       GROUP BY ls_booking-travel_id INTO DATA(ls_travel_key).
 
@@ -68,7 +72,7 @@ CLASS /dmo/cl_travel_auxiliary_m IMPLEMENTATION.
       LOOP AT GROUP ls_travel_key INTO DATA(ls_booking_result)
         GROUP BY ls_booking_result-currency_code INTO DATA(lv_curr).
 
-        DATA(total_book_price_by_trav_curr) = VALUE /dmo/total_price(  ).
+        total_book_price_by_trav_curr = 0.
 
         LOOP AT GROUP lv_curr INTO DATA(ls_booking_line).
 
@@ -104,6 +108,7 @@ CLASS /dmo/cl_travel_auxiliary_m IMPLEMENTATION.
                           %control-currency_code = if_abap_behv=>mk-on ) )
           RESULT   DATA(lt_read_booksuppl).
 
+
     LOOP AT lt_read_booksuppl INTO DATA(ls_booking_suppl)
       GROUP BY ls_booking_suppl-travel_id INTO ls_travel_key.
 
@@ -112,7 +117,7 @@ CLASS /dmo/cl_travel_auxiliary_m IMPLEMENTATION.
       LOOP AT GROUP ls_travel_key INTO DATA(ls_bookingsuppl_result)
         GROUP BY ls_bookingsuppl_result-currency_code INTO lv_curr.
 
-        DATA(total_suppl_price_by_trav_curr) = VALUE /dmo/total_price(  ).
+        total_suppl_price_by_trav_curr = 0.
 
         LOOP AT GROUP lv_curr INTO DATA(ls_booking_suppl2).
           total_suppl_price_by_trav_curr    += ls_booking_suppl2-price.

@@ -9,6 +9,7 @@ define view /DMO/I_BookingSupplement_U
 
   association        to parent /DMO/I_Booking_U as _Booking        on  $projection.TravelID  = _Booking.TravelID
                                                                    and $projection.BookingID = _Booking.BookingID
+  association [1..1] to /DMO/I_Travel_U         as _Travel         on  $projection.TravelID  = _Travel.TravelID                                                                         
 
   association [1..1] to /DMO/I_Supplement       as _Product        on  $projection.SupplementID = _Product.SupplementID
   association [1..*] to /DMO/I_SupplementText   as _SupplementText on  $projection.SupplementID = _SupplementText.SupplementID
@@ -28,10 +29,12 @@ define view /DMO/I_BookingSupplement_U
       @Semantics.currencyCode: true
       BookingSupplement.currency_code         as CurrencyCode,
 
-      _Booking.LastChangedAt                  as LastChangedAt,
+//      _Booking.LastChangedAt                  as LastChangedAt,
 
       /* Associations */
       _Booking,
+      _Travel,
       _Product,
       _SupplementText
 }
+  

@@ -48,4 +48,7 @@ define root view entity /DMO/C_Travel_U
       _Agency,
       _Currency,
       _Customer
+      
+     
 }
+

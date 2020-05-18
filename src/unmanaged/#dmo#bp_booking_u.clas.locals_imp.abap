@@ -23,9 +23,13 @@ CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.
       cba_supplement FOR MODIFY
         IMPORTING it_supplement_create_ba FOR CREATE booking\_booksupplement,
       read_supplement_ba FOR READ
-        IMPORTING it_booking   FOR READ booking\_booksupplement FULL ev_full_requested
-        RESULT    et_booksuppl
-                    LINK et_link_table.
+        IMPORTING it_booking   FOR READ booking\_booksupplement FULL iv_full_requested
+        RESULT    et_booksuppl LINK et_link_table,
+      read_travel_ba FOR READ
+        IMPORTING it_booking FOR READ booking\_travel FULL iv_full_requested
+        RESULT    et_travel LINK et_link_table.
+
+
 
 *    METHODS:
 *      _fill_booking_inx
@@ -184,7 +188,7 @@ CLASS lhc_booking IMPLEMENTATION.
                        flightdate    =   COND #( WHEN <fs_booking_read>-%control-FlightDate       = cl_abap_behv=>flag_changed THEN ls_booking-flight_date    )
                        flightprice   =   COND #( WHEN <fs_booking_read>-%control-FlightPrice      = cl_abap_behv=>flag_changed THEN ls_booking-flight_price   )
                        currencycode  =   COND #( WHEN <fs_booking_read>-%control-CurrencyCode     = cl_abap_behv=>flag_changed THEN ls_booking-currency_code  )
-                       lastchangedat =   COND #( WHEN <fs_booking_read>-%control-LastChangedAt    = cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat   )
+*                       lastchangedat =   COND #( WHEN <fs_booking_read>-%control-LastChangedAt    = cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat   )
                      ) INTO TABLE et_booking.
           ELSE.
             "BookingID not found
@@ -324,7 +328,55 @@ CLASS lhc_booking IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
+**********************************************************************
+*
+* Read travel  by association
+*
+**********************************************************************
+  METHOD read_travel_ba.
+    DATA: ls_travel_out  TYPE /dmo/travel,
+          lt_booking_out TYPE /dmo/t_booking,
+          ls_travel      LIKE LINE OF et_travel,
+          lt_message     TYPE /dmo/t_message.
 
+    "Only one function call for each requested travelid
+    LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<fs_travel>)
+                                 GROUP BY <fs_travel>-TravelID.
+
+      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
+        EXPORTING
+          iv_travel_id = <fs_travel>-%key-TravelID
+        IMPORTING
+          es_travel    = ls_travel_out
+          et_messages  = lt_message.
+
+      IF lt_message IS INITIAL.
+
+        LOOP AT GROUP <fs_travel> ASSIGNING FIELD-SYMBOL(<fs_booking>).
+          "fill link table with key fields
+          INSERT VALUE #( source-%key = <fs_booking>-%key
+                          target-%key = ls_travel_out-travel_id )
+           INTO TABLE et_link_table.
+
+          IF iv_full_requested = abap_true.
+            "fill result parameter with flagged fields
+            ls_travel = CORRESPONDING #(  ls_travel_out MAPPING TO ENTITY ).
+            INSERT ls_travel INTO TABLE et_travel.
+          ENDIF.
+        ENDLOOP.
+
+      ELSE. "fill failed table in case of error
+        failed-booking = VALUE #(  BASE failed-booking
+                              FOR msg IN lt_message ( %key-TravelID    = <fs_travel>-%key-TravelID
+                                                      %key-BookingID   = <fs_travel>-%key-BookingID
+                                                      %fail-cause      = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                                                 THEN if_abap_behv=>cause-not_found
+                                                                                ELSE if_abap_behv=>cause-unspecific ) ) ).
+      ENDIF.
+
+    ENDLOOP.
+
+  ENDMETHOD.
 
 **********************************************************************
 *
@@ -363,15 +415,15 @@ CLASS lhc_booking IMPLEMENTATION.
                  INTO TABLE et_link_table.
 
             "fill result parameter with flagged fields
-            IF ev_full_requested = abap_true.
+            IF iv_full_requested = abap_true.
               INSERT
                  VALUE #( travelid            = SWITCH #( <fs_booking>-%control-TravelID            WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-travel_id )
                           bookingid           = SWITCH #( <fs_booking>-%control-BookingID           WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-booking_id )
                           bookingsupplementid = SWITCH #( <fs_booking>-%control-BookingSupplementID WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-booking_supplement_id )
                           supplementid        = SWITCH #( <fs_booking>-%control-SupplementID        WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-supplement_id )
                           price               = SWITCH #( <fs_booking>-%control-Price               WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-price )
-                          currencycode        = SWITCH #( <fs_booking>-%control-CurrencyCode        WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-currency_code )
-                          lastchangedat       = SWITCH #( <fs_booking>-%control-LastChangedAt       WHEN cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat ) )
+                          currencycode        = SWITCH #( <fs_booking>-%control-CurrencyCode        WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-currency_code ) )
+*                          lastchangedat       = SWITCH #( <fs_booking>-%control-LastChangedAt       WHEN cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat ) )
                  INTO TABLE et_booksuppl.
             ENDIF.
           ENDLOOP.
@@ -394,6 +446,7 @@ CLASS lhc_booking IMPLEMENTATION.
     ENDLOOP.
 
   ENDMETHOD.
+
 
 
 ENDCLASS.

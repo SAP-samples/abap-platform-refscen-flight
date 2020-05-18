@@ -66,8 +66,9 @@ define view entity /DMO/C_Booking_Approver_M
              identification: [ { position: 90, label: 'Status [N(New)| X(Canceled)| B(Booked)]' } ] }
       booking_status     as BookingStatus,
 
+      /* Admininstrative fields */
       @UI.hidden: true
-      last_changed_at    as LastChangedAt, -- Take over from parent
+      last_changed_at    as LastChangedAt,
 
 
       /* Associations */

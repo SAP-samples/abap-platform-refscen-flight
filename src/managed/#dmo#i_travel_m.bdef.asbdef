@@ -4,7 +4,7 @@ define behavior for /DMO/I_Travel_M alias travel
 implementation in class /DMO/BP_TRAVEL_M unique
 persistent table /DMO/TRAVEL_M
 with additional save
-etag last_changed_at
+etag master last_changed_at
 lock master
 //authorization master(instance)
 
@@ -41,8 +41,10 @@ lock master
   validation validateDates    on save { field begin_date, end_date; }
   validation validateStatus   on save { field overall_status; }
 
+
+
   // create booking by association
-  association _Booking { create; }
+  association _Booking { create (features:instance); }
 
 
 
@@ -51,9 +53,9 @@ lock master
 define behavior for /DMO/I_Booking_M alias booking
 implementation in class /DMO/BP_BOOKING_M unique
 persistent table /DMO/BOOKING_M
-etag last_changed_at
-lock dependent( travel_id = travel_id )
-//authorization dependent( travel_id = travel_id )
+etag master last_changed_at
+lock dependent by _Travel
+
 
 {
   // static field control
@@ -68,9 +70,10 @@ lock dependent( travel_id = travel_id )
 
   // standard operations for booking entity
   update;
+//  delete;
 
   // create booking supplement by association
-  association _BookSupplement { create; }
+  association _BookSupplement { create (features:instance); }
 
  // validations
   validation validateStatus on save { field booking_status; }
@@ -78,6 +81,7 @@ lock dependent( travel_id = travel_id )
   // determination for calculation of total flight price
   determination calculateTotalFlightPrice on modify { field flight_price, currency_code; }
 
+  association _Travel { }
 }
 
 
@@ -85,9 +89,9 @@ define behavior for /DMO/I_BookSuppl_M alias booksuppl
 implementation in class /DMO/BP_BOOKINGSUPPLEMENT_M unique
 //persistent table /DMO/BOOKSUPPL_M
 with unmanaged save
-etag last_changed_at
-lock dependent( travel_id = travel_id )
-//authorization dependent( travel_id = travel_id )
+etag master last_changed_at
+lock dependent by _Travel
+//authorization dependent by _Travel
 
 {
   // static field control
@@ -103,7 +107,9 @@ lock dependent( travel_id = travel_id )
   // standard operations for booking supplement entity
   update;
 
+
   // determination for calculation of total suppl. price
   determination calculateTotalSupplmPrice on modify { field price, currency_code; }
 
+  association _Travel { }
 }

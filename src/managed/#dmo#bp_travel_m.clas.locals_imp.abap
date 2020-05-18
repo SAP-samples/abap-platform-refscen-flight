@@ -249,9 +249,6 @@ CLASS lhc_travel IMPLEMENTATION.
                                %param   = CORRESPONDING #(  create ) ) ) .
 
 
-
-
-
   ENDMETHOD.
 
 
@@ -343,7 +340,7 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD get_features.
 
     READ ENTITY /dmo/i_travel_m
-         FIELDS (  travel_id overall_status )
+         FIELDS (  travel_id overall_status description )
            WITH VALUE #( FOR keyval IN keys (  %key = keyval-%key ) )
          RESULT DATA(lt_travel_result).
 
@@ -354,6 +351,8 @@ CLASS lhc_travel IMPLEMENTATION.
                          %features-%action-rejectTravel = COND #( WHEN ls_travel-overall_status = 'X'
                                                                     THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  )
                          %features-%action-acceptTravel = COND #( WHEN ls_travel-overall_status = 'A'
+                                                                    THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
+                         %assoc-_Booking                = COND #( WHEN ls_travel-overall_status = 'X'
                                                                     THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
                       ) ).
 
@@ -377,7 +376,7 @@ CLASS lhc_travel IMPLEMENTATION.
 *    ENDLOOP.
 *
 *  ENDMETHOD.
-
+*
 ENDCLASS.
 
 

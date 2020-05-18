@@ -81,7 +81,8 @@ define view entity /DMO/C_Booking_Processor_M
       booking_status     as BookingStatus,
 
       @UI.hidden: true
-      last_changed_at    as LastChangedAt, -- Take over from parent
+      last_changed_at    as LastChangedAt,
+
 
       /* Associations */
       _Travel         : redirected to parent /DMO/C_Travel_Processor_M,
