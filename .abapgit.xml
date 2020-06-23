@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-16"?>
+<asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+ <asx:values>
+  <REPO>
+   <URL>https://github.com/SAP/abap-platform-refscen-flight.git</URL>
+   <BRANCH_NAME>refs/heads/master</BRANCH_NAME>
+   <PACKAGE>/DMO/FLIGHT</PACKAGE>
+   <CREATED_BY>DEVELOPER</CREATED_BY>
+   <CREATED_AT>20200623094403.647945</CREATED_AT>
+   <DESERIALIZED_BY/>
+   <DESERIALIZED_AT>0.0</DESERIALIZED_AT>
+   <OFFLINE/
+   <LOCAL_CHECKSUMS/>
+   <DOT_ABAPGIT>
+    <MASTER_LANGUAGE>E</MASTER_LANGUAGE>
+    <STARTING_FOLDER>/src/</STARTING_FOLDER>
+    <FOLDER_LOGIC>PREFIX</FOLDER_LOGIC>
+    <IGNORE>
+     <item>/.gitignore</item>
+     <item>/LICENSE</item>
+     <item>/README.md</item>
+     <item>/package.json</item>
+     <item>/.travis.yml</item>
+     <item>/.gitlab-ci.yml</item>
+     <item>/abaplint.json</item>
+     <item>/azure-pipelines.yml</item>
+    </IGNORE>
+    <REQUIREMENTS/>
+   </DOT_ABAPGIT>
+   <HEAD_BRANCH/>
+   <LOCAL_SETTINGS>
+    <DISPLAY_NAME/>
+    <IGNORE_SUBPACKAGES/>
+    <WRITE_PROTECTED/>
+    <ONLY_LOCAL_OBJECTS/>
+    <CODE_INSPECTOR_CHECK_VARIANT/>
+    <BLOCK_COMMIT/>
+    <SERIALIZE_MASTER_LANG_ONLY>X</SERIALIZE_MASTER_LANG_ONLY>
+   </LOCAL_SETTINGS>
+  </REPO>
+ </asx:values>
+</asx:abap>
