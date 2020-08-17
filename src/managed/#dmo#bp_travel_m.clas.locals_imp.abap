@@ -4,10 +4,10 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     TYPES tt_travel_update TYPE TABLE FOR UPDATE /DMO/I_Travel_M.
 
-    METHODS validate_customer          FOR VALIDATION travel~validateCustomer IMPORTING keys FOR travel.
-    METHODS validate_agency            FOR VALIDATION travel~validateAgency   IMPORTING keys FOR travel.
-    METHODS validate_dates             FOR VALIDATION travel~validateDates    IMPORTING keys FOR travel.
-    METHODS validate_travel_status     FOR VALIDATION travel~validateStatus   IMPORTING keys FOR travel.
+    METHODS validate_customer          FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateCustomer.
+    METHODS validate_agency            FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateAgency.
+    METHODS validate_dates             FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateDates.
+    METHODS validate_travel_status     FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateStatus.
 
     METHODS copy_travel                FOR MODIFY IMPORTING   keys FOR ACTION travel~createTravelByTemplate    RESULT result.
     METHODS set_status_completed       FOR MODIFY IMPORTING   keys FOR ACTION travel~acceptTravel              RESULT result.
@@ -52,14 +52,14 @@ CLASS lhc_travel IMPLEMENTATION.
       IF ls_travel-customer_id IS INITIAL
          OR NOT line_exists( lt_customer_db[ customer_id = ls_travel-customer_id ] ).
 
-        APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed.
+        APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed-travel.
         APPEND VALUE #(  travel_id = ls_travel-travel_id
                          %msg = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
                                              number    = '002'
                                              v1        = ls_travel-customer_id
                                              severity  = if_abap_behv_message=>severity-error )
                          %element-customer_id = if_abap_behv=>mk-on )
-          TO reported.
+          TO reported-travel.
       ENDIF.
     ENDLOOP.
 
@@ -71,7 +71,7 @@ CLASS lhc_travel IMPLEMENTATION.
 *
 **********************************************************************
 
- METHOD validate_agency.
+  METHOD validate_agency.
     " Read relevant travel instance data
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
     ENTITY travel
@@ -97,14 +97,14 @@ CLASS lhc_travel IMPLEMENTATION.
     LOOP AT lt_travel INTO DATA(ls_travel).
       IF ls_travel-agency_id IS INITIAL
          OR NOT line_exists( lt_agency_db[ agency_id = ls_travel-agency_id ] ).
-        APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed.
+        APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed-travel.
         APPEND VALUE #(  travel_id = ls_travel-travel_id
                          %msg = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
-                                             number    = '002'
+                                             number    = '001'
                                              v1        = ls_travel-agency_id
                                              severity  = if_abap_behv_message=>severity-error )
                          %element-agency_id = if_abap_behv=>mk-on )
-          TO reported.
+          TO reported-travel.
       ENDIF.
     ENDLOOP.
 
@@ -117,16 +117,18 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_dates.
 
-    READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( begin_date end_date )  WITH
-        VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
-        RESULT DATA(lt_travel_result).
+    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+      ENTITY travel
+        FIELDS ( begin_date end_date )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_travel_result).
 
     LOOP AT lt_travel_result INTO DATA(ls_travel_result).
 
       IF ls_travel_result-end_date < ls_travel_result-begin_date.  "end_date before begin_date
 
         APPEND VALUE #( %key        = ls_travel_result-%key
-                        travel_id   = ls_travel_result-travel_id ) TO failed.
+                        travel_id   = ls_travel_result-travel_id ) TO failed-travel.
 
         APPEND VALUE #( %key     = ls_travel_result-%key
                         %msg     = new_message( id       = /dmo/cx_flight_legacy=>end_date_before_begin_date-msgid
@@ -136,19 +138,19 @@ CLASS lhc_travel IMPLEMENTATION.
                                                 v3       = ls_travel_result-travel_id
                                                 severity = if_abap_behv_message=>severity-error )
                         %element-begin_date = if_abap_behv=>mk-on
-                        %element-end_date   = if_abap_behv=>mk-on ) TO reported.
+                        %element-end_date   = if_abap_behv=>mk-on ) TO reported-travel.
 
       ELSEIF ls_travel_result-begin_date < cl_abap_context_info=>get_system_date( ).  "begin_date must be in the future
 
         APPEND VALUE #( %key        = ls_travel_result-%key
-                        travel_id   = ls_travel_result-travel_id ) TO failed.
+                        travel_id   = ls_travel_result-travel_id ) TO failed-travel.
 
         APPEND VALUE #( %key = ls_travel_result-%key
                         %msg = new_message( id       = /dmo/cx_flight_legacy=>begin_date_before_system_date-msgid
                                             number   = /dmo/cx_flight_legacy=>begin_date_before_system_date-msgno
                                             severity = if_abap_behv_message=>severity-error )
                         %element-begin_date = if_abap_behv=>mk-on
-                        %element-end_date   = if_abap_behv=>mk-on ) TO reported.
+                        %element-end_date   = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
 
     ENDLOOP.
@@ -162,8 +164,10 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_travel_status.
 
-    READ ENTITY /DMO/I_Travel_M\\travel FIELDS ( overall_status ) WITH
-        VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
+    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+        ENTITY travel
+          FIELDS ( overall_status )
+          WITH CORRESPONDING #( keys )
         RESULT DATA(lt_travel_result).
 
     LOOP AT lt_travel_result INTO DATA(ls_travel_result).
@@ -173,14 +177,14 @@ CLASS lhc_travel IMPLEMENTATION.
         WHEN 'A'.  " Accepted
 
         WHEN OTHERS.
-          APPEND VALUE #( %key = ls_travel_result-%key ) TO failed.
+          APPEND VALUE #( %key = ls_travel_result-%key ) TO failed-travel.
 
           APPEND VALUE #( %key = ls_travel_result-%key
                           %msg = new_message( id       = /dmo/cx_flight_legacy=>status_is_not_valid-msgid
                                               number   = /dmo/cx_flight_legacy=>status_is_not_valid-msgno
                                               v1       = ls_travel_result-overall_status
                                               severity = if_abap_behv_message=>severity-error )
-                          %element-overall_status = if_abap_behv=>mk-on ) TO reported.
+                          %element-overall_status = if_abap_behv=>mk-on ) TO reported-travel.
       ENDCASE.
 
     ENDLOOP.
@@ -196,14 +200,15 @@ CLASS lhc_travel IMPLEMENTATION.
 
     SELECT MAX( travel_id ) FROM /dmo/travel_m INTO @DATA(lv_travel_id).
 
-    READ ENTITY /dmo/i_travel_m
+    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+      ENTITY travel
          FIELDS ( travel_id
                   agency_id
                   customer_id
                   booking_fee
                   total_price
                   currency_code )
-           WITH VALUE #( FOR travel IN keys (  %key = travel-%key ) )
+           WITH CORRESPONDING #( keys )
          RESULT    DATA(lt_read_result)
          FAILED    failed
          REPORTED  reported.
@@ -339,10 +344,11 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-    READ ENTITY /dmo/i_travel_m
+    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+      ENTITY travel
          FIELDS (  travel_id overall_status description )
-           WITH VALUE #( FOR keyval IN keys (  %key = keyval-%key ) )
-         RESULT DATA(lt_travel_result).
+         WITH CORRESPONDING #( keys )
+       RESULT DATA(lt_travel_result).
 
 
     result = VALUE #( FOR ls_travel IN lt_travel_result
@@ -504,6 +510,7 @@ CLASS lcl_save IMPLEMENTATION.
         "IF <fs_travel_log_u>-%control-...
 
       ENDLOOP.
+
 
       " Inserts rows specified in lt_travel_log into the DB table /dmo/log_travel
       INSERT /dmo/log_travel FROM TABLE @lt_travel_log_u.

@@ -34,9 +34,6 @@
       </item>
      </SERVICES>
     </CONTENT>
-    <CONTRACT>C2</CONTRACT>
-    <RELEASE_SUPPORTED>true</RELEASE_SUPPORTED>
-    <PUBLISHED>true</PUBLISHED>
    </SRVB>
   </asx:values>
  </asx:abap>

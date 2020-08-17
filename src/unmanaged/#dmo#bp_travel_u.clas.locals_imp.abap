@@ -24,6 +24,7 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
       create_booking_ba FOR MODIFY
         IMPORTING it_booking_create_ba FOR CREATE travel\_booking,
       read_booking_ba   FOR READ
+
         IMPORTING it_travel  FOR READ travel\_Booking
                     FULL iv_full_requested
         RESULT    et_booking
@@ -173,7 +174,7 @@ CLASS lhc_travel IMPLEMENTATION.
     DATA: ls_travel_out TYPE /dmo/travel,
           lt_message    TYPE /dmo/t_message.
 
-    LOOP AT it_travel INTO DATA(ls_travel_to_read).
+    LOOP AT it_travel INTO DATA(ls_travel_to_read) GROUP BY ls_travel_to_read-%key.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
         EXPORTING
@@ -195,7 +196,7 @@ CLASS lhc_travel IMPLEMENTATION.
           FOR msg IN lt_message (
             %key = ls_travel_to_read-%key
             %fail-cause = COND #(
-              WHEN msg-msgty = 'E' AND msg-msgno = '016'
+              WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
               THEN if_abap_behv=>cause-not_found
               ELSE if_abap_behv=>cause-unspecific
             )
@@ -328,7 +329,7 @@ CLASS lhc_travel IMPLEMENTATION.
           lt_message     TYPE /dmo/t_message.
 
 
-    LOOP AT it_travel ASSIGNING FIELD-SYMBOL(<fs_travel_rba>).
+    LOOP AT it_travel ASSIGNING FIELD-SYMBOL(<fs_travel_rba>) GROUP BY <fs_travel_rba>-TravelID.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
         EXPORTING
@@ -372,7 +373,7 @@ CLASS lhc_travel IMPLEMENTATION.
           FOR msg IN lt_message (
             %key = <fs_travel_rba>-TravelID
             %fail-cause = COND #(
-              WHEN msg-msgty = 'E' AND msg-msgno = '016'
+              WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
               THEN if_abap_behv=>cause-not_found
               ELSE if_abap_behv=>cause-unspecific
             )
@@ -394,13 +395,12 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD lock.
 
-*    TRY.
+    TRY.
     "Instantiate lock object
     DATA(lock) = cl_abap_lock_object_factory=>get_instance( iv_name = '/DMO/ETRAVEL' ).
-*      CATCH cx_abap_lock_failure INTO DATA(lr_exp).
-*        RAISE SHORTDUMP lr_exp.
-*        ASSERT 1 = 2. " Must not happen !!!
-*    ENDTRY.
+      CATCH cx_abap_lock_failure INTO DATA(lr_exp).
+        RAISE SHORTDUMP lr_exp.
+    ENDTRY.
 
     LOOP AT it_travel_lock   ASSIGNING FIELD-SYMBOL(<fs_travel>).
       TRY.
@@ -425,9 +425,8 @@ CLASS lhc_travel IMPLEMENTATION.
                 reported     = reported-travel
             ).
 
-*        CATCH cx_abap_lock_failure .
-*          RAISE SHORTDUMP lr_exp.
-*          ASSERT 1 = 2. " Must not happen !!!
+        CATCH cx_abap_lock_failure into lr_exp.
+          RAISE SHORTDUMP lr_exp.
       ENDTRY.
     ENDLOOP.
 

@@ -11,6 +11,11 @@
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>000</MSGNR>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>001</MSGNR>
      <TEXT>Agency &amp;1 unknown</TEXT>
     </T100>
@@ -229,6 +234,66 @@
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>043</MSGNR>
      <TEXT>Travel &amp;1: Booking &amp;2: Booking date must be on or after actual date</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>044</MSGNR>
+     <TEXT>Customer ID is initial for travel &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>045</MSGNR>
+     <TEXT>Agency ID is initial for travel &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>046</MSGNR>
+     <TEXT>You are not authorized to perform this activity</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>047</MSGNR>
+     <TEXT>Invalid discount: Enter a number between 1 an 100.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>050</MSGNR>
+     <TEXT>No flight &amp;1 &amp;2 for FlightDate &amp;3.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>051</MSGNR>
+     <TEXT>Enter AirlineID for Booking &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>052</MSGNR>
+     <TEXT>Enter ConnectionID for Booking &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>053</MSGNR>
+     <TEXT>Enter FlightDate for Booking&amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>054</MSGNR>
+     <TEXT>Enter SupplementID for BookingSupplement &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>055</MSGNR>
+     <TEXT>Supplement &amp;1 unknown.</TEXT>
     </T100>
    </T100>
   </asx:values>

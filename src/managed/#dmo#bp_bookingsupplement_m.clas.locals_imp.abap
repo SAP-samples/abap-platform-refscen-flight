@@ -1,8 +1,8 @@
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS calculate_total_supplm_price FOR DETERMINATION booksuppl~calculateTotalSupplmPrice IMPORTING keys FOR booksuppl.
-    METHODS get_features                 FOR FEATURES IMPORTING keys REQUEST requested_features FOR booksuppl RESULT result.
+    METHODS calculate_total_supplm_price FOR DETERMINE ON MODIFY IMPORTING keys FOR booksuppl~calculateTotalSupplmPrice.
+    METHODS get_features                 FOR FEATURES            IMPORTING keys REQUEST requested_features FOR booksuppl RESULT result.
 
 ENDCLASS.
 

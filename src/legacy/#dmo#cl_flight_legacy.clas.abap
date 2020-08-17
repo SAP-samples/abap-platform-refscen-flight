@@ -417,7 +417,7 @@ CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
     " For Bookings to be deleted we also need to delete the Booking Supplements
     IF    et_messages IS INITIAL
       AND lt_booking_supplement_del IS NOT INITIAL
-      AND line_exists( lt_bookingx[ action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-delete ) ] ).
+      AND line_exists( lt_bookingx[ action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-delete ) ] ). "#EC CI_SORTSEQ
       " Remove any Bookings from internal table that must not be deleted
       LOOP AT lt_booking_supplement_del ASSIGNING FIELD-SYMBOL(<s_booking_supplement_del>).
         READ TABLE lt_bookingx TRANSPORTING NO FIELDS WITH KEY action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-delete )
@@ -459,7 +459,8 @@ CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
         " So currently it is not implemented that a determination of a booking changes another booking as the other booking cannot be properly returned.
         LOOP AT et_booking ASSIGNING FIELD-SYMBOL(<s_booking>).
           LOOP AT it_bookingx TRANSPORTING NO FIELDS WHERE booking_id = <s_booking>-booking_id
-            AND ( action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-create ) OR action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-update ) ).
+            AND ( action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-create )
+               OR action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-update ) ).  "#EC CI_SORTSEQ
             EXIT.
           ENDLOOP.
           IF sy-subrc <> 0.
@@ -468,7 +469,8 @@ CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
         ENDLOOP.
         LOOP AT et_booking_supplement ASSIGNING FIELD-SYMBOL(<s_booking_supplement>).
           LOOP AT it_booking_supplementx TRANSPORTING NO FIELDS WHERE booking_id = <s_booking_supplement>-booking_id AND booking_supplement_id = <s_booking_supplement>-booking_supplement_id
-            AND ( action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-create ) OR action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-update ) ).
+            AND ( action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-create )
+               OR action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-update ) ). "#EC CI_SORTSEQ
             EXIT.
           ENDLOOP.
           IF sy-subrc <> 0.
@@ -507,11 +509,11 @@ CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
 
   METHOD _determine.
     ASSERT cs_travel-travel_id IS NOT INITIAL.
-    LOOP AT ct_booking TRANSPORTING NO FIELDS WHERE travel_id <> cs_travel-travel_id.
+    LOOP AT ct_booking TRANSPORTING NO FIELDS WHERE travel_id <> cs_travel-travel_id. "#EC CI_SORTSEQ
       EXIT.
     ENDLOOP.
     ASSERT sy-subrc = 4.
-    LOOP AT ct_booking_supplement TRANSPORTING NO FIELDS WHERE travel_id <> cs_travel-travel_id.
+    LOOP AT ct_booking_supplement TRANSPORTING NO FIELDS WHERE travel_id <> cs_travel-travel_id. "#EC CI_SORTSEQ
       EXIT.
     ENDLOOP.
     ASSERT sy-subrc = 4.

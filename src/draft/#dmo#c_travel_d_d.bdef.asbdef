@@ -1,0 +1,35 @@
+projection;
+use draft;
+
+define behavior for /DMO/C_TRAVEL_D_D alias Travel
+//use etag
+{
+  use create;
+  use update;
+  use delete;
+
+  use action acceptTravel;
+  use action rejectTravel;
+  use action deductDiscount;
+
+  use association _Booking { create; with draft; }
+}
+
+define behavior for /DMO/C_BOOKING_D_D alias Booking
+//use etag
+{
+  use update;
+  use delete;
+
+  use association _BookingSupplement { create; with draft; }
+  use association _Travel { with draft; }
+}
+
+define behavior for /DMO/C_BOOKINGSUPPLEMENT_D_D alias BookingSupplement
+//use etag
+{
+  use update;
+  use delete;
+
+  use association _Travel { with draft; }
+}

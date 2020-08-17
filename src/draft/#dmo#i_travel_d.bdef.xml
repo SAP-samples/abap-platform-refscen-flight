@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_BDEF" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <BDEF>
+    
+     <NAME>/DMO/I_TRAVEL_D</NAME>
+     <TYPE>BDEF/BDO</TYPE>
+     <VERSION>active</VERSION>
+     <DESCRIPTION>Behavior for /DMO/I_TRAVEL_D</DESCRIPTION>
+     <DESCRIPTION_TEXT_LIMIT>60</DESCRIPTION_TEXT_LIMIT>
+     <SOURCE_URI>./%2Fdmo%2Fi_travel_d/source/main</SOURCE_URI>
+     <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
+     <SOURCE_FIXED_POINT_ARITHMETIC>true</SOURCE_FIXED_POINT_ARITHMETIC>
+     <SOURCE_UNICODE_CHECKS_ACTIVE>true</SOURCE_UNICODE_CHECKS_ACTIVE>
+    
+   </BDEF>
+  </asx:values>
+ </asx:abap>
+</abapGit>

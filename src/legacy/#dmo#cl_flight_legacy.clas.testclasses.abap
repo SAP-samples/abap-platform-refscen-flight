@@ -224,7 +224,7 @@ CLASS ltc_travel IMPLEMENTATION.
     SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2). "#EC CI_NOWHERE
     cl_abap_unit_assert=>assert_equals( msg = 'create should add a travel'  exp = 1  act = lv_count2 - lv_count1 ).
 
-    SELECT * FROM /dmo/travel WHERE travel_id = @ls_travel_new-travel_id INTO TABLE @DATA(lt_travel).
+    SELECT FROM /dmo/travel FIELDS createdby, createdat, status WHERE travel_id = @ls_travel_new-travel_id INTO TABLE @DATA(lt_travel).
     cl_abap_unit_assert=>assert_equals( msg = 'cannot read created travel' exp = 1 act = lines(  lt_travel ) ).
     DATA(ls_travel) = lt_travel[ 1 ].
 
@@ -260,7 +260,7 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA lv_end TYPE timestampl.
     GET TIME STAMP FIELD lv_end.
 
-    SELECT * FROM /dmo/travel WHERE travel_id = @ls_travel_1-travel_id OR travel_id = @ls_travel_2-travel_id INTO TABLE @DATA(lt_travel) ##SELECT_FAE_WITH_LOB[DESCRIPTION].
+    SELECT FROM /dmo/travel FIELDS createdby, createdat, status WHERE travel_id = @ls_travel_1-travel_id OR travel_id = @ls_travel_2-travel_id INTO TABLE @DATA(lt_travel) ##SELECT_FAE_WITH_LOB[DESCRIPTION].
     cl_abap_unit_assert=>assert_equals( msg = 'cannot read created travel'  exp = 2  act = lines( lt_travel ) ).
 
     DATA(ls_travel) = lt_travel[ 1 ].

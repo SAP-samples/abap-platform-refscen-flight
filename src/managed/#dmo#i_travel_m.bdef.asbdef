@@ -13,7 +13,7 @@ lock master
   field ( readonly ) last_changed_at, last_changed_by, created_at, created_by;
 
   // mandatory fields that are required to create a travel
-  field ( mandatory ) agency_id, overall_status, booking_fee, currency_code;
+  field ( mandatory ) agency_id, customer_id, begin_date, end_date, overall_status, booking_fee, currency_code;
 
   // dynamic field control
   field (features : instance ) travel_id;

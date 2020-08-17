@@ -1,0 +1,16 @@
+@EndUserText.label: 'Travel Draft Scenario(active projection)'
+define service /DMO/UI_TRAVEL_A_D {
+  expose /DMO/C_Travel_A_D as Travel;
+  expose /DMO/C_Booking_A_D as Booking;
+  expose /DMO/C_BookingSupplement_A_D as BookingSupplement;
+  expose /DMO/I_Supplement as Supplement;
+  expose /DMO/I_SupplementText as SupplementText;
+  expose /DMO/I_Customer as Passenger;
+  expose /DMO/I_Agency as TravelAgency;
+  expose /DMO/I_Carrier as Airline;
+  expose /DMO/I_Connection as FlightConnection;
+  expose /DMO/I_Flight as Flight;
+  expose /DMO/I_Airport as Airport;
+  expose I_Currency as Currency;
+  expose I_Country as Country;
+}

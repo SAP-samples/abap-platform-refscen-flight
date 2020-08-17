@@ -162,7 +162,8 @@ CLASS lhc_supplement IMPLEMENTATION.
           et_messages           = lt_message.
 
       IF lt_message IS INITIAL.
-        LOOP AT GROUP <fs_travel_read> ASSIGNING FIELD-SYMBOL(<fs_bookingsuppl_read>).
+        LOOP AT GROUP <fs_travel_read> ASSIGNING FIELD-SYMBOL(<fs_bookingsuppl_read>)
+                                       GROUP BY <fs_bookingsuppl_read>-%key.
 
           READ TABLE lt_booksuppl_out INTO DATA(ls_bookingsuppl) WITH KEY  travel_id             = <fs_bookingsuppl_read>-%key-TravelID
                                                                            booking_id            = <fs_bookingsuppl_read>-%key-BookingID
@@ -199,7 +200,7 @@ CLASS lhc_supplement IMPLEMENTATION.
                                      FOR msg IN lt_message ( %key-TravelID            = <fs_bookingsuppl_read>-TravelID
                                                              %key-BookingID           = <fs_bookingsuppl_read>-BookingID
                                                              %key-bookingsupplementid = <fs_bookingsuppl_read>-BookingSupplementID
-                                                             %fail-cause              = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                             %fail-cause              = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
                                                                                                 THEN if_abap_behv=>cause-not_found
                                                                                                 ELSE if_abap_behv=>cause-unspecific ) ) ).
         ENDLOOP.
@@ -248,7 +249,7 @@ CLASS lhc_supplement IMPLEMENTATION.
                               FOR msg IN lt_message ( %key-TravelID            = <fs_travel>-%key-TravelID
                                                       %key-BookingID           = <fs_travel>-%key-BookingID
                                                       %key-BookingSupplementID = <fs_travel>-%key-BookingSupplementID
-                                                      %fail-cause              = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                      %fail-cause              = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
                                                                                          THEN if_abap_behv=>cause-not_found
                                                                                          ELSE if_abap_behv=>cause-unspecific ) ) ).
       ENDIF.

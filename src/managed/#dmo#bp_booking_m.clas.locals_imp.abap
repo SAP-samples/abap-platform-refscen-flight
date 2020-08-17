@@ -1,9 +1,9 @@
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS calculate_total_flight_price FOR DETERMINATION booking~calculateTotalFlightPrice IMPORTING keys FOR booking.
-    METHODS validate_booking_status      FOR VALIDATION booking~validateStatus   IMPORTING keys FOR booking.
-    METHODS get_features                 FOR FEATURES IMPORTING keys REQUEST requested_features FOR booking RESULT result.
+    METHODS calculate_total_flight_price FOR DETERMINE ON MODIFY IMPORTING keys FOR booking~calculateTotalFlightPrice.
+    METHODS validate_booking_status      FOR VALIDATE  ON SAVE   IMPORTING keys FOR booking~validateStatus.
+    METHODS get_features                 FOR FEATURES            IMPORTING keys REQUEST requested_features FOR booking RESULT result.
 
 
 *    METHODS check_authority_for_booking  FOR AUTHORIZATION IMPORTING it_booking_key REQUEST is_request FOR booking RESULT result.
@@ -37,10 +37,12 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_booking_status.
 
-    READ ENTITY /DMO/I_Travel_M\\booking
-         FIELDS ( booking_status )
-           WITH VALUE #( FOR <root_key> IN keys ( %key = <root_key> ) )
-         RESULT DATA(lt_booking_result).
+
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY booking
+        FIELDS ( booking_status )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_booking_result).
 
     LOOP AT lt_booking_result INTO DATA(ls_booking_result).
       CASE ls_booking_result-booking_status.
@@ -49,14 +51,14 @@ CLASS lhc_travel IMPLEMENTATION.
         WHEN 'B'.  " Booked
 
         WHEN OTHERS.
-          APPEND VALUE #( %key = ls_booking_result-%key ) TO failed.
+          APPEND VALUE #( %key = ls_booking_result-%key ) TO failed-booking.
 
           APPEND VALUE #( %key = ls_booking_result-%key
                           %msg = new_message( id       = /dmo/cx_flight_legacy=>status_is_not_valid-msgid
                                               number   = /dmo/cx_flight_legacy=>status_is_not_valid-msgno
                                               v1       = ls_booking_result-booking_status
                                               severity = if_abap_behv_message=>severity-error )
-                          %element-booking_status = if_abap_behv=>mk-on ) TO reported.
+                          %element-booking_status = if_abap_behv=>mk-on ) TO reported-booking.
       ENDCASE.
 
     ENDLOOP.
@@ -71,10 +73,11 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-    READ ENTITY /dmo/i_booking_m
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY booking
          FIELDS ( booking_id booking_date customer_id booking_status )
-           WITH VALUE #( FOR keyval IN keys ( %key = keyval-%key ) )
-         RESULT    DATA(lt_booking_result).
+         WITH CORRESPONDING #( keys )
+      RESULT    DATA(lt_booking_result).
 
     result = VALUE #( FOR ls_travel IN lt_booking_result
                        ( %key                   = ls_travel-%key

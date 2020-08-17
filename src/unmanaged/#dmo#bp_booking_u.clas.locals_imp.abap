@@ -8,8 +8,8 @@ CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
     TYPES:
-      tt_booking_update           TYPE TABLE FOR UPDATE  /dmo/i_booking_u,
-      tt_bookingsupplement_create TYPE TABLE FOR CREATE  /dmo/i_bookingsupplement_u.
+      tt_booking_update           TYPE TABLE FOR UPDATE  /dmo/i_booking_u.
+
 
     METHODS:
       update_booking FOR MODIFY
@@ -170,7 +170,8 @@ CLASS lhc_booking IMPLEMENTATION.
 
       IF lt_message IS INITIAL.
         "For each travelID find the requested bookings
-        LOOP AT GROUP <fs_travel_read> ASSIGNING FIELD-SYMBOL(<fs_booking_read>).
+        LOOP AT GROUP <fs_travel_read> ASSIGNING FIELD-SYMBOL(<fs_booking_read>)
+                                       GROUP BY <fs_booking_read>-%key.
 
           READ TABLE lt_booking_out INTO DATA(ls_booking) WITH KEY travel_id  = <fs_booking_read>-%key-TravelID
                                                                    booking_id = <fs_booking_read>-%key-BookingID .
@@ -205,7 +206,7 @@ CLASS lhc_booking IMPLEMENTATION.
           failed-booking = VALUE #(  BASE failed-booking
                                      FOR msg IN lt_message ( %key-TravelID    = <fs_booking_read>-TravelID
                                                              %key-BookingID   = <fs_booking_read>-BookingID
-                                                             %fail-cause      = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                             %fail-cause      = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
                                                                                         THEN if_abap_behv=>cause-not_found
                                                                                         ELSE if_abap_behv=>cause-unspecific ) ) ).
         ENDLOOP.
@@ -369,7 +370,7 @@ CLASS lhc_booking IMPLEMENTATION.
         failed-booking = VALUE #(  BASE failed-booking
                               FOR msg IN lt_message ( %key-TravelID    = <fs_travel>-%key-TravelID
                                                       %key-BookingID   = <fs_travel>-%key-BookingID
-                                                      %fail-cause      = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                      %fail-cause      = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
                                                                                  THEN if_abap_behv=>cause-not_found
                                                                                 ELSE if_abap_behv=>cause-unspecific ) ) ).
       ENDIF.
@@ -402,7 +403,7 @@ CLASS lhc_booking IMPLEMENTATION.
 
       IF lt_message IS INITIAL.
         "Get BookingSupplements for each travel
-        LOOP AT GROUP <fs_travel> ASSIGNING FIELD-SYMBOL(<fs_booking>).
+        LOOP AT GROUP <fs_travel> ASSIGNING FIELD-SYMBOL(<fs_booking>) GROUP BY <fs_booking>-%key.
           LOOP AT lt_booksuppl_out ASSIGNING FIELD-SYMBOL(<fs_booksuppl>) WHERE  travel_id  = <fs_booking>-%key-TravelID
                                                                           AND    booking_id = <fs_booking>-%key-BookingID .
             "Fill link table with key fields
@@ -435,7 +436,7 @@ CLASS lhc_booking IMPLEMENTATION.
           failed-booking = VALUE #(  BASE failed-booking
                                 FOR msg IN lt_message ( %key-TravelID    = <fs_booking>-%key-TravelID
                                                         %key-BookingID   = <fs_booking>-%key-BookingID
-                                                        %fail-cause      = COND #( WHEN msg-msgty = 'E' AND msg-msgno = '016'
+                                                        %fail-cause      = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
                                                                                    THEN if_abap_behv=>cause-not_found
                                                                                    ELSE if_abap_behv=>cause-unspecific ) ) ).
 

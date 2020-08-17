@@ -5,7 +5,6 @@ use etag
 
 {
   field ( readonly ) TotalPrice;
-  field ( mandatory ) BeginDate, EndDate, CustomerID;
 
   use create;
   use update;

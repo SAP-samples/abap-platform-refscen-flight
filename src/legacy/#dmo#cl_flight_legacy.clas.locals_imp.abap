@@ -194,7 +194,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
     CHECK it_booking_supplement IS NOT INITIAL.
 
     " Check for empty keys
-    LOOP AT it_booking_supplement ASSIGNING FIELD-SYMBOL(<s_booking_supplement_update>) WHERE booking_supplement_id = 0.
+    LOOP AT it_booking_supplement ASSIGNING FIELD-SYMBOL(<s_booking_supplement_update>) WHERE booking_supplement_id = 0. "#EC CI_SORTSEQ
       APPEND NEW /dmo/cx_flight_legacy( textid = /dmo/cx_flight_legacy=>booking_supplement_no_key  travel_id = <s_booking_supplement_update>-travel_id  booking_id = <s_booking_supplement_update>-booking_id ) TO et_messages.
       RETURN.
     ENDLOOP.
@@ -344,7 +344,7 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
     CHECK it_booking_supplement IS NOT INITIAL.
 
     " Check for empty keys
-    LOOP AT it_booking_supplement ASSIGNING FIELD-SYMBOL(<s_booking_supplement_delete>) WHERE booking_supplement_id = 0.
+    LOOP AT it_booking_supplement ASSIGNING FIELD-SYMBOL(<s_booking_supplement_delete>) WHERE booking_supplement_id = 0. "#EC CI_SORTSEQ
       APPEND NEW /dmo/cx_flight_legacy( textid     = /dmo/cx_flight_legacy=>booking_supplement_no_key
                                         travel_id  = <s_booking_supplement_delete>-travel_id
                                         booking_id = <s_booking_supplement_delete>-booking_id ) TO et_messages.
@@ -766,7 +766,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
     CHECK it_booking IS NOT INITIAL.
 
     " Check for empty keys
-    LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<s_booking_update>) WHERE booking_id = 0.
+    LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<s_booking_update>) WHERE booking_id = 0. "#EC CI_SORTSEQ
       APPEND NEW /dmo/cx_flight_legacy( textid = /dmo/cx_flight_legacy=>booking_no_key  travel_id = <s_booking_update>-travel_id ) TO et_messages.
       RETURN.
     ENDLOOP.
@@ -893,7 +893,7 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
     CHECK it_booking IS NOT INITIAL.
 
     " Check for empty keys
-    LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<s_booking_delete>) WHERE booking_id = 0.
+    LOOP AT it_booking ASSIGNING FIELD-SYMBOL(<s_booking_delete>) WHERE booking_id = 0. "#EC CI_SORTSEQ
       APPEND NEW /dmo/cx_flight_legacy( textid = /dmo/cx_flight_legacy=>booking_no_key  travel_id = <s_booking_delete>-travel_id ) TO et_messages.
       RETURN.
     ENDLOOP.
