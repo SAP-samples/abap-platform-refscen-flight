@@ -1,7 +1,7 @@
-# Flight Reference Scenario for the ABAP RESTful Programming Model for SAP Cloud Platform ABAP Environment
-The ABAP RESTful programming model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP Cloud Platform ABAP Environment. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model 
+The ABAP RESTful Application Programming Model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP Cloud Platform ABAP Environment. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
 
-The Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
+The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Application Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
 For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/def316685ad14033b051fc4b88db07c8.html).
 
@@ -13,7 +13,7 @@ Make sure to fulfill the following requirements:
 * You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the update site `http://eclipse.abapgit.org/updatesite/`.
 
 ## Download
-Use the abapGit plug-in to install the <em>Flight Reference Scenario</em> by executing the following steps:
+Use the abapGit plug-in to install the <em>ABAP Flight Reference Scenario</em> by executing the following steps:
 1. In your ABAP cloud project, create the ABAP package `/DMO/FLIGHT` (using the superpackage `/DMO/SAP`) as the target package for the demo content to be downloaded (leave the suggested values unchanged when following the steps in the package creation wizard).
 2. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, click `Window` > `Show View` > `Other...` from the menu bar and choose `abapGit Repositories`.
 3. In the <em>abapGit Repositories</em> view, click the `+` icon to clone an abapGit repository.
