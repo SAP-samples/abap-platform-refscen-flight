@@ -13,8 +13,8 @@ For more information, see [Downloading the ABAP Flight Reference Scenario](https
 ## Application Server ABAP On-Premise
 To import the reference scenario into your on-premise ABAP system, follow the steps in the relevant READ-ME file and download the sources from the branch corresponding to your your backend version: 
 
-* [READ-ME](../On-Premise-1909/README.md) for <em>On-Premise-1909</em> (Application Server ABAP 7.54)
-* [READ-ME](../On-Premise-2020/README.md) for <em>On-Premise-2020</em> (Application Server ABAP 7.55)
+* [READ-ME](../On-Premise-1909/README.md) of branch <em>On-Premise-1909</em> (Application Server ABAP 7.54)
+* [READ-ME](../On-Premise-2020/README.md) of branch <em>On-Premise-2020</em> (Application Server ABAP 7.55)
 
 For more information about the ABAP Flight Reference Scenario, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/def316685ad14033b051fc4b88db07c8.html).
 
