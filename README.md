@@ -1,7 +1,7 @@
-# Flight Reference Scenario for the ABAP RESTful Programming Model on Application Server ABAP 1909
-The ABAP RESTful programming model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps on Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model 
+The ABAP RESTful Application Programming Model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps on Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
 
-The Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
+The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Application Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
 For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/201909.000/en-US/def316685ad14033b051fc4b88db07c8.html).
 
@@ -36,7 +36,7 @@ For more information, see [Setting the System Change Option](https://help.sap.co
 
 
 ## Download
-Use the <em>zabapgit</em> to install the <em>Flight Reference Scenario</em> by executing the following steps:
+Use the <em>zabapgit</em> to install the <em>ABAP Flight Reference Scenario</em> by executing the following steps:
 1.	In your ABAP project, create the package `/DMO/FLIGHT` as target package for the demo content. Use `HOME` as software component. Assign it to a new transport request that you only use for the demo content import. 
 2.	In your ABAP project, run the program `zabapgit`.  
 3.	Choose `+Online` and enter the following URL of this repository  `https://github.com/SAP/abap-platform-refscen-flight.git`. 
