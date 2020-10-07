@@ -65,19 +65,19 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>013</MSGNR>
-     <TEXT>Enter begin date for travel &amp;1</TEXT>
+     <TEXT>Enter Begin Date for Travel &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>014</MSGNR>
-     <TEXT>Enter end date for travel &amp;1</TEXT>
+     <TEXT>Enter End Date for Travel &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>015</MSGNR>
-     <TEXT>Begin date &amp;1 must not be after end date &amp;2 for travel &amp;3</TEXT>
+     <TEXT>Begin Date &amp;1 must not be after End Date &amp;2 for Travel &amp;3</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -101,7 +101,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>019</MSGNR>
-     <TEXT>Travel &amp;1: Booking &amp;2: Invalid booking date &amp;3</TEXT>
+     <TEXT>Travel &amp;1: Booking &amp;2: Invalid Booking Date &amp;3</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -161,7 +161,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>029</MSGNR>
-     <TEXT>Travel &amp;1: Booking &amp;2: Booking Suppl &amp;3: Change price and currency</TEXT>
+     <TEXT>Travel &amp;1: Booking &amp;2: Booking Suppl &amp;3: Change Price and Currency</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -173,7 +173,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>031</MSGNR>
-     <TEXT>Travel &amp;1: Booking &amp;2: Change price and currency</TEXT>
+     <TEXT>Travel &amp;1: Booking &amp;2: Change Price and Currency</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -191,61 +191,61 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>036</MSGNR>
-     <TEXT>Travel ID is initial for travel &amp;1</TEXT>
+     <TEXT>Travel ID is initial for Travel &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>037</MSGNR>
-     <TEXT>Travel status not valid for travel &amp;1</TEXT>
+     <TEXT>Travel status not valid for Travel &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>038</MSGNR>
-     <TEXT>Begin date &amp;1 must be on or after system date</TEXT>
+     <TEXT>Begin Date &amp;1 must be on or after system date</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>039</MSGNR>
-     <TEXT>End date &amp;1 must be on or after begin date</TEXT>
+     <TEXT>End Date &amp;1 must be on or after Begin Date</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>040</MSGNR>
-     <TEXT>Travel &amp;1:Enter begin date for booking &amp;2</TEXT>
+     <TEXT>Travel &amp;1:Enter Begin Date for Booking &amp;2</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>041</MSGNR>
-     <TEXT>Currency code is initial and total price is provided for travel &amp;1</TEXT>
+     <TEXT>Currency Code is initial and Total Price is provided for Travel &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>042</MSGNR>
-     <TEXT>Travel &amp;1: Booking &amp;2: Flight date must be on or after booking date</TEXT>
+     <TEXT>Travel &amp;1: Booking &amp;2: Flight Date must be on or after Booking Date</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>043</MSGNR>
-     <TEXT>Travel &amp;1: Booking &amp;2: Booking date must be on or after actual date</TEXT>
+     <TEXT>Travel &amp;1: Booking &amp;2: Booking Date must be on or after system date</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>044</MSGNR>
-     <TEXT>Customer ID is initial for travel &amp;1</TEXT>
+     <TEXT>Enter Customer ID for Travel&amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>045</MSGNR>
-     <TEXT>Agency ID is initial for travel &amp;1</TEXT>
+     <TEXT>Enter Agency ID for Travel&amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -257,43 +257,49 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>047</MSGNR>
-     <TEXT>Invalid discount: Enter a number between 1 an 100.</TEXT>
+     <TEXT>Invalid discount: Enter a number between 1 an 100</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>050</MSGNR>
-     <TEXT>No flight &amp;1 &amp;2 for FlightDate &amp;3.</TEXT>
+     <TEXT>No Flight &amp;1 &amp;2 for FlightDate &amp;3</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>051</MSGNR>
-     <TEXT>Enter AirlineID for Booking &amp;1.</TEXT>
+     <TEXT>Enter AirlineID for Booking &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>052</MSGNR>
-     <TEXT>Enter ConnectionID for Booking &amp;1.</TEXT>
+     <TEXT>Enter ConnectionID for Booking &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>053</MSGNR>
-     <TEXT>Enter FlightDate for Booking&amp;1.</TEXT>
+     <TEXT>Enter Flight Date for Booking&amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>054</MSGNR>
-     <TEXT>Enter SupplementID for BookingSupplement &amp;1.</TEXT>
+     <TEXT>Enter SupplementID for BookingSupplement &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>055</MSGNR>
-     <TEXT>Supplement &amp;1 unknown.</TEXT>
+     <TEXT>Supplement &amp;1 unknown</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>056</MSGNR>
+     <TEXT>Enter Customer ID for Booking &amp;1</TEXT>
     </T100>
    </T100>
   </asx:values>

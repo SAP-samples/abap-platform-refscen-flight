@@ -1,59 +1,148 @@
 # ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model 
-The ABAP RESTful Application Programming Model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP Cloud Platform ABAP Environment. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+The ABAP RESTful Application Programming Model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps on Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
 
 The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Application Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
-For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/def316685ad14033b051fc4b88db07c8.html).
+For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/def316685ad14033b051fc4b88db07c8.html).
 
 ## Prerequisites
 Make sure to fulfill the following requirements:
-* You have access to an SAP Cloud Platform ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
+* You are working on Application Server ABAP 7.55 or higher. 
 * You have downloaded and installed ABAP Development Tools (ADT). Make sure to use the most recent version as indicated on the [installation page](https://tools.hana.ondemand.com/#abap). 
-* You have created an ABAP Cloud Project in ADT that allows you to access your SAP Cloud Platform ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for additional information). Your log-on language is English.
-* You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the update site `http://eclipse.abapgit.org/updatesite/`.
+* You have created an ABAP Project in ADT that allows you to access your Application Server as mentioned above. Your log-on language is English.
+* You have downloaded and installed the `zabapgit` report. Make sure to use the most recent version as indicated on the [installation page](https://docs.abapgit.org/). 
+* You have installed the certificate files for github.com, see [abapGit Documentation](https://docs.abapgit.org/guide-ssl-setup.html).  
+
+## Set Up Namespace
+SAP uses a reserved namespace for the demo objects. 
+
+To enable the namespace in your customer system, follow the steps described in [Setting Up a Namespace for Development](https://help.sap.com/viewer/4a368c163b08418890a406d413933ba7/LATEST/en-US/bdddbe08ac5c11d2850e0000e8a57770.html). For step 8, enter the following values: 
+* Namespace: `/DMO/`
+* Namespace Role : `C`
+* Repair license: `32869948212895959389`
+* Short Text: Enter a suitable description for the namespace  , for example `SAP Demo Scenarios`.
+* Owner: `SAP` 
+
+Choose `save` and write the changes to a transport. 
+
+To be able to import /DMO/ objects into your system, set the system change option. Proceed as follows: 
+1.	Go to  <em>Transport Organizer Tools</em> (transaction `SE03`) 
+2.	Go to <em>Administration</em> and start the program `Set System Change Option`.
+3.	In the table <em>Namespace/Name Range</em> table search for the <em>/DMO/</em> namespace. 
+4.	In the column <em>Modifiable</em> change the entry to `Modifiable`. 
+5.	Save the settings.
+
+For more information, see [Setting the System Change Option](https://help.sap.com/viewer/4a368c163b08418890a406d413933ba7/LATEST/en-US/5738de9b4eb711d182bf0000e829fbfe.html). 
+
 
 ## Download
-Use the abapGit plug-in to install the <em>ABAP Flight Reference Scenario</em> by executing the following steps:
-1. In your ABAP cloud project, create the ABAP package `/DMO/FLIGHT` (using the superpackage `/DMO/SAP`) as the target package for the demo content to be downloaded (leave the suggested values unchanged when following the steps in the package creation wizard).
-2. To add the <em>abapGit Repositories</em> view to the <em>ABAP</em> perspective, click `Window` > `Show View` > `Other...` from the menu bar and choose `abapGit Repositories`.
-3. In the <em>abapGit Repositories</em> view, click the `+` icon to clone an abapGit repository.
-4. Enter the following URL of this repository: `https://github.com/SAP-samples/abap-platform-refscen-flight.git` and choose <em>Next</em>.
-5. Select the branch <em>Cloud-Platform</em> and enter the newly created package `/DMO/FLIGHT` as the target package.
-6. Create a new transport request that you only use for this demo content installation (recommendation) and choose <em>Finish</em> to link the Git repository to your ABAP cloud project. The repository appears in the abapGit Repositories View with status <em>Linked</em>.
-7. Right-click on the new ABAP repository and choose `pull` to start the cloning of the repository contents. Note that this procedure may take a few minutes. 
-8. Once the cloning has finished, the status is set to `Pulled Successfully`. Then refresh your project tree. 
+Use the <em>zabapgit</em> to install the <em>ABAP Flight Reference Scenario</em> by executing the following steps:
+1.	In your ABAP project, create the package `/DMO/FLIGHT` as target package for the demo content. Use `HOME` as software component. Assign it to a new transport request that you only use for the demo content import. 
+2.	In your ABAP project, run the program `zabapgit`.  
+3.	Choose `New Online` and enter the following URL of this repository  `https://github.com/SAP/abap-platform-refscen-flight.git`. 
+4.	In the package field, enter the newly created package `/DMO/FLIGHT`.
+5.	Leave the other fields unchanged and choose `OK`. You will see the available artifacts to import into your ABAP system. 
+6.	To select the on-premise branch, choose `Branch` > `Switch` and select `On-Premise-2020`. 
+7.	Choose `Pull` and confirm every subpackage on your transport request. 
+8.	Select the package `/DMO/FLIGHT` to be overwritten with the demo content and again confirm the transport request. You will get an information screen telling you to only make repairs when they are urgent, which you can confirm.  
+9.	Once the cloning has finished, refresh your project tree.
 
-As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
+
+As a result of the installation procedure above, the ABAP system creates all development objects of the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
 * `/DMO/FLIGHT_REUSE`
-* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/504035c0850f44f787f5b81e35791d10.html)).
-* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
-* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
-* `/DMO/FLIGHT_DRAFT` - represents the transactional app with <em>draft</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/71ba2bec1d0d4f22bc344bba6b569f2e.html)).
+* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/504035c0850f44f787f5b81e35791d10.html)).
+* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
+* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
+* `/DMO/FLIGHT_DRAFT` - represents the transactional app with <em>draft</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/71ba2bec1d0d4f22bc344bba6b569f2e.html)).
 
-NOTE: The service bindings of the develop scenarios are imported with the warning: `To enable activation of local service endpoint, generate service artifacts`. 
+NOTE:`zabapgit` activates all imported development objects, but fails to manage the activation order for behavior definitions and projection behavior defintions. This results in errors in the import report of zabapgit. Despite finishing the import with errors, you can use the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar to activate the behavior definitions. All other development objects are already activated.
+
+
+NOTE: The demo packages do not include  <em>service definitions</em> or <em>service bindings</em>. They must be created to complete the services (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
 ## Configuration
-
-To activate all development objects from the `/DMO/FLIGHT` package: 
-1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
-2. In the dialog that appears, select all development objects in the transport request (that you created for the demo content installation) and choose `Activate`.
-
-To generate service artifacts for the service bidnings:
-1. Open the service bindings: `/DMO/UI_FLIGHT_R_V2` , `/DMO/UI_TRAVEL_PROC_M_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_U_V2`, and `/DMO/API_TRAVEL_U_V2` `/DMO/UI_TRAVEL_A_D`, `/DMO/UI_TRAVEL_D_D`.
-2. In each service binding editor, choose `Generate service artifacts` in the top left corner of the editor. 
-3. In each service binding, choose the button `Activate` or choose `Activate local service endpoint` in the top right corner of the editor.
-
 To fill the demo database tables for the read-only and the unmanaged scenario with sample business data: 
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
 2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
 
-NOTE: The database tables for transactional processing in the managed scenario and in the draft scnenario do not contain any business data. Instead, you create your business data from scratch.  
+#### Read-Only Scenario
+To create the missing development objects (<em>service definition</em> and <em>service binding</em>) for the read-only list reporting app (package `/DMO/FLIGHT_READONLY`):
+##### Service Definititon
+1. Right-click the CDS entity `/DMO/I_CONNECTION_R` and choose `New Service Definition` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/ade0637f7c554c229cbfd4dc02c7fcaa.html) for additional information). Use the name `/DMO/FLIGHT_R`.
+2. Include the CDS views that are relevant for the read-only scenario to be exposed in the service definition (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/fb9cb12aebf94852bac4665c2db2a25a.html) for additional information). You can also directly copy the source code from [Service Definition Read-Only /DMO/FLIGHT_R](service_definition_readonly)
+3. Activate the service definition.
 
-NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downloaded demo content, do not use the namespace /DMO/ and do not create any development objects in the downloaded packages. You can access the development objects in /DMO/ from your own namespace.
+##### Service Binding
+4.	Right-click the newly created service definition `/DMO/FLIGHT_R` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/777e027f61c3490dba0433443d9143a6.html) for additional information).  
+5.	Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
+6.	Choose the  `Publish` button in the service binding editor.  
 
-## Limitations
-The abapGit plug-in currently only supports to download content. It's not possible to upload any changes.
+#### Unmanaged Scenario
+To create the missing development objects (<em>service definition</em> and <em>service binding</em> ) for the transactional app with implementation type <em>unmanaged</em> (package `/DMO/FLIGHT_UNMANAGED`):
+##### Service Definition
+1.	Right-click the CDS root entity `/DMO/I_TRAVEL_U` and choose `New Service Definition` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/453ff778fd9c4bb0a0b1cd4b19afb8f3.html) for additional information). Use the name `/DMO/TRAVEL_U`.
+2.	Include the CDS views that are relevant for the unmanaged scenario to be exposed in the service definition. You can also directly copy the source code from [Service Definition Unmanaged /DMO/TRAVEL_U](service_definition_unmanaged).
+3.	Activate the service definition. 
+
+
+##### Service Binding
+4. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/ade0637f7c554c229cbfd4dc02c7fcaa.html) for additional information).  
+5. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
+6.	Choose the  `Publish` button in the service binding editor.  
+
+#### Managed Scenario
+To create the missing development objects (<em>service definition</em> and <em>service binding</em> ) for the transactional app with implementation type <em>managed</em> (package `/DMO/FLIGHT_MANAGED`):
+##### Service Definitions
+1.	Right-click the CDS root projection entity `/DMO/C_TRAVEL_PROCESSOR_M` and choose `New Service Definition` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/3dd07cd970d7433584f1b86588176bf1.html) for additional information). Use the name `/DMO/UI_TRAVEL_PROCESSOR_M`.
+2.	Include the CDS views that are relevant for the processor projection of the managed scenario to be exposed in the service definition. You can also directly copy the source code from [Service Definition Processor Projection /DMO/UI_TRAVEL_PROCESSOR_M](service_definition_managed_processor).
+3.	Activate the service definition. 
+
+
+4.	Right-click the CDS root projection entity `/DMO/C_TRAVEL_APPROVER_M` and choose `New Service Definition` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/3dd07cd970d7433584f1b86588176bf1.html) for additional information). Use the name `/DMO/UI_TRAVEL_APPROVER_M`.
+5.	Include the CDS views that are relevant for the approver projection of the managed scenario to be exposed in the service definition. You can also directly copy the source code from [Service Definition Approver Projection /DMO/UI_TRAVEL_APPROVER_M](service_definition_managed_approver).
+6.	Activate the service definition. 
+
+
+##### Service Bindings
+7. Right-click the service definition `/DMO/C_TRAVEL_PROCESSOR_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/3dd07cd970d7433584f1b86588176bf1.html). 
+8. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
+9. Use `ODATA V2 UI` binding type.
+10.	Choose the  `Publish` button in the service binding editor.   
+
+
+11. Right-click the service definition `/DMO/C_TRAVEL_APPROVER_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/3dd07cd970d7433584f1b86588176bf1.html) for additional information). 
+12. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
+13. Use `ODATA V2 UI` binding type.
+14.	Choose the  `Publish` button in the service binding editor. 
+
+#### Draft Scenario
+To create the missing development objects (<em>service definition</em> and <em>service binding</em> ) for the transactional app with  <em>draft</em> (package `/DMO/FLIGHT_DRAFT`):
+##### Service Definitions
+1.	Right-click the CDS root projection entity `/DMO/C_TRAVEL_A_D` and choose `New Service Definition` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/ba62670e882e4b12aa7f7e545dfebe31.html) for additional information). Use the name `/DMO/UI_TRAVEL_A_D`.
+2.	Include the CDS views that are relevant for the non-draft projection of the draft scenario to be exposed in the service definition. You can also directly copy the source code from [Service Definition Draft Active Projection /DMO/UI_TRAVEL_A_D](service_definition_draft_active_projection).
+3.	Activate the service definition. 
+
+
+4.	Right-click the CDS root projection entity `/DMO/C_TRAVEL_D_D` and choose `New Service Definition` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/b10ea0d6cae24a20910bf337c1e5c1cb.html) for additional information). Use the name `/DMO/UI_TRAVEL_D_D`.
+5.	Include the CDS views that are relevant for the draft projection of the draft scenario to be exposed in the service definition. You can also directly copy the source code from [Service Definition Draft Draft Projection /DMO/UI_TRAVEL_D_D](service_definition_draft_draft_projection).
+6.	Activate the service definition. 
+
+##### Service Bindings
+7. Right-click the service definition `/DMO/C_TRAVEL_A_D` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/ba62670e882e4b12aa7f7e545dfebe31.html). 
+8. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
+9. Use `ODATA V2 UI` binding type.
+10.	Choose the  `Publish` button in the service binding editor.   
+
+
+11. Right-click the service definition `/DMO/C_TRAVEL_D_D` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/b10ea0d6cae24a20910bf337c1e5c1cb.html). 
+12. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
+13. Use `ODATA V4 UI` binding type.
+14.	Choose the  `Publish` button in the service binding editor. 
+
+ 
+NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downloaded demo content and the development objects that need to be created to complete the scenario, do not use the namespace /DMO/ and do not create any development objects in the downloaded packages. You can access the development objects in /DMO/ from your own namespace.
+
 
 ## How to obtain support
 This project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.

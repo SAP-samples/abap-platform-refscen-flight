@@ -24,8 +24,9 @@ define view /DMO/I_BookSuppl_M
       @Semantics.currencyCode: true
       currency_code,
       
-      @Semantics.systemDateTime.lastChangedAt: true
-      last_changed_at,                -- used as etag field
+      //local ETag field --> OData ETag
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      last_changed_at,
 
       /* Associations */
       _Travel, 

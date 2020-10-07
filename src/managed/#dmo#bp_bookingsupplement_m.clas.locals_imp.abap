@@ -31,17 +31,17 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-      READ ENTITY /dmo/i_booksuppl_m
-           FIELDS ( booking_supplement_id )
-             WITH VALUE #( FOR keyval IN keys ( %key = keyval-%key ) )
-           RESULT  DATA(lt_booksupppl_result).
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY booksuppl
+         FIELDS ( booking_supplement_id )
+           WITH VALUE #( FOR keyval IN keys ( %tky = keyval-%tky ) )
+         RESULT  DATA(lt_booksupppl_result).
 
 
     result = VALUE #( FOR ls_travel IN lt_booksupppl_result
-                       ( %key                         = ls_travel-%key
+                       ( %tky                         = ls_travel-%tky
                          %field-booking_supplement_id = if_abap_behv=>fc-f-read_only
-                         "%features-%delete = if_abap_behv=>fc-o-disabled  " Workaround for missing determinations on delete
-                     ) ).
+                        ) ).
 
   ENDMETHOD.
 

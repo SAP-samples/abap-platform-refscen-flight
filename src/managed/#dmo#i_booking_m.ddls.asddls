@@ -33,8 +33,9 @@ define view /DMO/I_Booking_M
       currency_code,
       booking_status,
       
-      @Semantics.systemDateTime.lastChangedAt: true
-      last_changed_at,                -- used as etag field
+      //local ETag field --> OData ETag
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
+      last_changed_at,
 
       /* Associations */
       _Travel,
