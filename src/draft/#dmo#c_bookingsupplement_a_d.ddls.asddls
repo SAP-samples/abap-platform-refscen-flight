@@ -18,8 +18,8 @@ define view entity /DMO/C_BookingSupplement_A_D
 
       @ObjectModel.text.element: ['SupplementDescription']
       @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_SUPPLEMENT', element: 'SupplementID' } ,
-                                     additionalBinding: [ { localElement: 'BookSupplPrice',  element: 'Price' },
-                                                          { localElement: 'CurrencyCode', element: 'CurrencyCode' }] }]
+                     additionalBinding: [ { localElement: 'BookSupplPrice',  element: 'Price', usage: #RESULT },
+                                          { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT }] }]
       SupplementID,
       _SupplementText.Description as SupplementDescription : localized,
 

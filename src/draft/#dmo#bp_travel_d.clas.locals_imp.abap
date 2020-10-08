@@ -368,7 +368,7 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky = ls_travel-%tky ) TO failed-travel.
 
         APPEND VALUE #( %tky                = ls_travel-%tky
-*                            %state_area         = 'VALIDATE_AGENCY'
+                        %state_area         = 'VALIDATE_AGENCY'
                         %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
                                                            number   = '045' " Agency is initial
                                                            v1       = ls_travel-TravelID
@@ -416,8 +416,8 @@ CLASS lhc_travel IMPLEMENTATION.
                                                            v1       = ls_travel-TravelID
                                                            severity = if_abap_behv_message=>severity-error )
                         %element-BeginDate = if_abap_behv=>mk-on ) TO reported-travel.
-
-      ELSEIF ls_travel-EndDate IS INITIAL.
+      ENDIF.
+      IF ls_travel-EndDate IS INITIAL.
         APPEND VALUE #( %tky = ls_travel-%tky ) TO failed-travel.
 
         APPEND VALUE #( %tky               = ls_travel-%tky
@@ -426,9 +426,10 @@ CLASS lhc_travel IMPLEMENTATION.
                                                            number   = '014' " Enter EndDate for travel
                                                            v1       = ls_travel-TravelID
                                                            severity = if_abap_behv_message=>severity-error )
-                        %element-BeginDate = if_abap_behv=>mk-on ) TO reported-travel.
-
-      ELSEIF ls_travel-EndDate < ls_travel-BeginDate.
+                        %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.
+      ENDIF.
+      IF ls_travel-EndDate < ls_travel-BeginDate AND ls_travel-BeginDate IS NOT INITIAL
+                                                 AND ls_travel-EndDate IS NOT INITIAL.
         APPEND VALUE #( %tky = ls_travel-%tky ) TO failed-travel.
 
         APPEND VALUE #( %tky               = ls_travel-%tky
@@ -441,8 +442,8 @@ CLASS lhc_travel IMPLEMENTATION.
                                                            severity = if_abap_behv_message=>severity-error )
                         %element-BeginDate = if_abap_behv=>mk-on
                         %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.
-
-      ELSEIF ls_travel-BeginDate < cl_abap_context_info=>get_system_date( ).
+      ENDIF.
+      IF ls_travel-BeginDate < cl_abap_context_info=>get_system_date( ) AND ls_travel-BeginDate IS NOT INITIAL.
         APPEND VALUE #( %tky               = ls_travel-%tky ) TO failed-travel.
 
         APPEND VALUE #( %tky               = ls_travel-%tky

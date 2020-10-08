@@ -346,7 +346,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
     READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
       ENTITY travel
-         FIELDS (  travel_id overall_status description )
+         FIELDS (  travel_id overall_status )
          WITH CORRESPONDING #( keys )
        RESULT DATA(lt_travel_result).
 

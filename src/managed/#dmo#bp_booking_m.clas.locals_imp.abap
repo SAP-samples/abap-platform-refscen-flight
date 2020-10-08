@@ -75,7 +75,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY booking
-         FIELDS ( booking_id booking_date customer_id booking_status )
+         FIELDS ( booking_id booking_status )
          WITH CORRESPONDING #( keys )
       RESULT    DATA(lt_booking_result).
 

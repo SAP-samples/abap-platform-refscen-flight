@@ -50,6 +50,7 @@ etag master LocalLastChangedAt
     CustomerID = customer_id;
     Description = description;
     EndDate = end_date;
+    LastChangedAt = last_changed_at;
     LocalCreatedAt = local_created_at;
     LocalCreatedBy = local_created_by;
     LocalLastChangedAt = local_last_changed_at;
@@ -70,7 +71,7 @@ etag master LocalLastChangedAt
 {
   update;
   delete;
-  association _BookingSupplement { create ( features : instance ); with draft; }
+  association _BookingSupplement { create ; with draft; }
 
   association _Travel { with draft; }
 

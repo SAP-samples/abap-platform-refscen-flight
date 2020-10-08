@@ -27,19 +27,19 @@ define view entity /DMO/C_Booking_D_D
       _Carrier.Name      as CarrierName,
 
       @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_Flight', element: 'ConnectionID'},
-                                                 additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate'},
-                                                                      { localElement: 'AirlineID',    element: 'AirlineID'},
-                                                                      { localElement: 'FlightPrice',  element: 'Price', usage: #RESULT},
-                                                                      { localElement: 'CurrencyCode', element: 'CurrencyCode' } ] } ]
+                     additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate'},
+                                          { localElement: 'AirlineID',    element: 'AirlineID'},
+                                          { localElement: 'FlightPrice',  element: 'Price', usage: #RESULT},
+                                          { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT } ] } ]
       ConnectionID,
 
       FlightDate,
 
       @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_Flight', element: 'ConnectionID'},
-                                                  additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate'},
-                                                                       { localElement: 'AirlineID',    element: 'AirlineID'},
-                                                                       { localElement: 'FlightPrice',  element: 'Price', usage: #RESULT },
-                                                                       { localElement: 'CurrencyCode', element: 'CurrencyCode' } ] } ]
+                     additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate'},
+                                          { localElement: 'AirlineID',    element: 'AirlineID'},
+                                          { localElement: 'FlightPrice',  element: 'Price', usage: #RESULT },
+                                          { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT } ] } ]
       FlightPrice,
 
       @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }}]
@@ -50,7 +50,7 @@ define view entity /DMO/C_Booking_D_D
       LocalLastChangedAt,
 
       /* Associations */
-      _BookingSupplement: redirected to composition child /DMO/C_BOOKINGSUPPLEMENT_D_D,
+      _BookingSupplement: redirected to composition child /DMO/C_BookingSupplement_D_D,
       _Carrier,
       _Connection,
       _Customer,
