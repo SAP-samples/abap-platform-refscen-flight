@@ -137,7 +137,7 @@ To create the missing development objects (<em>service definition</em> and <em>s
 
 11. Right-click the service definition `/DMO/C_TRAVEL_D_D` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/b10ea0d6cae24a20910bf337c1e5c1cb.html). 
 12. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
-13. Use `ODATA V4 UI` binding type.
+13. Use `ODATA V2 UI` binding type.
 14.	Choose the  `Publish` button in the service binding editor. 
 
  
