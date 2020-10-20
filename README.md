@@ -148,5 +148,7 @@ NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downl
 This project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
 ## License
-Copyright (c) 2018 SAP SE or an SAP affiliate company. All rights reserved.
-This project is licensed under the SAP Sample Code License except as noted otherwise in the [LICENSE](LICENSE) file.
+Copyright (c) 2018-2020 SAP SE or an SAP affiliate company. All rights reserved.
+This project is licensed under the SAP Sample Code License except as noted otherwise in the [LICENSE](LICENSES/Apache-2.0.txt) file.
+
+[![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/abap-platform-refscen-flight)](https://api.reuse.software/info/github.com/SAP-samples/abap-platform-refscen-flight)
