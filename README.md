@@ -41,7 +41,7 @@ To activate all development objects from the `/DMO/FLIGHT` package:
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
 2. In the dialog that appears, select all development objects in the transport request (that you created for the demo content installation) and choose `Activate`.
 
-To generate service artifacts for the service bidnings:
+To generate service artifacts for the service bindings:
 1. Open the service bindings: `/DMO/UI_FLIGHT_R_V2` , `/DMO/UI_TRAVEL_PROC_M_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_U_V2`, and `/DMO/API_TRAVEL_U_V2` `/DMO/UI_TRAVEL_A_D`, `/DMO/UI_TRAVEL_D_D`.
 2. In each service binding editor, choose `Generate service artifacts` in the top left corner of the editor. 
 3. In each service binding, choose the button `Activate` or choose `Activate local service endpoint` in the top right corner of the editor.
@@ -50,7 +50,7 @@ To fill the demo database tables for the read-only and the unmanaged scenario wi
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
 2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
 
-NOTE: The database tables for transactional processing in the managed scenario and in the draft scnenario do not contain any business data. Instead, you create your business data from scratch.  
+NOTE: The database tables for transactional processing in the managed scenario and in the draft scenario do not contain any business data. Instead, you create your business data from scratch.  
 
 NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downloaded demo content, do not use the namespace /DMO/ and do not create any development objects in the downloaded packages. You can access the development objects in /DMO/ from your own namespace.
 
