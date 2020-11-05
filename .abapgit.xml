@@ -28,6 +28,10 @@
     <item>/src/unmanaged/#dmo#i_travel_u.bdef.xml</item>
     <item>/src/unmanaged/#dmo#travel_u.srvd.srvdsrv</item>
     <item>/src/unmanaged/#dmo#travel_u.srvd.xml</item>
+    <item>/src/draft/#dmo#ui_travel_a_d.srvb.xml</item>
+    <item>/src/draft/#dmo#ui_travel_a_d.srvd.srvdsrv</item>
+    <item>/src/draft/#dmo#ui_travel_d_d.srvb.xml</item>
+    <item>/src/draft/#dmo#ui_travel_d_d.srvd.srvdsrv</item>
    </IGNORE>
   </DATA>
  </asx:values>

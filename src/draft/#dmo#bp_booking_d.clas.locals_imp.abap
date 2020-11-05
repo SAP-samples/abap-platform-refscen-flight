@@ -157,10 +157,9 @@ CLASS lhc_booking IMPLEMENTATION.
 
         APPEND VALUE #( %tky                = ls_booking-%tky
                         %state_area         = 'VALIDATE_CUSTOMER'
-                        %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '056' " Customer is initial
-                                                           v1       = ls_booking-BookingID
-                                                           severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>ENTER_CUSTOMER_ID
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = lt_link[ source-%tky = ls_booking-%tky ]-target-%tky )
                         %element-CustomerID = if_abap_behv=>mk-on ) TO reported-booking.
 
@@ -169,10 +168,10 @@ CLASS lhc_booking IMPLEMENTATION.
 
         APPEND VALUE #( %tky                = ls_booking-%tky
                         %state_area         = 'VALIDATE_CUSTOMER'
-                        %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '002' " Customer unknown
-                                                           v1       = ls_booking-CustomerID
-                                                           severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>CUSTOMER_UNKOWN
+                                                                customer_id = ls_booking-customerId
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = lt_link[ source-%tky = ls_booking-%tky ]-target-%tky )
                         %element-CustomerID = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
@@ -208,10 +207,9 @@ CLASS lhc_booking IMPLEMENTATION.
 
         APPEND VALUE #( %tky                = <fs_booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
-                        %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '051' " AirlineID is initial
-                                                           v1       = <fs_booking>-BookingID
-                                                           severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>ENTER_AIRLINE_ID
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path              = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
                         %element-AirlineID = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
@@ -221,10 +219,9 @@ CLASS lhc_booking IMPLEMENTATION.
 
         APPEND VALUE #( %tky                = <fs_booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
-                        %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '052' " Connection ID is initial
-                                                           v1       = <fs_booking>-BookingID
-                                                           severity = if_abap_behv_message=>severity-error )
+                        %msg                = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>ENTER_CONNECTION_ID
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
                         %element-ConnectionID = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
@@ -234,10 +231,9 @@ CLASS lhc_booking IMPLEMENTATION.
 
         APPEND VALUE #( %tky                = <fs_booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
-                        %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '053' " FLightDate is initial
-                                                           v1       =  <fs_booking>-BookingID
-                                                           severity = if_abap_behv_message=>severity-error )
+                        %msg                = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>ENTER_FLIGHT_DATE
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
                         %element-FlightDate = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
@@ -245,22 +241,22 @@ CLASS lhc_booking IMPLEMENTATION.
       IF <fs_booking>-AirlineID IS NOT INITIAL AND
          <fs_booking>-ConnectionID IS NOT INITIAL AND
          <fs_booking>-FlightDate IS NOT INITIAL.
-        SELECT SINGLE * FROM /dmo/flight  WHERE  carrier_id    = @<fs_booking>-AirlineID
-                                            AND  connection_id = @<fs_booking>-ConnectionID
-                                            AND  flight_date   = @<fs_booking>-FlightDate
-                                           INTO  @DATA(ls_flight).
+
+        SELECT SINGLE Carrier_ID, Connection_ID, Flight_Date   FROM /dmo/flight  WHERE  carrier_id    = @<fs_booking>-AirlineID
+                                                               AND  connection_id = @<fs_booking>-ConnectionID
+                                                               AND  flight_date   = @<fs_booking>-FlightDate
+                                                               INTO  @DATA(ls_flight).
 
         IF sy-subrc <> 0.
           APPEND VALUE #( %tky = <fs_booking>-%tky ) TO failed-booking.
 
           APPEND VALUE #( %tky                 = <fs_booking>-%tky
                           %state_area          = 'VALIDATE_CONNECTION'
-                          %msg                 = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                              number   = '050' " Flight invalid
-                                                              v1       = <fs_booking>-AirlineID
-                                                              v2       = <fs_booking>-ConnectionID
-                                                              v3       = <fs_booking>-FlightDate
-                                                              severity = if_abap_behv_message=>severity-error )
+                          %msg                 = NEW /dmo/cm_flight_messages(
+                                                                textid      = /dmo/cm_flight_messages=>NO_FLIGHT_EXISTS
+                                                                carrier_id  = <fs_booking>-AirlineID
+                                                                flight_date = <fs_booking>-FlightDate
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path                  = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
                         %element-FlightDate    = if_abap_behv=>mk-on
                         %element-AirlineID     = if_abap_behv=>mk-on

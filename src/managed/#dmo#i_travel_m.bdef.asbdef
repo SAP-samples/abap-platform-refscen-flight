@@ -15,8 +15,8 @@ lock master
   // mandatory fields that are required to create a travel
   field ( mandatory ) agency_id, customer_id, begin_date, end_date, overall_status, booking_fee, currency_code;
 
-  // dynamic field control
-  field (features : instance ) travel_id;
+  // Fields that are mandatory for create but should be read-only afterwards
+  field ( mandatory : create, readonly : update ) travel_id;
 
   // mapping entity's field types with table field types
   mapping for /DMO/TRAVEL_M corresponding;
@@ -65,8 +65,8 @@ lock dependent by _Travel
   // mapping entity's field types with table field types
   mapping for /DMO/BOOKING_M corresponding;
 
-  // dynamic field control
-  field (features : instance ) booking_id, booking_date, customer_id;
+  // Fields that are mandatory for create but should be read-only afterwards
+  field ( mandatory : create, readonly : update) booking_id, booking_date, customer_id;
 
   // standard operations for booking entity
   update;
@@ -98,8 +98,8 @@ lock dependent by _Travel
   field ( mandatory ) supplement_id, price;
   field ( readonly ) travel_id, booking_id;
 
-  // dynamic field control
-  field (features : instance ) booking_supplement_id;
+  // Fields that are mandatory for create but should be read-only afterwards
+  field ( mandatory : create, readonly : update ) booking_supplement_id;
 
   // mapping entity's field types with table field types
   mapping for /DMO/BOOKSUPPL_M corresponding;

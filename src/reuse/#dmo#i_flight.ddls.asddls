@@ -1,12 +1,9 @@
-@AbapCatalog.sqlViewName: '/DMO/IFLIGHT_RE'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Flight View - CDS Data Model'
 
 @Search.searchable: true
 
-define view /DMO/I_Flight
+define view entity /DMO/I_Flight
   as select from /dmo/flight as Flight
 
   association [1] to /DMO/I_Carrier as _Airline         on $projection.AirlineID = _Airline.AirlineID
@@ -16,7 +13,6 @@ define view /DMO/I_Flight
 
 {
       @Search.defaultSearchElement: true
-      @Search.fuzzinessThreshold: 0.8
       @ObjectModel.text.association: '_Airline'
       @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Carrier' , element: 'AirlineID'} }]
   key Flight.carrier_id     as AirlineID,
@@ -27,12 +23,12 @@ define view /DMO/I_Flight
                      additionalBinding: [{ element: 'AirlineID', localElement: 'AirlineID' }] }]
   key Flight.connection_id  as ConnectionID,
 
+      @Search.defaultSearchElement: true
   key Flight.flight_date    as FlightDate,
 
       @Semantics.amount.currencyCode: 'CurrencyCode'
       Flight.price          as Price,
 
-      @Semantics.currencyCode: true
       Flight.currency_code  as CurrencyCode,
 
       Flight.plane_type_id  as PlaneType,

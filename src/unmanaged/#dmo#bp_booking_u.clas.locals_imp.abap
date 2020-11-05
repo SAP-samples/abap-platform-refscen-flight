@@ -318,7 +318,8 @@ CLASS lhc_booking IMPLEMENTATION.
         /dmo/cl_travel_auxiliary=>handle_booking_messages(
            EXPORTING
              iv_cid       = <fs_supplement_create_ba>-%cid_ref
-             iv_travel_id = ls_parent_key-travelid
+             iv_travel_id = ls_parent_key-TravelID
+             iv_booking_id = ls_parent_key-BookingID
              it_messages  = lt_messages
            CHANGING
              failed   = failed-booking

@@ -55,6 +55,15 @@ CLASS /dmo/cl_flight_data_generator IMPLEMENTATION.
     out->write( 'Generate Data: Booking Supplement      /DMO/BOOK_SUPPL' ).
     lcl_travel_data_generator=>lif_data_generator~create( out ).
 
+
+    out->write(  'Calling BAdIs' ).
+
+    DATA lo_badi TYPE REF TO /DMO/DATA_GENERATION_BADI.
+    GET BADI lo_badi.
+    CALL BADI lo_badi->data_generation
+      EXPORTING out = out.
+    out->write(  'Finished Calling BAdIs' ).
+
     out->write( 'Finished Data Generation' ).
   ENDMETHOD.
   METHOD calculate_flight_price.

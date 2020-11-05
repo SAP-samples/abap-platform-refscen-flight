@@ -1,11 +1,8 @@
-@AbapCatalog.sqlViewName: '/DMO/IBOOKING_U'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Booking view'
 
 
-define view /DMO/I_Booking_U
+define view entity /DMO/I_Booking_U
   as select from /dmo/booking as Booking 
 
   association        to parent /DMO/I_Travel_U     as _Travel     on  $projection.TravelID = _Travel.TravelID
@@ -34,7 +31,6 @@ define view /DMO/I_Booking_U
       @Semantics.amount.currencyCode: 'CurrencyCode'
       Booking.flight_price  as FlightPrice,
 
-      @Semantics.currencyCode: true
       Booking.currency_code as CurrencyCode,
 
 //      _Travel.LastChangedAt as LastChangedAt, -- Take over ETag from parent

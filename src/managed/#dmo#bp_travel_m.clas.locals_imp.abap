@@ -1,4 +1,8 @@
-CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS test_readonly_methods DEFINITION DEFERRED FOR TESTING.
+CLASS test_writing_methods  DEFINITION DEFERRED FOR TESTING.
+CLASS test_using_entity_stub  DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
+  FRIENDS test_readonly_methods test_writing_methods test_using_entity_stub.
 
   PRIVATE SECTION.
 
@@ -13,6 +17,10 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
     METHODS set_status_completed       FOR MODIFY IMPORTING   keys FOR ACTION travel~acceptTravel              RESULT result.
     METHODS set_status_cancelled       FOR MODIFY IMPORTING   keys FOR ACTION travel~rejectTravel              RESULT result.
     METHODS get_features               FOR FEATURES IMPORTING keys REQUEST    requested_features FOR travel    RESULT result.
+    METHODS recalctotalprice FOR MODIFY
+      IMPORTING keys FOR ACTION travel~recalctotalprice.
+    METHODS calculatetotalprice FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR travel~calculatetotalprice.
 
 *    METHODS check_authority_for_travel FOR AUTHORIZATION IMPORTING it_travel_key REQUEST is_request FOR travel RESULT result.
 
@@ -54,10 +62,10 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed-travel.
         APPEND VALUE #(  travel_id = ls_travel-travel_id
-                         %msg = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
-                                             number    = '002'
-                                             v1        = ls_travel-customer_id
-                                             severity  = if_abap_behv_message=>severity-error )
+                         %msg = NEW /dmo/cm_flight_messages(
+                              customer_id = ls_travel-customer_id
+                              textid = /dmo/cm_flight_messages=>customer_unkown
+                              severity = if_abap_behv_message=>severity-error )
                          %element-customer_id = if_abap_behv=>mk-on )
           TO reported-travel.
       ENDIF.
@@ -99,10 +107,10 @@ CLASS lhc_travel IMPLEMENTATION.
          OR NOT line_exists( lt_agency_db[ agency_id = ls_travel-agency_id ] ).
         APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed-travel.
         APPEND VALUE #(  travel_id = ls_travel-travel_id
-                         %msg = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
-                                             number    = '001'
-                                             v1        = ls_travel-agency_id
-                                             severity  = if_abap_behv_message=>severity-error )
+                         %msg = NEW /dmo/cm_flight_messages(
+                          textid = /dmo/cm_flight_messages=>agency_unkown
+                          agency_id = ls_travel-agency_id
+                          severity = if_abap_behv_message=>severity-error )
                          %element-agency_id = if_abap_behv=>mk-on )
           TO reported-travel.
       ENDIF.
@@ -131,12 +139,13 @@ CLASS lhc_travel IMPLEMENTATION.
                         travel_id   = ls_travel_result-travel_id ) TO failed-travel.
 
         APPEND VALUE #( %key     = ls_travel_result-%key
-                        %msg     = new_message( id       = /dmo/cx_flight_legacy=>end_date_before_begin_date-msgid
-                                                number   = /dmo/cx_flight_legacy=>end_date_before_begin_date-msgno
-                                                v1       = ls_travel_result-begin_date
-                                                v2       = ls_travel_result-end_date
-                                                v3       = ls_travel_result-travel_id
-                                                severity = if_abap_behv_message=>severity-error )
+                        %msg = NEW /dmo/cm_flight_messages(
+                               textid = /dmo/cm_flight_messages=>begin_date_bef_end_date
+                               severity = if_abap_behv_message=>severity-error
+                               begin_date = ls_travel_result-begin_date
+                               end_Date = ls_travel_result-end_date
+                               travel_id = ls_travel_result-travel_id
+                          )
                         %element-begin_date = if_abap_behv=>mk-on
                         %element-end_date   = if_abap_behv=>mk-on ) TO reported-travel.
 
@@ -146,9 +155,10 @@ CLASS lhc_travel IMPLEMENTATION.
                         travel_id   = ls_travel_result-travel_id ) TO failed-travel.
 
         APPEND VALUE #( %key = ls_travel_result-%key
-                        %msg = new_message( id       = /dmo/cx_flight_legacy=>begin_date_before_system_date-msgid
-                                            number   = /dmo/cx_flight_legacy=>begin_date_before_system_date-msgno
-                                            severity = if_abap_behv_message=>severity-error )
+                        %msg = NEW /dmo/cm_flight_messages(
+                               textid = /dmo/cm_flight_messages=>begin_date_on_or_bef_sysdate
+                               severity = if_abap_behv_message=>severity-error )
+
                         %element-begin_date = if_abap_behv=>mk-on
                         %element-end_date   = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
@@ -180,10 +190,10 @@ CLASS lhc_travel IMPLEMENTATION.
           APPEND VALUE #( %key = ls_travel_result-%key ) TO failed-travel.
 
           APPEND VALUE #( %key = ls_travel_result-%key
-                          %msg = new_message( id       = /dmo/cx_flight_legacy=>status_is_not_valid-msgid
-                                              number   = /dmo/cx_flight_legacy=>status_is_not_valid-msgno
-                                              v1       = ls_travel_result-overall_status
-                                              severity = if_abap_behv_message=>severity-error )
+                          %msg = NEW /dmo/cm_flight_messages(
+                               textid = /dmo/cm_flight_messages=>status_invalid
+                               severity = if_abap_behv_message=>severity-error
+                               status = ls_travel_result-overall_status )
                           %element-overall_status = if_abap_behv=>mk-on ) TO reported-travel.
       ENDCASE.
 
@@ -198,7 +208,7 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD copy_travel.
 
-    SELECT MAX( travel_id ) FROM /dmo/travel_m INTO @DATA(lv_travel_id).
+    SELECT MAX( travel_id ) FROM /dmo/travel_m INTO @DATA(lv_travel_id). "#EC CI_NOWHERE
 
     READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
       ENTITY travel
@@ -344,16 +354,16 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel
          FIELDS (  travel_id overall_status )
          WITH CORRESPONDING #( keys )
-       RESULT DATA(lt_travel_result).
+       RESULT DATA(lt_travel_result)
+       FAILED failed.
 
 
     result = VALUE #( FOR ls_travel IN lt_travel_result
                        ( %key                           = ls_travel-%key
-                         %field-travel_id               = if_abap_behv=>fc-f-read_only
                          %features-%action-rejectTravel = COND #( WHEN ls_travel-overall_status = 'X'
                                                                     THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  )
                          %features-%action-acceptTravel = COND #( WHEN ls_travel-overall_status = 'A'
@@ -383,6 +393,92 @@ CLASS lhc_travel IMPLEMENTATION.
 *
 *  ENDMETHOD.
 *
+  METHOD ReCalcTotalPrice.
+    TYPES: BEGIN OF ty_amount_per_currencycode,
+             amount        TYPE /dmo/total_price,
+             currency_code TYPE /dmo/currency_code,
+           END OF ty_amount_per_currencycode.
+
+    DATA: amount_per_currencycode TYPE STANDARD TABLE OF ty_amount_per_currencycode.
+
+    " Read all relevant travel instances.
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+         ENTITY Travel
+            FIELDS ( booking_fee currency_code )
+            WITH CORRESPONDING #( keys )
+         RESULT DATA(lt_travel)
+         FAILED failed.
+
+    DELETE lt_travel WHERE currency_code IS INITIAL.
+
+    LOOP AT lt_travel ASSIGNING FIELD-SYMBOL(<fs_travel>).
+      " Set the start for the calculation by adding the booking fee.
+      amount_per_currencycode = VALUE #( ( amount        = <fs_travel>-booking_fee
+                                           currency_code = <fs_travel>-currency_code ) ).
+
+      " Read all associated bookings and add them to the total price.
+      READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+        ENTITY Travel BY \_Booking
+          FIELDS ( flight_price currency_code )
+        WITH VALUE #( ( %key = <fs_travel>-%key ) )
+        RESULT DATA(lt_booking).
+
+      LOOP AT lt_booking INTO DATA(booking) WHERE currency_code IS NOT INITIAL.
+        COLLECT VALUE ty_amount_per_currencycode( amount        = booking-flight_price
+                                                  currency_code = booking-currency_code ) INTO amount_per_currencycode.
+      ENDLOOP.
+
+      " Read all associated booking supplements and add them to the total price.
+      READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+        ENTITY Booking BY \_BookSupplement
+          FIELDS (  price currency_code )
+        WITH VALUE #( FOR rba_booking IN lt_booking ( %tky = rba_booking-%tky ) )
+        RESULT DATA(lt_bookingsupplement).
+
+      LOOP AT lt_bookingsupplement INTO DATA(bookingsupplement) WHERE currency_code IS NOT INITIAL.
+        COLLECT VALUE ty_amount_per_currencycode( amount        = bookingsupplement-price
+                                                  currency_code = bookingsupplement-currency_code ) INTO amount_per_currencycode.
+      ENDLOOP.
+
+      CLEAR <fs_travel>-total_price.
+      LOOP AT amount_per_currencycode INTO DATA(single_amount_per_currencycode).
+        " If needed do a Currency Conversion
+        IF single_amount_per_currencycode-currency_code = <fs_travel>-currency_code.
+          <fs_travel>-total_price += single_amount_per_currencycode-amount.
+        ELSE.
+          /dmo/cl_flight_amdp=>convert_currency(
+             EXPORTING
+               iv_amount                   =  single_amount_per_currencycode-amount
+               iv_currency_code_source     =  single_amount_per_currencycode-currency_code
+               iv_currency_code_target     =  <fs_travel>-currency_code
+               iv_exchange_rate_date       =  cl_abap_context_info=>get_system_date( )
+             IMPORTING
+               ev_amount                   = DATA(total_booking_price_per_curr)
+            ).
+          <fs_travel>-total_price += total_booking_price_per_curr.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+
+    " write back the modified total_price of travels
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY travel
+        UPDATE FIELDS ( total_price )
+        WITH CORRESPONDING #( lt_travel ).
+
+  ENDMETHOD.
+
+  METHOD calculateTotalPrice.
+
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY Travel
+        EXECUTE ReCalcTotalPrice
+        FROM CORRESPONDING #( keys )
+    REPORTED DATA(lt_reported).
+
+    reported = CORRESPONDING #( DEEP lt_reported ).
+  ENDMETHOD.
+
 ENDCLASS.
 
 
@@ -437,7 +533,7 @@ CLASS lcl_save IMPLEMENTATION.
             APPEND <fs_travel_log_c> TO lt_travel_log_c.
           ENDIF.
 
-          " If new value of the overal_status field created
+          " If new value of the overall_status field created
           IF ls_travel-%control-overall_status = cl_abap_behv=>flag_changed.
             " Generate uuid as value of the change_id field
             TRY.
@@ -445,7 +541,7 @@ CLASS lcl_save IMPLEMENTATION.
               CATCH cx_uuid_error.
                 "handle exception
             ENDTRY.
-            <fs_travel_log_c>-changed_field_name = 'overal_status'.
+            <fs_travel_log_c>-changed_field_name = 'overall_status'.
             <fs_travel_log_c>-changed_value = ls_travel-overall_status.
             APPEND <fs_travel_log_c> TO lt_travel_log_c.
           ENDIF.
@@ -555,8 +651,8 @@ CLASS lcl_save IMPLEMENTATION.
     ENDIF.
 
     " (2) Get instance data of all instances that have been updated during the transaction
-    IF update-booksuppl IS NOT INITIAL.
-      lt_booksuppl_db = CORRESPONDING #( update-booksuppl ).
+    lt_booksuppl_db = CORRESPONDING #( update-booksuppl ).
+    IF lt_booksuppl_db IS NOT INITIAL.
 
       " Read all field values from database
       SELECT * FROM /dmo/booksuppl_m FOR ALL ENTRIES IN @lt_booksuppl_db

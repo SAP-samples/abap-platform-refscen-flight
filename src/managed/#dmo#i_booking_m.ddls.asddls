@@ -1,13 +1,8 @@
-@AbapCatalog.sqlViewName: '/DMO/IBOOKING_M'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
-
 //@Metadata.ignorePropagatedAnnotations:true
-
 @EndUserText.label: 'Booking view'
 
-define view /DMO/I_Booking_M
+define view entity /DMO/I_Booking_M
   as select from /dmo/booking_m as Booking
 
   association        to parent /DMO/I_Travel_M as _Travel     on  $projection.travel_id = _Travel.travel_id
@@ -29,7 +24,6 @@ define view /DMO/I_Booking_M
       flight_date,
       @Semantics.amount.currencyCode: 'currency_code'
       flight_price,
-      @Semantics.currencyCode: true
       currency_code,
       booking_status,
       

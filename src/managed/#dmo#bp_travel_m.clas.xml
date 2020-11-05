@@ -12,6 +12,7 @@
     <FIXPT>X</FIXPT>
     <UNICODE>5</UNICODE>
     <CLSDEFINT>/DMO/I_TRAVEL_M</CLSDEFINT>
+    <WITH_UNIT_TESTS>X</WITH_UNIT_TESTS>
    </VSEOCLASS>
   </asx:values>
  </asx:abap>

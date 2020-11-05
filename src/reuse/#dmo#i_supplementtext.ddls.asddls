@@ -1,12 +1,9 @@
-@AbapCatalog.sqlViewName: '/DMO/ISUPPTXT'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Supplement Text View - CDS Data Model'
 
 @Search.searchable: true
 
-define view /DMO/I_SupplementText
+define view entity /DMO/I_SupplementText
   as select from /dmo/suppl_text as SupplementText
 
 {

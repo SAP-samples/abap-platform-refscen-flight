@@ -1,5 +1,3 @@
-@AbapCatalog.sqlViewName: '/DMO/ICONNECT_R'
-@AbapCatalog.compiler.compareFilter: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Connection View - CDS Data Model'
 
@@ -8,7 +6,7 @@
 
 @Search.searchable: true
 
-define view /DMO/I_Connection_R
+define view entity /DMO/I_Connection_R
   as select from /dmo/connection as Connection
 
   association [1..*] to /DMO/I_Flight_R as _Flight  on  $projection.AirlineID    = _Flight.AirlineID
@@ -75,7 +73,6 @@ define view /DMO/I_Connection_R
         @UI: { identification:[ { position: 70, label: 'Distance' } ] }
         Connection.distance         as Distance,
 
-        @Semantics.unitOfMeasure: true
         Connection.distance_unit    as DistanceUnit,
 
         /* Associations */

@@ -3,6 +3,8 @@
 
 @Metadata.allowExtensions: true
 @Search.searchable: true
+@ObjectModel.semanticKey: ['BookingID']
+
 define view entity /DMO/C_Booking_D_D
   as projection on /DMO/I_Booking_D
 {

@@ -1,10 +1,7 @@
-@AbapCatalog.sqlViewName: '/DMO/IBOOKSUPP_U'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Booking Supplement view - CDS data model'
 
-define view /DMO/I_BookingSupplement_U
+define view entity /DMO/I_BookingSupplement_U
   as select from /dmo/book_suppl as BookingSupplement
 
   association        to parent /DMO/I_Booking_U as _Booking        on  $projection.TravelID  = _Booking.TravelID
@@ -26,7 +23,6 @@ define view /DMO/I_BookingSupplement_U
       @Semantics.amount.currencyCode: 'CurrencyCode'
       BookingSupplement.price                 as Price,
 
-      @Semantics.currencyCode: true
       BookingSupplement.currency_code         as CurrencyCode,
 
 //      _Booking.LastChangedAt                  as LastChangedAt,
