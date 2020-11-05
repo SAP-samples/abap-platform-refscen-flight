@@ -126,10 +126,10 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
         APPEND VALUE #( %tky                  = <fs_booksuppl>-%tky
                         %state_area           = 'VALIDATE_SUPPLEMENT'
-                        %msg                  = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number      = '054' " SupplementID is initial
-                                                           v1          = <fs_booksuppl>-BookingSupplementID
-                                                           severity    = if_abap_behv_message=>severity-error )
+                        %msg                  = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>ENTER_SUPPLEMENT_ID
+                                                                booking_supplement_id = <fs_booksuppl>-bookingSupplementID
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path                 = VALUE #( booking-%tky = lt_link_booking[ source-%tky = <fs_booksuppl>-%tky ]-target-%tky
                                                          travel-%tky  = lt_link_travel[ source-%tky  = <fs_booksuppl>-%tky ]-target-%tky )
                         %element-SupplementID = if_abap_behv=>mk-on ) TO reported-bookingsupplement.
@@ -140,10 +140,10 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
         APPEND VALUE #( %tky                  = <fs_booksuppl>-%tky
                         %state_area           = 'VALIDATE_SUPPLEMENT'
-                        %msg                  = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                             number   = '055' " Supplement unknown
-                                                             v1       = <fs_booksuppl>-SupplementID
-                                                             severity = if_abap_behv_message=>severity-error )
+                        %msg                  = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>SUPPLEMENT_UNKNOWN
+                                                                booking_supplement_id = <fs_booksuppl>-bookingSupplementID
+                                                                severity = if_abap_behv_message=>severity-error )
                         %path                 = VALUE #( booking-%tky = lt_link_booking[ source-%tky = <fs_booksuppl>-%tky ]-target-%tky
                                                         travel-%tky  = lt_link_travel[ source-%tky  = <fs_booksuppl>-%tky ]-target-%tky )
                         %element-SupplementID = if_abap_behv=>mk-on ) TO reported-bookingsupplement.

@@ -1,0 +1,116 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Flight Reference Scenario: Messages for Managed and Draft</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>CustomerID  &amp;1 is unknown.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Agency &amp;1 is unknown.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Begin Date &amp;1 must not be after End Date &amp;2 for Travel &amp;3</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Begin Date &amp;1 must be on or after system date.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Status not valid for  status value &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Invalid discount: Enter a number between 1 an 100.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Enter Begin Date for Travel &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Enter End Date for Travel &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Enter Agency ID for Travel&amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>Enter a Customer ID.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Enter ConnectionID for Booking &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>No Flight &amp;1 for FlightDate &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Product ID is unknown.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Enter ProductID for BookingSupplement &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Booking status not valid for BookingID &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>Enter an AirlineID.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Enter a FlightDate.</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

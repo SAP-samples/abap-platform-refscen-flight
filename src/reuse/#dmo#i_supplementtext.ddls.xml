@@ -6,7 +6,7 @@
     <DDLNAME>/DMO/I_SUPPLEMENTTEXT</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
     <DDTEXT>Text provider view - CDS data model</DDTEXT>
-    <SOURCE_TYPE>V</SOURCE_TYPE>
+    <SOURCE_TYPE>W</SOURCE_TYPE>
    </DDLS>
   </asx:values>
  </asx:abap>

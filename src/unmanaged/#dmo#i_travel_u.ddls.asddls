@@ -1,10 +1,7 @@
-@AbapCatalog.sqlViewName: '/DMO/ITRAVEL_U'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Travel view - CDS data model'
 
-define root view /DMO/I_Travel_U
+define root view entity /DMO/I_Travel_U
   as select from /dmo/travel as Travel -- the travel table is the data source for this view
 
   composition [0..*] of /DMO/I_Booking_U as _Booking
@@ -30,7 +27,6 @@ define root view /DMO/I_Travel_U
       @Semantics.amount.currencyCode: 'CurrencyCode'
       Travel.total_price   as TotalPrice,
 
-      @Semantics.currencyCode: true
       Travel.currency_code as CurrencyCode,
 
       Travel.description   as Memo,

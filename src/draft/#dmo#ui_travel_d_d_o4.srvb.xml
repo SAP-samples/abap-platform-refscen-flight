@@ -4,18 +4,32 @@
   <asx:values>
    <SRVB>
     <METADATA>
-     <NAME>/DMO/UI_TRAVEL_D_D</NAME>
-     <VERSION>active</VERSION>
-     <DESCRIPTION>Service Binding for DraftScen with Draft</DESCRIPTION>
+     <NAME>/DMO/UI_TRAVEL_D_D_O4</NAME>
+     <TYPE>SRVB/SVB</TYPE>
+     <DESCRIPTION>Service Binding for Travel Draft Scenario Draft Projection</DESCRIPTION>
      <LANGUAGE>EN</LANGUAGE>
+     <LINKS>
+      <item>
+       <HREF>/sap/bc/adt/businessservices/odatav4/%2FDMO%2FUI_TRAVEL_D_D_O4</HREF>
+       <REL>http://www.sap.com/categories/odatav4</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.odatav4.v1+xml</TYPE>
+       <TITLE>ODATAV4</TITLE>
+      </item>
+      <item>
+       <HREF>/sap/bc/adt/businessservices/testclass</HREF>
+       <REL>http://www.sap.com/categories/testclass</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.testclass.v1+xml</TYPE>
+       <TITLE>TESTCLASS</TITLE>
+      </item>
+     </LINKS>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     </METADATA>
     <CONTENT>
      <BIND_TYPE_IMPL>
-      <NAME>/DMO/UI_TRAVEL_D_D</NAME>
+      <NAME>/DMO/UI_TRAVEL_D_D_O4</NAME>
      </BIND_TYPE_IMPL>
      <BIND_TYPE>ODATA</BIND_TYPE>
-     <BIND_TYPE_VERSION>V2</BIND_TYPE_VERSION>
+     <BIND_TYPE_VERSION>V4</BIND_TYPE_VERSION>
      <SERVICES>
       <item>
        <SERVICE_NAME>/DMO/UI_TRAVEL_D_D</SERVICE_NAME>
@@ -32,6 +46,7 @@
       </item>
      </SERVICES>
     </CONTENT>
+    <BINDING_CREATED>true</BINDING_CREATED>
    </SRVB>
   </asx:values>
  </asx:abap>

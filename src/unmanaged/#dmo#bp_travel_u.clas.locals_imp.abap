@@ -396,8 +396,8 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD lock.
 
     TRY.
-    "Instantiate lock object
-    DATA(lock) = cl_abap_lock_object_factory=>get_instance( iv_name = '/DMO/ETRAVEL' ).
+        "Instantiate lock object
+        DATA(lock) = cl_abap_lock_object_factory=>get_instance( iv_name = '/DMO/ETRAVEL' ).
       CATCH cx_abap_lock_failure INTO DATA(lr_exp).
         RAISE SHORTDUMP lr_exp.
     ENDTRY.
@@ -425,7 +425,7 @@ CLASS lhc_travel IMPLEMENTATION.
                 reported     = reported-travel
             ).
 
-        CATCH cx_abap_lock_failure into lr_exp.
+        CATCH cx_abap_lock_failure INTO lr_exp.
           RAISE SHORTDUMP lr_exp.
       ENDTRY.
     ENDLOOP.
@@ -495,14 +495,12 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD get_features.
 
-    READ ENTITY /dmo/i_travel_u
-    FIELDS ( TravelID Status )
-      WITH VALUE #(
-        FOR keyval IN keys (
-          %key              = keyval-%key
-        )
-      )
-      RESULT DATA(lt_travel_result).
+    READ ENTITIES OF /DMO/I_Travel_U IN LOCAL MODE
+      ENTITY Travel
+        FIELDS ( TravelID Status )
+        WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_travel_result)
+    FAILED failed.
 
     result = VALUE #(
       FOR ls_travel IN lt_travel_result (

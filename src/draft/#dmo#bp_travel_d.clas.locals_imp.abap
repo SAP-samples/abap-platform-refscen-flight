@@ -99,9 +99,9 @@ CLASS lhc_travel IMPLEMENTATION.
       APPEND VALUE #( %tky                = <fs_key>-%tky ) TO failed-travel.
 
       APPEND VALUE #( %tky                = <fs_key>-%tky
-                      %msg                = new_message(  id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                          number   = '047' "discount invalid
-                                                          severity = if_abap_behv_message=>severity-error )
+                      %msg                = NEW /dmo/cm_flight_messages(
+                             textid = /dmo/cm_flight_messages=>DISCOUNT_INVALID
+                             severity = if_abap_behv_message=>severity-error )
                       %element-TotalPrice = if_abap_behv=>mk-on ) TO reported-travel.
 
       DELETE lt_keys.
@@ -253,8 +253,19 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD setStatusToNew.
 
+   READ ENTITIES of /DMO/I_Travel_D in LOCAL MODE
+    ENTITY Travel
+      FIELDS ( OverallStatus )
+      with CORRESPONDING #( keys )
+    RESULT data(lt_travel)
+    FAILED data(lt_failed).
+
+    "If Status is already set, do nothing
+    DELETE lt_travel WHERE OverallStatus IS NOT INITIAL.
+    CHECK lt_travel IS NOT INITIAL.
+
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
-      ENTITY travel
+      ENTITY Travel
         UPDATE SET FIELDS
         WITH VALUE #( FOR key IN keys ( %tky          = key-%tky
                                         OverallStatus = travel_status-open ) )
@@ -312,10 +323,9 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #( %tky                = ls_travel-%tky
                         %state_area         = 'VALIDATE_CUSTOMER'
-                        %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '044' " Customer is initial
-                                                           v1       = ls_travel-TravelID
-                                                           severity = if_abap_behv_message=>severity-error )
+                        %msg                = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>ENTER_CUSTOMER_ID
+                                                                severity = if_abap_behv_message=>severity-error )
                         %element-CustomerID = if_abap_behv=>mk-on ) TO reported-travel.
 
       ELSEIF ls_travel-CustomerID IS NOT INITIAL AND NOT line_exists( lt_customer_db[ customer_id = ls_travel-CustomerID ] ).
@@ -323,10 +333,10 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #(  %tky                = ls_travel-%tky
                          %state_area         = 'VALIDATE_CUSTOMER'
-                         %msg                = new_message( id        = '/DMO/CM_FLIGHT_LEGAC'
-                                                             number   = '002' " Customer unknown
-                                                             v1       = ls_travel-CustomerID
-                                                             severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                customer_id = ls_travel-customerid
+                                                                textid = /dmo/cm_flight_messages=>customer_unkown
+                                                                severity = if_abap_behv_message=>severity-error )
                          %element-CustomerID = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
 
@@ -369,10 +379,10 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #( %tky                = ls_travel-%tky
                         %state_area         = 'VALIDATE_AGENCY'
-                        %msg                = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '045' " Agency is initial
-                                                           v1       = ls_travel-TravelID
-                                                           severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                travel_id = ls_travel-travelid
+                                                                textid = /dmo/cm_flight_messages=>ENTER_AGENCY_ID
+                                                                severity = if_abap_behv_message=>severity-error )
                         %element-AgencyID = if_abap_behv=>mk-on ) TO reported-travel.
 
       ELSEIF ls_travel-AgencyID IS NOT INITIAL AND NOT line_exists( lt_agency_db[ agency_id = ls_travel-AgencyID ] ).
@@ -380,10 +390,10 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #(  %tky                 = ls_travel-%tky
                          %state_area          = 'VALIDATE_AGENCY'
-                         %msg                 = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                             number   = '001' " Agency unknown
-                                                             v1       = ls_travel-AgencyID
-                                                             severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                travel_id = ls_travel-travelid
+                                                                textid = /dmo/cm_flight_messages=>AGENCY_UNKOWN
+                                                                severity = if_abap_behv_message=>severity-error )
                          %element-AgencyID  = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
 
@@ -411,10 +421,10 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #( %tky               = ls_travel-%tky
                         %state_area        = 'VALIDATE_DATES'
-                        %msg               =  new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '013' " Enter Begin Date for travel
-                                                           v1       = ls_travel-TravelID
-                                                           severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                travel_id = ls_travel-travelid
+                                                                textid = /dmo/cm_flight_messages=>ENTER_BEGIN_DATE
+                                                                severity = if_abap_behv_message=>severity-error )
                         %element-BeginDate = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
       IF ls_travel-EndDate IS INITIAL.
@@ -422,10 +432,10 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #( %tky               = ls_travel-%tky
                         %state_area        = 'VALIDATE_DATES'
-                        %msg               =  new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '014' " Enter EndDate for travel
-                                                           v1       = ls_travel-TravelID
-                                                           severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                travel_id = ls_travel-travelid
+                                                                textid = /dmo/cm_flight_messages=>ENTER_END_DATE
+                                                                severity = if_abap_behv_message=>severity-error )
                         %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
       IF ls_travel-EndDate < ls_travel-BeginDate AND ls_travel-BeginDate IS NOT INITIAL
@@ -434,12 +444,12 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #( %tky               = ls_travel-%tky
                         %state_area        = 'VALIDATE_DATES'
-                        %msg               =  new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                           number   = '015' " End date before Begin date
-                                                           v1       = ls_travel-BeginDate
-                                                           v2       = ls_travel-EndDate
-                                                           v3       = ls_travel-TravelID
-                                                           severity = if_abap_behv_message=>severity-error )
+                        %msg               = NEW /dmo/cm_flight_messages(
+                                                                textid = /dmo/cm_flight_messages=>BEGIN_DATE_BEF_END_DATE
+                                                                begin_date = ls_travel-BeginDate
+                                                                end_date   = ls_travel-EndDate
+                                                                travel_id  = ls_travel-TravelId
+                                                                severity = if_abap_behv_message=>severity-error )
                         %element-BeginDate = if_abap_behv=>mk-on
                         %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
@@ -448,9 +458,10 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #( %tky               = ls_travel-%tky
                         %state_area        = 'VALIDATE_DATES'
-                        %msg               = new_message( id       = '/DMO/CM_FLIGHT_LEGAC'
-                                                          number   = '038' " Begin Date must be in the future
-                                                          severity = if_abap_behv_message=>severity-error )
+                         %msg                = NEW /dmo/cm_flight_messages(
+                                                                travel_id = ls_travel-travelid
+                                                                textid = /dmo/cm_flight_messages=>BEGIN_DATE_ON_OR_BEF_SYSDATE
+                                                                severity = if_abap_behv_message=>severity-error )
                         %element-BeginDate = if_abap_behv=>mk-on
                         %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.

@@ -54,11 +54,12 @@ CLASS lhc_travel IMPLEMENTATION.
           APPEND VALUE #( %key = ls_booking_result-%key ) TO failed-booking.
 
           APPEND VALUE #( %key = ls_booking_result-%key
-                          %msg = new_message( id       = /dmo/cx_flight_legacy=>status_is_not_valid-msgid
-                                              number   = /dmo/cx_flight_legacy=>status_is_not_valid-msgno
-                                              v1       = ls_booking_result-booking_status
-                                              severity = if_abap_behv_message=>severity-error )
-                          %element-booking_status = if_abap_behv=>mk-on ) TO reported-booking.
+                          %msg = new /dmo/cm_flight_messages(
+                               textid = /dmo/cm_flight_messages=>TRAVEL_STATUS_INVALID
+                               status = ls_booking_result-booking_status
+                               severity = if_abap_behv_message=>severity-error )
+                          %element-booking_status = if_abap_behv=>mk-on
+                          %path = VALUE #( travel-travel_id    = ls_booking_result-travel_id ) ) TO reported-booking.
       ENDCASE.
 
     ENDLOOP.
@@ -77,17 +78,13 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY booking
          FIELDS ( booking_id booking_status )
          WITH CORRESPONDING #( keys )
-      RESULT    DATA(lt_booking_result).
+      RESULT    DATA(lt_booking_result)
+      FAILED failed.
 
     result = VALUE #( FOR ls_travel IN lt_booking_result
                        ( %key                   = ls_travel-%key
-                         %field-booking_id      = if_abap_behv=>fc-f-read_only
-                         %field-booking_date    = if_abap_behv=>fc-f-read_only
-                         %field-customer_id     = if_abap_behv=>fc-f-read_only
                          %assoc-_BookSupplement = COND #( WHEN ls_travel-booking_status = 'B'
-                                                          THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
-                         "%features-%delete   = if_abap_behv=>fc-o-disabled  " Workaround for missing determinations OnDelete
-                      ) ).
+                                                          THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  ) ) ).
 
   ENDMETHOD.
 

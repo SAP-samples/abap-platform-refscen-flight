@@ -1,12 +1,8 @@
-@AbapCatalog.sqlViewName: '/DMO/IAGENCY_RE'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Agency View - CDS Data Model'
-
 @Search.searchable: true
 
-define view /DMO/I_Agency
+define view entity /DMO/I_Agency
   as select from /dmo/agency as Agency
 
   association [0..1] to I_Country as _Country on $projection.CountryCode = _Country.Country
@@ -25,6 +21,7 @@ define view /DMO/I_Agency
 
       Agency.postal_code   as PostalCode,
 
+      @Search.defaultSearchElement: true
       Agency.city          as City,
 
       @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'Country' } }]

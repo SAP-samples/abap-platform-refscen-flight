@@ -1,11 +1,7 @@
-@AbapCatalog.sqlViewName: '/DMO/IBOOKSUP_M'
-@AbapCatalog.compiler.compareFilter: true
-@AbapCatalog.preserveKey: true
 @AccessControl.authorizationCheck: #NOT_REQUIRED
-
 @EndUserText.label: 'Booking Supplement View - CDS data model'
 
-define view /DMO/I_BookSuppl_M 
+define view entity /DMO/I_BookSuppl_M 
   as select from /dmo/booksuppl_m as BookingSupplement
 
   association        to parent /DMO/I_Booking_M  as _Booking     on  $projection.travel_id    = _Booking.travel_id
@@ -21,7 +17,6 @@ define view /DMO/I_BookSuppl_M
       supplement_id,
       @Semantics.amount.currencyCode: 'currency_code'
       price,
-      @Semantics.currencyCode: true
       currency_code,
       
       //local ETag field --> OData ETag

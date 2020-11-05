@@ -3,12 +3,14 @@
 
 @Metadata.allowExtensions: true
 @Search.searchable: true
+@ObjectModel.semanticKey: ['TravelID']
 
 define root view entity /DMO/C_Travel_D_D
   as projection on /DMO/I_Travel_D
 
 {
   key TravelUUID,
+
 
       @Search.defaultSearchElement: true
       TravelID,
@@ -43,7 +45,7 @@ define root view entity /DMO/C_Travel_D_D
       LocalLastChangedAt,
       /* Associations */
       _Agency,
-      _Booking : redirected to composition child /DMO/C_BOOKING_D_D,
+      _Booking : redirected to composition child /DMO/C_Booking_D_D,
       _Currency,
       _Customer
 }

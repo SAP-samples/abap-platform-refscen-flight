@@ -2,7 +2,7 @@ projection;
 use draft;
 
 define behavior for /DMO/C_TRAVEL_D_D alias Travel
-//use etag
+use etag
 {
   use create;
   use update;
@@ -16,7 +16,7 @@ define behavior for /DMO/C_TRAVEL_D_D alias Travel
 }
 
 define behavior for /DMO/C_BOOKING_D_D alias Booking
-//use etag
+use etag
 {
   use update;
   use delete;
@@ -26,7 +26,7 @@ define behavior for /DMO/C_BOOKING_D_D alias Booking
 }
 
 define behavior for /DMO/C_BOOKINGSUPPLEMENT_D_D alias BookingSupplement
-//use etag
+use etag
 {
   use update;
   use delete;
