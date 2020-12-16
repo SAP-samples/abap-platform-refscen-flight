@@ -24,7 +24,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>003</MSGNR>
-     <TEXT>Begin Date &amp;1 must not be after End Date &amp;2 for Travel &amp;3</TEXT>
+    <TEXT>Begin Date &amp;1 must not be after End Date &amp;2 .</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -36,7 +36,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>005</MSGNR>
-     <TEXT>Status not valid for  status value &amp;1.</TEXT>
+     <TEXT>Status &amp;1 is not valid.</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -48,19 +48,19 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>007</MSGNR>
-     <TEXT>Enter Begin Date for Travel &amp;1.</TEXT>
+     <TEXT>Enter a BeginDate.</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>008</MSGNR>
-     <TEXT>Enter End Date for Travel &amp;1.</TEXT>
+     <TEXT>Enter an EndDate.</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>009</MSGNR>
-     <TEXT>Enter Agency ID for Travel&amp;1.</TEXT>
+     <TEXT>Enter an Agency ID.</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -72,7 +72,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>011</MSGNR>
-     <TEXT>Enter ConnectionID for Booking &amp;1.</TEXT>
+     <TEXT>Enter a ConnectionID.</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -90,7 +90,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>014</MSGNR>
-     <TEXT>Enter ProductID for BookingSupplement &amp;1.</TEXT>
+     <TEXT>Enter a ProductID.</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>

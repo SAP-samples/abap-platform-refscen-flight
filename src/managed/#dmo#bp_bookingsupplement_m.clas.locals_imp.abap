@@ -1,8 +1,7 @@
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS calculate_total_supplm_price FOR DETERMINE ON MODIFY IMPORTING keys FOR booksuppl~calculateTotalSupplmPrice.
-
+    METHODS calculateTotalPrice FOR DETERMINE ON MODIFY IMPORTING keys FOR booksuppl~calculateTotalPrice.
 ENDCLASS.
 
 CLASS lhc_travel IMPLEMENTATION.
@@ -12,15 +11,16 @@ CLASS lhc_travel IMPLEMENTATION.
 * Calculates total supplement price
 *
 ********************************************************************************
-  METHOD calculate_total_supplm_price.
+  METHOD calculateTotalPrice.
 
-    IF keys IS NOT INITIAL.
-      /dmo/cl_travel_auxiliary_m=>calculate_price(
-          it_travel_id = VALUE #(  FOR GROUPS <booking_suppl> OF booksuppl_key IN keys
-                                       GROUP BY booksuppl_key-travel_id WITHOUT MEMBERS
-                                             ( <booking_suppl> ) ) ).
-    ENDIF.
 
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY Travel
+        EXECUTE ReCalcTotalPrice
+        FROM CORRESPONDING #( keys )
+    REPORTED DATA(lt_reported).
+
+    reported = CORRESPONDING #( DEEP lt_reported ).
   ENDMETHOD.
 
 ENDCLASS.

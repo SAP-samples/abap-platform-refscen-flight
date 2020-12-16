@@ -49,8 +49,6 @@ To fill the demo database tables for the read-only and the unmanaged scenario wi
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
 2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
 
-NOTE: The database tables for transactional processing in the managed scenario and in the draft scenario do not contain any business data. Instead, you create your business data from scratch.  
-
 NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downloaded demo content, do not use the namespace /DMO/ and do not create any development objects in the downloaded packages. You can access the development objects in /DMO/ from your own namespace.
 
 ## How to obtain support

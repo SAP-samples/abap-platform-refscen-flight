@@ -128,7 +128,6 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
                         %state_area           = 'VALIDATE_SUPPLEMENT'
                         %msg                  = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>ENTER_SUPPLEMENT_ID
-                                                                booking_supplement_id = <fs_booksuppl>-bookingSupplementID
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path                 = VALUE #( booking-%tky = lt_link_booking[ source-%tky = <fs_booksuppl>-%tky ]-target-%tky
                                                          travel-%tky  = lt_link_travel[ source-%tky  = <fs_booksuppl>-%tky ]-target-%tky )
@@ -142,7 +141,6 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
                         %state_area           = 'VALIDATE_SUPPLEMENT'
                         %msg                  = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>SUPPLEMENT_UNKNOWN
-                                                                booking_supplement_id = <fs_booksuppl>-bookingSupplementID
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path                 = VALUE #( booking-%tky = lt_link_booking[ source-%tky = <fs_booksuppl>-%tky ]-target-%tky
                                                         travel-%tky  = lt_link_travel[ source-%tky  = <fs_booksuppl>-%tky ]-target-%tky )

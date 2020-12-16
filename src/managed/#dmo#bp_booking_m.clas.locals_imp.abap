@@ -1,7 +1,7 @@
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS calculate_total_flight_price FOR DETERMINE ON MODIFY IMPORTING keys FOR booking~calculateTotalFlightPrice.
+    METHODS calculateTotalPrice FOR DETERMINE ON MODIFY IMPORTING keys FOR booking~calculateTotalPrice.
     METHODS validate_booking_status      FOR VALIDATE  ON SAVE   IMPORTING keys FOR booking~validateStatus.
     METHODS get_features                 FOR FEATURES            IMPORTING keys REQUEST requested_features FOR booking RESULT result.
 
@@ -18,17 +18,17 @@ CLASS lhc_travel IMPLEMENTATION.
 * Calculates total flight price
 *
 ********************************************************************************
-  METHOD calculate_total_flight_price.
+  METHOD calculateTotalPrice.
 
-    IF keys IS NOT INITIAL.
-      /dmo/cl_travel_auxiliary_m=>calculate_price(
-          it_travel_id = VALUE #(  FOR GROUPS <booking> OF booking_key IN keys
-                                       GROUP BY booking_key-travel_id WITHOUT MEMBERS
-                                             ( <booking> ) ) ).
-    ENDIF.
 
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY Travel
+        EXECUTE ReCalcTotalPrice
+        FROM CORRESPONDING #( keys )
+    REPORTED DATA(lt_reported).
+
+    reported = CORRESPONDING #( DEEP lt_reported ).
   ENDMETHOD.
-
 
 **********************************************************************
 *
@@ -50,12 +50,16 @@ CLASS lhc_travel IMPLEMENTATION.
         WHEN 'X'.  " Canceled
         WHEN 'B'.  " Booked
 
+        APPEND VALUE #(  %tky                 = ls_booking_result-%tky
+                         %state_area          = 'VALIDATE_BOOKINGSTATUS' ) TO reported-booking.
+
         WHEN OTHERS.
           APPEND VALUE #( %key = ls_booking_result-%key ) TO failed-booking.
 
           APPEND VALUE #( %key = ls_booking_result-%key
+                          %state_area         = 'VALIDATE_BOOKINGSTATUS'
                           %msg = new /dmo/cm_flight_messages(
-                               textid = /dmo/cm_flight_messages=>TRAVEL_STATUS_INVALID
+                               textid = /dmo/cm_flight_messages=>STATUS_INVALID
                                status = ls_booking_result-booking_status
                                severity = if_abap_behv_message=>severity-error )
                           %element-booking_status = if_abap_behv=>mk-on

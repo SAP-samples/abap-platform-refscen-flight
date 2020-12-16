@@ -221,7 +221,6 @@ CLASS lhc_booking IMPLEMENTATION.
                         %state_area         = 'VALIDATE_CONNECTION'
                         %msg                = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>ENTER_CONNECTION_ID
-                                                                booking_id = <fs_booking>-bookingid
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
                         %element-ConnectionID = if_abap_behv=>mk-on ) TO reported-booking.

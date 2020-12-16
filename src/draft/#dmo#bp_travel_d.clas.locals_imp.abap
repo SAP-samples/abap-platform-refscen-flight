@@ -102,7 +102,7 @@ CLASS lhc_travel IMPLEMENTATION.
                       %msg                = NEW /dmo/cm_flight_messages(
                              textid = /dmo/cm_flight_messages=>DISCOUNT_INVALID
                              severity = if_abap_behv_message=>severity-error )
-                      %element-TotalPrice = if_abap_behv=>mk-on ) TO reported-travel.
+                             %element-TotalPrice = if_abap_behv=>mk-on ) TO reported-travel.
 
       DELETE lt_keys.
     ENDLOOP.
@@ -144,8 +144,8 @@ CLASS lhc_travel IMPLEMENTATION.
         CORRESPONDING #( lt_travel )
       RESULT DATA(lt_travel_with_discount).
 
-    result = VALUE #( FOR travel IN lt_travel ( %tky   = travel-%tky
-                                                %param = travel ) ).
+    result = VALUE #( FOR travel IN lt_travel_with_discount ( %tky   = travel-%tky
+                                                              %param = travel ) ).
 
   ENDMETHOD.
 
@@ -347,7 +347,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
-        FIELDS (  AgencyID )
+        FIELDS (  AgencyID TravelID )
         WITH CORRESPONDING #( keys )
       RESULT DATA(lt_travel)
       FAILED DATA(lt_failed).
@@ -367,7 +367,6 @@ CLASS lhc_travel IMPLEMENTATION.
                               WHERE agency_id = @lt_agency-agency_id
       INTO TABLE @DATA(lt_agency_db).
     ENDIF.
-
 
     " Raise message for non existing customer id
     LOOP AT lt_travel INTO DATA(ls_travel).
@@ -391,6 +390,7 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #(  %tky                 = ls_travel-%tky
                          %state_area          = 'VALIDATE_AGENCY'
                          %msg                = NEW /dmo/cm_flight_messages(
+                                                                agency_id = ls_travel-agencyid
                                                                 travel_id = ls_travel-travelid
                                                                 textid = /dmo/cm_flight_messages=>AGENCY_UNKOWN
                                                                 severity = if_abap_behv_message=>severity-error )
@@ -404,7 +404,7 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD validateDates.
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
-        FIELDS (  BeginDate EndDate )
+        FIELDS (  BeginDate EndDate TravelID )
         WITH CORRESPONDING #( keys )
       RESULT DATA(lt_travel)
       FAILED DATA(lt_failed).
@@ -459,11 +459,10 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky               = ls_travel-%tky
                         %state_area        = 'VALIDATE_DATES'
                          %msg                = NEW /dmo/cm_flight_messages(
-                                                                travel_id = ls_travel-travelid
+                                                                begin_date = ls_travel-BeginDate
                                                                 textid = /dmo/cm_flight_messages=>BEGIN_DATE_ON_OR_BEF_SYSDATE
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %element-BeginDate = if_abap_behv=>mk-on
-                        %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.
+                        %element-BeginDate = if_abap_behv=>mk-on ) TO reported-travel.
       ENDIF.
 
     ENDLOOP.
