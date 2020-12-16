@@ -31,15 +31,20 @@ lock master
   action  ( features: instance ) acceptTravel result [1] $self;
   action  ( features: instance ) rejectTravel result [1] $self;
 
+  // internal action that is called by determinations
+  internal action ReCalcTotalPrice;
+
   // instance action for copying travel instances
   //action ( authorization : none ) createTravelByTemplate result [1] $self;
   action createTravelByTemplate result [1] $self;
 
   // validations
-  validation validateCustomer on save { field customer_id; }
-  validation validateAgency   on save { field agency_id; }
-  validation validateDates    on save { field begin_date, end_date; }
-  validation validateStatus   on save { field overall_status; }
+  validation validateCustomer on save { create; field customer_id; }
+  validation validateAgency   on save { create; field agency_id; }
+  validation validateDates    on save { create; field begin_date, end_date; }
+  validation validateStatus   on save { create; field overall_status; }
+
+  determination calculateTotalPrice on modify {create; field booking_fee, currency_code; }
 
 
 
@@ -76,10 +81,10 @@ lock dependent by _Travel
   association _BookSupplement { create (features:instance); }
 
  // validations
-  validation validateStatus on save { field booking_status; }
+  validation validateStatus on save { create; field booking_status; }
 
   // determination for calculation of total flight price
-  determination calculateTotalFlightPrice on modify { field flight_price, currency_code; }
+  determination calculateTotalPrice on modify { create;  field flight_price, currency_code; }
 
   association _Travel { }
 }
@@ -109,7 +114,7 @@ lock dependent by _Travel
 
 
   // determination for calculation of total suppl. price
-  determination calculateTotalSupplmPrice on modify { field price, currency_code; }
+  determination calculateTotalPrice on modify {create;  field price, currency_code; }
 
   association _Travel { }
 }
