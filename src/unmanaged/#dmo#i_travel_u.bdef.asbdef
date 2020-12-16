@@ -8,7 +8,7 @@ lock master
 
 
 {
-  field ( read only ) TravelID;
+  field ( readonly ) TravelID;
   field ( mandatory ) AgencyID, CustomerID, BeginDate, EndDate;
 
   create;
@@ -44,7 +44,7 @@ lock dependent by _Travel
 
 
 {
-  field ( read only ) TravelID, BookingID;
+  field ( readonly ) TravelID, BookingID;
   field ( mandatory ) BookingDate, CustomerID, AirlineID, ConnectionID, FlightDate;
 
 
@@ -77,7 +77,7 @@ lock dependent by _Travel
 
 {
 
-  field ( read only ) TravelID, BookingID, BookingSupplementID;
+  field ( readonly ) TravelID, BookingID, BookingSupplementID;
   field ( mandatory ) SupplementID, Price;
 
 
