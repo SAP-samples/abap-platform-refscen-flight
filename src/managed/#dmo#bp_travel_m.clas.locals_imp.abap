@@ -228,7 +228,9 @@ CLASS lhc_travel IMPLEMENTATION.
     DATA lt_create TYPE TABLE FOR CREATE /DMO/I_Travel_M\\travel.
 
     lt_create = VALUE #( FOR row IN  lt_read_result INDEX INTO idx
-                             ( travel_id      = lv_travel_id + idx
+
+                             ( %cid = row-travel_id
+                               travel_id      = lv_travel_id + idx
                                agency_id      = row-agency_id
                                customer_id    = row-customer_id
                                begin_date     = lv_today
@@ -254,14 +256,25 @@ CLASS lhc_travel IMPLEMENTATION.
                               overall_status )
            WITH lt_create
          MAPPED   mapped
-         FAILED   failed
-         REPORTED reported.
+         FAILED   DATA(failed_modify)
+         REPORTED DATA(reported_modify).
+
+    failed-travel   = CORRESPONDING #( BASE ( failed-travel )   failed_modify-travel   MAPPING travel_id = %cid ).
+    reported-travel = CORRESPONDING #( BASE ( reported-travel ) reported_modify-travel MAPPING travel_id = %cid ).
 
 
-    result = VALUE #( FOR create IN  lt_create INDEX INTO idx
-                             ( %cid_ref = keys[ idx ]-%cid_ref
-                               %key     = keys[ idx ]-travel_id
-                               %param   = CORRESPONDING #(  create ) ) ) .
+    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+      ENTITY travel
+        ALL FIELDS WITH
+        CORRESPONDING #( mapped-travel )
+    RESULT DATA(lt_read_created).
+
+    result = VALUE #( FOR key IN  mapped-travel  INDEX INTO idx
+                               ( %cid_ref = keys[ KEY entity %key = key-%cid ]-%cid_ref
+                                 %key     = key-%cid
+                                 %param-%tky   = key-%tky ) ) .
+
+    result = CORRESPONDING #( result FROM lt_read_created USING KEY entity  %key = %param-%key MAPPING %param = %data EXCEPT * ).
 
 
   ENDMETHOD.

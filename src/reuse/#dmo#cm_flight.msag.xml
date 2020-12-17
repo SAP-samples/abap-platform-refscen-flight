@@ -24,7 +24,7 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT</ARBGB>
      <MSGNR>003</MSGNR>
-    <TEXT>Begin Date &amp;1 must not be after End Date &amp;2 .</TEXT>
+     <TEXT>Begin Date &amp;1 must not be after End Date &amp;2 .</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
