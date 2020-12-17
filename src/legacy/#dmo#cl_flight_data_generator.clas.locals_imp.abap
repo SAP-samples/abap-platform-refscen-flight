@@ -18,20 +18,24 @@ ENDCLASS.
 CLASS lcl_agency_data_generator IMPLEMENTATION.
 
   METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/agency.                            "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     DATA(lt_data) = get_data( ).
 
-    IF out IS BOUND.  out->write( '--> Insert Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/agency FROM TABLE @lt_data.
 
-    IF out IS BOUND.  out->write( '--> Done.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
   METHOD get_data.
-    rt_data = VALUE tt_agency(
+    rt_data = VALUE tt_agency(  ##NO_TEXT
           ( agency_id = '070001'
             name      = 'Sunshine Travel'
             street    = '134 West Street          '
@@ -552,20 +556,24 @@ ENDCLASS.
 CLASS lcl_airport_data_generator IMPLEMENTATION.
 
   METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/airport.                           "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     DATA(lt_data) = get_data(  ).
 
-    IF out IS BOUND.  out->write( '--> Insert Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/airport FROM TABLE @lt_data.
 
-    IF out IS BOUND.  out->write( '--> Done.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
   METHOD get_data.
-    rt_data = VALUE tt_airport(
+    rt_data = VALUE tt_airport( ##NO_TEXT
           " Europe
           ( airport_id = 'FRA'    name = 'Frankfurt Airport'                      city = 'Frankfurt/Main'                    country = 'DE' )
           ( airport_id = 'HAM'    name = 'Hamburg Airport'                        city = 'Hamburg'                           country = 'DE' )
@@ -646,20 +654,24 @@ ENDCLASS.
 CLASS lcl_carrier_data_generator IMPLEMENTATION.
 
   METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/carrier.                           "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     DATA(lt_data) = get_data( ).
 
-    IF out IS BOUND.  out->write( '--> Insert Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/carrier FROM TABLE @lt_data.
 
-    IF out IS BOUND.  out->write( '--> Done.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
   METHOD get_data.
-    rt_data = VALUE tt_carrier(
+    rt_data = VALUE tt_carrier( ##NO_TEXT
         (   carrier_id = 'AA'  name = 'American Airlines Inc.'                  currency_code = 'USD'  )
         (   carrier_id = 'AC'  name = 'Air Canada'                              currency_code = 'CAD'  )
         (   carrier_id = 'AF'  name = 'Air France'                              currency_code = 'EUR'  )
@@ -695,7 +707,7 @@ CLASS lcl_connection_data_generator DEFINITION CREATE PRIVATE.
       BEGIN OF ty_connection_additional_info.
         INCLUDE TYPE /dmo/connection.
     TYPES: weekday TYPE i,
-           END OF ty_connection_additional_info.
+      END OF ty_connection_additional_info.
 
     TYPES: tt_connection_additional_info TYPE STANDARD TABLE OF ty_connection_additional_info WITH KEY connection_id.
 
@@ -710,21 +722,25 @@ ENDCLASS.
 CLASS lcl_connection_data_generator IMPLEMENTATION.
 
   METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/connection.                        "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     DATA(lt_data) = get_data(  ).
     DATA(lt_data_db) = CORRESPONDING tt_connection( lt_data ).
 
-    IF out IS BOUND.  out->write( '--> Insert Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/connection FROM TABLE @lt_data.
 
-    IF out IS BOUND.  out->write( '--> Done.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
   METHOD get_data.
-    rt_data = VALUE tt_connection_additional_info(
+    rt_data = VALUE tt_connection_additional_info( ##NO_TEXT
           ( carrier_id = 'SQ'  connection_id = '0001'  airport_from_id = 'SFO'  airport_to_id = 'SIN'  departure_time = '011500'  arrival_time = '115000'  distance = 13523  distance_unit = 'KM'  weekday = 3 ) "1-7
           ( carrier_id = 'SQ'  connection_id = '0002'  airport_from_id = 'SIN'  airport_to_id = 'SFO'  departure_time = '063000'  arrival_time = '091500'  distance = 13523  distance_unit = 'KM'  weekday = 4 ) "1-7
           ( carrier_id = 'SQ'  connection_id = '0011'  airport_from_id = 'NRT'  airport_to_id = 'SIN'  departure_time = '145500'  arrival_time = '205000'  distance =  5363  distance_unit = 'KM'  weekday = 4 ) "1-7
@@ -825,19 +841,24 @@ ENDCLASS.
 CLASS lcl_flight_data_generator IMPLEMENTATION.
 
   METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/flight.                            "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Dependent Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Build Dependent Content.' ) ##NO_TEXT.
+    ENDIF.
     build_dependent_content( ).
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     get_data(  ).
 
-    IF out IS BOUND.  out->write( '--> Insert Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/flight FROM TABLE @gt_flights.
 
-    IF out IS BOUND.  out->write( '--> Done.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
   METHOD get_data.
@@ -939,7 +960,7 @@ CLASS lcl_flight_data_generator IMPLEMENTATION.
 
 
   METHOD build_plane_types.
-    rt_data = VALUE tt_plane_type(
+    rt_data = VALUE tt_plane_type( ##NO_TEXT
                 ( id = 'A320-200' seats_max = 130 long_distance = ' ' index = 1 )
                 ( id = 'A321-200' seats_max = 150 long_distance = ' ' index = 2 )
                 ( id = '737-800'  seats_max = 140 long_distance = ' ' index = 3 )
@@ -1095,20 +1116,24 @@ ENDCLASS.
 CLASS lcl_customer_data_generator IMPLEMENTATION.
 
   METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/customer.                          "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     DATA(lt_data) = get_data( ).
 
-    IF out IS BOUND.  out->write( '--> Insert Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/customer FROM TABLE @lt_data.
 
-    IF out IS BOUND.  out->write( '--> Done.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
   METHOD build_first_names.
-    rt_data = VALUE tt_first_name(
+    rt_data = VALUE tt_first_name( ##NO_TEXT
                 ( first_name = 'Simon'  gender = 'M')
                 ( first_name = 'Harish'  gender = 'M')
                 ( first_name = 'Volker'  gender = 'M')
@@ -1183,7 +1208,7 @@ CLASS lcl_customer_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD build_last_names.
-    rt_data = VALUE tt_last_name(
+    rt_data = VALUE tt_last_name( ##NO_TEXT
           ( last_name = 'Buchholm')
           ( last_name = 'Vrsic')
           ( last_name = 'Jeremias')
@@ -1329,7 +1354,7 @@ CLASS lcl_customer_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD build_city.
-    rt_data = VALUE tt_city(
+    rt_data = VALUE tt_city( ##NO_TEXT
               ( country = 'DE' postal_code =    '23496' city = 'Dielheim')
               ( country = 'SI' postal_code =     '1000' city = 'Ljubljana')
               ( country = 'DE' postal_code =    '86343' city = 'Koenigsbrunn')
@@ -1433,7 +1458,7 @@ CLASS lcl_customer_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD build_street.
-    rt_data = VALUE tt_street(
+    rt_data = VALUE tt_street( ##NO_TEXT
         ( country = 'AT' streets = VALUE tt_street_per_country( ( 'Hasnerstrasse' ) ) )
         ( country = 'BE' streets = VALUE tt_street_per_country( ( 'rue Voltaire' ) ) )
         ( country = 'CH' streets = VALUE tt_street_per_country( ( 'rue de Moillebeau' ) ) )
@@ -1509,8 +1534,11 @@ CLASS lcl_supplement_data_generator DEFINITION CREATE PRIVATE.
 
   PUBLIC SECTION.
     INTERFACES: lif_data_generator.
-    TYPES: tt_supplement      TYPE STANDARD TABLE OF /dmo/supplement WITH KEY supplement_id,
-           tt_supplement_text TYPE STANDARD TABLE OF /dmo/suppl_text WITH KEY supplement_id.
+    TYPES:
+      tt_supplement               TYPE STANDARD TABLE OF /dmo/supplement  WITH KEY supplement_id,
+      tt_supplement_text          TYPE STANDARD TABLE OF /dmo/suppl_text  WITH KEY supplement_id language_code,
+      tt_supplement_category      TYPE STANDARD TABLE OF /dmo/supplcat    WITH KEY supplement_category,
+      tt_supplement_category_text TYPE STANDARD TABLE OF /dmo/supplcat_t  WITH KEY supplement_category language_code.
 
     " Merged types
     TYPES BEGIN OF ty_supplement_complete.
@@ -1519,91 +1547,303 @@ CLASS lcl_supplement_data_generator DEFINITION CREATE PRIVATE.
     TYPES description   TYPE /dmo/description.
     TYPES END OF ty_supplement_complete.
 
+    TYPES tt_supplement_category_compl TYPE STANDARD TABLE OF /dmo/supplcat_t WITH KEY supplement_category language_code.
+
     TYPES tt_supplement_complete TYPE STANDARD TABLE OF ty_supplement_complete WITH KEY supplement_id.
 
-    CLASS-METHODS: get_data
-      RETURNING VALUE(rt_data) TYPE tt_supplement_complete.
+    CLASS-METHODS:
+      get_data
+        RETURNING
+          VALUE(rt_data) TYPE tt_supplement_complete.
+
   PROTECTED SECTION.
   PRIVATE SECTION.
+
+    CONSTANTS:
+      BEGIN OF cs_supplement_category,
+        beverage TYPE /dmo/supplement_category VALUE 'BV',
+        meal     TYPE /dmo/supplement_category VALUE 'ML',
+        luggage  TYPE /dmo/supplement_category VALUE 'LU',
+        extra    TYPE /dmo/supplement_category VALUE 'EX',
+      END OF cs_supplement_category.
+
+    CONSTANTS:
+      cv_numberrange_interval TYPE cl_numberrange_runtime=>nr_interval VALUE '01',
+      cv_numberrange_object   TYPE cl_numberrange_runtime=>nr_object   VALUE '/DMO/SUPPL' ##NO_TEXT.
+
+    CLASS-DATA:
+      gt_supplement_category TYPE tt_supplement_category_compl,
+      gt_data                TYPE lcl_supplement_data_generator=>tt_supplement_complete.
+
+    CLASS-METHODS:
+      set_numberrange_intervals,
+
+      get_key
+        IMPORTING
+          iv_type       TYPE /dmo/supplement_category
+        RETURNING
+          VALUE(rv_key) TYPE /dmo/supplement_id,
+
+      get_supplement_category
+        RETURNING
+          VALUE(rt_supplement_category) TYPE tt_supplement_category_compl.
 
 ENDCLASS.
 
 CLASS lcl_supplement_data_generator IMPLEMENTATION.
 
   METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ).  ENDIF.
-    DELETE FROM /dmo/supplement.                        "#EC CI_NOWHERE
-    DELETE FROM /dmo/suppl_text.                        "#EC CI_NOWHERE
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
+    DELETE FROM:
+      /dmo/supplement,                                  "#EC CI_NOWHERE
+      /dmo/suppl_text,                                  "#EC CI_NOWHERE
+      /dmo/supplcat,                                    "#EC CI_NOWHERE
+      /dmo/supplcat_t.                                  "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Defining Supplement Types.' ) ##NO_TEXT.
+    ENDIF.
+    gt_supplement_category = get_supplement_category( ).
+
+    DATA(lt_type) = get_supplement_category( ).
+    INSERT /dmo/supplcat    FROM TABLE @( CORRESPONDING tt_supplement_category(      lt_type ) ).
+    INSERT /dmo/supplcat_t  FROM TABLE @( CORRESPONDING tt_supplement_category_text( lt_type ) ).
+
+*   The number range has to be set after inserting values into /dmo/supplcat as it reads the data from the table to validate the sub-objects ...
+    IF out IS BOUND.  out->write( '--> Set up Number Range Intervals.' ) ##NO_TEXT.
+    ENDIF.
+    set_numberrange_intervals( ).
+
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     DATA(lt_data) = get_data( ).
 
-    IF out IS BOUND.  out->write( '--> Insert Content.' ). ENDIF.
-    INSERT /dmo/supplement FROM TABLE @( CORRESPONDING tt_supplement( lt_data ) ).
-    INSERT /dmo/suppl_text FROM TABLE @( CORRESPONDING tt_supplement_text( lt_data ) ).
-
-    IF out IS BOUND.  out->write( '--> Done.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
+    ENDIF.
+    INSERT /dmo/supplement  FROM TABLE @( CORRESPONDING tt_supplement(               lt_data ) ).
+    INSERT /dmo/suppl_text  FROM TABLE @( CORRESPONDING tt_supplement_text(          lt_data ) ).
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
   METHOD get_data.
-    " BV = beverage
-    " ML = meal
-    " LU = luggage
-    " EX = extra
-    rt_data = VALUE tt_supplement_complete(
-      ( supplement_id = 'BV-0001' price =  '2.30'  currency_code = 'EUR' language_code = 'E'   description = 'Hot Chocolate' )
-      ( supplement_id = 'BV-0002' price =  '7.50'  currency_code = 'EUR' language_code = 'E'   description = 'Alcohol free Champagne' )
-      ( supplement_id = 'BV-0003' price =  '3.50'  currency_code = 'EUR' language_code = 'E'   description = 'Coke' )
-      ( supplement_id = 'BV-0004' price =  '3.50'  currency_code = 'EUR' language_code = 'E'   description = 'Orange Lemonade' )
-      ( supplement_id = 'BV-0005' price =  '3.50'  currency_code = 'EUR' language_code = 'E'   description = 'Apple Juice' )
-      ( supplement_id = 'BV-0006' price =  '3.50'  currency_code = 'EUR' language_code = 'E'   description = 'Pear Juice' )
-      ( supplement_id = 'BV-0007' price =  '3.50'  currency_code = 'EUR' language_code = 'E'   description = 'Mango Juice' )
-      ( supplement_id = 'BV-0008' price =  '3.50'  currency_code = 'EUR' language_code = 'E'   description = 'Lemon Lemonade' )
-      ( supplement_id = 'BV-0009' price =  '4.50'  currency_code = 'EUR' language_code = 'E'   description = 'Tomato Juice' )
-      ( supplement_id = 'ML-0001' price =  '3.00'  currency_code = 'EUR' language_code = 'E'   description = 'Black Forest Cake' )
-      ( supplement_id = 'ML-0002' price =  '2.00'  currency_code = 'EUR' language_code = 'E'   description = 'Chocolate Cake' )
-      ( supplement_id = 'ML-0003' price =  '1.50'  currency_code = 'EUR' language_code = 'E'   description = 'Apple Pie' )
-      ( supplement_id = 'ML-0004' price =  '1.50'  currency_code = 'EUR' language_code = 'E'   description = 'Pear Pie' )
-      ( supplement_id = 'ML-0005' price =  '8.00'  currency_code = 'EUR' language_code = 'E'   description = 'Nice Salad')
-      ( supplement_id = 'ML-0006' price =  '9.00'  currency_code = 'EUR' language_code = 'E'   description = 'Paris Salad')
-      ( supplement_id = 'ML-0007' price = '12.00'  currency_code = 'EUR' language_code = 'E'   description = 'Hamburg Salad with Eggs' )
-      ( supplement_id = 'ML-0008' price = '25.00'  currency_code = 'EUR' language_code = 'E'   description = 'Quail with French Salad and Black Forest Cake')
-      ( supplement_id = 'ML-0009' price = '13.00'  currency_code = 'EUR' language_code = 'E'   description = 'Duck on Lettuce' )
-      ( supplement_id = 'ML-0010' price =  '5.00'  currency_code = 'EUR' language_code = 'E'   description = 'Carpaccio')
-      ( supplement_id = 'ML-0011' price =  '7.00'  currency_code = 'EUR' language_code = 'E'   description = 'Seasonal Salad')
-      ( supplement_id = 'ML-0012' price = '16.00'  currency_code = 'EUR' language_code = 'E'   description = 'Hamburg Salad with Fresh Shrimps')
-      ( supplement_id = 'ML-0013' price = '17.00'  currency_code = 'EUR' language_code = 'E'   description = 'Quail')
-      ( supplement_id = 'ML-0014' price = '14.00'  currency_code = 'EUR' language_code = 'E'   description = 'Wiener Schnitzel')
-      ( supplement_id = 'ML-0015' price = '13.00'  currency_code = 'EUR' language_code = 'E'   description = 'Pork Schnitzel')
-      ( supplement_id = 'ML-0016' price = '14.00'  currency_code = 'EUR' language_code = 'E'   description = 'Schnitzel with Pepper Sauce')
-      ( supplement_id = 'ML-0017' price = '11.00'  currency_code = 'EUR' language_code = 'E'   description = 'Chicken and French Fries')
-      ( supplement_id = 'ML-0018' price = '12.00'  currency_code = 'EUR' language_code = 'E'   description = 'Turkey Steak')
-      ( supplement_id = 'ML-0019' price = '15.00'  currency_code = 'EUR' language_code = 'E'   description = 'Bavarian Duck')
-      ( supplement_id = 'ML-0020' price = '14.00'  currency_code = 'EUR' language_code = 'E'   description = 'Knuckle of Pork')
-      ( supplement_id = 'ML-0021' price = '22.00'  currency_code = 'EUR' language_code = 'E'   description = 'Fillet of Beef')
-      ( supplement_id = 'ML-0022' price = '21.00'  currency_code = 'EUR' language_code = 'E'   description = 'Trout Au Bleu')
-      ( supplement_id = 'ML-0023' price = '20.00'  currency_code = 'EUR' language_code = 'E'   description = 'Trout Meuniere')
-      ( supplement_id = 'ML-0024' price = '17.00'  currency_code = 'EUR' language_code = 'E'   description = 'Monkfish')
-      ( supplement_id = 'ML-0025' price = '12.00'  currency_code = 'EUR' language_code = 'E'   description = 'Sole')
-      ( supplement_id = 'ML-0026' price =  '6.00'  currency_code = 'EUR' language_code = 'E'   description = 'Mini Fried Sole')
-      ( supplement_id = 'ML-0027' price = '14.00'  currency_code = 'EUR' language_code = 'E'   description = 'Salmon in a Bearnaise Sauce')
-      ( supplement_id = 'ML-0028' price = '15.00'  currency_code = 'EUR' language_code = 'E'   description = 'Salmon Lasagne')
-      ( supplement_id = 'ML-0029' price =  '3.00'  currency_code = 'EUR' language_code = 'E'   description = 'Chocolate Ice Cream')
-      ( supplement_id = 'ML-0030' price =  '2.50'  currency_code = 'EUR' language_code = 'E'   description = 'Vanilla Ice Cream')
-      ( supplement_id = 'ML-0031' price =  '4.50'  currency_code = 'EUR' language_code = 'E'   description = 'Vanilla Ice Cream with Hot Cherries')
-      ( supplement_id = 'ML-0032' price =  '4.50'  currency_code = 'EUR' language_code = 'E'   description = 'Vanilla Ice Cream with Hot Raspberries')
-      ( supplement_id = 'ML-0033' price =  '4.00'  currency_code = 'EUR' language_code = 'E'   description = 'Apple Strudel')
-      ( supplement_id = 'ML-0034' price =  '4.00'  currency_code = 'EUR' language_code = 'E'   description = 'Raspberry Sorbet')
-      ( supplement_id = 'ML-0035' price =  '4.00'  currency_code = 'EUR' language_code = 'E'   description = 'Strawberry Sorbet')
-      ( supplement_id = 'LU-0001' price = '40.00'  currency_code = 'EUR' language_code = 'E'   description = 'Extra baggage 5 kgs')
-      ( supplement_id = 'LU-0002' price = '15.00'  currency_code = 'EUR' language_code = 'E'   description = 'Luggage transfer from airport to hotel')
-      ( supplement_id = 'LU-0003' price = '75.00'  currency_code = 'EUR' language_code = 'E'   description = 'Luggage pickup from home and return ' )
-      ( supplement_id = 'LU-0004' price = '80.00'  currency_code = 'EUR' language_code = 'E'   description = 'Bulky goods like sports equipment' )
-    )  .
+    IF gt_data IS INITIAL.
+      GET TIME STAMP FIELD DATA(current_timestamp).
+      gt_data = VALUE tt_supplement_complete(  ##NO_TEXT
+
+        currency_code         = 'EUR'
+        language_code         = 'E'
+        local_created_by      = 'GENERATOR'
+        local_last_changed_by = 'GENERATOR'
+        local_created_at      = current_timestamp
+        local_last_changed_at = current_timestamp
+        last_changed_at       = current_timestamp
+
+        " Beverages
+        supplement_category = cs_supplement_category-beverage
+        ( price =  '2.30'  description = 'Hot Chocolate' )
+        ( price =  '7.50'  description = 'Alcohol free Champagne' )
+        ( price =  '3.50'  description = 'Coke' )
+        ( price =  '3.50'  description = 'Orange Lemonade' )
+        ( price =  '3.50'  description = 'Apple Juice' )
+        ( price =  '3.50'  description = 'Pear Juice' )
+        ( price =  '3.50'  description = 'Mango Juice' )
+        ( price =  '3.50'  description = 'Lemon Lemonade' )
+        ( price =  '4.50'  description = 'Tomato Juice' )
+
+        " Meals
+        supplement_category = cs_supplement_category-meal
+        ( price =  '3.00'  description = 'Black Forest Cake' )
+        ( price =  '2.00'  description = 'Chocolate Cake' )
+        ( price =  '1.50'  description = 'Apple Pie' )
+        ( price =  '1.50'  description = 'Pear Pie' )
+        ( price =  '8.00'  description = 'Nice Salad')
+        ( price =  '9.00'  description = 'Paris Salad')
+        ( price = '12.00'  description = 'Hamburg Salad with Eggs' )
+        ( price = '25.00'  description = 'Quail with French Salad and Black Forest Cake')
+        ( price = '13.00'  description = 'Duck on Lettuce' )
+        ( price =  '5.00'  description = 'Carpaccio')
+        ( price =  '7.00'  description = 'Seasonal Salad')
+        ( price = '16.00'  description = 'Hamburg Salad with Fresh Shrimps')
+        ( price = '17.00'  description = 'Quail')
+        ( price = '14.00'  description = 'Wiener Schnitzel')
+        ( price = '13.00'  description = 'Pork Schnitzel')
+        ( price = '14.00'  description = 'Schnitzel with Pepper Sauce')
+        ( price = '11.00'  description = 'Chicken and French Fries')
+        ( price = '12.00'  description = 'Turkey Steak')
+        ( price = '15.00'  description = 'Bavarian Duck')
+        ( price = '14.00'  description = 'Knuckle of Pork')
+        ( price = '22.00'  description = 'Fillet of Beef')
+        ( price = '21.00'  description = 'Trout Au Bleu')
+        ( price = '20.00'  description = 'Trout Meuniere')
+        ( price = '17.00'  description = 'Monkfish')
+        ( price = '12.00'  description = 'Sole')
+        ( price =  '6.00'  description = 'Mini Fried Sole')
+        ( price = '14.00'  description = 'Salmon in a Bearnaise Sauce')
+        ( price = '15.00'  description = 'Salmon Lasagne')
+        ( price =  '3.00'  description = 'Chocolate Ice Cream')
+        ( price =  '2.50'  description = 'Vanilla Ice Cream')
+        ( price =  '4.50'  description = 'Vanilla Ice Cream with Hot Cherries')
+        ( price =  '4.50'  description = 'Vanilla Ice Cream with Hot Raspberries')
+        ( price =  '4.00'  description = 'Apple Strudel')
+        ( price =  '4.00'  description = 'Raspberry Sorbet')
+        ( price =  '4.00'  description = 'Strawberry Sorbet')
+        ( price = '40.00'  description = 'Extra baggage 5 kgs')
+
+        "Luggage
+        supplement_category = cs_supplement_category-luggage
+        ( price = '15.00'  description = 'Luggage transfer from airport to hotel')
+        ( price = '75.00'  description = 'Luggage pickup from home and return ' )
+        ( price = '80.00'  description = 'Bulky goods like sports equipment' )
+      )  .
+
+      LOOP AT gt_data ASSIGNING FIELD-SYMBOL(<data>).
+        <data>-supplement_id = get_key( <data>-supplement_category ).
+      ENDLOOP.
+
+    ENDIF.
+
+    rt_data = gt_data.
+  ENDMETHOD.
+
+  METHOD get_key.
+    TRY.
+        cl_numberrange_runtime=>number_get(
+          EXPORTING
+            nr_range_nr = cv_numberrange_interval
+            subobject   = CONV #( iv_type )
+            object      = cv_numberrange_object
+          IMPORTING
+            number      = DATA(lv_key)
+        ).
+      CATCH cx_number_ranges.
+        " Should not happen.  If so, something is wrong
+        ASSERT 1 = 0.
+    ENDTRY.
+    DATA(lv_num) = CONV i( lv_key+2 ).
+    rv_key = |{ iv_type }-{ lv_num  ALIGN = RIGHT  PAD = `0`  WIDTH = 4 }|.
+  ENDMETHOD.
+
+  METHOD set_numberrange_intervals.
+
+    CONSTANTS:
+      cv_fromnumber TYPE cl_numberrange_intervals=>nr_nriv_line-fromnumber VALUE '0001',
+      cv_tonumber   TYPE cl_numberrange_intervals=>nr_nriv_line-tonumber   VALUE '9999'.
+
+    LOOP AT gt_supplement_category INTO DATA(ls_supplement_category).
+      /dmo/cl_flight_data_generator=>reset_numberrange_interval(
+        EXPORTING
+          numberrange_object   = cv_numberrange_object
+          numberrange_interval = cv_numberrange_interval
+          subobject            = CONV #( ls_supplement_category-supplement_category )
+          fromnumber           = cv_fromnumber
+          tonumber             = cv_tonumber ).
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD get_supplement_category.
+    rt_supplement_category = VALUE tt_supplement_category_compl( ##NO_TEXT
+        language_code = 'E'
+        ( supplement_category = cs_supplement_category-beverage  description = 'Beverage' )
+        ( supplement_category = cs_supplement_category-meal      description = 'Meal'     )
+        ( supplement_category = cs_supplement_category-luggage   description = 'Luggage'  )
+        ( supplement_category = cs_supplement_category-extra     description = 'Extra'    )
+      ).
   ENDMETHOD.
 
 ENDCLASS.
 
+
+CLASS lcl_status_vh_data_generator DEFINITION CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    INTERFACES: lif_data_generator.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES:
+      type_travel_status  TYPE STANDARD TABLE OF /dmo/trvl_stat_t WITH KEY travel_status  language,
+      type_overall_status TYPE STANDARD TABLE OF /dmo/oall_stat_t WITH KEY overall_status language,
+      type_booking_status TYPE STANDARD TABLE OF /dmo/book_stat_t WITH KEY booking_status language.
+
+    CLASS-METHODS:
+      _travel_status
+        RETURNING VALUE(travel_status) TYPE type_travel_status,
+      _overall_status
+        RETURNING VALUE(overall_status) TYPE type_overall_status,
+      _booking_status
+        RETURNING VALUE(booking_status) TYPE type_booking_status.
+
+ENDCLASS.
+
+CLASS lcl_status_vh_data_generator IMPLEMENTATION.
+
+  METHOD lif_data_generator~create.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
+    DELETE FROM:
+       /dmo/trvl_stat,
+       /dmo/oall_stat,
+       /dmo/book_stat,
+       /dmo/trvl_stat_t,
+       /dmo/oall_stat_t,
+       /dmo/book_stat_t.
+
+
+    IF out IS BOUND.  out->write( '--> Travel Status' ) ##no_text.
+    ENDIF.
+    DATA(travel_status) = _travel_status( ).
+    INSERT /dmo/trvl_stat   FROM TABLE @( CORRESPONDING #( travel_status ) ).
+    INSERT /dmo/trvl_stat_t FROM TABLE @travel_status.
+
+    IF out IS BOUND.  out->write( '--> Overall Status' ) ##no_text.
+    ENDIF.
+    DATA(overall_status) = _overall_status( ).
+    INSERT /dmo/oall_stat   FROM TABLE @( CORRESPONDING #( overall_status ) ).
+    INSERT /dmo/oall_stat_t FROM TABLE @overall_status.
+
+    IF out IS BOUND.  out->write( '--> Booking Status' ) ##no_text.
+    ENDIF.
+    DATA(booking_status) = _booking_status( ).
+    INSERT /dmo/book_stat   FROM TABLE @( CORRESPONDING #( booking_status ) ).
+    INSERT /dmo/book_stat_t FROM TABLE @booking_status.
+
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD _Travel_status.
+    travel_status = VALUE type_travel_status(
+        language = 'E'
+          ( travel_status = 'N'  text = 'New'       )
+          ( travel_status = 'B'  text = 'Booked'    )
+          ( travel_status = 'P'  text = 'Planned'   )
+          ( travel_status = 'X'  text = 'Canceled'  )
+      ).
+  ENDMETHOD.
+
+  METHOD _overall_status.
+    overall_status = VALUE type_overall_status(
+        language = 'E'
+          ( overall_status = 'O'  text = 'Open'      )
+          ( overall_status = 'A'  text = 'Accepted'  )
+          ( overall_status = 'X'  text = 'Rejected'  )
+      ).
+  ENDMETHOD.
+
+  METHOD _booking_status.
+    booking_status = VALUE type_booking_status(
+        language = 'E'
+          ( booking_status = 'N'  text = 'New'       )
+          ( booking_status = 'B'  text = 'Booked'    )
+          ( booking_status = 'X'  text = 'Canceled'  )
+      ).
+  ENDMETHOD.
+
+ENDCLASS.
 
 CLASS lcl_travel_data_generator DEFINITION DEFERRED.
 CLASS /dmo/cl_flight_data_generator DEFINITION LOCAL FRIENDS lcl_travel_data_generator.
@@ -1643,17 +1883,20 @@ CLASS lcl_travel_data_generator DEFINITION CREATE PRIVATE.
              countryname TYPE i_countrytext-countryname,
            END OF ty_countryname.
 
-    CONSTANTS: cv_travel_group_amount_max     TYPE i VALUE 3,
-               cv_trip_length_center          TYPE i   VALUE 3,
-               cv_trip_length_offset          TYPE i VALUE 2,
-               cv_booking_date_min            TYPE i VALUE 0,
-               cv_booking_date_max            TYPE i VALUE 20,
-               cv_travel_create_dat_befor_min TYPE i VALUE 0,
-               cv_travel_create_dat_befor_max TYPE i VALUE 40,
-               cv_travel_change_date_min      TYPE i VALUE 0,
-               cv_travel_change_date_max      TYPE i VALUE 10,
-               cv_booking_supplement_amount   TYPE i   VALUE 5,
-               cv_booking_days_before         TYPE i VALUE 15.
+    CONSTANTS:
+      cv_travel_group_amount_max     TYPE i VALUE 3,
+      cv_trip_length_center          TYPE i VALUE 3,
+      cv_trip_length_offset          TYPE i VALUE 2,
+      cv_booking_date_min            TYPE i VALUE 0,
+      cv_booking_date_max            TYPE i VALUE 20,
+      cv_travel_create_dat_befor_min TYPE i VALUE 0,
+      cv_travel_create_dat_befor_max TYPE i VALUE 40,
+      cv_travel_change_date_min      TYPE i VALUE 0,
+      cv_travel_change_date_max      TYPE i VALUE 10,
+      cv_booking_supplement_amount   TYPE i VALUE 5,
+      cv_booking_days_before         TYPE i VALUE 15,
+      cv_numberrange_interval        TYPE cl_numberrange_runtime=>nr_interval VALUE '01',
+      cv_numberrange_object          TYPE cl_numberrange_runtime=>nr_object   VALUE '/DMO/TRAVL' ##NO_TEXT.
 
     CLASS-DATA:
       go_random_seats                TYPE REF TO cl_abap_random_int,
@@ -1687,6 +1930,10 @@ CLASS lcl_travel_data_generator DEFINITION CREATE PRIVATE.
       get_data
         RETURNING
           VALUE(rt_data) TYPE tt_travel_complete,
+      set_numberrange,
+      get_travel_id
+        RETURNING
+          VALUE(rv_travel_id) TYPE /dmo/travel_id,
       build_booking
         IMPORTING
           iv_travel_id       TYPE /dmo/booking-travel_id
@@ -1742,17 +1989,26 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
           lt_bookings            TYPE tt_bookings,
           lt_booking_supplements TYPE tt_booking_supplements.
 
-    IF out IS BOUND.  out->write( '--> Delete Travel Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Travel Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/travel.                            "#EC CI_NOWHERE
-    IF out IS BOUND.  out->write( '--> Delete Booking Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Booking Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/booking.                           "#EC CI_NOWHERE
-    IF out IS BOUND.  out->write( '--> Delete Booking Supplement Content.' ). ENDIF.
+    IF out IS BOUND.  out->write( '--> Delete Booking Supplement Content.' ) ##NO_TEXT.
+    ENDIF.
     DELETE FROM /dmo/book_suppl.                        "#EC CI_NOWHERE
 
-    IF out IS BOUND.  out->write( '--> Build Content.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Set Numberranges.' ) ##NO_TEXT.
+    ENDIF.
+    set_numberrange( ).
+
+    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
+    ENDIF.
     DATA(lt_data) = get_data(  ).
 
-    IF out IS BOUND.  out->write( '--> Convert Content to Table Format' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Convert Content to Table Format' ) ##NO_TEXT.
+    ENDIF.
     LOOP AT lt_data INTO DATA(ls_travel).
       APPEND CORRESPONDING /dmo/travel( ls_travel ) TO lt_travels.
       LOOP AT ls_travel-bookings INTO DATA(ls_booking).
@@ -1761,14 +2017,18 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
       ENDLOOP.
     ENDLOOP.
 
-    IF out IS BOUND.  out->write( '--> Insert Travel Content' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Travel Content' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/travel FROM TABLE @lt_travels.
-    IF out IS BOUND.  out->write( '--> Insert Booking Content' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Booking Content' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/booking FROM TABLE @lt_bookings.
-    IF out IS BOUND.  out->write( '--> Insert Booking Supplement Content' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Insert Booking Supplement Content' ) ##NO_TEXT.
+    ENDIF.
     INSERT /dmo/book_suppl FROM TABLE @lt_booking_supplements.
 
-    IF out IS BOUND.  out->write( '--> Done.' ).  ENDIF.
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
   ENDMETHOD.
 
 
@@ -1778,12 +2038,11 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
     build_dependend_content( ).
     set_today( ).
 
-    lv_travel_id = 1.
-
 
     DATA(lt_bookings) = build_booking( lv_travel_id ).
     WHILE lt_bookings IS NOT INITIAL.
 
+      lv_travel_id = get_travel_id( ).
 
       DATA(lv_travel_create_date_dats) = calc_days_before_book_or_today( lt_bookings[ 1 ]-booking_date ).
 
@@ -1823,9 +2082,40 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
           bookings      = lt_bookings
       ) TO rt_data.
 
-      lv_travel_id = lv_travel_id + 1.
       lt_bookings = build_booking( lv_travel_id ).
     ENDWHILE.
+  ENDMETHOD.
+
+  METHOD set_numberrange.
+
+    CONSTANTS:
+      cv_fromnumber TYPE cl_numberrange_intervals=>nr_nriv_line-fromnumber VALUE '00000001',
+      cv_tonumber   TYPE cl_numberrange_intervals=>nr_nriv_line-tonumber   VALUE '99999999'.
+
+    /dmo/cl_flight_data_generator=>reset_numberrange_interval(
+      EXPORTING
+        numberrange_object   = cv_numberrange_object
+        numberrange_interval = cv_numberrange_interval
+        fromnumber           = cv_fromnumber
+        tonumber             = cv_tonumber ).
+
+  ENDMETHOD.
+
+
+  METHOD get_travel_id.
+    TRY.
+        cl_numberrange_runtime=>number_get(
+          EXPORTING
+            nr_range_nr = cv_numberrange_interval
+            object      = cv_numberrange_object
+          IMPORTING
+            number      = DATA(lv_key)
+        ).
+      CATCH cx_number_ranges.
+        "should not happen
+        ASSERT 1 = 0.
+    ENDTRY.
+    rv_travel_id = CONV #( lv_key ).
   ENDMETHOD.
 
 
@@ -2067,7 +2357,7 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
                                   WHEN 6 THEN `Visiting ` && gt_customer[ go_ran_customer->get_next( ) ]-first_name
                                   WHEN 7 THEN `Business Trip`
                                   ELSE `Vacation`
-                        ).
+                        )  ##NO_TEXT.
   ENDMETHOD.
 
 

@@ -1297,25 +1297,50 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
 
     CHECK it_travel IS NOT INITIAL.
 
-    DATA lv_travel_id_max TYPE /dmo/travel_id.
-    IF lcl_travel_buffer=>get_instance( )->mt_create_buffer IS INITIAL.
-      SELECT FROM /dmo/travel FIELDS MAX( travel_id ) INTO @lv_travel_id_max. "#EC CI_NOWHERE
-    ELSE.
-      LOOP AT mt_create_buffer ASSIGNING FIELD-SYMBOL(<s_buffer_travel_create>).
-        IF <s_buffer_travel_create>-travel_id > lv_travel_id_max.
-          lv_travel_id_max = <s_buffer_travel_create>-travel_id.
-        ENDIF.
-      ENDLOOP.
-    ENDIF.
+    DATA lt_travel_to_process LIKE it_travel.
+    DATA lv_travel_id_max     TYPE /dmo/travel_id.
 
+    lt_travel_to_process = it_travel.
+
+    " Checks
     LOOP AT it_travel INTO DATA(ls_travel_create) ##INTO_OK.
-
-      " Checks
       IF _check( EXPORTING is_travel     = ls_travel_create
                            iv_change_mode = /dmo/cl_flight_legacy=>change_mode-create
                  CHANGING  ct_messages   = et_messages ) = abap_false.
-        RETURN.
+        DELETE lt_travel_to_process WHERE travel_id = ls_travel_create-travel_id.
       ENDIF.
+    ENDLOOP.
+
+    CHECK lt_travel_to_process IS NOT INITIAL.
+
+    " Get Numbers
+    TRY.
+        cl_numberrange_runtime=>number_get(
+          EXPORTING
+            nr_range_nr       = '01'
+            object            = '/DMO/TRAVL'
+            quantity          = CONV #( lines( lt_travel_to_process ) )
+          IMPORTING
+            number            = DATA(lv_key)
+            returncode        = DATA(lv_return_code)
+            returned_quantity = DATA(lv_returned_quantity)
+        ).
+      CATCH cx_number_ranges INTO DATA(lx_number_ranges).
+        APPEND lx_number_ranges TO et_messages.
+        EXIT.
+    ENDTRY.
+
+
+    IF lv_return_code = '2' OR lv_return_code = '3'.
+      APPEND NEW /dmo/cx_flight_legacy( textid = /dmo/cx_flight_legacy=>travel_nr_last_number ) TO et_messages.
+      EXIT.
+    ENDIF.
+
+    ASSERT lv_returned_quantity = lines( lt_travel_to_process ).
+
+    lv_travel_id_max = CONV i( lv_key ) - lines( lt_travel_to_process ).
+
+    LOOP AT lt_travel_to_process INTO ls_travel_create ##INTO_OK.
 
       " standard determinations
       ls_travel_create-createdby = sy-uname.
@@ -1324,15 +1349,17 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
       ls_travel_create-lastchangedat = ls_travel_create-createdat.
       ls_travel_create-status = /dmo/if_flight_legacy=>travel_status-new.
 
+
+
       " **Internal** numbering: Override travel_id
       lv_travel_id_max = lv_travel_id_max + 1.
       ASSERT lv_travel_id_max IS NOT INITIAL.
       ls_travel_create-travel_id = lv_travel_id_max.
 
       INSERT ls_travel_create INTO TABLE mt_create_buffer_2.
-    ENDLOOP.
 
-    et_travel = mt_create_buffer_2.
+      et_travel = mt_create_buffer_2.
+    ENDLOOP.
   ENDMETHOD.
 
 

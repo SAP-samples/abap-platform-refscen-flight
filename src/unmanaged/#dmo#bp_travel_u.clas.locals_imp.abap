@@ -172,7 +172,7 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD read_travel.
     DATA: ls_travel_out TYPE /dmo/travel,
-          lt_message    TYPE /dmo/t_message.
+          lt_messages   TYPE /dmo/t_message.
 
     LOOP AT it_travel INTO DATA(ls_travel_to_read) GROUP BY ls_travel_to_read-%key.
 
@@ -181,9 +181,9 @@ CLASS lhc_travel IMPLEMENTATION.
           iv_travel_id = ls_travel_to_read-travelid
         IMPORTING
           es_travel    = ls_travel_out
-          et_messages  = lt_message.
+          et_messages  = lt_messages.
 
-      IF lt_message IS INITIAL.
+      IF lt_messages IS INITIAL.
         "fill result parameter with flagged fields
 
         INSERT CORRESPONDING #( ls_travel_out MAPPING TO ENTITY ) INTO TABLE et_travel.
@@ -191,16 +191,25 @@ CLASS lhc_travel IMPLEMENTATION.
       ELSE.
         "fill failed table in case of error
 
-        failed-travel = VALUE #(
-          BASE failed-travel
-          FOR msg IN lt_message (
-            %key = ls_travel_to_read-%key
-            %fail-cause = COND #(
-              WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
-              THEN if_abap_behv=>cause-not_found
-              ELSE if_abap_behv=>cause-unspecific
-            )
-          )
+*        failed-travel = VALUE #(
+*          BASE failed-travel
+*          FOR msg IN lt_messages (
+*            %key = ls_travel_to_read-%key
+*            %fail-cause = COND #(
+*              WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
+*              THEN if_abap_behv=>cause-not_found
+*              ELSE if_abap_behv=>cause-unspecific
+*            )
+*          )
+*        ).
+
+        /dmo/cl_travel_auxiliary=>handle_travel_messages(
+          EXPORTING
+            iv_travel_id = ls_travel_to_read-travelid
+            it_messages  = lt_messages
+          CHANGING
+            failed       = failed-travel
+            reported     = reported-travel
         ).
 
       ENDIF.
@@ -326,7 +335,7 @@ CLASS lhc_travel IMPLEMENTATION.
     DATA: ls_travel_out  TYPE /dmo/travel,
           lt_booking_out TYPE /dmo/t_booking,
           ls_booking     LIKE LINE OF et_booking,
-          lt_message     TYPE /dmo/t_message.
+          lt_messages    TYPE /dmo/t_message.
 
 
     LOOP AT it_travel ASSIGNING FIELD-SYMBOL(<fs_travel_rba>) GROUP BY <fs_travel_rba>-TravelID.
@@ -337,9 +346,9 @@ CLASS lhc_travel IMPLEMENTATION.
         IMPORTING
           es_travel    = ls_travel_out
           et_booking   = lt_booking_out
-          et_messages  = lt_message.
+          et_messages  = lt_messages.
 
-      IF lt_message IS INITIAL.
+      IF lt_messages IS INITIAL.
 
         LOOP AT lt_booking_out ASSIGNING FIELD-SYMBOL(<fs_booking>).
           "fill link table with key fields
@@ -368,16 +377,25 @@ CLASS lhc_travel IMPLEMENTATION.
       ELSE.
         "fill failed table in case of error
 
-        failed-travel = VALUE #(
-          BASE failed-travel
-          FOR msg IN lt_message (
-            %key = <fs_travel_rba>-TravelID
-            %fail-cause = COND #(
-              WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
-              THEN if_abap_behv=>cause-not_found
-              ELSE if_abap_behv=>cause-unspecific
-            )
-          )
+*        failed-travel = VALUE #(
+*          BASE failed-travel
+*          FOR msg IN lt_messages (
+*            %key = <fs_travel_rba>-TravelID
+*            %fail-cause = COND #(
+*              WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
+*              THEN if_abap_behv=>cause-not_found
+*              ELSE if_abap_behv=>cause-unspecific
+*            )
+*          )
+*        ).
+
+        /dmo/cl_travel_auxiliary=>handle_travel_messages(
+          EXPORTING
+            iv_travel_id = <fs_travel_rba>-travelid
+            it_messages  = lt_messages
+          CHANGING
+            failed       = failed-travel
+            reported     = reported-travel
         ).
 
       ENDIF.
@@ -507,7 +525,7 @@ CLASS lhc_travel IMPLEMENTATION.
         %key                                = ls_travel-%key
         %features-%action-set_status_booked = COND #( WHEN ls_travel-Status = 'B'
                                                       THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled )
-        %assoc-_Booking                     = COND #( WHEN ls_travel-Status = 'B'
+        %assoc-_Booking                     = COND #( WHEN ls_travel-Status = 'B' OR ls_travel-Status = 'X'
                                                       THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled )
 
       ) ).

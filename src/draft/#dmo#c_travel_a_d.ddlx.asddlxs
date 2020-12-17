@@ -25,7 +25,7 @@ annotate entity /DMO/C_Travel_A_D
   @UI: { lineItem:       [ { position: 10, importance: #HIGH },
                            { type: #FOR_ACTION, dataAction: 'acceptTravel', label: 'Accept Travel' }, 
                            { type: #FOR_ACTION, dataAction: 'rejectTravel', label: 'Reject Travel' }, 
-                           { type: #FOR_ACTION, dataAction: 'deductDiscount', label: 'Deduct Discount' } ],
+                           { type: #FOR_ACTION, dataAction: 'deductDiscount', label: 'Deduct Discount', invocationGrouping: #CHANGE_SET } ],
          identification: [ { position: 10, label: 'Travel ID' },
                            { type: #FOR_ACTION, dataAction: 'acceptTravel', label: 'Accept Travel' },
                            { type: #FOR_ACTION, dataAction: 'rejectTravel', label: 'Reject Travel' }, 
@@ -66,8 +66,13 @@ annotate entity /DMO/C_Travel_A_D
   Description;
   
   @UI: { lineItem:       [ { position: 99, importance: #HIGH } ] ,
-         identification: [ { position: 99, label: 'Status' } ] }
+         identification: [ { position: 99, label: 'Status' } ], 
+         selectionField: [ { position: 40 } ] ,   
+         textArrangement: #TEXT_ONLY }
   OverallStatus;
+  
+  @UI.hidden: true
+  OverallStatusText;
    
   @UI.hidden: true
   LocalLastChangedAt;

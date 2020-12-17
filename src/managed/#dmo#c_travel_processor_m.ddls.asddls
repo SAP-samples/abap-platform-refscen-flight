@@ -25,8 +25,8 @@ define root view entity /DMO/C_Travel_Processor_M
 
       @UI: {
           lineItem:       [ { position: 10, importance: #HIGH } ,
-                          { type: #FOR_ACTION, dataAction: 'createTravelByTemplate', label: 'Create Travel by Template' } ],
-          identification: [ { position: 10, label: 'Travel ID [1,...,99999999]' } ] }
+                          { type: #FOR_ACTION, dataAction: 'copyTravel', label: 'Copy Travel' } ],
+          identification: [ { position: 10, label: 'Travel ID' } ] }
       @Search.defaultSearchElement: true
   key travel_id          as TravelID,
 
@@ -35,7 +35,6 @@ define root view entity /DMO/C_Travel_Processor_M
           identification: [ { position: 20 } ],
           selectionField: [ { position: 20 } ] }
       @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency', element: 'AgencyID'  } }]
-
       @ObjectModel.text.element: ['AgencyName']
       @Search.defaultSearchElement: true
       agency_id          as AgencyID,
@@ -46,7 +45,6 @@ define root view entity /DMO/C_Travel_Processor_M
           identification: [ { position: 30 } ],
           selectionField: [ { position: 30 } ] }
       @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Customer', element: 'CustomerID'  } }]
-
       @ObjectModel.text.element: ['CustomerName']
       @Search.defaultSearchElement: true
       customer_id        as CustomerID,
@@ -79,8 +77,16 @@ define root view entity /DMO/C_Travel_Processor_M
 
       @UI: {
           lineItem:       [ { position: 50, importance: #HIGH } ],
-          identification: [ { position: 45, label: 'Status [O(Open)|A(Accepted)|X(Canceled)]' } ] }
-      overall_status     as TravelStatus,
+          identification: [ { position: 45, label: 'Status' } ],
+          selectionField: [{ position: 40 }],
+          textArrangement: #TEXT_ONLY
+           }
+      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Overall_Status_VH', element: 'OverallStatus' }}]
+      @ObjectModel.text.element: ['OverallStatusText']    
+      overall_status     as OverallStatus,
+      
+      @UI.hidden: true
+      _OverallStatus._Text.Text as OverallStatusText : localized,
 
       @UI: {
           identification:[ { position: 46 } ]  }
@@ -92,5 +98,6 @@ define root view entity /DMO/C_Travel_Processor_M
       /* Associations */
       _Booking : redirected to composition child /DMO/C_Booking_Processor_M,
       _Agency,
-      _Customer
+      _Customer,
+      _OverallStatus
 }

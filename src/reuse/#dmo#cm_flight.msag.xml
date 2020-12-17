@@ -110,6 +110,30 @@
      <MSGNR>017</MSGNR>
      <TEXT>Enter a FlightDate.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Not enough keys for all instances.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>Number range object almost depleted.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>You are not authorized to perform this activity.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>You are not authorized to perform this activity.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

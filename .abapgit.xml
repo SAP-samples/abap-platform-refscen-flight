@@ -12,26 +12,6 @@
     <item>/package.json</item>
     <item>/.travis.yml</item>
     <item>/NOTICE</item>
-    <item>/src/managed/#dmo#c_travel_approver_m.bdef.asbdef</item>
-    <item>/src/managed/#dmo#c_travel_approver_m.bdef.xml</item>
-    <item>/src/managed/#dmo#c_travel_processor_m.bdef.asbdef</item>
-    <item>/src/managed/#dmo#c_travel_processor_m.bdef.xml</item>
-    <item>/src/managed/#dmo#i_travel_m.bdef.asbdef</item>
-    <item>/src/managed/#dmo#i_travel_m.bdef.xml</item>
-    <item>/src/managed/#dmo#ui_travel_approver_m.srvd.srvdsrv</item>
-    <item>/src/managed/#dmo#ui_travel_approver_m.srvd.xml</item>
-    <item>/src/managed/#dmo#ui_travel_processor_m.srvd.srvdsrv</item>
-    <item>/src/managed/#dmo#ui_travel_processor_m.srvd.xml</item>
-    <item>/src/readonly/#dmo#flight_r.srvd.srvdsrv</item>
-    <item>/src/readonly/#dmo#flight_r.srvd.xml</item>
-    <item>/src/unmanaged/#dmo#i_travel_u.bdef.asbdef</item>
-    <item>/src/unmanaged/#dmo#i_travel_u.bdef.xml</item>
-    <item>/src/unmanaged/#dmo#travel_u.srvd.srvdsrv</item>
-    <item>/src/unmanaged/#dmo#travel_u.srvd.xml</item>
-    <item>/src/draft/#dmo#ui_travel_a_d.srvb.xml</item>
-    <item>/src/draft/#dmo#ui_travel_a_d.srvd.srvdsrv</item>
-    <item>/src/draft/#dmo#ui_travel_d_d.srvb.xml</item>
-    <item>/src/draft/#dmo#ui_travel_d_d.srvd.srvdsrv</item>
    </IGNORE>
   </DATA>
  </asx:values>

@@ -9,6 +9,7 @@ define root view entity /DMO/I_Travel_M
   association [0..1] to /DMO/I_Agency    as _Agency   on $projection.agency_id = _Agency.AgencyID
   association [0..1] to /DMO/I_Customer  as _Customer on $projection.customer_id = _Customer.CustomerID
   association [0..1] to I_Currency       as _Currency on $projection.currency_code = _Currency.Currency
+  association [1..1] to /DMO/I_Overall_Status_VH as _OverallStatus on $projection.overall_status = _OverallStatus.OverallStatus
 
 
 {
@@ -38,5 +39,6 @@ define root view entity /DMO/I_Travel_M
       _Booking,
       _Agency,
       _Customer,
-      _Currency
+      _Currency,
+      _OverallStatus
 }

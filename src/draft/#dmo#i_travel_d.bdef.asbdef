@@ -7,13 +7,13 @@ persistent table /dmo/a_travel_d
 draft table /dmo/d_travel_d
 lock master
 total etag LastChangedAt
-//authorization master ( instance )
+authorization master ( global, instance )
 etag master LocalLastChangedAt
 {
   create;
   update;
   delete;
-  association _Booking { create ( features : instance ); with draft; }
+  association _Booking { create ( features : instance ) ; with draft; }
 
   field ( numbering : managed, readonly ) TravelUUID;
   field ( readonly ) TravelID, OverallStatus, TotalPrice, LocalCreatedAt, LocalCreatedBy, LocalLastChangedAt, LocalLastChangedBy;
@@ -26,12 +26,14 @@ etag master LocalLastChangedAt
   internal action reCalcTotalPrice;
 
   determination setTravelNumber on save { create; }
-  determination setStatusToNew on modify { create; }
+  determination setStatusToOpen on modify { create; }
   determination calculateTotalPrice on modify { create; field BookingFee, CurrencyCode; }
 
   validation validateCustomer on save { create; field CustomerID; }
   validation validateAgency on save { create; field AgencyID; }
   validation validateDates on save { create; field BeginDate, EndDate; }
+  validation validateAuthOnCreate on save { create; }
+
 
   draft determine action Prepare
   {
@@ -66,18 +68,19 @@ implementation in class /dmo/bp_booking_d unique
 persistent table /dmo/a_booking_d
 draft table /dmo/d_booking_d
 lock dependent by _Travel
-//authorization dependent by <association>
+authorization dependent by _Travel
 etag master LocalLastChangedAt
 {
   update;
   delete;
-  association _BookingSupplement { create ; with draft; }
+  association _BookingSupplement { create; with draft; }
 
   association _Travel { with draft; }
 
   field ( numbering : managed, readonly ) BookingUUID;
   field ( readonly ) TravelUUID, BookingID, BookingDate, LocalLastChangedAt;
   field ( mandatory ) CustomerID, AirlineID, ConnectionID, FlightDate;
+
 
   determination setBookingNumber on save { create; }
   determination setBookingDate on save { create; }
@@ -107,7 +110,7 @@ implementation in class /dmo/bp_bookingsupplement_d unique
 persistent table /dmo/a_bksuppl_d
 draft table /dmo/d_bksuppl_d
 lock dependent by _Travel
-//authorization dependent by <association>
+authorization dependent by _Travel
 etag master LocalLastChangedAt
 {
   update;

@@ -1,0 +1,11 @@
+projection implementation in class /dmo/bp_c_supplement unique;
+use draft;
+
+define behavior for /DMO/C_Supplement alias Supplement
+{
+  use create ( augment );
+  use update ( augment );
+  use delete;
+
+  field ( modify ) SupplementDescription;
+}

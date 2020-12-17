@@ -53,6 +53,14 @@ annotate entity /DMO/C_Booking_A_D with
   FlightPrice;
       
 //  CurrencyCode;
+
+  @UI: { lineItem:       [ { position: 90, importance: #HIGH } ],
+         identification: [ { position: 90 } ],
+         textArrangement: #TEXT_ONLY }
+  BookingStatus; 
+  
+  @UI.hidden: true
+  BookingStatusText;
   
   @UI.hidden: true
   LocalLastChangedAt;

@@ -23,7 +23,7 @@ ENDCLASS.
 
 CLASS lc_test_data_config IMPLEMENTATION.
   METHOD constructor.
-    gt_agency = VALUE #( ( agency_id = '70001'
+    gt_agency = VALUE #( ( agency_id = '70001' ##NO_TEXT
                            name = 'SNS travels'
                            street = 'wall street'
                            postal_code = '560056'
@@ -31,7 +31,7 @@ CLASS lc_test_data_config IMPLEMENTATION.
                            country_code = 'DE'
                              ) ).
 
-    gt_customer =  VALUE #( ( customer_id = '00010'
+    gt_customer =  VALUE #( ( customer_id = '00010' ##NO_TEXT
                               first_name = 'John'
                               last_name = 'doe'
                               title ='Mr.'
@@ -41,7 +41,7 @@ CLASS lc_test_data_config IMPLEMENTATION.
                               country_code = 'DE'
                                ) ).
 
-    gt_carrier = VALUE #( ( carrier_id = 'AA'
+    gt_carrier = VALUE #( ( carrier_id = 'AA' ##NO_TEXT
                             name = 'American Airlines'
                             currency_code = 'USD'
                              ) ).

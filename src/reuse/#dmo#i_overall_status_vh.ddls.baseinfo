@@ -3,10 +3,12 @@
 {
 "FROM":
 [
-"/DMO/SUPPL_TEXT"
+"/DMO/OALL_STAT"
 ],
 "ASSOCIATED":
-[],
+[
+"/DMO/I_OVERALL_STATUS_VH_TEXT"
+],
 "BASE":
 [],
 "ANNO_REF":

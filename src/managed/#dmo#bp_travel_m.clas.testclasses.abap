@@ -260,7 +260,7 @@ CLASS test_writing_methods IMPLEMENTATION.
     DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
     DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
 
-    class_under_test->set_status_completed(
+    class_under_test->set_status_accepted(
       EXPORTING
         keys     = CORRESPONDING #(  travel_mock_data )
       CHANGING
@@ -391,7 +391,7 @@ CLASS test_using_entity_stub IMPLEMENTATION.
     DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
     DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
 
-    class_under_test->set_status_completed(
+    class_under_test->set_status_accepted(
       EXPORTING
         keys     = VALUE #( ( travel_id = 42 )
                             ( travel_id = 43 ) )

@@ -1,7 +1,7 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/abap-platform-refscen-flight)](https://api.reuse.software/info/github.com/SAP-samples/abap-platform-refscen-flight)
 
-# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model for SAP Cloud Platform ABAP Environment
-The ABAP RESTful programming model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP Cloud Platform ABAP Environment. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model for SAP BTP ABAP Environment
+The ABAP RESTful programming model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps in SAP BTP ABAP Environment. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
 
 The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Application Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
@@ -9,9 +9,9 @@ For more information, see [Downloading the ABAP Flight Reference Scenario](https
 
 ## Prerequisites
 Make sure to fulfill the following requirements:
-* You have access to an SAP Cloud Platform ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
+* You have access to an SAP BTP ABAP Environment instance (see [here](https://blogs.sap.com/2018/09/04/sap-cloud-platform-abap-environment) for additional information).
 * You have downloaded and installed ABAP Development Tools (ADT). Make sure to use the most recent version as indicated on the [installation page](https://tools.hana.ondemand.com/#abap). 
-* You have created an ABAP Cloud Project in ADT that allows you to access your SAP Cloud Platform ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for additional information). Your log-on language is English.
+* You have created an ABAP Cloud Project in ADT that allows you to access your SAP BTP ABAP Environment instance (see [here](https://help.sap.com/viewer/5371047f1273405bb46725a417f95433/Cloud/en-US/99cc54393e4c4e77a5b7f05567d4d14c.html) for additional information). Your log-on language is English.
 * You have installed the [abapGit](https://github.com/abapGit/eclipse.abapgit.org) plug-in for ADT from the update site `http://eclipse.abapgit.org/updatesite/`.
 
 ## Download
@@ -27,7 +27,7 @@ Use the abapGit plug-in to install the <em>ABAP Flight Reference Scenario</em> b
 
 As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
-* `/DMO/FLIGHT_REUSE`
+* `/DMO/FLIGHT_REUSE` The reuse package contains a package for the supplement business object `/DMO/FLIGHT_REUSE_SUPPLEMENT`, which is reused in the other development scenarios. 
 * `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/504035c0850f44f787f5b81e35791d10.html)).
 * `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
 * `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
@@ -39,13 +39,14 @@ NOTE: The service bindings of the develop scenarios are imported with the warnin
 
 To activate all development objects from the `/DMO/FLIGHT` package: 
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
-2. In the dialog that appears, select all development objects except for all service binding artifacts (`/DMO/UI_FLIGHT_R_V2` , `/DMO/UI_TRAVEL_PROC_M_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_U_V2`, and `/DMO/API_TRAVEL_U_V2` `/DMO/UI_TRAVEL_A_D`, `/DMO/UI_TRAVEL_D_D`)in the transport request (that you created for the demo content installation) and choose `Activate`. 
-3. Service bindings can only be activated once the underlying service definition is activated. To activate each service binding separately open them and choose the `Activate` button.
+2. In the dialog that appears, select all development objects except for all service binding artifacts (`/DMO/UI_SUPPLEMENT_04` `/DMO/UI_FLIGHT_R_V2` , `/DMO/UI_TRAVEL_PROC_M_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_U_V2`, and `/DMO/API_TRAVEL_U_V2` `/DMO/UI_TRAVEL_A_D`, `/DMO/UI_TRAVEL_D_D`) in the transport request (that you created for the demo content installation) and choose `Activate`. 
+3. Service bindings can only be activated once the underlying service definition is activated. To activate the service bindings click the mass-activation icon again and select all service bindings. 
+4. Choose the `Activate` button.
 
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish` or choose `Publish local service endpoint` in the top right corner of the editor.
 
-To fill the demo database tables for the read-only and the unmanaged scenario with sample business data: 
+To fill the demo database tables for develop scenarios with sample business data: 
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
 2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
 

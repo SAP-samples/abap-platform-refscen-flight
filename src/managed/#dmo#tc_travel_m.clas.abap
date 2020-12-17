@@ -95,7 +95,6 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
       ENTITY travel
         CREATE SET FIELDS WITH
           VALUE #( (  %cid = 'ROOT1'
-                      travel_id = '4711'
                       agency_id = agency_mock_data[ 1 ]-agency_id
                       customer_id = customer_mock_data[ 1 ]-customer_id
                       begin_date = begin_date
@@ -108,7 +107,6 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
         CREATE BY \_booking SET FIELDS WITH
           VALUE #( ( %cid_ref = 'ROOT1'
                      %target = VALUE #( ( %cid = 'booking1'
-                                          booking_id     = '201'
                                           booking_date   = begin_date
                                           customer_id    = customer_mock_data[ 1 ]-customer_id
                                           carrier_id     = flight_mock_data[ 1 ]-carrier_id
@@ -123,7 +121,6 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
         CREATE BY \_booksupplement SET FIELDS WITH
           VALUE #( ( %cid_ref = 'booking1'
                      %target = VALUE #( ( %cid = 'supplement1'
-                                          booking_supplement_id = '01'
                                           supplement_id = supplement_mock_data[ 1 ]-supplement_id
                                           price         = supplement_mock_data[ 1 ]-price
                                           currency_code = supplement_mock_data[ 1 ]-currency_code

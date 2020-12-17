@@ -46,12 +46,16 @@ define view entity /DMO/C_Booking_A_D
       @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }}]
       CurrencyCode,
 
+      @ObjectModel.text.element: ['BookingStatusText']
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Booking_Status_VH', element: 'BookingStatus' }}]
       BookingStatus,
+      _BookingStatus._Text.Text as BookingStatusText: localized, 
 
       LocalLastChangedAt,
 
       /* Associations */
       _BookingSupplement: redirected to composition child /DMO/C_BookingSupplement_A_D,
+      _BookingStatus, 
       _Carrier,
       _Connection,
       _Customer,

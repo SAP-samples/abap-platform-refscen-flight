@@ -328,22 +328,29 @@ CLASS ltc_travel IMPLEMENTATION.
     SELECT MAX( travel_id ) FROM /dmo/travel INTO @DATA(lv_travel_id_max). "#EC CI_NOWHERE
     DATA lv_travel_id_1 TYPE /dmo/travel_id.
     DATA lv_travel_id_2 TYPE /dmo/travel_id.
-    lv_travel_id_1 = lv_travel_id_max + 1.
-    IF lv_travel_id_1 IS INITIAL.
-      cl_abap_unit_assert=>abort( msg = 'Travel ID overflow!' ).
-    ENDIF.
-    lv_travel_id_2 = lv_travel_id_max + 2.
-    IF lv_travel_id_2 IS INITIAL.
-      cl_abap_unit_assert=>abort( msg = 'Travel ID overflow!' ).
-    ENDIF.
+*    lv_travel_id_1 = lv_travel_id_max + 1.
+*    IF lv_travel_id_1 IS INITIAL.
+*      cl_abap_unit_assert=>abort( msg = 'Travel ID overflow!' ).
+*    ENDIF.
+*    lv_travel_id_2 = lv_travel_id_max + 2.
+*    IF lv_travel_id_2 IS INITIAL.
+*      cl_abap_unit_assert=>abort( msg = 'Travel ID overflow!' ).
+*    ENDIF.
+*
+*    " Create a travel
+*    cl_abap_unit_assert=>assert_equals( act = _create_travel( VALUE #( agency_id = gv_agency_id_1  customer_id = gv_customer_id_2  begin_date = '20190101'  end_date = '20190201'
+*                                                                       status = /dmo/if_flight_legacy=>travel_status-booked ) )-travel_id  exp = lv_travel_id_1 ).
+*
+*    " Create a second travel
+*    cl_abap_unit_assert=>assert_equals( act = _create_travel( VALUE #( agency_id = gv_agency_id_2  customer_id = gv_customer_id_1  begin_date = '20190101'  end_date = '20190201'
+*                                                                       status = /dmo/if_flight_legacy=>travel_status-booked ) )-travel_id  exp = lv_travel_id_2 ).
 
-    " Create a travel
-    cl_abap_unit_assert=>assert_equals( act = _create_travel( VALUE #( agency_id = gv_agency_id_1  customer_id = gv_customer_id_2  begin_date = '20190101'  end_date = '20190201'
-                                                                       status = /dmo/if_flight_legacy=>travel_status-booked ) )-travel_id  exp = lv_travel_id_1 ).
+*   The Travel ID is now calculated by a number range object - so we can't predict the next number to be used ...
+    lv_travel_id_1 = _create_travel( VALUE #( agency_id = gv_agency_id_1  customer_id = gv_customer_id_2  begin_date = '20190101'  end_date = '20190201'
+                                              status = /dmo/if_flight_legacy=>travel_status-booked ) )-travel_id.
 
-    " Create a second travel
-    cl_abap_unit_assert=>assert_equals( act = _create_travel( VALUE #( agency_id = gv_agency_id_2  customer_id = gv_customer_id_1  begin_date = '20190101'  end_date = '20190201'
-                                                                       status = /dmo/if_flight_legacy=>travel_status-booked ) )-travel_id  exp = lv_travel_id_2 ).
+    lv_travel_id_2 = _create_travel( VALUE #( agency_id = gv_agency_id_2  customer_id = gv_customer_id_1  begin_date = '20190101'  end_date = '20190201'
+                                              status = /dmo/if_flight_legacy=>travel_status-booked ) )-travel_id.
 
     " Select and check the second travel
     DATA ls_travel_sel TYPE /dmo/travel.
