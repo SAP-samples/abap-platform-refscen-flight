@@ -45,7 +45,7 @@ To activate all development objects from the `/DMO/FLIGHT` package:
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish` or choose `Publish local service endpoint` in the top right corner of the editor.
 
-To fill the demo database tables for the read-only and the unmanaged scenario with sample business data: 
+To fill the demo database tables for develop scenarios with sample business data: 
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
 2. Select the data generator class `/DMO/CL_FLIGHT_DATA_GENERATOR` and press `F9` (Run as Console Application). 
 
