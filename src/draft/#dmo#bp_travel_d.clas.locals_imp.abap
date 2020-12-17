@@ -379,7 +379,6 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky                = ls_travel-%tky
                         %state_area         = 'VALIDATE_AGENCY'
                          %msg                = NEW /dmo/cm_flight_messages(
-                                                                travel_id = ls_travel-travelid
                                                                 textid = /dmo/cm_flight_messages=>ENTER_AGENCY_ID
                                                                 severity = if_abap_behv_message=>severity-error )
                         %element-AgencyID = if_abap_behv=>mk-on ) TO reported-travel.
@@ -391,7 +390,6 @@ CLASS lhc_travel IMPLEMENTATION.
                          %state_area          = 'VALIDATE_AGENCY'
                          %msg                = NEW /dmo/cm_flight_messages(
                                                                 agency_id = ls_travel-agencyid
-                                                                travel_id = ls_travel-travelid
                                                                 textid = /dmo/cm_flight_messages=>AGENCY_UNKOWN
                                                                 severity = if_abap_behv_message=>severity-error )
                          %element-AgencyID  = if_abap_behv=>mk-on ) TO reported-travel.
@@ -422,7 +420,6 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky               = ls_travel-%tky
                         %state_area        = 'VALIDATE_DATES'
                          %msg                = NEW /dmo/cm_flight_messages(
-                                                                travel_id = ls_travel-travelid
                                                                 textid = /dmo/cm_flight_messages=>ENTER_BEGIN_DATE
                                                                 severity = if_abap_behv_message=>severity-error )
                         %element-BeginDate = if_abap_behv=>mk-on ) TO reported-travel.
@@ -433,7 +430,6 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky               = ls_travel-%tky
                         %state_area        = 'VALIDATE_DATES'
                          %msg                = NEW /dmo/cm_flight_messages(
-                                                                travel_id = ls_travel-travelid
                                                                 textid = /dmo/cm_flight_messages=>ENTER_END_DATE
                                                                 severity = if_abap_behv_message=>severity-error )
                         %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.
@@ -448,7 +444,6 @@ CLASS lhc_travel IMPLEMENTATION.
                                                                 textid = /dmo/cm_flight_messages=>BEGIN_DATE_BEF_END_DATE
                                                                 begin_date = ls_travel-BeginDate
                                                                 end_date   = ls_travel-EndDate
-                                                                travel_id  = ls_travel-TravelId
                                                                 severity = if_abap_behv_message=>severity-error )
                         %element-BeginDate = if_abap_behv=>mk-on
                         %element-EndDate   = if_abap_behv=>mk-on ) TO reported-travel.

@@ -37,8 +37,8 @@ CLASS /dmo/tc_travel_proc_m_o2_odata DEFINITION
     METHODS:
       setup,
       teardown,
-      create_travel FOR TESTING RAISING cx_static_check,
-      create_deep FOR TESTING RAISING cx_static_check.
+      create_travel FOR TESTING RAISING cx_static_check.
+
 
 ENDCLASS.
 
@@ -154,109 +154,7 @@ CLASS /dmo/tc_travel_proc_m_o2_odata  IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD create_deep.
-    " call a Deep Create (travel with embedded child data) within a $batch request
-    " and check that we get back a deep response and that the data was written into the database
 
-
-    " Need to define a deep data structure
-    TYPES: BEGIN OF ty_booking_and_suppl.
-             INCLUDE   TYPE /dmo/c_booking_processor_m.
-    TYPES:   to_booksupplement TYPE STANDARD TABLE OF /dmo/c_booksuppl_processor_m WITH EMPTY KEY,
-           END OF ty_booking_and_suppl.
-
-    TYPES: BEGIN OF ty_travel_and_bookings.
-             INCLUDE    TYPE /dmo/c_travel_processor_m.
-    TYPES:   to_booking TYPE STANDARD TABLE OF ty_booking_and_suppl WITH EMPTY KEY,
-           END OF ty_travel_and_bookings.
-
-    " fill in request data
-    DATA(ls_business_data) = VALUE ty_travel_and_bookings(
-               travelid     = '101'
-               agencyid     = agency_mock_data[ 1 ]-agency_id
-               customerid   = customer_mock_data[  1 ]-customer_id
-               begindate    = begin_date
-               enddate      = end_date
-               bookingfee   = '10.50'
-               currencycode = 'EUR'
-               description  = 'TestTravel 1'
-               travelstatus = 'O'
-
-               to_booking = VALUE #( (
-                    bookingid     = 10
-                    bookingdate   = begin_date
-                    customerid    = customer_mock_data[ 1 ]-customer_id
-                    carrierid     = flight_mock_data[ 1 ]-carrier_id
-                    connectionid  = flight_mock_data[ 1 ]-connection_id
-                    flightdate    = flight_mock_data[ 1 ]-flight_date
-                    flightprice   = flight_mock_data[ 1 ]-price
-                    currencycode  = flight_mock_data[ 1 ]-currency_code
-                    bookingstatus = 'N'
-
-                    to_booksupplement = VALUE #(  (
-                          bookingsupplementid = '01'
-                          supplementid = supplement_mock_data[ 1 ]-supplement_id
-                          price        = supplement_mock_data[ 1 ]-price
-                          currencycode = supplement_mock_data[ 1 ]-currency_code
-                    ) )
-               ) )
-    ).
-
-    " setup a create request
-    DATA(create_travel_request) = mo_client_proxy->create_resource_for_entity_set( 'Travel' )->create_request_for_create( ).
-
-    " extend default data description with compositions
-    DATA(description) = create_travel_request->create_data_descripton_node( ).
-    " add to_Booking and to_BookingSupplement
-    description->add_child( 'TO_BOOKING' )->add_child( 'TO_BOOKSUPPLEMENT' ).
-
-    " fill in the request data
-    create_travel_request->set_deep_business_data(
-        is_business_data    = ls_business_data
-        io_data_description = description
-    ).
-
-    " create a $batch with embedded changeset ( as the Fiori UI does )
-    DATA(batch) = mo_client_proxy->create_request_for_batch( ).
-    DATA(changeset) = batch->create_request_for_changeset( ).
-    batch->add_request( changeset ).
-    changeset->add_request( io_request = create_travel_request ).
-
-    " Execute the request
-    batch->execute( ).
-
-    " check for errors
-    batch->check_execution(  ).
-    changeset->check_execution( ).
-
-    " get response data back
-    DATA(create_travel_response) = create_travel_request->get_response( ).
-    cl_abap_unit_assert=>assert_not_initial( create_travel_response ).
-
-    DATA ls_travel_response_data LIKE ls_business_data.
-    create_travel_response->get_business_data( IMPORTING es_business_data = ls_travel_response_data ).
-
-    cl_abap_unit_assert=>assert_not_initial( msg = 'response data-travel' act = ls_travel_response_data ).
-    cl_abap_unit_assert=>assert_not_initial( msg = 'response data-booking' act = ls_travel_response_data-to_booking ).
-    cl_abap_unit_assert=>assert_not_initial( msg = 'response data-booking supplement'
-                                             act = ls_travel_response_data-to_booking[ 1 ]-to_booksupplement ).
-
-    " verify also in database table
-    SELECT * FROM /dmo/i_travel_m INTO TABLE @DATA(lt_travel). "#EC CI_NOWHERE
-    cl_abap_unit_assert=>assert_not_initial( msg = 'travel from db' act = lt_travel ).
-
-    " check the description
-    cl_abap_unit_assert=>assert_equals( msg = 'description' exp = ls_business_data-description  act = lt_travel[ 1 ]-description ).
-
-    " total_price = SUM( flight_price ) + SUM ( supplement price ) + booking_fee
-    cl_abap_unit_assert=>assert_equals( msg = 'total price incl. booking_fee' exp = '2210.50' act = lt_travel[ 1 ]-total_price ).
-
-    " check also log written by "additional save" functionality
-    SELECT * FROM /dmo/log_travel INTO TABLE @DATA(log_travel). "#EC CI_NOWHERE
-    cl_abap_unit_assert=>assert_not_initial( msg = '/DMO/LOG_TRAVEL' act = log_travel ).
-
-
-  ENDMETHOD.
 
 
   METHOD create_local_client_proxy.
@@ -288,7 +186,7 @@ CLASS /dmo/tc_travel_proc_m_o2_odata  IMPLEMENTATION.
       ENDTRY.
     ENDIF.
 
-    cl_abap_unit_assert=>assert_bound( msg = 'client proxy factory' act = client_proxy ).
+    cl_abap_unit_assert=>assert_bound( msg = 'cannot get client proxy factory or service binding not active' act = client_proxy ).
 
   ENDMETHOD.
 

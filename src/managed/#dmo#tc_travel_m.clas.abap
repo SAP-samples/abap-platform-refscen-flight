@@ -97,6 +97,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
           VALUE #( (  %cid = 'ROOT1'
                       travel_id = '4711'
                       agency_id = agency_mock_data[ 1 ]-agency_id
+                      customer_id = customer_mock_data[ 1 ]-customer_id
                       begin_date = begin_date
                       end_date = end_date
                       description = 'TestTravel 1'
