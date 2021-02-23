@@ -8,19 +8,25 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
 
     TYPES tt_travel_update TYPE TABLE FOR UPDATE /DMO/I_Travel_M.
 
-    METHODS validate_customer          FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateCustomer.
-    METHODS validate_agency            FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateAgency.
-    METHODS validate_dates             FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateDates.
-    METHODS validate_travel_status     FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateStatus.
+    METHODS validate_customer          FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validatecustomer.
+    METHODS validate_agency            FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateagency.
+    METHODS validate_dates             FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validatedates.
+    METHODS validate_travel_status     FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validatestatus.
 
-    METHODS copy_travel                FOR MODIFY IMPORTING   keys FOR ACTION travel~createTravelByTemplate    RESULT result.
-    METHODS set_status_completed       FOR MODIFY IMPORTING   keys FOR ACTION travel~acceptTravel              RESULT result.
-    METHODS set_status_cancelled       FOR MODIFY IMPORTING   keys FOR ACTION travel~rejectTravel              RESULT result.
+    METHODS copyTravel                 FOR MODIFY IMPORTING   keys FOR ACTION travel~copyTravel                RESULT result.
+    METHODS set_status_completed       FOR MODIFY IMPORTING   keys FOR ACTION travel~accepttravel              RESULT result.
+    METHODS set_status_cancelled       FOR MODIFY IMPORTING   keys FOR ACTION travel~rejecttravel              RESULT result.
     METHODS get_features               FOR FEATURES IMPORTING keys REQUEST    requested_features FOR travel    RESULT result.
     METHODS recalctotalprice FOR MODIFY
+
+
       IMPORTING keys FOR ACTION travel~recalctotalprice.
     METHODS calculatetotalprice FOR DETERMINE ON MODIFY
       IMPORTING keys FOR travel~calculatetotalprice.
+    METHODS earlynumbering_cba_booking FOR NUMBERING
+      IMPORTING entities FOR CREATE travel\_booking.
+    METHODS earlynumbering_create FOR NUMBERING
+      IMPORTING entities FOR CREATE travel.
 
 *    METHODS check_authority_for_travel FOR AUTHORIZATION IMPORTING it_travel_key REQUEST is_request FOR travel RESULT result.
 
@@ -125,7 +131,7 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_dates.
 
-    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel
         FIELDS ( begin_date end_date )
         WITH CORRESPONDING #( keys )
@@ -143,7 +149,7 @@ CLASS lhc_travel IMPLEMENTATION.
                                textid = /dmo/cm_flight_messages=>begin_date_bef_end_date
                                severity = if_abap_behv_message=>severity-error
                                begin_date = ls_travel_result-begin_date
-                               end_Date = ls_travel_result-end_date
+                               end_date = ls_travel_result-end_date
                                travel_id = ls_travel_result-travel_id
                           )
                         %element-begin_date = if_abap_behv=>mk-on
@@ -174,7 +180,7 @@ CLASS lhc_travel IMPLEMENTATION.
 **********************************************************************
   METHOD validate_travel_status.
 
-    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
         ENTITY travel
           FIELDS ( overall_status )
           WITH CORRESPONDING #( keys )
@@ -206,75 +212,76 @@ CLASS lhc_travel IMPLEMENTATION.
 * Create travel instances with initial values
 *
 **********************************************************************
-  METHOD copy_travel.
+  METHOD copyTravel.
 
-    SELECT MAX( travel_id ) FROM /dmo/travel_m INTO @DATA(lv_travel_id). "#EC CI_NOWHERE
+    DATA:
+      travels       TYPE TABLE FOR CREATE /DMO/I_Travel_M\\travel,
+      bookings_cba  TYPE TABLE FOR CREATE /DMO/I_Travel_M\\travel\_booking,
+      booksuppl_cba TYPE TABLE FOR CREATE /DMO/I_Travel_M\\booking\_booksupplement.
 
-    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel
-         FIELDS ( travel_id
-                  agency_id
-                  customer_id
-                  booking_fee
-                  total_price
-                  currency_code )
-           WITH CORRESPONDING #( keys )
-         RESULT    DATA(lt_read_result)
-         FAILED    failed
-         REPORTED  reported.
+       ALL FIELDS WITH CORRESPONDING #( keys )
+                  RESULT DATA(travel_read_result)
+     FAILED    failed
+     REPORTED  reported.
 
-    DATA(lv_today) = cl_abap_context_info=>get_system_date( ).
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY travel BY \_booking
+        ALL FIELDS WITH CORRESPONDING #( travel_read_result )
+                   RESULT DATA(book_read_result).
 
-    DATA lt_create TYPE TABLE FOR CREATE /DMO/I_Travel_M\\travel.
-
-    lt_create = VALUE #( FOR row IN  lt_read_result INDEX INTO idx
-
-                             ( %cid = row-travel_id
-                               travel_id      = lv_travel_id + idx
-                               agency_id      = row-agency_id
-                               customer_id    = row-customer_id
-                               begin_date     = lv_today
-                               end_date       = lv_today + 30
-                               booking_fee    = row-booking_fee
-                               total_price    = row-total_price
-                               currency_code  = row-currency_code
-                               description    = 'Enter your comments here'
-                               overall_status = 'O' ) ). " Open
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY booking BY \_booksupplement
+       ALL FIELDS WITH CORRESPONDING #( book_read_result )
+                  RESULT DATA(booksuppl_read_result).
 
 
-    MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
-        ENTITY travel
-           CREATE FIELDS (    travel_id
-                              agency_id
-                              customer_id
-                              begin_date
-                              end_date
-                              booking_fee
-                              total_price
-                              currency_code
-                              description
-                              overall_status )
-           WITH lt_create
-         MAPPED   mapped
-         FAILED   DATA(failed_modify)
-         REPORTED DATA(reported_modify).
+    LOOP AT travel_read_result ASSIGNING FIELD-SYMBOL(<travel>).
+      APPEND VALUE #( %cid     = <travel>-travel_id   %data = CORRESPONDING #( <travel> EXCEPT travel_id ) ) TO travels ASSIGNING FIELD-SYMBOL(<new_travel>).
+      APPEND VALUE #( %cid_ref = <travel>-travel_id ) TO bookings_cba ASSIGNING FIELD-SYMBOL(<bookings_cba>).
 
-    failed-travel   = CORRESPONDING #( BASE ( failed-travel )   failed_modify-travel   MAPPING travel_id = %cid ).
-    reported-travel = CORRESPONDING #( BASE ( reported-travel ) reported_modify-travel MAPPING travel_id = %cid ).
+      <new_travel>-begin_date     = cl_abap_context_info=>get_system_date( ).
+      <new_travel>-end_date       = cl_abap_context_info=>get_system_date( ) + 30.
+      <new_travel>-overall_status = 'O'.  "Set to open to allow an editable instance
 
+      LOOP AT book_read_result ASSIGNING FIELD-SYMBOL(<booking>) USING KEY entity WHERE travel_id EQ <travel>-travel_id.
+        APPEND VALUE #( %cid     = <travel>-travel_id && <booking>-booking_id
+                        %data    = CORRESPONDING #( <booking> EXCEPT travel_id ) ) TO <bookings_cba>-%target ASSIGNING FIELD-SYMBOL(<new_booking>).
+        APPEND VALUE #( %cid_ref = <travel>-travel_id && <booking>-booking_id ) TO booksuppl_cba ASSIGNING FIELD-SYMBOL(<booksuppl_cba>).
 
-    READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+        <new_booking>-booking_status = 'N'.
+
+        LOOP AT booksuppl_read_result ASSIGNING FIELD-SYMBOL(<booksuppl>) USING KEY entity WHERE travel_id  EQ <travel>-travel_id
+                                                                                           AND   booking_id EQ <booking>-booking_id.
+          APPEND VALUE #( %cid  = <travel>-travel_id && <booking>-booking_id && <booksuppl>-booking_supplement_id
+                          %data = CORRESPONDING #( <booksuppl> EXCEPT travel_id booking_id ) ) TO <booksuppl_cba>-%target.
+        ENDLOOP.
+      ENDLOOP.
+    ENDLOOP.
+
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel
-        ALL FIELDS WITH
-        CORRESPONDING #( mapped-travel )
-    RESULT DATA(lt_read_created).
+        CREATE SET FIELDS WITH travels
+        CREATE BY \_Booking SET FIELDS WITH bookings_cba
+      ENTITY booking
+        CREATE BY \_BookSupplement SET FIELDS WITH booksuppl_cba
+      MAPPED mapped
+      FAILED DATA(failed_create)
+      REPORTED DATA(reported_create).
 
-    result = VALUE #( FOR key IN  mapped-travel  INDEX INTO idx
-                               ( %cid_ref = keys[ KEY entity %key = key-%cid ]-%cid_ref
-                                 %key     = key-%cid
-                                 %param-%tky   = key-%tky ) ) .
+    failed-travel   = CORRESPONDING #( BASE ( failed-travel )   failed_create-travel   MAPPING travel_id = %cid EXCEPT %cid ).
+    reported-travel = CORRESPONDING #( BASE ( reported-travel ) reported_create-travel MAPPING travel_id = %cid EXCEPT %cid ).
 
-    result = CORRESPONDING #( result FROM lt_read_created USING KEY entity  %key = %param-%key MAPPING %param = %data EXCEPT * ).
+
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+       ENTITY travel
+         ALL FIELDS WITH CORRESPONDING #( mapped-travel )
+         RESULT DATA(read_created_result).
+
+    result = VALUE #( FOR new IN read_created_result ( %param = new  travel_id = new-travel_id ) ).
+    result = CORRESPONDING #( result FROM mapped-travel USING KEY entity  travel_id = travel_id MAPPING travel_id = %cid     ).
+    result = CORRESPONDING #( result FROM keys          USING KEY entity  travel_id = travel_id MAPPING %cid_ref  = %cid_ref ).
 
 
   ENDMETHOD.
@@ -288,7 +295,7 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD set_status_completed.
 
     " Modify in local mode: BO-related updates that are not relevant for authorization checks
-    MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
            ENTITY travel
               UPDATE FIELDS ( overall_status )
                  WITH VALUE #( FOR key IN keys ( travel_id      = key-travel_id
@@ -327,7 +334,7 @@ CLASS lhc_travel IMPLEMENTATION.
 ********************************************************************************
   METHOD set_status_cancelled.
 
-    MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
            ENTITY travel
               UPDATE FROM VALUE #( FOR key IN keys ( travel_id = key-travel_id
                                                      overall_status = 'X'   " Canceled
@@ -377,11 +384,11 @@ CLASS lhc_travel IMPLEMENTATION.
 
     result = VALUE #( FOR ls_travel IN lt_travel_result
                        ( %key                           = ls_travel-%key
-                         %features-%action-rejectTravel = COND #( WHEN ls_travel-overall_status = 'X'
+                         %features-%action-rejecttravel = COND #( WHEN ls_travel-overall_status = 'X'
                                                                     THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  )
-                         %features-%action-acceptTravel = COND #( WHEN ls_travel-overall_status = 'A'
+                         %features-%action-accepttravel = COND #( WHEN ls_travel-overall_status = 'A'
                                                                     THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
-                         %assoc-_Booking                = COND #( WHEN ls_travel-overall_status = 'X'
+                         %assoc-_booking                = COND #( WHEN ls_travel-overall_status = 'X'
                                                                     THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
                       ) ).
 
@@ -406,7 +413,7 @@ CLASS lhc_travel IMPLEMENTATION.
 *
 *  ENDMETHOD.
 *
-  METHOD ReCalcTotalPrice.
+  METHOD recalctotalprice.
     TYPES: BEGIN OF ty_amount_per_currencycode,
              amount        TYPE /dmo/total_price,
              currency_code TYPE /dmo/currency_code,
@@ -416,7 +423,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
     " Read all relevant travel instances.
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
-         ENTITY Travel
+         ENTITY travel
             FIELDS ( booking_fee currency_code )
             WITH CORRESPONDING #( keys )
          RESULT DATA(lt_travel)
@@ -431,7 +438,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
       " Read all associated bookings and add them to the total price.
       READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
-        ENTITY Travel BY \_Booking
+        ENTITY travel BY \_booking
           FIELDS ( flight_price currency_code )
         WITH VALUE #( ( %key = <fs_travel>-%key ) )
         RESULT DATA(lt_booking).
@@ -443,7 +450,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
       " Read all associated booking supplements and add them to the total price.
       READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
-        ENTITY Booking BY \_BookSupplement
+        ENTITY booking BY \_booksupplement
           FIELDS (  price currency_code )
         WITH VALUE #( FOR rba_booking IN lt_booking ( %tky = rba_booking-%tky ) )
         RESULT DATA(lt_bookingsupplement).
@@ -481,15 +488,148 @@ CLASS lhc_travel IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD calculateTotalPrice.
+  METHOD calculatetotalprice.
 
     MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
-      ENTITY Travel
-        EXECUTE ReCalcTotalPrice
+      ENTITY travel
+        EXECUTE recalctotalprice
         FROM CORRESPONDING #( keys )
     REPORTED DATA(lt_reported).
 
     reported = CORRESPONDING #( DEEP lt_reported ).
+  ENDMETHOD.
+
+  METHOD earlynumbering_create.
+
+    DATA:
+      entity        TYPE STRUCTURE FOR CREATE /DMO/I_Travel_M,
+      travel_id_max TYPE /dmo/travel_id.
+
+    " Ensure Travel ID is not set yet (idempotent)- must be checked when BO is draft-enabled
+    LOOP AT entities INTO entity WHERE travel_id IS NOT INITIAL.
+      APPEND CORRESPONDING #( entity ) TO mapped-travel.
+    ENDLOOP.
+
+    DATA(entities_wo_travelid) = entities.
+    DELETE entities_wo_travelid WHERE travel_id IS NOT INITIAL.
+
+    " Get Numbers
+    TRY.
+        cl_numberrange_runtime=>number_get(
+          EXPORTING
+            nr_range_nr       = '01'
+            object            = '/DMO/TRV_M'
+            quantity          = CONV #( lines( entities_wo_travelid ) )
+          IMPORTING
+            number            = DATA(number_range_key)
+            returncode        = DATA(number_range_return_code)
+            returned_quantity = DATA(number_range_returned_quantity)
+        ).
+      CATCH cx_number_ranges INTO DATA(lx_number_ranges).
+        LOOP AT entities_wo_travelid INTO entity.
+          APPEND VALUE #(
+                %cid = entity-%cid
+                %key = entity-%key
+                %msg = lx_number_ranges
+            ) TO reported-travel.
+          APPEND VALUE #(
+                %cid        = entity-%cid
+                %key        = entity-%key
+            ) TO failed-travel.
+        ENDLOOP.
+        EXIT.
+    ENDTRY.
+
+    CASE number_range_return_code.
+      WHEN '1'.
+        " 1 - the returned number is in a critical range (specified under “percentage warning” in the object definition)
+        LOOP AT entities_wo_travelid INTO entity.
+          APPEND VALUE #(
+                %cid      = entity-%cid
+                %key      = entity-%key
+                %msg      = NEW /dmo/cm_flight_messages(
+                                textid = /dmo/cm_flight_messages=>number_range_depleted
+                                severity = if_abap_behv_message=>severity-warning
+                       )
+            ) TO reported-travel.
+        ENDLOOP.
+
+      WHEN '2' OR '3'.
+        " 2 - the last number of the interval was returned
+        " 3 - if fewer numbers are available than requested,  the return code is 3
+        LOOP AT entities_wo_travelid INTO entity.
+          APPEND VALUE #(
+                %cid      = entity-%cid
+                %key      = entity-%key
+                %msg      = NEW /dmo/cm_flight_messages(
+                                textid = /dmo/cm_flight_messages=>not_sufficient_numbers
+                                severity = if_abap_behv_message=>severity-error )
+            ) TO reported-travel.
+          APPEND VALUE #(
+                %cid        = entity-%cid
+                %key        = entity-%key
+                %fail-cause = if_abap_behv=>cause-conflict
+            ) TO failed-travel.
+        ENDLOOP.
+        EXIT.
+    ENDCASE.
+
+    " At this point ALL entities get a number!
+    ASSERT number_range_returned_quantity = lines( entities_wo_travelid ).
+
+    travel_id_max = number_range_key - number_range_returned_quantity.
+
+    " Set Travel ID
+    LOOP AT entities_wo_travelid INTO entity.
+      travel_id_max += 1.
+      entity-travel_id = travel_id_max .
+
+      APPEND VALUE #(
+          %cid      = entity-%cid
+          %key      = entity-%key
+        ) TO mapped-travel.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD earlynumbering_cba_booking.
+
+    DATA: max_booking_id TYPE /dmo/booking_id.
+
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY travel BY \_booking
+        FIELDS ( booking_id )
+          WITH CORRESPONDING #( entities )
+          RESULT DATA(bookings)
+          FAILED failed.
+
+    LOOP AT entities ASSIGNING FIELD-SYMBOL(<booking>).
+
+      " Get highest booking_id from bookings belonging to travel
+      max_booking_id = REDUCE #( INIT max = CONV /dmo/booking_id( '0' )
+                                       FOR  booking IN bookings USING KEY entity
+                                                                             WHERE (     travel_id  = <booking>-travel_id )
+                                       NEXT max = COND /dmo/booking_id(      WHEN   booking-booking_id > max
+                                                                             THEN booking-booking_id
+                                                                             ELSE max )
+                                     ).
+
+      " map booking which already have an id (required for draft)
+
+      LOOP AT <booking>-%target INTO DATA(booking_w_numbers) WHERE booking_id IS NOT INITIAL.
+        APPEND CORRESPONDING #( booking_w_numbers ) TO mapped-booking.
+      ENDLOOP.
+
+
+      "assign new booking-ids
+
+      LOOP AT <booking>-%target INTO DATA(booking_wo_numbers) WHERE booking_id IS INITIAL.
+        APPEND CORRESPONDING #( booking_wo_numbers ) TO mapped-booking ASSIGNING FIELD-SYMBOL(<mapped_booking>).
+        max_booking_id += 10 .
+        <mapped_booking>-booking_id = max_booking_id .
+      ENDLOOP.
+
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.

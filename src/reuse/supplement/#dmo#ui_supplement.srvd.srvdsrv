@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service Definition Supplement BO'
+define service /DMO/ui_supplement {
+  expose /DMO/C_Supplement as Supplement;
+}

@@ -1,0 +1,40 @@
+@Metadata.layer: #CORE
+
+@UI: { headerInfo: { typeName:       'Supplement',
+                     typeNamePlural: 'Supplements',
+                     title:          { type: #STANDARD,
+                                       label: 'Supplement',
+                                       value: 'SupplementID' } } }
+
+annotate view /DMO/C_Supplement with
+{
+  @UI.facet: [ { id:              'Supplement',
+                 purpose:         #STANDARD,
+                 type:            #IDENTIFICATION_REFERENCE,
+                 label:           'Supplement',
+                 position:        10 }]
+  @UI: {
+      lineItem:       [ { position: 10, importance: #HIGH } ],
+      identification: [ { position: 10 } ] }
+  SupplementID;
+
+  @UI: {
+      lineItem:       [ { position: 15, importance: #HIGH } ],
+      identification: [ { position: 15 } ],
+      selectionField: [ { position: 15 } ] }
+  @UI.textArrangement: #TEXT_ONLY
+  SupplementCategory;
+
+  @UI.hidden: true
+  SupplementCategoryText;
+
+  @UI: {
+      lineItem:       [ { position: 20, importance: #HIGH } ],
+      identification: [ { position: 20 } ] }
+  SupplementDescription;
+
+  @UI: {
+      lineItem:       [ { position: 30, importance: #HIGH } ],
+      identification: [ { position: 30 } ] }
+  Price;
+}

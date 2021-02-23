@@ -10,7 +10,7 @@ use etag
   use update;
   use delete;
 
-  use action createTravelByTemplate;
+  use action copyTravel;
 
   use association _BOOKING { create; }
 

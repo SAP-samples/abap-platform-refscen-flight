@@ -332,7 +332,25 @@ CLASS /dmo/cx_flight_legacy DEFINITION
         attr2 TYPE scx_attrname VALUE 'MV_BOOKING_ID',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF BOOKING_date_befor_system_date.
+      END OF BOOKING_date_befor_system_date,
+
+      BEGIN OF travel_nr_percentage_warning,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '057',
+        attr1 TYPE scx_attrname VALUE 'MV_REAMAINING_TRAVEL',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF travel_nr_percentage_warning,
+
+      BEGIN OF travel_nr_last_number,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT_LEGAC',
+        msgno TYPE symsgno VALUE '058',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF travel_nr_last_number.
 
 
     METHODS constructor
@@ -353,6 +371,7 @@ CLASS /dmo/cx_flight_legacy DEFINITION
         flight_date           TYPE /dmo/flight_date OPTIONAL
         status                TYPE /dmo/travel_status OPTIONAL
         currency_code         TYPE /dmo/currency_code OPTIONAL
+        reamaining_travel     TYPE i OPTIONAL
         uname                 TYPE syuname OPTIONAL.
 
 
@@ -370,6 +389,7 @@ CLASS /dmo/cx_flight_legacy DEFINITION
           mv_flight_date           TYPE /dmo/flight_date,
           mv_status                TYPE /dmo/travel_status,
           mv_currency_code         TYPE /dmo/currency_code,
+          mv_reamaining_travel     TYPE i,
           mv_uname                 TYPE syuname.
   PROTECTED SECTION.
   PRIVATE SECTION.
@@ -397,6 +417,7 @@ CLASS /dmo/cx_flight_legacy IMPLEMENTATION.
     me->mv_flight_date           = flight_date.
     me->mv_status                = status.
     me->mv_currency_code         = currency_code.
+    me->mv_reamaining_travel     = reamaining_travel.
     me->mv_uname                 = uname.
 
     CLEAR me->textid.

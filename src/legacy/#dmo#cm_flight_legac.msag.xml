@@ -239,13 +239,13 @@
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>044</MSGNR>
-     <TEXT>Enter Customer ID for Travel&amp;1</TEXT>
+     <TEXT>Enter Customer ID for Travel &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>045</MSGNR>
-     <TEXT>Enter Agency ID for Travel&amp;1</TEXT>
+     <TEXT>Enter Agency ID for Travel &amp;1</TEXT>
     </T100>
     <T100>
      <SPRSL>E</SPRSL>
@@ -300,6 +300,18 @@
      <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
      <MSGNR>056</MSGNR>
      <TEXT>Enter Customer ID for Booking &amp;1</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>057</MSGNR>
+     <TEXT>Only &amp;1 Travel(s) can be created!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT_LEGAC</ARBGB>
+     <MSGNR>058</MSGNR>
+     <TEXT>No new Travels can be created anymore!</TEXT>
     </T100>
    </T100>
   </asx:values>

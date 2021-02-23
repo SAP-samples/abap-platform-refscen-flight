@@ -25,7 +25,8 @@ define view entity /DMO/I_Connection_R
         type:     #LINEITEM_REFERENCE,
         label:    'Flight',
         position: 20,
-        targetElement: '_Flight' } ]
+        targetElement: '_Flight' }
+        ]
 
         @UI.lineItem: [ { position: 10, label: 'Airline'} ]
         @UI: { identification:[ { position: 10, label: 'Airline' } ]}

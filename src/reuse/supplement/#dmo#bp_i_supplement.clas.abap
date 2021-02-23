@@ -1,0 +1,5 @@
+CLASS /dmo/bp_i_supplement DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF /dmo/i_supplement.
+ENDCLASS.
+
+CLASS /dmo/bp_i_supplement IMPLEMENTATION.
+ENDCLASS.

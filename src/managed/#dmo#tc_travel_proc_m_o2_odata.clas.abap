@@ -105,7 +105,6 @@ CLASS /dmo/tc_travel_proc_m_o2_odata  IMPLEMENTATION.
 
     " Prepare business data i.e. the travel instance test data
     DATA(ls_business_data) = VALUE /dmo/c_travel_processor_m(
-        travelid = '101'
         agencyid = agency_mock_data[ 1 ]-agency_id
         customerid = customer_mock_data[  1 ]-customer_id
         begindate = begin_date
@@ -132,11 +131,11 @@ CLASS /dmo/tc_travel_proc_m_o2_odata  IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals( msg = 'description' exp = ls_business_data-description act = ls_response_data-description ).
 
-    " Read the created travel entity
+    " Read the created travel entity - the number is now calculated by a number range, so we can't predict it
     READ ENTITIES OF /dmo/c_travel_processor_m
       ENTITY travelprocessor
         FIELDS ( description )
-          WITH VALUE #( (  travelid = ls_business_data-travelid ) )
+          WITH VALUE #( (  travelid = ls_response_data-travelid ) )
         RESULT DATA(lt_read_travel)
         FAILED DATA(failed)
         REPORTED DATA(reported).

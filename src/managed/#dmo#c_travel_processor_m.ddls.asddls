@@ -25,7 +25,7 @@ define root view entity /DMO/C_Travel_Processor_M
 
       @UI: {
           lineItem:       [ { position: 10, importance: #HIGH } ,
-                          { type: #FOR_ACTION, dataAction: 'createTravelByTemplate', label: 'Create Travel by Template' } ],
+                          { type: #FOR_ACTION, dataAction: 'copyTravel', label: 'Copy Travel' } ],
           identification: [ { position: 10, label: 'Travel ID [1,...,99999999]' } ] }
       @Search.defaultSearchElement: true
   key travel_id          as TravelID,

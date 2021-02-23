@@ -6,6 +6,7 @@ persistent table /DMO/TRAVEL_M
 with additional save
 etag master last_changed_at
 lock master
+early numbering
 //authorization master(instance)
 
 {
@@ -16,7 +17,7 @@ lock master
   field ( mandatory ) agency_id, customer_id, begin_date, end_date, overall_status, booking_fee, currency_code;
 
   // Fields that are mandatory for create but should be read-only afterwards
-  field ( mandatory : create, readonly : update ) travel_id;
+  field ( readonly ) travel_id;
 
   // mapping entity's field types with table field types
   mapping for /DMO/TRAVEL_M corresponding;
@@ -35,8 +36,8 @@ lock master
   internal action ReCalcTotalPrice;
 
   // instance action for copying travel instances
-  //action ( authorization : none ) createTravelByTemplate result [1] $self;
-  action createTravelByTemplate result [1] $self;
+  //action ( authorization : none ) copyTravel result [1] $self;
+  action copyTravel result [1] $self;
 
   // validations
   validation validateCustomer on save { create; field customer_id; }
@@ -60,6 +61,7 @@ implementation in class /DMO/BP_BOOKING_M unique
 persistent table /DMO/BOOKING_M
 etag master last_changed_at
 lock dependent by _Travel
+early numbering
 
 
 {
@@ -71,7 +73,8 @@ lock dependent by _Travel
   mapping for /DMO/BOOKING_M corresponding;
 
   // Fields that are mandatory for create but should be read-only afterwards
-  field ( mandatory : create, readonly : update) booking_id, booking_date, customer_id;
+  field ( readonly ) booking_id;
+  field ( mandatory : create, readonly : update) booking_date, customer_id;
 
   // standard operations for booking entity
   update;
@@ -96,15 +99,13 @@ implementation in class /DMO/BP_BOOKINGSUPPLEMENT_M unique
 with unmanaged save
 etag master last_changed_at
 lock dependent by _Travel
+early numbering
 //authorization dependent by _Travel
 
 {
   // static field control
-  field ( mandatory ) supplement_id, price;
-  field ( readonly ) travel_id, booking_id;
-
-  // Fields that are mandatory for create but should be read-only afterwards
-  field ( mandatory : create, readonly : update ) booking_supplement_id;
+  field ( mandatory ) price,supplement_id;
+  field ( readonly ) travel_id, booking_id, booking_supplement_id;
 
   // mapping entity's field types with table field types
   mapping for /DMO/BOOKSUPPL_M corresponding;
