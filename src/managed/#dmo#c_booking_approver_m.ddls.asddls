@@ -63,8 +63,14 @@ define view entity /DMO/C_Booking_Approver_M
       currency_code      as CurrencyCode,
 
       @UI: { lineItem:       [ { position: 90, importance: #HIGH, label: 'Status' } ],
-             identification: [ { position: 90, label: 'Status [N(New)| X(Canceled)| B(Booked)]' } ] }
+             identification: [ { position: 90, label: 'Status' } ],
+             textArrangement: #TEXT_ONLY }
+      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Booking_Status_VH', element: 'BookingStatus' }}]
+      @ObjectModel.text.element: ['BookingStatusText']
       booking_status     as BookingStatus,
+      
+      @UI.hidden: true
+      _BookingStatus._Text.Text as BookingStatusText : localized,
 
       /* Admininstrative fields */
       @UI.hidden: true
@@ -74,6 +80,7 @@ define view entity /DMO/C_Booking_Approver_M
       /* Associations */
       _Travel : redirected to parent /DMO/C_Travel_Approver_M,
       _Customer,
-      _Carrier
+      _Carrier,
+      _BookingStatus
 
 }

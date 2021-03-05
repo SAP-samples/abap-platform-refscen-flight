@@ -525,7 +525,7 @@ CLASS lhc_travel IMPLEMENTATION.
         %key                                = ls_travel-%key
         %features-%action-set_status_booked = COND #( WHEN ls_travel-Status = 'B'
                                                       THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled )
-        %assoc-_Booking                     = COND #( WHEN ls_travel-Status = 'B'
+        %assoc-_Booking                     = COND #( WHEN ls_travel-Status = 'B' OR ls_travel-Status = 'X'
                                                       THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled )
 
       ) ).

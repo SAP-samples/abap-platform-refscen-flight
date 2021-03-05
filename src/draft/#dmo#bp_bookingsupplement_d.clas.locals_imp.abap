@@ -16,7 +16,7 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
   METHOD setBookSupplNumber.
     DATA max_bookingsupplementid TYPE /dmo/booking_supplement_id.
-    DATA lt_bookingsupplement_update TYPE TABLE FOR UPDATE /DMO/I_Travel_D\\BookingSupplement.
+    DATA bookingsupplements_update TYPE TABLE FOR UPDATE /DMO/I_Travel_D\\BookingSupplement.
 
     "Read all bookings for the requested booking supplements
     " If multiple booking supplements of the same booking are requested, the booking is returned only once.
@@ -24,29 +24,29 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
       ENTITY BookingSupplement BY \_Booking
         FIELDS (  BookingUUID  )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(lt_booking).
+      RESULT DATA(bookings).
 
     " Process all affected bookings. Read respective booking supplements for one booking
-    LOOP AT lt_booking INTO DATA(ls_booking).
+    LOOP AT bookings INTO DATA(ls_booking).
       READ ENTITIES OF /dmo/i_travel_d IN LOCAL MODE
         ENTITY Booking BY \_BookingSupplement
           FIELDS ( BookingSupplementID )
           WITH VALUE #( ( %tky = ls_booking-%tky ) )
-        RESULT DATA(lt_bookingsupplement).
+        RESULT DATA(bookingsupplements).
 
       " find max used bookingID in all bookings of this travel
       max_bookingsupplementid = '00'.
-      LOOP AT lt_bookingsupplement INTO DATA(ls_bookingsupplement).
-        IF ls_bookingsupplement-BookingSupplementID > max_bookingsupplementid.
-          max_bookingsupplementid = ls_bookingsupplement-BookingSupplementID.
+      LOOP AT bookingsupplements INTO DATA(bookingsupplement).
+        IF bookingsupplement-BookingSupplementID > max_bookingsupplementid.
+          max_bookingsupplementid = bookingsupplement-BookingSupplementID.
         ENDIF.
       ENDLOOP.
 
       "Provide a booking supplement ID for all booking supplement of this booking that have none.
-      LOOP AT lt_bookingsupplement INTO ls_bookingsupplement WHERE BookingSupplementID IS INITIAL.
+      LOOP AT bookingsupplements INTO bookingsupplement WHERE BookingSupplementID IS INITIAL.
         max_bookingsupplementid += 1.
-        APPEND VALUE #( %tky                = ls_bookingsupplement-%tky
-                        bookingsupplementid = max_bookingsupplementid ) TO lt_bookingsupplement_update.
+        APPEND VALUE #( %tky                = bookingsupplement-%tky
+                        bookingsupplementid = max_bookingsupplementid ) TO bookingsupplements_update.
 
       ENDLOOP.
     ENDLOOP.
@@ -54,10 +54,10 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
     " Provide a booking ID for all bookings that have none.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement
-        UPDATE FIELDS ( BookingSupplementID ) WITH lt_bookingsupplement_update
-      REPORTED DATA(lt_reported).
+        UPDATE FIELDS ( BookingSupplementID ) WITH bookingsupplements_update
+      REPORTED DATA(update_reported).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP update_reported ).
 
   ENDMETHOD.
 
@@ -67,16 +67,16 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
       ENTITY BookingSupplement BY \_Travel
         FIELDS ( TravelUUID  )
         WITH CORRESPONDING #(  keys  )
-      RESULT DATA(lt_travel).
+      RESULT DATA(travels).
 
     " Trigger Re-Calculation on Root Node
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
-          FROM CORRESPONDING  #( lt_travel )
-    REPORTED DATA(lt_reported).
+          FROM CORRESPONDING  #( travels )
+    REPORTED DATA(action_reported).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP action_reported ).
 
   ENDMETHOD.
 
@@ -86,64 +86,64 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
       ENTITY BookingSupplement
         FIELDS ( SupplementID )
         WITH CORRESPONDING #(  keys )
-      RESULT DATA(lt_booksuppl)
-      FAILED DATA(lt_failed).
+      RESULT DATA(bookingsupplements)
+      FAILED DATA(read_failed).
 
-    failed = CORRESPONDING #( DEEP lt_failed ).
+    failed = CORRESPONDING #( DEEP read_failed ).
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement BY \_Booking
-        FROM CORRESPONDING #( lt_booksuppl )
-      LINK DATA(lt_link_booking).
+        FROM CORRESPONDING #( bookingsupplements )
+      LINK DATA(booksuppl_booking_links).
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement BY \_Travel
-        FROM CORRESPONDING #( lt_booksuppl )
-      LINK DATA(lt_link_travel).
+        FROM CORRESPONDING #( bookingsupplements )
+      LINK DATA(booksuppl_travel_links).
 
 
-    DATA lt_supplement TYPE SORTED TABLE OF /dmo/supplement WITH UNIQUE KEY supplement_id.
+    DATA supplements TYPE SORTED TABLE OF /dmo/supplement WITH UNIQUE KEY supplement_id.
 
     " Optimization of DB select: extract distinct non-initial customer IDs
-    lt_supplement = CORRESPONDING #( lt_booksuppl DISCARDING DUPLICATES MAPPING supplement_id = SupplementID EXCEPT * ).
-    DELETE lt_supplement WHERE supplement_id IS INITIAL.
+    supplements = CORRESPONDING #( bookingsupplements DISCARDING DUPLICATES MAPPING supplement_id = SupplementID EXCEPT * ).
+    DELETE supplements WHERE supplement_id IS INITIAL.
 
-    IF  lt_supplement IS NOT INITIAL.
+    IF  supplements IS NOT INITIAL.
       " Check if customer ID exists
       SELECT FROM /dmo/supplement FIELDS supplement_id
-                                  FOR ALL ENTRIES IN @lt_supplement
-                                  WHERE supplement_id = @lt_supplement-supplement_id
-      INTO TABLE @DATA(lt_supplement_db).
+                                  FOR ALL ENTRIES IN @supplements
+                                  WHERE supplement_id = @supplements-supplement_id
+      INTO TABLE @DATA(valid_supplements).
     ENDIF.
 
-    LOOP AT lt_booksuppl ASSIGNING FIELD-SYMBOL(<fs_booksuppl>).
+    LOOP AT bookingsupplements ASSIGNING FIELD-SYMBOL(<bookingsupplement>).
 
-      APPEND VALUE #(  %tky        = <fs_booksuppl>-%tky
+      APPEND VALUE #(  %tky        = <bookingsupplement>-%tky
                        %state_area = 'VALIDATE_SUPPLEMENT' ) TO reported-bookingsupplement.
 
-      IF <fs_booksuppl>-SupplementID IS  INITIAL.
-        APPEND VALUE #( %tky = <fs_booksuppl>-%tky ) TO failed-bookingsupplement.
+      IF <bookingsupplement>-SupplementID IS  INITIAL.
+        APPEND VALUE #( %tky = <bookingsupplement>-%tky ) TO failed-bookingsupplement.
 
-        APPEND VALUE #( %tky                  = <fs_booksuppl>-%tky
+        APPEND VALUE #( %tky                  = <bookingsupplement>-%tky
                         %state_area           = 'VALIDATE_SUPPLEMENT'
                         %msg                  = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>ENTER_SUPPLEMENT_ID
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path                 = VALUE #( booking-%tky = lt_link_booking[ source-%tky = <fs_booksuppl>-%tky ]-target-%tky
-                                                         travel-%tky  = lt_link_travel[ source-%tky  = <fs_booksuppl>-%tky ]-target-%tky )
+                        %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ source-%tky = <bookingsupplement>-%tky ]-target-%tky
+                                                         travel-%tky  = booksuppl_travel_links[ source-%tky  = <bookingsupplement>-%tky ]-target-%tky )
                         %element-SupplementID = if_abap_behv=>mk-on ) TO reported-bookingsupplement.
 
 
-      ELSEIF <fs_booksuppl>-SupplementID IS NOT INITIAL AND NOT line_exists( lt_supplement_db[ supplement_id = <fs_booksuppl>-SupplementID ] ).
-        APPEND VALUE #(  %tky = <fs_booksuppl>-%tky ) TO failed-bookingsupplement.
+      ELSEIF <bookingsupplement>-SupplementID IS NOT INITIAL AND NOT line_exists( valid_supplements[ supplement_id = <bookingsupplement>-SupplementID ] ).
+        APPEND VALUE #(  %tky = <bookingsupplement>-%tky ) TO failed-bookingsupplement.
 
-        APPEND VALUE #( %tky                  = <fs_booksuppl>-%tky
+        APPEND VALUE #( %tky                  = <bookingsupplement>-%tky
                         %state_area           = 'VALIDATE_SUPPLEMENT'
                         %msg                  = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>SUPPLEMENT_UNKNOWN
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path                 = VALUE #( booking-%tky = lt_link_booking[ source-%tky = <fs_booksuppl>-%tky ]-target-%tky
-                                                        travel-%tky  = lt_link_travel[ source-%tky  = <fs_booksuppl>-%tky ]-target-%tky )
+                        %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ source-%tky = <bookingsupplement>-%tky ]-target-%tky
+                                                        travel-%tky  = booksuppl_travel_links[ source-%tky  = <bookingsupplement>-%tky ]-target-%tky )
                         %element-SupplementID = if_abap_behv=>mk-on ) TO reported-bookingsupplement.
       ENDIF.
 

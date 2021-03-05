@@ -26,7 +26,7 @@ etag master LocalLastChangedAt
   internal action reCalcTotalPrice;
 
   determination setTravelNumber on save { create; }
-  determination setStatusToNew on modify { create; }
+  determination setStatusToOpen on modify { create; }
   determination calculateTotalPrice on modify { create; field BookingFee, CurrencyCode; }
 
   validation validateCustomer on save { create; field CustomerID; }
@@ -80,6 +80,7 @@ etag master LocalLastChangedAt
   field ( numbering : managed, readonly ) BookingUUID;
   field ( readonly ) TravelUUID, BookingID, BookingDate, LocalLastChangedAt;
   field ( mandatory ) CustomerID, AirlineID, ConnectionID, FlightDate;
+
 
   determination setBookingNumber on save { create; }
   determination setBookingDate on save { create; }

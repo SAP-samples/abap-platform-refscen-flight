@@ -112,7 +112,7 @@ CLASS /dmo/tc_travel_proc_m_o2_odata  IMPLEMENTATION.
         bookingfee = '10.50'
         currencycode = 'EUR'
         description = 'TestTravel 1'
-        travelstatus = 'O'
+        OverallStatus = 'O'
        ).
 
     " Navigate to the resource and create a request for the create operation

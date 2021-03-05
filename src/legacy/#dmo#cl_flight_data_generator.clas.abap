@@ -67,6 +67,9 @@ CLASS /dmo/cl_flight_data_generator IMPLEMENTATION.
     out->write( 'Generate Data: Booking Supplement      /DMO/BOOK_SUPPL' ) ##NO_TEXT.
     lcl_travel_data_generator=>lif_data_generator~create( out ).
 
+    out->write( 'Generate Data: Status ValueHelps' ) ##NO_TEXT.
+    lcl_status_vh_data_generator=>lif_data_generator~create( out ).
+
 
     out->write(  'Calling BAdIs' ) ##NO_TEXT.
 

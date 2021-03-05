@@ -79,9 +79,15 @@ define root view entity /DMO/C_Travel_Approver_M
           identification: [ { position: 15 }, 
                             { type: #FOR_ACTION, dataAction: 'acceptTravel', label: 'Accept Travel' },
                             { type: #FOR_ACTION, dataAction: 'rejectTravel', label: 'Reject Travel' } ] ,
+          textArrangement: #TEXT_ONLY,
           selectionField: [ { position: 40 } ] }
       @EndUserText.label: 'Overall Status'
-      overall_status     as TravelStatus,
+      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Overall_Status_VH', element: 'OverallStatus' }}]
+      @ObjectModel.text.element: ['OverallStatusText'] 
+      overall_status     as OverallStatus,
+      
+      @UI.hidden: true
+      _OverallStatus._Text.Text as OverallStatusText : localized,
 
       @UI: {
           lineItem: [ { position: 45, importance: #MEDIUM } ],
@@ -96,5 +102,6 @@ define root view entity /DMO/C_Travel_Approver_M
       /* Associations */
       _Booking : redirected to composition child /DMO/C_Booking_Approver_M,
       _Agency,
-      _Customer
+      _Customer,
+      _OverallStatus
 }

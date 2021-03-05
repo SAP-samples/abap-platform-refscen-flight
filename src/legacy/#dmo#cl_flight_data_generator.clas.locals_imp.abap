@@ -1561,10 +1561,10 @@ CLASS lcl_supplement_data_generator DEFINITION CREATE PRIVATE.
 
     CONSTANTS:
       BEGIN OF cs_supplement_category,
-        beverage TYPE /DMO/supplement_category VALUE 'BV',
-        meal     TYPE /DMO/supplement_category VALUE 'ML',
-        luggage  TYPE /DMO/supplement_category VALUE 'LU',
-        extra    TYPE /DMO/supplement_category VALUE 'EX',
+        beverage TYPE /dmo/supplement_category VALUE 'BV',
+        meal     TYPE /dmo/supplement_category VALUE 'ML',
+        luggage  TYPE /dmo/supplement_category VALUE 'LU',
+        extra    TYPE /dmo/supplement_category VALUE 'EX',
       END OF cs_supplement_category.
 
     CONSTANTS:
@@ -1622,6 +1622,8 @@ CLASS lcl_supplement_data_generator IMPLEMENTATION.
     ENDIF.
     INSERT /dmo/supplement  FROM TABLE @( CORRESPONDING tt_supplement(               lt_data ) ).
     INSERT /dmo/suppl_text  FROM TABLE @( CORRESPONDING tt_supplement_text(          lt_data ) ).
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
     IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
     ENDIF.
   ENDMETHOD.
@@ -1749,6 +1751,95 @@ CLASS lcl_supplement_data_generator IMPLEMENTATION.
         ( supplement_category = cs_supplement_category-meal      description = 'Meal'     )
         ( supplement_category = cs_supplement_category-luggage   description = 'Luggage'  )
         ( supplement_category = cs_supplement_category-extra     description = 'Extra'    )
+      ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+
+CLASS lcl_status_vh_data_generator DEFINITION CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    INTERFACES: lif_data_generator.
+
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+    TYPES:
+      type_travel_status  TYPE STANDARD TABLE OF /dmo/trvl_stat_t WITH KEY travel_status  language,
+      type_overall_status TYPE STANDARD TABLE OF /dmo/oall_stat_t WITH KEY overall_status language,
+      type_booking_status TYPE STANDARD TABLE OF /dmo/book_stat_t WITH KEY booking_status language.
+
+    CLASS-METHODS:
+      _travel_status
+        RETURNING VALUE(travel_status) TYPE type_travel_status,
+      _overall_status
+        RETURNING VALUE(overall_status) TYPE type_overall_status,
+      _booking_status
+        RETURNING VALUE(booking_status) TYPE type_booking_status.
+
+ENDCLASS.
+
+CLASS lcl_status_vh_data_generator IMPLEMENTATION.
+
+  METHOD lif_data_generator~create.
+    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
+    ENDIF.
+    DELETE FROM:
+       /dmo/trvl_stat,
+       /dmo/oall_stat,
+       /dmo/book_stat,
+       /dmo/trvl_stat_t,
+       /dmo/oall_stat_t,
+       /dmo/book_stat_t.
+
+
+    IF out IS BOUND.  out->write( '--> Travel Status' ) ##no_text.
+    ENDIF.
+    DATA(travel_status) = _travel_status( ).
+    INSERT /dmo/trvl_stat   FROM TABLE @( CORRESPONDING #( travel_status ) ).
+    INSERT /dmo/trvl_stat_t FROM TABLE @travel_status.
+
+    IF out IS BOUND.  out->write( '--> Overall Status' ) ##no_text.
+    ENDIF.
+    DATA(overall_status) = _overall_status( ).
+    INSERT /dmo/oall_stat   FROM TABLE @( CORRESPONDING #( overall_status ) ).
+    INSERT /dmo/oall_stat_t FROM TABLE @overall_status.
+
+    IF out IS BOUND.  out->write( '--> Booking Status' ) ##no_text.
+    ENDIF.
+    DATA(booking_status) = _booking_status( ).
+    INSERT /dmo/book_stat   FROM TABLE @( CORRESPONDING #( booking_status ) ).
+    INSERT /dmo/book_stat_t FROM TABLE @booking_status.
+
+    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
+    ENDIF.
+  ENDMETHOD.
+
+  METHOD _Travel_status.
+    travel_status = VALUE type_travel_status(
+        language = 'E'
+          ( travel_status = 'N'  text = 'New'       )
+          ( travel_status = 'B'  text = 'Booked'    )
+          ( travel_status = 'P'  text = 'Planned'   )
+          ( travel_status = 'X'  text = 'Canceled'  )
+      ).
+  ENDMETHOD.
+
+  METHOD _overall_status.
+    overall_status = VALUE type_overall_status(
+        language = 'E'
+          ( overall_status = 'O'  text = 'Open'      )
+          ( overall_status = 'A'  text = 'Accepted'  )
+          ( overall_status = 'X'  text = 'Rejected'  )
+      ).
+  ENDMETHOD.
+
+  METHOD _booking_status.
+    booking_status = VALUE type_booking_status(
+        language = 'E'
+          ( booking_status = 'N'  text = 'New'       )
+          ( booking_status = 'B'  text = 'Booked'    )
+          ( booking_status = 'X'  text = 'Canceled'  )
       ).
   ENDMETHOD.
 

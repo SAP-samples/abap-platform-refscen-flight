@@ -39,7 +39,11 @@ define root view entity /DMO/C_Travel_U
 
       Memo,
 
+      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Travel_Status_VH', element: 'TravelStatus' }}]
+      @ObjectModel.text.element: ['StatusText']  
       Status,
+      
+      _TravelStatus._Text.Text as StatusText : localized,
 
       LastChangedAt,
       /* Associations */
@@ -47,7 +51,8 @@ define root view entity /DMO/C_Travel_U
       _Booking : redirected to composition child /DMO/C_Booking_U,
       _Agency,
       _Currency,
-      _Customer
+      _Customer,
+      _TravelStatus
       
      
 }

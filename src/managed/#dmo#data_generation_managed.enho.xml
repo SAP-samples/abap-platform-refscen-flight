@@ -3,7 +3,7 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <TOOL>BADI_IMPL</TOOL>
-   <SHORTTEXT>BAdI Implementation of Data Generator in managed package</SHORTTEXT>
+   <SHORTTEXT>BAdI Implementation of data generator in managed package</SHORTTEXT>
    <SPOT_NAME>/DMO/DATA_GENERATION_ENH_SPOT</SPOT_NAME>
    <IMPL>
     <ENH_BADI_IMPL_DATA>

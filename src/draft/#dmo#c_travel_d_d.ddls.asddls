@@ -40,12 +40,17 @@ define root view entity /DMO/C_Travel_D_D
 
       Description,
 
+      @ObjectModel.text.element: ['OverallStatusText']
+      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Overall_Status_VH', element: 'OverallStatus'  } }]
       OverallStatus,
+      _OverallStatus._Text.Text as OverallStatusText: localized,
+      
 
       LocalLastChangedAt,
       /* Associations */
       _Agency,
       _Booking : redirected to composition child /DMO/C_Booking_D_D,
       _Currency,
-      _Customer
+      _Customer, 
+      _OverallStatus
 }

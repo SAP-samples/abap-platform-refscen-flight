@@ -25,7 +25,7 @@ CLASS lhc_booking IMPLEMENTATION.
 
   METHOD setBookingNumber.
     DATA max_bookingid TYPE /dmo/booking_id.
-    DATA lt_booking_update TYPE TABLE FOR UPDATE /DMO/I_Travel_D\\Booking.
+    DATA bookings_update TYPE TABLE FOR UPDATE /DMO/I_Travel_D\\Booking.
 
     "Read all travels for the requested bookings
     " If multiple bookings of the same travel are requested, the travel is returned only once.
@@ -33,29 +33,29 @@ CLASS lhc_booking IMPLEMENTATION.
       ENTITY Booking BY \_Travel
         FIELDS ( TravelUUID )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(lt_travel).
+      RESULT DATA(travels).
 
     " Process all affected travels. Read respective bookings for one travel
-    LOOP AT lt_travel INTO DATA(ls_travel).
+    LOOP AT travels INTO DATA(travel).
       READ ENTITIES OF /dmo/i_travel_d IN LOCAL MODE
         ENTITY Travel BY \_Booking
           FIELDS ( BookingID )
-          WITH VALUE #( ( %tky = ls_travel-%tky ) )
-        RESULT DATA(lt_booking).
+          WITH VALUE #( ( %tky = travel-%tky ) )
+        RESULT DATA(bookings).
 
       " find max used bookingID in all bookings of this travel
       max_bookingid = '0000'.
-      LOOP AT lt_booking INTO DATA(ls_booking).
-        IF ls_booking-BookingID > max_bookingid.
-          max_bookingid = ls_booking-BookingID.
+      LOOP AT bookings INTO DATA(booking).
+        IF booking-BookingID > max_bookingid.
+          max_bookingid = booking-BookingID.
         ENDIF.
       ENDLOOP.
 
       "Provide a booking ID for all bookings of this travel that have none.
-      LOOP AT lt_booking INTO ls_booking WHERE BookingID IS INITIAL.
+      LOOP AT bookings INTO booking WHERE BookingID IS INITIAL.
         max_bookingid += 1.
-        APPEND VALUE #( %tky      = ls_booking-%tky
-                        BookingID = max_bookingid ) TO lt_booking_update.
+        APPEND VALUE #( %tky      = booking-%tky
+                        BookingID = max_bookingid ) TO bookings_update.
 
       ENDLOOP.
     ENDLOOP.
@@ -63,10 +63,10 @@ CLASS lhc_booking IMPLEMENTATION.
     " Provide a booking ID for all bookings that have none.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY booking
-        UPDATE FIELDS ( BookingID ) WITH lt_booking_update
-      REPORTED DATA(lt_reported).
+        UPDATE FIELDS ( BookingID ) WITH bookings_update
+      REPORTED DATA(update_reported).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP update_reported ).
 
 
   ENDMETHOD.
@@ -77,22 +77,22 @@ CLASS lhc_booking IMPLEMENTATION.
       ENTITY Booking
         FIELDS ( BookingDate )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(lt_booking).
+      RESULT DATA(bookings).
 
-    DELETE lt_booking WHERE BookingDate IS NOT INITIAL.
-    CHECK lt_booking IS NOT INITIAL.
+    DELETE bookings WHERE BookingDate IS NOT INITIAL.
+    CHECK bookings IS NOT INITIAL.
 
-    LOOP AT lt_booking ASSIGNING FIELD-SYMBOL(<fs_booking>).
-      <fs_booking>-BookingDate = cl_abap_context_info=>get_system_date( ).
+    LOOP AT bookings ASSIGNING FIELD-SYMBOL(<booking>).
+      <booking>-BookingDate = cl_abap_context_info=>get_system_date( ).
     ENDLOOP.
 
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Booking
         UPDATE  FIELDS ( BookingDate )
-        WITH CORRESPONDING #( lt_booking )
-    REPORTED DATA(lt_reported).
+        WITH CORRESPONDING #( bookings )
+    REPORTED DATA(update_reported).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP update_reported ).
 
   ENDMETHOD.
 
@@ -103,16 +103,16 @@ CLASS lhc_booking IMPLEMENTATION.
       ENTITY Booking BY \_Travel
         FIELDS ( TravelUUID  )
         WITH CORRESPONDING #(  keys  )
-      RESULT DATA(lt_travel).
+      RESULT DATA(travels).
 
     " Trigger Re-Calculation on Root Node
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
-          FROM CORRESPONDING  #( lt_travel )
-    REPORTED DATA(lt_reported).
+          FROM CORRESPONDING  #( travels )
+    REPORTED DATA(action_reported).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP action_reported ).
 
   ENDMETHOD.
 
@@ -123,56 +123,56 @@ CLASS lhc_booking IMPLEMENTATION.
       ENTITY Booking
         FIELDS (  CustomerID )
         WITH CORRESPONDING #( keys )
-    RESULT DATA(lt_booking)
-    FAILED DATA(lt_failed).
+    RESULT DATA(bookings)
+    FAILED DATA(read_failed).
 
-    failed = CORRESPONDING #( DEEP lt_failed ).
+    failed = CORRESPONDING #( DEEP read_failed ).
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel
-        FROM CORRESPONDING #( lt_booking )
-      LINK DATA(lt_link).
+        FROM CORRESPONDING #( bookings )
+      LINK DATA(travel_booking_links).
 
-    DATA lt_customer TYPE SORTED TABLE OF /dmo/customer WITH UNIQUE KEY customer_id.
+    DATA customers TYPE SORTED TABLE OF /dmo/customer WITH UNIQUE KEY customer_id.
 
     " Optimization of DB select: extract distinct non-initial customer IDs
-    lt_customer = CORRESPONDING #( lt_booking DISCARDING DUPLICATES MAPPING customer_id = CustomerID EXCEPT * ).
-    DELETE lt_customer WHERE customer_id IS INITIAL.
+    customers = CORRESPONDING #( bookings DISCARDING DUPLICATES MAPPING customer_id = CustomerID EXCEPT * ).
+    DELETE customers WHERE customer_id IS INITIAL.
 
-    IF  lt_customer IS NOT INITIAL.
+    IF  customers IS NOT INITIAL.
       " Check if customer ID exists
       SELECT FROM /dmo/customer FIELDS customer_id
-                                FOR ALL ENTRIES IN @lt_customer
-                                WHERE customer_id = @lt_customer-customer_id
-      INTO TABLE @DATA(lt_customer_db).
+                                FOR ALL ENTRIES IN @customers
+                                WHERE customer_id = @customers-customer_id
+      INTO TABLE @DATA(valid_customers).
     ENDIF.
 
     " Raise message for non existing customer id
-    LOOP AT lt_booking INTO DATA(ls_booking).
-      APPEND VALUE #(  %tky               = ls_booking-%tky
+    LOOP AT bookings INTO DATA(booking).
+      APPEND VALUE #(  %tky               = booking-%tky
                        %state_area        = 'VALIDATE_CUSTOMER' ) TO reported-booking.
 
-      IF ls_booking-CustomerID IS  INITIAL.
-        APPEND VALUE #( %tky = ls_booking-%tky ) TO failed-booking.
+      IF booking-CustomerID IS  INITIAL.
+        APPEND VALUE #( %tky = booking-%tky ) TO failed-booking.
 
-        APPEND VALUE #( %tky                = ls_booking-%tky
+        APPEND VALUE #( %tky                = booking-%tky
                         %state_area         = 'VALIDATE_CUSTOMER'
                          %msg                = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>ENTER_CUSTOMER_ID
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = lt_link[ source-%tky = ls_booking-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = booking-%tky ]-target-%tky )
                         %element-CustomerID = if_abap_behv=>mk-on ) TO reported-booking.
 
-      ELSEIF ls_booking-CustomerID IS NOT INITIAL AND NOT line_exists( lt_customer_db[ customer_id = ls_booking-CustomerID ] ).
-        APPEND VALUE #(  %tky = ls_booking-%tky ) TO failed-booking.
+      ELSEIF booking-CustomerID IS NOT INITIAL AND NOT line_exists( valid_customers[ customer_id = booking-CustomerID ] ).
+        APPEND VALUE #(  %tky = booking-%tky ) TO failed-booking.
 
-        APPEND VALUE #( %tky                = ls_booking-%tky
+        APPEND VALUE #( %tky                = booking-%tky
                         %state_area         = 'VALIDATE_CUSTOMER'
                          %msg                = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>CUSTOMER_UNKOWN
-                                                                customer_id = ls_booking-customerId
+                                                                customer_id = booking-customerId
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = lt_link[ source-%tky = ls_booking-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = booking-%tky ]-target-%tky )
                         %element-CustomerID = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
 
@@ -186,78 +186,78 @@ CLASS lhc_booking IMPLEMENTATION.
       ENTITY Booking
         FIELDS ( BookingID AirlineID ConnectionID FlightDate )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(lt_booking)
-      FAILED DATA(lt_failed).
+      RESULT DATA(bookings)
+      FAILED DATA(read_failed).
 
-    failed = CORRESPONDING #( DEEP lt_failed ).
+    failed = CORRESPONDING #( DEEP read_failed ).
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel
-        FROM CORRESPONDING #( lt_booking )
-      LINK DATA(lt_link).
+        FROM CORRESPONDING #( bookings )
+      LINK DATA(travel_booking_links).
 
-    LOOP AT lt_booking ASSIGNING FIELD-SYMBOL(<fs_booking>).
+    LOOP AT bookings ASSIGNING FIELD-SYMBOL(<booking>).
       "overwrite state area with empty message to avoid duplicate messages
-      APPEND VALUE #(  %tky               = <fs_booking>-%tky
+      APPEND VALUE #(  %tky               = <booking>-%tky
                        %state_area        = 'VALIDATE_CONNECTION' ) TO reported-booking.
 
       " Raise message for non existing airline ID
-      IF <fs_booking>-AirlineID IS INITIAL.
-        APPEND VALUE #( %tky = <fs_booking>-%tky ) TO failed-booking.
+      IF <booking>-AirlineID IS INITIAL.
+        APPEND VALUE #( %tky = <booking>-%tky ) TO failed-booking.
 
-        APPEND VALUE #( %tky                = <fs_booking>-%tky
+        APPEND VALUE #( %tky                = <booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
                          %msg                = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>ENTER_AIRLINE_ID
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path              = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
+                        %path              = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
                         %element-AirlineID = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
       " Raise message for non existing connection ID
-      IF <fs_booking>-ConnectionID IS INITIAL.
-        APPEND VALUE #( %tky = <fs_booking>-%tky ) TO failed-booking.
+      IF <booking>-ConnectionID IS INITIAL.
+        APPEND VALUE #( %tky = <booking>-%tky ) TO failed-booking.
 
-        APPEND VALUE #( %tky                = <fs_booking>-%tky
+        APPEND VALUE #( %tky                = <booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
                         %msg                = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>ENTER_CONNECTION_ID
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
                         %element-ConnectionID = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
       " Raise message for non existing flight date
-      IF <fs_booking>-FlightDate IS INITIAL.
-        APPEND VALUE #( %tky = <fs_booking>-%tky ) TO failed-booking.
+      IF <booking>-FlightDate IS INITIAL.
+        APPEND VALUE #( %tky = <booking>-%tky ) TO failed-booking.
 
-        APPEND VALUE #( %tky                = <fs_booking>-%tky
+        APPEND VALUE #( %tky                = <booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
                         %msg                = NEW /dmo/cm_flight_messages(
                                                                 textid = /dmo/cm_flight_messages=>ENTER_FLIGHT_DATE
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
                         %element-FlightDate = if_abap_behv=>mk-on ) TO reported-booking.
       ENDIF.
       " check if flight connection exists
-      IF <fs_booking>-AirlineID IS NOT INITIAL AND
-         <fs_booking>-ConnectionID IS NOT INITIAL AND
-         <fs_booking>-FlightDate IS NOT INITIAL.
+      IF <booking>-AirlineID IS NOT INITIAL AND
+         <booking>-ConnectionID IS NOT INITIAL AND
+         <booking>-FlightDate IS NOT INITIAL.
 
-        SELECT SINGLE Carrier_ID, Connection_ID, Flight_Date   FROM /dmo/flight  WHERE  carrier_id    = @<fs_booking>-AirlineID
-                                                               AND  connection_id = @<fs_booking>-ConnectionID
-                                                               AND  flight_date   = @<fs_booking>-FlightDate
-                                                               INTO  @DATA(ls_flight).
+        SELECT SINGLE Carrier_ID, Connection_ID, Flight_Date   FROM /dmo/flight  WHERE  carrier_id    = @<booking>-AirlineID
+                                                               AND  connection_id = @<booking>-ConnectionID
+                                                               AND  flight_date   = @<booking>-FlightDate
+                                                               INTO  @DATA(flight).
 
         IF sy-subrc <> 0.
-          APPEND VALUE #( %tky = <fs_booking>-%tky ) TO failed-booking.
+          APPEND VALUE #( %tky = <booking>-%tky ) TO failed-booking.
 
-          APPEND VALUE #( %tky                 = <fs_booking>-%tky
+          APPEND VALUE #( %tky                 = <booking>-%tky
                           %state_area          = 'VALIDATE_CONNECTION'
                           %msg                 = NEW /dmo/cm_flight_messages(
                                                                 textid      = /dmo/cm_flight_messages=>NO_FLIGHT_EXISTS
-                                                                carrier_id  = <fs_booking>-AirlineID
-                                                                flight_date = <fs_booking>-FlightDate
+                                                                carrier_id  = <booking>-AirlineID
+                                                                flight_date = <booking>-FlightDate
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path                  = VALUE #( travel-%tky = lt_link[ source-%tky = <fs_booking>-%tky ]-target-%tky )
+                        %path                  = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
                         %element-FlightDate    = if_abap_behv=>mk-on
                         %element-AirlineID     = if_abap_behv=>mk-on
                         %element-ConnectionID  = if_abap_behv=>mk-on ) TO reported-booking.

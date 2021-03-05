@@ -14,8 +14,8 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
     METHODS validate_travel_status     FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validatestatus.
 
     METHODS copyTravel                 FOR MODIFY IMPORTING   keys FOR ACTION travel~copyTravel                RESULT result.
-    METHODS set_status_completed       FOR MODIFY IMPORTING   keys FOR ACTION travel~accepttravel              RESULT result.
-    METHODS set_status_cancelled       FOR MODIFY IMPORTING   keys FOR ACTION travel~rejecttravel              RESULT result.
+    METHODS set_status_accepted        FOR MODIFY IMPORTING   keys FOR ACTION travel~accepttravel              RESULT result.
+    METHODS set_status_rejected        FOR MODIFY IMPORTING   keys FOR ACTION travel~rejecttravel              RESULT result.
     METHODS get_features               FOR FEATURES IMPORTING keys REQUEST    requested_features FOR travel    RESULT result.
     METHODS recalctotalprice FOR MODIFY
 
@@ -292,7 +292,7 @@ CLASS lhc_travel IMPLEMENTATION.
 * Implements travel action (in our case: for setting travel overall_status to completed)
 *
 ********************************************************************************
-  METHOD set_status_completed.
+  METHOD set_status_accepted.
 
     " Modify in local mode: BO-related updates that are not relevant for authorization checks
     MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
@@ -320,9 +320,9 @@ CLASS lhc_travel IMPLEMENTATION.
                     last_changed_at
                     last_changed_by )
              WITH VALUE #( FOR key IN keys ( travel_id = key-travel_id ) )
-         RESULT DATA(lt_travel).
+         RESULT DATA(travels).
 
-    result = VALUE #( FOR travel IN lt_travel ( travel_id = travel-travel_id
+    result = VALUE #( FOR travel IN travels ( travel_id = travel-travel_id
                                                 %param    = travel ) ).
 
   ENDMETHOD.
@@ -332,7 +332,7 @@ CLASS lhc_travel IMPLEMENTATION.
 * Implements travel action(s) (in our case: for setting travel overall_status to cancelled)
 *
 ********************************************************************************
-  METHOD set_status_cancelled.
+  METHOD set_status_rejected.
 
     MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
            ENTITY travel
@@ -359,9 +359,9 @@ CLASS lhc_travel IMPLEMENTATION.
                 last_changed_at
                 last_changed_by )
          WITH VALUE #( FOR key IN keys ( travel_id = key-travel_id ) )
-     RESULT DATA(lt_travel).
+     RESULT DATA(travels).
 
-    result = VALUE #( FOR travel IN lt_travel ( travel_id = travel-travel_id
+    result = VALUE #( FOR travel IN travels ( travel_id = travel-travel_id
                                                 %param    = travel
                                               ) ).
 

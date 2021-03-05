@@ -50,5 +50,5 @@ define view entity /DMO/C_BookSuppl_Processor_M
       /* Associations */
       _Travel  : redirected to /DMO/C_Travel_Processor_M,
       _Booking : redirected to parent /DMO/C_Booking_Processor_M,
-      _SupplementText
+      _Product
 }
