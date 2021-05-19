@@ -3344,7 +3344,7 @@ CLASS ltc_booking_supplement IMPLEMENTATION.
         iv_currency_code_target = 'EUR'
         iv_exchange_rate_date   = lv_exchange_rate_date
       IMPORTING
-        ev_amount               = data(lv_30_usd_as_eur)
+        ev_amount               = DATA(lv_30_usd_as_eur)
     ).
     cl_abap_unit_assert=>assert_not_initial( lv_30_usd_as_eur ).
     DATA ls_travel_sel TYPE /dmo/travel.
@@ -3506,7 +3506,8 @@ CLASS ltc_booking_supplement IMPLEMENTATION.
     CONSTANTS lc_booking_supplement_id_2_1 TYPE /dmo/booking_supplement_id VALUE '10'.
     CONSTANTS lc_booking_supplement_id_1_4 TYPE /dmo/booking_supplement_id VALUE '40'.
     CONSTANTS lc_diff TYPE /dmo/supplement_price VALUE '123.00'.
-    DATA(lv_new_price) = ls_booking_supplement_1_1-price + lc_diff.
+    DATA lv_new_price TYPE /dmo/supplement_price.
+    lv_new_price = ls_booking_supplement_1_1-price + lc_diff.
     gr_cut->update_travel(
       EXPORTING
         is_travel              = VALUE #( travel_id = ls_travel-travel_id  description = 'My_Deep_Insert_2' )

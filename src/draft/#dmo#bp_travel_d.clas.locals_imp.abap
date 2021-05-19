@@ -284,9 +284,9 @@ CLASS lhc_travel IMPLEMENTATION.
 
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
-        UPDATE SET FIELDS
-        WITH VALUE #( FOR key IN keys ( %tky          = key-%tky
-                                        OverallStatus = travel_status-open ) )
+        UPDATE FIELDS ( OverallStatus )
+        WITH VALUE #( FOR travel IN travels ( %tky          = travel-%tky
+                                              OverallStatus = travel_status-open ) )
     REPORTED DATA(update_reported).
 
     reported = CORRESPONDING #( DEEP update_reported ).
@@ -559,7 +559,6 @@ CLASS lhc_travel IMPLEMENTATION.
     "Actions are treated like update
     IF requested_authorizations-%update                =  if_abap_behv=>mk-on OR
        requested_authorizations-%action-Edit           =  if_abap_behv=>mk-on OR
-       requested_authorizations-%action-Prepare        =  if_abap_behv=>mk-on OR
        requested_authorizations-%action-acceptTravel   =  if_abap_behv=>mk-on OR
        requested_authorizations-%action-rejectTravel   =  if_abap_behv=>mk-on OR
        requested_authorizations-%action-deductDiscount =  if_abap_behv=>mk-on.
@@ -567,7 +566,6 @@ CLASS lhc_travel IMPLEMENTATION.
       IF  is_update_granted( ) = abap_true.
         result-%update                =  if_abap_behv=>auth-allowed.
         result-%action-Edit           =  if_abap_behv=>auth-allowed.
-        result-%action-Prepare        =  if_abap_behv=>auth-allowed.
         result-%action-acceptTravel   =  if_abap_behv=>auth-allowed.
         result-%action-rejectTravel   =  if_abap_behv=>auth-allowed.
         result-%action-deductDiscount =  if_abap_behv=>auth-allowed.
@@ -575,7 +573,6 @@ CLASS lhc_travel IMPLEMENTATION.
       ELSE.
         result-%update                =  if_abap_behv=>auth-unauthorized.
         result-%action-Edit           =  if_abap_behv=>auth-unauthorized.
-        result-%action-Prepare        =  if_abap_behv=>auth-unauthorized.
         result-%action-acceptTravel   =  if_abap_behv=>auth-unauthorized.
         result-%action-rejectTravel   =  if_abap_behv=>auth-unauthorized.
         result-%action-deductDiscount =  if_abap_behv=>auth-unauthorized.
@@ -741,7 +738,6 @@ CLASS lhc_travel IMPLEMENTATION.
     update_requested = COND #( WHEN requested_authorizations-%update                = if_abap_behv=>mk-on OR
                                     requested_authorizations-%assoc-_Booking        = if_abap_behv=>mk-on OR
                                     requested_authorizations-%action-Edit           = if_abap_behv=>mk-on OR
-                                    requested_authorizations-%action-Prepare        = if_abap_behv=>mk-on OR
                                     requested_authorizations-%action-acceptTravel   = if_abap_behv=>mk-on OR
                                     requested_authorizations-%action-deductDiscount = if_abap_behv=>mk-on OR
                                     requested_authorizations-%action-rejectTravel   = if_abap_behv=>mk-on
@@ -810,7 +806,6 @@ CLASS lhc_travel IMPLEMENTATION.
                        %update                = upd_auth
                        %assoc-_Booking        = upd_auth
                        %action-Edit           = upd_auth
-                       %action-Prepare        = upd_auth
                        %action-acceptTravel   = upd_auth
                        %action-deductDiscount = upd_auth
                        %action-rejectTravel   = upd_auth

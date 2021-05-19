@@ -1,13 +1,12 @@
-implementation unmanaged;
+unmanaged implementation in class /DMO/BP_TRAVEL_U unique;
+strict;
 
 // behavior defintion for the TRAVEL root entity
-define behavior for /DMO/I_Travel_U alias travel
+define behavior for /DMO/I_Travel_U alias Travel
 implementation in class /DMO/BP_TRAVEL_U unique
 etag master LastChangedAt
 lock master
-
-
-
+authorization master ( global )
 
 {
   field ( readonly ) TravelID;
@@ -39,11 +38,11 @@ lock master
 }
 
 // behavior definition for the BOOKING child entity
-define behavior for /DMO/I_Booking_U alias booking
+define behavior for /DMO/I_Booking_U alias Booking
 implementation in class /DMO/BP_BOOKING_U unique
 etag dependent by _Travel
 lock dependent by _Travel
-
+authorization dependent by _Travel
 
 {
   field ( readonly ) TravelID, BookingID;
@@ -53,7 +52,7 @@ lock dependent by _Travel
   update;
   delete;
 
-  association _BookSupplement abbreviation _Supplement { create; }
+  association _BookSupplement { create; }
   association _Travel;
 
   mapping for /dmo/booking control /dmo/s_booking_intx
@@ -72,21 +71,25 @@ lock dependent by _Travel
 }
 
 // behavior defintion for the BOOKING SUPPLEMENT sub node
-define behavior for /DMO/I_BookingSupplement_U alias bookingsupplement
+define behavior for /DMO/I_BookingSupplement_U alias BookingSupplement
 implementation in class /DMO/BP_BOOKINGSUPPLEMENT_U unique
 etag dependent by _Travel
 lock dependent by _Travel
+authorization dependent by _Travel
 
 {
 
   field ( readonly ) TravelID, BookingID, BookingSupplementID;
-  field ( mandatory ) SupplementID, Price;
+  field ( mandatory: create, readonly : update ) SupplementID;
+  field ( mandatory ) Price;
+
 
 
   update;
   delete;
 
   association _Travel;
+  association _Booking;
 
   mapping for /dmo/book_suppl control /dmo/s_booking_supplement_intx
   {

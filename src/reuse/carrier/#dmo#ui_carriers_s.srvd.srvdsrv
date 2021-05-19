@@ -1,0 +1,5 @@
+@EndUserText.label: 'Multi-Inline-Edit Scenario'
+define service /DMO/UI_Carriers_s {
+  expose /DMO/C_CarriersLockSingleton_S as CarriersLockSingleton;
+  expose /DMO/C_Carrier_S as Carrier;
+}

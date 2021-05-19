@@ -1,0 +1,54 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SRVB" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SRVB>
+    <METADATA>
+     <NAME>/DMO/UI_CARRIERS_S_O4</NAME>
+     <TYPE>SRVB/SVB</TYPE>
+     <DESCRIPTION>Multi-Inline-Edit Scenario</DESCRIPTION>
+     <LANGUAGE>EN</LANGUAGE>
+     <LINKS>
+      <item>
+       <HREF>/sap/bc/adt/businessservices/odatav4/%2FDMO%2FUI_CARRIERS_S_O4</HREF>
+       <REL>http://www.sap.com/categories/odatav4</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.odatav4.v1+xml</TYPE>
+       <TITLE>ODATAV4</TITLE>
+      </item>
+      <item>
+       <HREF>/sap/bc/adt/businessservices/testclass</HREF>
+       <REL>http://www.sap.com/categories/testclass</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.testclass.v1+xml</TYPE>
+       <TITLE>TESTCLASS</TITLE>
+      </item>
+     </LINKS>
+     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+    </METADATA>
+    <CONTENT>
+     <BIND_TYPE_IMPL>
+      <NAME>/DMO/UI_CARRIERS_S_O4</NAME>
+     </BIND_TYPE_IMPL>
+     <BIND_TYPE>ODATA</BIND_TYPE>
+     <BIND_TYPE_VERSION>V4</BIND_TYPE_VERSION>
+     <SERVICES>
+      <item>
+       <SERVICE_NAME>/DMO/UI_CARRIERS_S</SERVICE_NAME>
+       <SERVICE_CONTENT>
+        <item>
+         <SERVICE_VERSION>0001</SERVICE_VERSION>
+         <SRVD_REF>
+          <URI>/sap/bc/adt/ddic/srvd/sources/%2fdmo%2fui_carriers_s</URI>
+          <TYPE>SRVD/SRV</TYPE>
+          <NAME>/DMO/UI_CARRIERS_S</NAME>
+         </SRVD_REF>
+        </item>
+       </SERVICE_CONTENT>
+      </item>
+     </SERVICES>
+    </CONTENT>
+    <PUBLISHED>true</PUBLISHED>
+    <BINDING_CREATED>true</BINDING_CREATED>
+   </SRVB>
+  </asx:values>
+ </asx:abap>
+</abapGit>

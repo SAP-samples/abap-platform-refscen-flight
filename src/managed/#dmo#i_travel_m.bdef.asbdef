@@ -1,4 +1,5 @@
-managed;
+managed implementation in class /DMO/BP_TRAVEL_M unique;
+strict;
 
 define behavior for /DMO/I_Travel_M alias travel
 implementation in class /DMO/BP_TRAVEL_M unique
@@ -7,7 +8,7 @@ with additional save
 etag master last_changed_at
 lock master
 early numbering
-//authorization master(instance)
+authorization master(global)
 
 {
   // administrative fields: read only
@@ -61,7 +62,7 @@ persistent table /DMO/BOOKING_M
 etag master last_changed_at
 lock dependent by _Travel
 early numbering
-
+authorization dependent by _Travel
 
 {
   // static field control
@@ -99,7 +100,7 @@ with unmanaged save
 etag master last_changed_at
 lock dependent by _Travel
 early numbering
-//authorization dependent by _Travel
+authorization dependent by _Travel
 
 {
   // static field control
@@ -117,4 +118,5 @@ early numbering
   determination calculateTotalPrice on modify {create;  field price, currency_code; }
 
   association _Travel { }
+  association _Booking { }
 }

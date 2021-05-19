@@ -16,9 +16,15 @@ define view entity /DMO/I_Carrier
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.7
       @Semantics.text: true
-      Airline.name          as Name,
+      Airline.name          as Name, 
 
       Airline.currency_code as CurrencyCode,
+
+      last_changed_at       as LastChangedAt,
+      local_created_at      as LocalCreatedAt,
+      local_created_by      as LocalCreatedBy,
+      local_last_changed_at as LocalLastChangedAt,
+      local_last_changed_by as LocalLastChangedBy,
 
       /* Associations */
       _Currency

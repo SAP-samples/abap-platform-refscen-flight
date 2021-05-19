@@ -23,6 +23,8 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR ACTION travel~recalctotalprice.
     METHODS calculatetotalprice FOR DETERMINE ON MODIFY
       IMPORTING keys FOR travel~calculatetotalprice.
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
     METHODS earlynumbering_cba_booking FOR NUMBERING
       IMPORTING entities FOR CREATE travel\_booking.
     METHODS earlynumbering_create FOR NUMBERING
@@ -262,10 +264,13 @@ CLASS lhc_travel IMPLEMENTATION.
 
     MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel
-        CREATE SET FIELDS WITH travels
-        CREATE BY \_Booking SET FIELDS WITH bookings_cba
+        CREATE FIELDS ( agency_id customer_id begin_date end_date booking_fee total_price currency_code overall_status description )
+          WITH travels
+        CREATE BY \_Booking FIELDS ( booking_id booking_date customer_id carrier_id connection_id flight_date flight_price currency_code booking_status )
+          WITH bookings_cba
       ENTITY booking
-        CREATE BY \_BookSupplement SET FIELDS WITH booksuppl_cba
+        CREATE BY \_BookSupplement FIELDS ( booking_supplement_id supplement_id price currency_code )
+          WITH booksuppl_cba
       MAPPED mapped
       FAILED DATA(failed_create)
       REPORTED DATA(reported_create).
@@ -593,43 +598,51 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD earlynumbering_cba_booking.
-
     DATA: max_booking_id TYPE /dmo/booking_id.
 
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel BY \_booking
-        FIELDS ( booking_id )
-          WITH CORRESPONDING #( entities )
-          RESULT DATA(bookings)
-          FAILED failed.
+        FROM CORRESPONDING #( entities )
+        LINK DATA(bookings)
+      FAILED failed.
 
-    LOOP AT entities ASSIGNING FIELD-SYMBOL(<booking>).
+    " Loop over all unique TravelIDs
+    LOOP AT entities ASSIGNING FIELD-SYMBOL(<travel_group>) GROUP BY <travel_group>-travel_id.
 
       " Get highest booking_id from bookings belonging to travel
       max_booking_id = REDUCE #( INIT max = CONV /dmo/booking_id( '0' )
-                                       FOR  booking IN bookings USING KEY entity
-                                                                             WHERE (     travel_id  = <booking>-travel_id )
-                                       NEXT max = COND /dmo/booking_id(      WHEN   booking-booking_id > max
-                                                                             THEN booking-booking_id
-                                                                             ELSE max )
-                                     ).
+                                 FOR  booking IN bookings USING KEY entity WHERE ( source-travel_id  = <travel_group>-travel_id )
+                                 NEXT max = COND /dmo/booking_id( WHEN booking-target-booking_id > max
+                                                                    THEN booking-target-booking_id
+                                                                    ELSE max )
+                               ).
+      " Get highest assigned booking_id from incoming entities
+      max_booking_id = REDUCE #( INIT max = max_booking_id
+                                 FOR  entity IN entities USING KEY entity WHERE ( travel_id  = <travel_group>-travel_id )
+                                 FOR  target IN entity-%target
+                                 NEXT max = COND /dmo/booking_id( WHEN   target-booking_id > max
+                                                                    THEN target-booking_id
+                                                                    ELSE max )
+                               ).
 
-      " map booking which already have an id (required for draft)
+      " Loop over all entries in entities with the same TravelID
+      LOOP AT entities ASSIGNING FIELD-SYMBOL(<travel>) USING KEY entity WHERE travel_id = <travel_group>-travel_id.
 
-      LOOP AT <booking>-%target INTO DATA(booking_w_numbers) WHERE booking_id IS NOT INITIAL.
-        APPEND CORRESPONDING #( booking_w_numbers ) TO mapped-booking.
-      ENDLOOP.
+        " Assign new booking-ids if not already assigned
+        LOOP AT <travel>-%target ASSIGNING FIELD-SYMBOL(<booking_wo_numbers>).
+          APPEND CORRESPONDING #( <booking_wo_numbers> ) TO mapped-booking ASSIGNING FIELD-SYMBOL(<mapped_booking>).
+          IF <booking_wo_numbers>-booking_id IS INITIAL.
+            max_booking_id += 10 .
+            <mapped_booking>-booking_id = max_booking_id .
+          ENDIF.
+        ENDLOOP.
 
-
-      "assign new booking-ids
-
-      LOOP AT <booking>-%target INTO DATA(booking_wo_numbers) WHERE booking_id IS INITIAL.
-        APPEND CORRESPONDING #( booking_wo_numbers ) TO mapped-booking ASSIGNING FIELD-SYMBOL(<mapped_booking>).
-        max_booking_id += 10 .
-        <mapped_booking>-booking_id = max_booking_id .
       ENDLOOP.
 
     ENDLOOP.
+  ENDMETHOD.
+
+  METHOD get_global_authorizations.
   ENDMETHOD.
 
 ENDCLASS.
@@ -705,7 +718,7 @@ CLASS lcl_save IMPLEMENTATION.
 
       ENDLOOP.
 
-      " Inserts rows specified in lt_travel_log into the DB table /dmo/log_travel
+      " Inserts rows specified in lt_travel_log_c into the DB table /dmo/log_travel
       INSERT /dmo/log_travel FROM TABLE @lt_travel_log_c.
 
     ENDIF.
@@ -761,7 +774,7 @@ CLASS lcl_save IMPLEMENTATION.
       ENDLOOP.
 
 
-      " Inserts rows specified in lt_travel_log into the DB table /dmo/log_travel
+      " Inserts rows specified in lt_travel_log_u into the DB table /dmo/log_travel
       INSERT /dmo/log_travel FROM TABLE @lt_travel_log_u.
 
     ENDIF.

@@ -1,4 +1,5 @@
 projection;
+strict;
 use draft;
 
 define behavior for /DMO/C_TRAVEL_D_D alias Travel
@@ -11,6 +12,12 @@ use etag
   use action acceptTravel;
   use action rejectTravel;
   use action deductDiscount;
+
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Prepare;
+  use action Resume;
 
   use association _Booking { create; with draft; }
 }
@@ -32,4 +39,5 @@ use etag
   use delete;
 
   use association _Travel { with draft; }
+  use association _Booking { with draft; }
 }

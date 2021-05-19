@@ -93,8 +93,8 @@ CLASS lhc_Supplement IMPLEMENTATION.
           APPEND VALUE #( %tky     = CORRESPONDING #( supplement_update-%tky )
                           %cid_ref = supplement_update-%cid_ref
                           %target  = VALUE #( ( %cid          = |UPDATETEXTCID{ tabix }|
-                                                languagecode  = sy-langu
                                                 %is_draft     = suppl_text_tky-%is_draft
+                                                languagecode  = suppl_text_tky-LanguageCode
                                                 description   = supplement_update-SupplementDescription
                                                 %control      = VALUE #( languagecode = if_abap_behv=>mk-on
                                                                          description   = supplement_update-%control-SupplementDescription )

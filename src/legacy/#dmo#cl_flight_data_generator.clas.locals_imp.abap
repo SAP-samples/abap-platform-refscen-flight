@@ -671,7 +671,13 @@ CLASS lcl_carrier_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_data.
+    GET TIME STAMP FIELD DATA(current_timestamp).
     rt_data = VALUE tt_carrier( ##NO_TEXT
+        local_created_by      = 'GENERATOR'
+        local_last_changed_by = 'GENERATOR'
+        local_created_at      = current_timestamp
+        local_last_changed_at = current_timestamp
+        last_changed_at       = current_timestamp
         (   carrier_id = 'AA'  name = 'American Airlines Inc.'                  currency_code = 'USD'  )
         (   carrier_id = 'AC'  name = 'Air Canada'                              currency_code = 'CAD'  )
         (   carrier_id = 'AF'  name = 'Air France'                              currency_code = 'EUR'  )
