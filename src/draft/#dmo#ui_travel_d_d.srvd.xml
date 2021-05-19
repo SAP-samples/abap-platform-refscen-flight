@@ -3,14 +3,16 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <SRVD>
-    
-     <NAME>/DMO/UI_TRAVEL_D_D</NAME>
-     <VERSION>active</VERSION>
-     <DESCRIPTION>Service Definition Travel Draft Scenario (draft projection)</DESCRIPTION>
-     <SOURCE_ORIGIN_DESCRIPTION>ABAP Development Tools</SOURCE_ORIGIN_DESCRIPTION>
-     <SRVD_SOURCE_TYPE>S</SRVD_SOURCE_TYPE>
-     <SRVD_SOURCE_TYPE_DESC>Service Definition</SRVD_SOURCE_TYPE_DESC>
-    
+    <NAME>/DMO/UI_TRAVEL_D_D</NAME>
+    <TYPE>SRVD/SRV</TYPE>
+    <DESCRIPTION>Service Definition Travel Draft Scenario (draft projection)</DESCRIPTION>
+    <LANGUAGE>EN</LANGUAGE>
+    <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+    <SOURCE_URI>./%2Fdmo%2Fui_travel_d_d/source/main</SOURCE_URI>
+    <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
+    <SOURCE_ORIGIN_DESCRIPTION>ABAP Development Tools</SOURCE_ORIGIN_DESCRIPTION>
+    <SRVD_SOURCE_TYPE>S</SRVD_SOURCE_TYPE>
+    <SRVD_SOURCE_TYPE_DESC>Service Definition</SRVD_SOURCE_TYPE_DESC>
    </SRVD>
   </asx:values>
  </asx:abap>

@@ -1,9 +1,14 @@
 CLASS lhc_Supplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS:
-      validateprice         FOR VALIDATE ON SAVE IMPORTING keys     FOR supplement~validateprice,
-      earlynumbering_create FOR NUMBERING        IMPORTING entities FOR CREATE supplement.
+    METHODS validateprice  FOR VALIDATE ON SAVE
+      IMPORTING keys FOR supplement~validateprice.
+
+    METHODS earlynumbering_create FOR NUMBERING
+      IMPORTING entities FOR CREATE supplement.
+
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR supplement RESULT result.
 
 
 
@@ -12,34 +17,40 @@ ENDCLASS.
 CLASS lhc_Supplement IMPLEMENTATION.
 
   METHOD validatePrice.
-    DATA: supplement TYPE STRUCTURE FOR READ RESULT /dmo/i_supplement.
-
     READ ENTITIES OF /dmo/i_supplement IN LOCAL MODE
       ENTITY Supplement
         FIELDS ( Price CurrencyCode )
         WITH CORRESPONDING #( keys )
-        RESULT DATA(result).
+        RESULT DATA(supplements).
 
-    " Raise message for empty Price
-    LOOP AT result INTO supplement WHERE Price IS INITIAL.
-      APPEND VALUE #( %tky = supplement-%tky ) TO failed-supplement.
-      APPEND VALUE #( %tky = supplement-%tky
-                      %msg = NEW /dmo/cx_supplement(
-                                    textid    = /dmo/cx_supplement=>price_required
-                                    severity  = if_abap_behv_message=>severity-error )
-                      %element-Price        = if_abap_behv=>mk-on
-                    ) TO reported-supplement.
-    ENDLOOP.
+    LOOP AT supplements INTO DATA(supplement).
 
-    " Raise message for empty Currency
-    LOOP AT result INTO supplement WHERE CurrencyCode IS INITIAL.
-      APPEND VALUE #( %tky = supplement-%tky ) TO failed-supplement.
-      APPEND VALUE #( %tky = supplement-%tky
-                      %msg = NEW /dmo/cx_supplement(
-                                    textid    = /dmo/cx_supplement=>currency_required
-                                    severity  = if_abap_behv_message=>severity-error )
-                      %element-CurrencyCode = if_abap_behv=>mk-on
-                    ) TO reported-supplement.
+      APPEND VALUE #(  %tky          = supplement-%tky
+                       %state_area   = 'VALIDATE_PRICE' )  TO reported-supplement.
+
+      IF supplement-price IS INITIAL.
+        " Raise message for empty Price
+        APPEND VALUE #( %tky           = supplement-%tky ) TO failed-supplement.
+        APPEND VALUE #( %tky           = supplement-%tky
+                        %state_area    = 'VALIDATE_PRICE'
+                        %msg           = NEW /dmo/cx_supplement(
+                                             textid    = /dmo/cx_supplement=>price_required
+                                             severity  = if_abap_behv_message=>severity-error )
+                        %element-Price = if_abap_behv=>mk-on
+                      ) TO reported-supplement.
+      ENDIF.
+
+      IF supplement-CurrencyCode IS INITIAL.
+        " Raise message for empty Currency
+        APPEND VALUE #( %tky                 = supplement-%tky ) TO failed-supplement.
+        APPEND VALUE #( %tky                 = supplement-%tky
+                        %state_area          = 'VALIDATE_PRICE'
+                        %msg                 = NEW /dmo/cx_supplement(
+                                                      textid    = /dmo/cx_supplement=>currency_required
+                                                      severity  = if_abap_behv_message=>severity-error )
+                        %element-CurrencyCode = if_abap_behv=>mk-on
+                      ) TO reported-supplement.
+      ENDIF.
     ENDLOOP.
   ENDMETHOD.
 
@@ -55,7 +66,9 @@ CLASS lhc_Supplement IMPLEMENTATION.
 
     entities_wo_supplementid = entities.
     DELETE entities_wo_supplementid WHERE SupplementID IS NOT INITIAL.
-    CHECK entities_wo_supplementid IS NOT INITIAL.
+    IF entities_wo_supplementid IS INITIAL.
+      EXIT.
+    ENDIF.
 
 
     LOOP AT entities_wo_supplementid INTO DATA(supplement) GROUP BY supplement-SupplementCategory INTO DATA(SupplementCategory).
@@ -75,12 +88,12 @@ CLASS lhc_Supplement IMPLEMENTATION.
               returncode        = DATA(number_range_return_code)
               returned_quantity = DATA(number_range_returned_quantity)
             ).
-        CATCH cx_number_ranges INTO DATA(lx_number_ranges).
+        CATCH cx_number_ranges INTO DATA(number_range_exception).
           LOOP AT entities_wo_supplid_filtered INTO entity.
             APPEND VALUE #(
                   %cid = entity-%cid
                   %key = entity-%key
-                  %msg = lx_number_ranges
+                  %msg = number_range_exception
               ) TO reported-supplement.
             APPEND VALUE #(
                   %cid        = entity-%cid
@@ -143,5 +156,9 @@ CLASS lhc_Supplement IMPLEMENTATION.
 
   ENDMETHOD.
 
+
+
+  METHOD get_global_authorizations.
+  ENDMETHOD.
 
 ENDCLASS.

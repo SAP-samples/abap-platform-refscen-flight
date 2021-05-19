@@ -27,7 +27,7 @@ Use the abapGit plug-in to install the <em>ABAP Flight Reference Scenario</em> b
 
 As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
-* `/DMO/FLIGHT_REUSE` The reuse package contains a package for the supplement business object `/DMO/FLIGHT_REUSE_SUPPLEMENT`, which is reused in the other development scenarios. 
+* `/DMO/FLIGHT_REUSE` The reuse package contains a package for the supplement business object `/DMO/FLIGHT_REUSE_SUPPLEMENT`, which is reused in the other development scenarios. The reuse package also contains the package `/DMO/FLIGHT_REUSE_CARRIER`, which contains a mulit-inline-edit scenario for maintaining carrier data (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/f713ec52bcb8405ca9262918cffa5d25.html)).   
 * `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/504035c0850f44f787f5b81e35791d10.html)).
 * `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
 * `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/923180ddb98240829d935862025004d6/Cloud/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
@@ -39,9 +39,8 @@ NOTE: The service bindings of the develop scenarios are imported with the warnin
 
 To activate all development objects from the `/DMO/FLIGHT` package: 
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
-2. In the dialog that appears, select all development objects except for all service binding artifacts (`/DMO/UI_SUPPLEMENT_04` `/DMO/UI_FLIGHT_R_V2` , `/DMO/UI_TRAVEL_PROC_M_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_U_V2`, and `/DMO/API_TRAVEL_U_V2` `/DMO/UI_TRAVEL_A_D`, `/DMO/UI_TRAVEL_D_D`) in the transport request (that you created for the demo content installation) and choose `Activate`. 
-3. Service bindings can only be activated once the underlying service definition is activated. To activate the service bindings click the mass-activation icon again and select all service bindings. 
-4. Choose the `Activate` button.
+2. In the dialog that appears, select all development objects except for all service binding artifacts (`/DMO/API_TRAVEL_U_V2`, `/DMO/UI_CARRIERS_S_O4`, `/DMO/UI_FLIGHT_R_V2`, `/DMO/UI_SUPPLEMENT_04`, `/DMO/UI_TRAVEL_A_D_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_D_D_O4`, `/DMO/UI_TRAVEL_PROC_M_O2`, and `/DMO/UI_TRAVEL_U_V2`) in the transport request (that you created for the demo content installation) and choose `Activate`. 
+3. Service bindings can only be activated once the underlying service definition is activated. To activate the service bindings click the mass-activation icon again and select all service bindings and choose `Activate`.
 
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish` or choose `Publish local service endpoint` in the top right corner of the editor.

@@ -1,0 +1,23 @@
+@Metadata.layer: #CORE
+
+@UI: { headerInfo: { typeName: 'Manage Carriers',
+                     typeNamePlural: 'Carrier Singleton', 
+                     title: { type: #STANDARD, value: 'CarrierSingletonID' } } }
+
+annotate entity /DMO/C_CarriersLockSingleton_S
+  with 
+{
+  @UI.facet: [
+
+  {
+    purpose:  #STANDARD,
+    type:     #LINEITEM_REFERENCE,
+    label:    'Carrier Multi Inline Edit',
+    position: 10,
+    targetElement: '_Airline' 
+  }
+  ]
+
+  @UI.lineItem: [{ position: 10 }]
+  CarrierSingletonID;
+}

@@ -1,38 +1,57 @@
-**********************************************************************
-*
-* Handler class for managing bookings
-*
-**********************************************************************
 CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.
-
   PRIVATE SECTION.
 
-    METHODS:
-      update FOR MODIFY
-        IMPORTING entities FOR UPDATE booking,
-      delete FOR MODIFY
-        IMPORTING keys FOR DELETE booking,
-      read FOR READ
-        IMPORTING keys FOR READ booking
-        RESULT    result,
-      rba_travel FOR READ
-        IMPORTING keys_rba FOR READ booking\_travel FULL result_requested
-        RESULT    result LINK association_links,
+    TYPES tt_booking_failed   TYPE TABLE FOR FAILED   /dmo/i_booking_u.
+    TYPES tt_booking_reported TYPE TABLE FOR REPORTED /dmo/i_booking_u.
 
-      cba_booksupplement FOR MODIFY
-        IMPORTING entities FOR CREATE booking\_booksupplement,
-      rba_booksupplement FOR READ
-        IMPORTING keys_rba   FOR READ booking\_booksupplement FULL result_requested
-        RESULT    result LINK association_links.
+    TYPES tt_bookingsupplement_failed   TYPE TABLE FOR FAILED   /dmo/i_bookingsupplement_u.
+    TYPES tt_bookingsupplement_reported TYPE TABLE FOR REPORTED /dmo/i_bookingsupplement_u.
 
+    METHODS update FOR MODIFY
+      IMPORTING entities FOR UPDATE booking.
 
+    METHODS delete FOR MODIFY
+      IMPORTING keys FOR DELETE booking.
 
+    METHODS read FOR READ
+      IMPORTING keys FOR READ booking RESULT result.
 
+    METHODS rba_Booksupplement FOR READ
+      IMPORTING keys_rba FOR READ booking\_Booksupplement FULL result_requested RESULT result LINK association_links.
 
+    METHODS rba_Travel FOR READ
+      IMPORTING keys_rba FOR READ booking\_Travel FULL result_requested RESULT result LINK association_links.
 
+    METHODS cba_Booksupplement FOR MODIFY
+      IMPORTING entities_cba FOR CREATE booking\_Booksupplement.
+
+    METHODS map_messages
+      IMPORTING
+        cid          TYPE string OPTIONAL
+        travel_id    TYPE /dmo/travel_id OPTIONAL
+        booking_id   TYPE /dmo/booking_id OPTIONAL
+        messages     TYPE /dmo/t_message
+      EXPORTING
+        failed_added TYPE abap_bool
+      CHANGING
+        failed       TYPE tt_booking_failed
+        reported     TYPE tt_booking_reported.
+
+    METHODS map_messages_assoc_to_booksupp
+      IMPORTING
+        cid                   TYPE string OPTIONAL
+        travel_id             TYPE /dmo/travel_id OPTIONAL
+        booking_id            TYPE /dmo/booking_id OPTIONAL
+        booking_supplement_id TYPE /dmo/booking_supplement_id OPTIONAL
+        is_dependend          TYPE abap_bool DEFAULT abap_false
+        messages              TYPE /dmo/t_message
+      EXPORTING
+        failed_added          TYPE abap_bool
+      CHANGING
+        failed                TYPE tt_bookingsupplement_failed
+        reported              TYPE tt_bookingsupplement_reported.
 
 ENDCLASS.
-
 
 CLASS lhc_booking IMPLEMENTATION.
 
@@ -42,17 +61,16 @@ CLASS lhc_booking IMPLEMENTATION.
 *
 **********************************************************************
   METHOD update.
-
-    DATA messages TYPE /dmo/t_message.
-    DATA booking  TYPE /dmo/booking.
-    DATA bookingx TYPE /dmo/s_booking_inx.
+    DATA: messages TYPE /dmo/t_message,
+          booking  TYPE /dmo/booking,
+          bookingx TYPE /dmo/s_booking_inx.
 
     LOOP AT entities ASSIGNING FIELD-SYMBOL(<booking>).
 
       booking = CORRESPONDING #( <booking> MAPPING FROM ENTITY ).
 
-      bookingx-booking_id  = <booking>-BookingID.
       bookingx-_intx       = CORRESPONDING #( <booking> MAPPING FROM ENTITY ).
+      bookingx-booking_id  = <booking>-BookingID.
       bookingx-action_code = /dmo/if_flight_legacy=>action_code-update.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
@@ -64,8 +82,7 @@ CLASS lhc_booking IMPLEMENTATION.
         IMPORTING
           et_messages = messages.
 
-
-      /dmo/cl_travel_auxiliary=>handle_booking_messages(
+      map_messages(
         EXPORTING
           cid        = <booking>-%cid_ref
           travel_id  = <booking>-travelid
@@ -74,30 +91,8 @@ CLASS lhc_booking IMPLEMENTATION.
         CHANGING
           failed   = failed-booking
           reported = reported-booking ).
-
     ENDLOOP.
-
   ENDMETHOD.
-
-***********************************************************************
-** Helper method:
-** Indicates the booking fields that have been changed by the client
-**
-***********************************************************************
-*  METHOD _fill_booking_inx.
-*
-*    CLEAR rs_booking_inx.
-*    rs_booking_inx-booking_id    = is_booking_update-bookingid.
-*    rs_booking_inx-action_code   = /dmo/if_flight_legacy=>action_code-update.
-*
-*    rs_booking_inx-booking_date  = xsdbool( is_booking_update-%control-bookingdate  = if_abap_behv=>mk-on ).
-*    rs_booking_inx-customer_id   = xsdbool( is_booking_update-%control-customerid   = if_abap_behv=>mk-on ).
-*    rs_booking_inx-carrier_id    = xsdbool( is_booking_update-%control-airlineid    = if_abap_behv=>mk-on ).
-*    rs_booking_inx-connection_id = xsdbool( is_booking_update-%control-connectionid = if_abap_behv=>mk-on ).
-*    rs_booking_inx-flight_date   = xsdbool( is_booking_update-%control-flightdate   = if_abap_behv=>mk-on ).
-*    rs_booking_inx-flight_price  = xsdbool( is_booking_update-%control-flightprice  = if_abap_behv=>mk-on ).
-*    rs_booking_inx-currency_code = xsdbool( is_booking_update-%control-currencycode = if_abap_behv=>mk-on ).
-*  ENDMETHOD.
 
 
 **********************************************************************
@@ -106,47 +101,39 @@ CLASS lhc_booking IMPLEMENTATION.
 *
 **********************************************************************
   METHOD delete.
-
     DATA messages TYPE /dmo/t_message.
 
-    LOOP AT keys INTO DATA(booking).
+    LOOP AT keys ASSIGNING FIELD-SYMBOL(<booking>).
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_UPDATE'
         EXPORTING
-          is_travel   = VALUE /dmo/s_travel_in( travel_id = booking-travelid )
-          is_travelx  = VALUE /dmo/s_travel_inx( travel_id = booking-travelid )
-          it_booking  = VALUE /dmo/t_booking_in( ( booking_id = booking-bookingid ) )
-          it_bookingx = VALUE /dmo/t_booking_inx( ( booking_id  = booking-bookingid
+          is_travel   = VALUE /dmo/s_travel_in( travel_id = <booking>-travelid )
+          is_travelx  = VALUE /dmo/s_travel_inx( travel_id = <booking>-travelid )
+          it_booking  = VALUE /dmo/t_booking_in( ( booking_id = <booking>-bookingid ) )
+          it_bookingx = VALUE /dmo/t_booking_inx( ( booking_id  = <booking>-bookingid
                                                     action_code = /dmo/if_flight_legacy=>action_code-delete ) )
         IMPORTING
           et_messages = messages.
 
-      IF messages IS NOT INITIAL.
-
-        /dmo/cl_travel_auxiliary=>handle_booking_messages(
-         EXPORTING
-           cid        = booking-%cid_ref
-           travel_id  = booking-travelid
-           booking_id = booking-bookingid
-           messages   = messages
-         CHANGING
-           failed   = failed-booking
-           reported = reported-booking ).
-
-      ENDIF.
-
+      map_messages(
+        EXPORTING
+          cid        = <booking>-%cid_ref
+          travel_id  = <booking>-travelid
+          booking_id = <booking>-bookingid
+          messages   = messages
+        CHANGING
+          failed   = failed-booking
+          reported = reported-booking ).
     ENDLOOP.
-
   ENDMETHOD.
+
 
 **********************************************************************
 *
 * Read booking data from buffer
 *
 **********************************************************************
-
   METHOD read.
-
     DATA: travel_out   TYPE /dmo/travel,
           bookings_out TYPE /dmo/t_booking,
           messages     TYPE /dmo/t_message.
@@ -163,70 +150,176 @@ CLASS lhc_booking IMPLEMENTATION.
           et_booking   = bookings_out
           et_messages  = messages.
 
-      IF messages IS INITIAL.
+      map_messages(
+        EXPORTING
+          travel_id  = <booking_by_travel>-travelid
+          booking_id = <booking_by_travel>-bookingid
+          messages   = messages
+        IMPORTING
+          failed_added = DATA(failed_added)
+        CHANGING
+          failed   = failed-booking
+          reported = reported-booking ).
+
+
+      IF failed_added = abap_false.
         "For each travelID find the requested bookings
         LOOP AT GROUP <booking_by_travel> ASSIGNING FIELD-SYMBOL(<booking>)
-                                          GROUP BY <booking>-%key.
+                                          GROUP BY <booking>-%tky.
 
           READ TABLE bookings_out INTO DATA(booking_out) WITH KEY travel_id  = <booking>-%key-TravelID
                                                                   booking_id = <booking>-%key-BookingID .
           "if read was successful
           IF sy-subrc = 0.
-
-            "fill result parameter with flagged fields
-            INSERT
-              VALUE #( travelid      =   booking_out-travel_id
-                       bookingid     =   booking_out-booking_id
-                       bookingdate   =   COND #( WHEN <booking>-%control-BookingDate      = cl_abap_behv=>flag_changed THEN booking_out-booking_date   )
-                       customerid    =   COND #( WHEN <booking>-%control-CustomerID       = cl_abap_behv=>flag_changed THEN booking_out-customer_id    )
-                       airlineid     =   COND #( WHEN <booking>-%control-AirlineID        = cl_abap_behv=>flag_changed THEN booking_out-carrier_id     )
-                       connectionid  =   COND #( WHEN <booking>-%control-ConnectionID     = cl_abap_behv=>flag_changed THEN booking_out-connection_id  )
-                       flightdate    =   COND #( WHEN <booking>-%control-FlightDate       = cl_abap_behv=>flag_changed THEN booking_out-flight_date    )
-                       flightprice   =   COND #( WHEN <booking>-%control-FlightPrice      = cl_abap_behv=>flag_changed THEN booking_out-flight_price   )
-                       currencycode  =   COND #( WHEN <booking>-%control-CurrencyCode     = cl_abap_behv=>flag_changed THEN booking_out-currency_code  )
-*                       lastchangedat =   COND #( WHEN <booking>-%control-LastChangedAt    = cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat   )
-                     ) INTO TABLE result.
+            INSERT CORRESPONDING #( booking_out MAPPING TO ENTITY ) INTO TABLE result.
           ELSE.
             "BookingID not found
-            INSERT
-              VALUE #( travelid    = <booking>-TravelID
-                       bookingid   = <booking>-BookingID
-                       %fail-cause = if_abap_behv=>cause-not_found )
+            INSERT VALUE #( travelid    = <booking>-TravelID
+                            bookingid   = <booking>-BookingID
+                            %fail-cause = if_abap_behv=>cause-not_found )
               INTO TABLE failed-booking.
           ENDIF.
         ENDLOOP.
-      ELSE.
-        "TravelID not found or other fail cause
-        LOOP AT GROUP <booking_by_travel> ASSIGNING <booking>.
-          failed-booking = VALUE #(  BASE failed-booking
-                                     FOR msg IN messages ( %key-TravelID    = <booking>-TravelID
-                                                           %key-BookingID   = <booking>-BookingID
-                                                           %fail-cause      = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
-                                                                                      THEN if_abap_behv=>cause-not_found
-                                                                                      ELSE if_abap_behv=>cause-unspecific ) ) ).
-        ENDLOOP.
+      ENDIF.
 
+    ENDLOOP.
+  ENDMETHOD.
+
+
+***********************************************************************
+*
+* Read associated booking supplements
+*
+***********************************************************************
+  METHOD rba_Booksupplement.
+    DATA: bookingsupplements_out TYPE /dmo/t_booking_supplement,
+          messages               TYPE /dmo/t_message.
+
+    "Only one function call for each requested travelid
+    LOOP AT keys_rba ASSIGNING FIELD-SYMBOL(<bookingsupplement_by_travel>)
+                               GROUP BY <bookingsupplement_by_travel>-travelid .
+
+      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
+        EXPORTING
+          iv_travel_id          = <bookingsupplement_by_travel>-travelid
+        IMPORTING
+          et_booking_supplement = bookingsupplements_out
+          et_messages           = messages.
+
+      LOOP AT keys_rba ASSIGNING FIELD-SYMBOL(<bookingsuppl_by_travel_book>)
+                                 USING KEY entity
+                                 WHERE TravelID = <bookingsupplement_by_travel>-TravelID.
+
+        map_messages(
+          EXPORTING
+            travel_id  = <bookingsuppl_by_travel_book>-travelid
+            booking_id = <bookingsuppl_by_travel_book>-bookingid
+            messages   = messages
+          IMPORTING
+            failed_added = DATA(failed_added)
+          CHANGING
+            failed   = failed-booking
+            reported = reported-booking ).
+
+        IF failed_added = abap_false.
+          LOOP AT bookingsupplements_out ASSIGNING FIELD-SYMBOL(<bookingsupplement>)
+                                                   WHERE travel_id  = <bookingsuppl_by_travel_book>-TravelID
+                                                     AND booking_id = <bookingsuppl_by_travel_book>-BookingID.
+
+            IF result_requested = abap_true.
+              INSERT CORRESPONDING #( <bookingsupplement> MAPPING TO ENTITY ) INTO TABLE result.
+            ENDIF.
+
+            INSERT VALUE #(
+                source-travelid            = <bookingsupplement>-travel_id
+                source-bookingid           = <bookingsupplement>-booking_id
+                target-travelid            = <bookingsupplement>-travel_id
+                target-bookingid           = <bookingsupplement>-booking_id
+                target-bookingsupplementid = <bookingsupplement>-booking_supplement_id
+              ) INTO TABLE association_links.
+          ENDLOOP.
+        ENDIF.
+      ENDLOOP.
+    ENDLOOP.
+
+    SORT association_links BY target ASCENDING.
+    DELETE ADJACENT DUPLICATES FROM association_links COMPARING ALL FIELDS.
+
+    SORT result BY %tky ASCENDING.
+    DELETE ADJACENT DUPLICATES FROM result COMPARING ALL FIELDS.
+  ENDMETHOD.
+
+
+***********************************************************************
+*
+* Read associated travels
+*
+***********************************************************************
+  METHOD rba_Travel.
+    DATA: travel   TYPE /dmo/travel,
+          messages TYPE /dmo/t_message.
+
+    "Only one function call for each requested travelid
+    LOOP AT keys_rba ASSIGNING FIELD-SYMBOL(<booking_by_travel>)
+                               GROUP BY <booking_by_travel>-travelid .
+
+      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
+        EXPORTING
+          iv_travel_id = <booking_by_travel>-travelid
+        IMPORTING
+          es_travel    = travel
+          et_messages  = messages.
+
+      map_messages(
+        EXPORTING
+          travel_id  = <booking_by_travel>-travelid
+          booking_id = <booking_by_travel>-bookingid
+          messages   = messages
+        IMPORTING
+          failed_added = DATA(failed_added)
+        CHANGING
+          failed   = failed-booking
+          reported = reported-booking ).
+
+
+      IF failed_added = abap_false.
+        LOOP AT keys_rba ASSIGNING FIELD-SYMBOL(<travel>) USING KEY entity WHERE TravelID = <booking_by_travel>-TravelID.
+          INSERT VALUE #(
+              source-%tky     = <travel>-%tky
+              target-travelid = <travel>-TravelID
+            ) INTO TABLE association_links.
+
+          IF result_requested = abap_true.
+            APPEND CORRESPONDING #( travel MAPPING TO ENTITY ) TO result.
+          ENDIF.
+        ENDLOOP.
       ENDIF.
 
     ENDLOOP.
 
+    SORT association_links BY source ASCENDING.
+    DELETE ADJACENT DUPLICATES FROM association_links COMPARING ALL FIELDS.
+
+    SORT result BY %tky ASCENDING.
+    DELETE ADJACENT DUPLICATES FROM result COMPARING ALL FIELDS.
   ENDMETHOD.
+
 
 ***********************************************************************
 *
 * Create associated booking supplements
 *
 ***********************************************************************
-  METHOD cba_booksupplement.
-
-    DATA messages               TYPE /dmo/t_message.
-    DATA booksupplements_old     TYPE /dmo/t_booking_supplement.
-    DATA booksupplement         TYPE /dmo/book_suppl.
-    DATA last_bookingsupplement_id TYPE /dmo/booking_supplement_id.
+  METHOD cba_Booksupplement.
+    DATA: message                   TYPE LINE OF /dmo/t_message,
+          messages                  TYPE /dmo/t_message,
+          booksupplements_old       TYPE /dmo/t_booking_supplement,
+          booksupplement            TYPE /dmo/book_suppl,
+          last_bookingsupplement_id TYPE /dmo/booking_supplement_id.
 
     " Loop at parent - booking
-    LOOP AT entities ASSIGNING FIELD-SYMBOL(<bookingsupplement>).
-      DATA(parent_key) = <bookingsupplement>-%key.
+    LOOP AT entities_cba ASSIGNING FIELD-SYMBOL(<booking>).
+      DATA(parent_key) = <booking>-%tky.
 
       " Retrieve booking supplements related to the imported travel ID
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
@@ -236,7 +329,34 @@ CLASS lhc_booking IMPLEMENTATION.
           et_booking_supplement = booksupplements_old
           et_messages           = messages.
 
-      IF messages IS INITIAL.
+      map_messages(
+        EXPORTING
+          travel_id  = <booking>-travelid
+          booking_id = <booking>-bookingid
+          messages   = messages
+        IMPORTING
+          failed_added = DATA(failed_added)
+        CHANGING
+          failed   = failed-booking
+          reported = reported-booking ).
+
+      IF failed_added = abap_false.
+        LOOP AT <booking>-%target ASSIGNING FIELD-SYMBOL(<bookingsupplement>).
+          map_messages_assoc_to_booksupp(
+            EXPORTING
+              cid                   = <bookingsupplement>-%cid
+              travel_id             = <booking>-TravelID
+              booking_id            = <booking>-BookingID
+              booking_supplement_id = <bookingsupplement>-BookingSupplementID
+              is_dependend          = abap_true
+              messages              = messages
+            CHANGING
+              failed                = failed-bookingsupplement
+              reported              = reported-bookingsupplement
+          ).
+        ENDLOOP.
+
+      ELSE.
 
         " Look up for maximum booking supplement ID for a given travel/booking
         " lt_booksupplement_old provides sorted values, therefore the last value is maximum value
@@ -247,13 +367,13 @@ CLASS lhc_booking IMPLEMENTATION.
                                                     AND booking_id = parent_key-bookingid )
                                               NEXT res = old-booking_supplement_id ).
 
-        LOOP AT <bookingsupplement>-%target INTO DATA(supplement).
+        LOOP AT <booking>-%target ASSIGNING FIELD-SYMBOL(<supplement>).
 
           " Increase value of booking supplement ID with 1
           last_bookingsupplement_id += 1.
 
           " Do mapping between the element names of the CDS view and the original table fields
-          booksupplement = CORRESPONDING #( supplement MAPPING FROM ENTITY USING CONTROL ).
+          booksupplement = CORRESPONDING #( <supplement> MAPPING FROM ENTITY USING CONTROL ).
 
           " Assign the key elements
           booksupplement-travel_id = parent_key-TravelID.
@@ -267,185 +387,110 @@ CLASS lhc_booking IMPLEMENTATION.
               is_travelx             = VALUE /dmo/s_travel_inx( travel_id = parent_key-travelid )
               it_booking_supplement  = VALUE /dmo/t_booking_supplement_in( ( CORRESPONDING #( booksupplement ) ) )
               it_booking_supplementx = VALUE /dmo/t_booking_supplement_inx( ( VALUE #(
-                                                                                                             booking_id = booksupplement-booking_id
-                                                                                                             booking_supplement_id = booksupplement-booking_supplement_id
-                                                                                                             action_code = /dmo/if_flight_legacy=>action_code-create )
-                                                                                                 ) )
+                                                                                 booking_id = booksupplement-booking_id
+                                                                                 booking_supplement_id = booksupplement-booking_supplement_id
+                                                                                 action_code = /dmo/if_flight_legacy=>action_code-create )
+                                                                               ) )
             IMPORTING
               et_messages            = messages.
 
-          IF messages IS INITIAL.
-            INSERT VALUE #( %cid      = supplement-%cid
+
+          map_messages_assoc_to_booksupp(
+            EXPORTING
+              cid                   = <supplement>-%cid
+              travel_id             = booksupplement-travel_id
+              booking_id            = booksupplement-booking_id
+              booking_supplement_id = booksupplement-booking_supplement_id
+              is_dependend          = abap_true
+              messages              = messages
+            IMPORTING
+              failed_added          = failed_added
+            CHANGING
+              failed                = failed-bookingsupplement
+              reported              = reported-bookingsupplement
+          ).
+
+          IF failed_added = abap_false.
+            INSERT VALUE #( %cid      = <supplement>-%cid
                             travelid  = parent_key-travelid
                             bookingid = parent_key-bookingid
                             bookingsupplementid = booksupplement-booking_supplement_id )
                    INTO TABLE mapped-bookingsupplement.
-          ELSE.
-
-            " Issue a message in case of error ('E') or abort ('A')
-            LOOP AT messages INTO DATA(message) WHERE msgty = 'E' OR msgty = 'A'.
-              INSERT VALUE #( %cid      = supplement-%cid
-                              travelid  = supplement-TravelID
-                              bookingid = supplement-BookingID )
-                     INTO TABLE failed-bookingsupplement.
-
-              INSERT VALUE #( %cid      = supplement-%cid
-                              TravelID  = supplement-TravelID
-                              BookingID = supplement-BookingID
-                              %msg      = new_message(
-                                            id       = message-msgid
-                                            number   = message-msgno
-                                            severity = if_abap_behv_message=>severity-error
-                                            v1       = message-msgv1
-                                            v2       = message-msgv2
-                                            v3       = message-msgv3
-                                            v4       = message-msgv4 ) )
-                    INTO TABLE reported-bookingsupplement.
-
-
-            ENDLOOP.
-
           ENDIF.
 
+
         ENDLOOP.
-
-      ELSE.
-        /dmo/cl_travel_auxiliary=>handle_booking_messages(
-           EXPORTING
-             cid       = <bookingsupplement>-%cid_ref
-             travel_id = parent_key-TravelID
-             booking_id = parent_key-BookingID
-             messages  = messages
-           CHANGING
-             failed   = failed-booking
-             reported = reported-booking ).
-
       ENDIF.
-
     ENDLOOP.
-
-  ENDMETHOD.
-**********************************************************************
-*
-* Read travel  by association
-*
-**********************************************************************
-  METHOD rba_travel.
-    DATA: travel_out     TYPE /dmo/travel,
-          travel         LIKE LINE OF result,
-          messages       TYPE /dmo/t_message.
-
-    "Only one function call for each requested travelid
-    LOOP AT keys_rba ASSIGNING FIELD-SYMBOL(<travel>)
-                                 GROUP BY <travel>-TravelID.
-
-      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
-        EXPORTING
-          iv_travel_id = <travel>-%key-TravelID
-        IMPORTING
-          es_travel    = travel_out
-          et_messages  = messages.
-
-      IF messages IS INITIAL.
-
-        LOOP AT GROUP <travel> ASSIGNING FIELD-SYMBOL(<booking>).
-          "fill link table with key fields
-          INSERT VALUE #( source-%key = <booking>-%key
-                          target-%key = travel_out-travel_id )
-           INTO TABLE association_links.
-
-          IF result_requested = abap_true.
-            "fill result parameter with flagged fields
-            travel = CORRESPONDING #(  travel_out MAPPING TO ENTITY ).
-            INSERT travel INTO TABLE result.
-          ENDIF.
-        ENDLOOP.
-
-        DELETE ADJACENT DUPLICATES FROM association_links COMPARING ALL FIELDS.
-        DELETE ADJACENT DUPLICATES FROM result COMPARING ALL FIELDS.
-
-      ELSE. "fill failed table in case of error
-        failed-booking = VALUE #(  BASE failed-booking
-                              FOR msg IN messages ( %key-TravelID    = <travel>-%key-TravelID
-                                                    %key-BookingID   = <travel>-%key-BookingID
-                                                    %fail-cause      = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
-                                                                               THEN if_abap_behv=>cause-not_found
-                                                                               ELSE if_abap_behv=>cause-unspecific ) ) ).
-      ENDIF.
-
-    ENDLOOP.
-
-  ENDMETHOD.
-
-**********************************************************************
-*
-* Read booking supplement by association
-*
-**********************************************************************
-  METHOD rba_booksupplement.
-    DATA: ls_travel_out    TYPE /dmo/travel,
-          lt_booksuppl_out TYPE /dmo/t_booking_supplement,
-          lt_message       TYPE /dmo/t_message.
-
-    "Only one function call for each travelid
-    LOOP AT keys_rba ASSIGNING FIELD-SYMBOL(<fs_travel>)
-                       GROUP BY <fs_travel>-TravelID.
-
-      CALL FUNCTION '/DMO/FLIGHT_TRAVEL_READ'
-        EXPORTING
-          iv_travel_id          = <fs_travel>-travelid
-        IMPORTING
-          es_travel             = ls_travel_out
-          et_booking_supplement = lt_booksuppl_out
-          et_messages           = lt_message.
-
-      IF lt_message IS INITIAL.
-        "Get BookingSupplements for each travel
-        LOOP AT GROUP <fs_travel> ASSIGNING FIELD-SYMBOL(<fs_booking>) GROUP BY <fs_booking>-%key.
-          LOOP AT lt_booksuppl_out ASSIGNING FIELD-SYMBOL(<fs_booksuppl>) WHERE  travel_id  = <fs_booking>-%key-TravelID
-                                                                          AND    booking_id = <fs_booking>-%key-BookingID .
-            "Fill link table with key fields
-            INSERT
-                 VALUE #( source-%key = VALUE #( TravelID            = <fs_booking>-%key-TravelID
-                                                 BookingID           = <fs_booking>-%key-BookingID )
-                          target-%key = VALUE #( TravelID            = <fs_booksuppl>-travel_id
-                                                 BookingID           = <fs_booksuppl>-booking_id
-                                                 BookingSupplementID = <fs_booksuppl>-booking_supplement_id  ) )
-                 INTO TABLE association_links.
-
-            "fill result parameter with flagged fields
-            IF result_requested = abap_true.
-              INSERT
-                 VALUE #( travelid            = SWITCH #( <fs_booking>-%control-TravelID            WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-travel_id )
-                          bookingid           = SWITCH #( <fs_booking>-%control-BookingID           WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-booking_id )
-                          bookingsupplementid = SWITCH #( <fs_booking>-%control-BookingSupplementID WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-booking_supplement_id )
-                          supplementid        = SWITCH #( <fs_booking>-%control-SupplementID        WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-supplement_id )
-                          price               = SWITCH #( <fs_booking>-%control-Price               WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-price )
-                          currencycode        = SWITCH #( <fs_booking>-%control-CurrencyCode        WHEN cl_abap_behv=>flag_changed THEN <fs_booksuppl>-currency_code ) )
-*                          lastchangedat       = SWITCH #( <fs_booking>-%control-LastChangedAt       WHEN cl_abap_behv=>flag_changed THEN ls_travel_out-lastchangedat ) )
-                 INTO TABLE result.
-            ENDIF.
-          ENDLOOP.
-        ENDLOOP.
-
-      ELSE.
-        "Fill failed table in case of error
-        LOOP AT GROUP <fs_travel> ASSIGNING <fs_booking>.
-          failed-booking = VALUE #(  BASE failed-booking
-                                FOR msg IN lt_message ( %key-TravelID    = <fs_booking>-%key-TravelID
-                                                        %key-BookingID   = <fs_booking>-%key-BookingID
-                                                        %fail-cause      = COND #( WHEN msg-msgty = 'E' AND ( msg-msgno = '016' OR msg-msgno = '009' )
-                                                                                   THEN if_abap_behv=>cause-not_found
-                                                                                   ELSE if_abap_behv=>cause-unspecific ) ) ).
-
-        ENDLOOP.
-
-      ENDIF.
-
-    ENDLOOP.
-
   ENDMETHOD.
 
 
+***********************************************************************
+*
+* Map messages
+*
+***********************************************************************
+  METHOD map_messages.
+    failed_added = abap_false.
+    LOOP AT messages INTO DATA(message).
+      IF message-msgty = 'E' OR message-msgty = 'A'.
+        APPEND VALUE #( %cid        = cid
+                        travelid    = travel_id
+                        bookingid   = booking_id
+                        %fail-cause = /dmo/cl_travel_auxiliary=>get_cause_from_message(
+                                        msgid = message-msgid
+                                        msgno = message-msgno
+                                      ) )
+            TO failed.
+        failed_added = abap_true.
+      ENDIF.
+
+      APPEND VALUE #( %msg = new_message(
+                                id       = message-msgid
+                                number   = message-msgno
+                                severity = if_abap_behv_message=>severity-error
+                                v1       = message-msgv1
+                                v2       = message-msgv2
+                                v3       = message-msgv3
+                                v4       = message-msgv4 )
+                      %cid          = cid
+                      TravelID      = travel_id
+                      BookingID     = booking_id )
+        TO reported.
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD map_messages_assoc_to_booksupp.
+    failed_added = abap_false.
+    LOOP AT messages INTO DATA(message).
+      IF message-msgty = 'E' OR message-msgty = 'A'.
+        APPEND VALUE #( %cid                = cid
+                        travelid            = travel_id
+                        bookingid           = booking_id
+                        bookingsupplementid = booking_supplement_id
+                        %fail-cause         = /dmo/cl_travel_auxiliary=>get_cause_from_message(
+                                                msgid = message-msgid
+                                                msgno = message-msgno
+                                                is_dependend = is_dependend
+                                              ) )
+            TO failed.
+        failed_added = abap_true.
+      ENDIF.
+
+      APPEND VALUE #( %msg                = new_message(
+                                               id       = message-msgid
+                                               number   = message-msgno
+                                               severity = if_abap_behv_message=>severity-error
+                                               v1       = message-msgv1
+                                               v2       = message-msgv2
+                                               v3       = message-msgv3
+                                               v4       = message-msgv4 )
+                      %cid                = cid
+                      TravelID            = travel_id
+                      BookingID           = booking_id
+                      bookingsupplementid = booking_supplement_id )
+        TO reported.
+    ENDLOOP.
+  ENDMETHOD.
 
 ENDCLASS.

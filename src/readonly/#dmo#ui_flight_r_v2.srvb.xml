@@ -5,9 +5,23 @@
    <SRVB>
     <METADATA>
      <NAME>/DMO/UI_FLIGHT_R_V2</NAME>
-     <VERSION>active</VERSION>
+     <TYPE>SRVB/SVB</TYPE>
      <DESCRIPTION>Service Binding for Managing Flights</DESCRIPTION>
      <LANGUAGE>EN</LANGUAGE>
+     <LINKS>
+      <item>
+       <HREF>/sap/bc/adt/businessservices/odatav2/%2FDMO%2FUI_FLIGHT_R_V2</HREF>
+       <REL>http://www.sap.com/categories/odatav2</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.odatav2.v2+xml</TYPE>
+       <TITLE>ODATAV2</TITLE>
+      </item>
+      <item>
+       <HREF>/sap/bc/adt/businessservices/testclass</HREF>
+       <REL>http://www.sap.com/categories/testclass</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.testclass.v1+xml</TYPE>
+       <TITLE>TESTCLASS</TITLE>
+      </item>
+     </LINKS>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     </METADATA>
     <CONTENT>
@@ -32,6 +46,7 @@
       </item>
      </SERVICES>
     </CONTENT>
+    <BINDING_CREATED>true</BINDING_CREATED>
    </SRVB>
   </asx:values>
  </asx:abap>

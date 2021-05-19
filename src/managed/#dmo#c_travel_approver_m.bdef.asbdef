@@ -1,4 +1,5 @@
 projection;
+strict;
 
 define behavior for /DMO/C_Travel_Approver_M alias Approver
 use etag

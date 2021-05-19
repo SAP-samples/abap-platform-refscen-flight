@@ -1,0 +1,24 @@
+@Metadata.layer: #CORE
+
+@UI: { headerInfo: { typeName:       'Carrier',
+                     typeNamePlural: 'Carriers',
+                     title:          { type: #STANDARD,
+                                       label: 'Airline',
+                                       value: 'AirlineID' } } }
+annotate entity /DMO/C_Carrier_S
+  with 
+{
+  @UI.facet: [{ type: #IDENTIFICATION_REFERENCE }]
+
+  @UI.lineItem: [{ position: 10 }]
+  @UI.identification: [{ position: 10 }]
+  AirlineID;
+
+  @UI.lineItem: [{ position: 20 }]
+  @UI.identification: [{ position: 20 }]
+  Name;
+
+  @UI.lineItem: [{ position: 30 }]
+  @UI.identification: [{ position: 30 }]
+  CurrencyCode;
+}

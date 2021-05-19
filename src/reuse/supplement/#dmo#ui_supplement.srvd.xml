@@ -7,47 +7,12 @@
     <TYPE>SRVD/SRV</TYPE>
     <DESCRIPTION>Service Definition Supplement BO</DESCRIPTION>
     <LANGUAGE>EN</LANGUAGE>
-    <LINKS>
-     <item>
-      <COMMON_ATTRIBUTES>
-       <UNDEFINED_ATTRIBUTES>
-        <item>
-         <NAME>etag</NAME>
-         <TEXT>19710401000000001text/plain_60UkZ44gTrsFkuzJrNIZ9kNJQHc=</TEXT>
-        </item>
-       </UNDEFINED_ATTRIBUTES>
-      </COMMON_ATTRIBUTES>
-      <HREF>./%2Fdmo%2Fui_supplement/source/main</HREF>
-      <REL>http://www.sap.com/adt/relations/source</REL>
-      <TYPE>text/plain</TYPE>
-      <TITLE>Source Content</TITLE>
-     </item>
-     <item>
-      <COMMON_ATTRIBUTES>
-       <UNDEFINED_ATTRIBUTES>
-        <item>
-         <NAME>etag</NAME>
-        </item>
-       </UNDEFINED_ATTRIBUTES>
-      </COMMON_ATTRIBUTES>
-      <HREF>./%2Fdmo%2Fui_supplement/source/main</HREF>
-      <REL>http://www.sap.com/adt/relations/source</REL>
-      <TYPE>text/html</TYPE>
-      <TITLE>Source Content (HTML)</TITLE>
-     </item>
-     <item>
-      <HREF>./%2Fdmo%2Fui_supplement/source/main/versions</HREF>
-      <REL>http://www.sap.com/adt/relations/versions</REL>
-      <TITLE>Historic versions</TITLE>
-     </item>
-    </LINKS>
     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     <SOURCE_URI>./%2Fdmo%2Fui_supplement/source/main</SOURCE_URI>
     <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
     <SOURCE_ORIGIN_DESCRIPTION>ABAP Development Tools</SOURCE_ORIGIN_DESCRIPTION>
     <SRVD_SOURCE_TYPE>S</SRVD_SOURCE_TYPE>
     <SRVD_SOURCE_TYPE_DESC>Service Definition</SRVD_SOURCE_TYPE_DESC>
-    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </SRVD>
   </asx:values>
  </asx:abap>

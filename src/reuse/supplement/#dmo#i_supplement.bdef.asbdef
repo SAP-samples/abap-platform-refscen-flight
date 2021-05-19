@@ -1,4 +1,5 @@
 managed implementation in class /dmo/bp_i_supplement unique;
+strict;
 with draft;
 
 define behavior for /DMO/I_Supplement alias Supplement
@@ -8,6 +9,7 @@ draft table /dmo/suppl_d
 lock master
 total etag LastChangedAt
 etag master LocalLastChangedAt
+authorization master ( global )
 {
   create;
   update;
@@ -17,9 +19,16 @@ etag master LocalLastChangedAt
   field ( mandatory: create, readonly : update ) SupplementCategory;
   field ( mandatory ) Price, CurrencyCode;
 
+  draft action resume;
   draft action Edit;
+  draft action Activate;
+  draft action Discard;
+
 
   validation validatePrice on save { create; update; }
+
+  draft determine action Prepare
+  { validation validatePrice; }
 
   association _SupplementText { create; with draft; }
 
@@ -41,7 +50,11 @@ persistent table /dmo/suppl_text
 draft table /dmo/suppl_txt_d
 lock dependent by _Supplement
 etag master LocalLastChangedAt
+authorization dependent by _Supplement
 {
+
+  association _Supplement { with draft; }
+
   update;
   delete;
 
