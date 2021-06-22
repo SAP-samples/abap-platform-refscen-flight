@@ -21,7 +21,8 @@ CLASS /dmo/cl_data_generator_managed IMPLEMENTATION.
 
     " Travels
     DATA lt_travel TYPE SORTED TABLE OF /dmo/travel WITH UNIQUE KEY travel_id.
-    SELECT * FROM /dmo/travel INTO TABLE @lt_travel.    "#EC CI_NOWHERE
+    SELECT * FROM /dmo/travel   "#EC CI_ALL_FIELDS_NEEDED
+      INTO TABLE @lt_travel.    "#EC CI_NOWHERE
 
     DATA lt_travel_m TYPE STANDARD TABLE OF /dmo/travel_m.
     lt_travel_m = CORRESPONDING #( lt_travel MAPPING overall_status = status
@@ -47,11 +48,11 @@ CLASS /dmo/cl_data_generator_managed IMPLEMENTATION.
       IF <travel>-travel_id > max_travel_id.  max_travel_id = <travel>-travel_id.  ENDIF.
     ENDLOOP.
 
-    out->write( ' --> /DMO/TRAVEL_M' ).
+    out->write( ' --> /DMO/TRAVEL_M' ) ##NO_TEXT.
     DELETE FROM /dmo/travel_m.                          "#EC CI_NOWHERE
     INSERT /dmo/travel_m FROM TABLE @lt_travel_m.
 
-    out->write( '--> Set up Number Range Interval.' ).
+    out->write( ' --> Set up Number Range Interval' ) ##NO_TEXT.
     CONSTANTS:
       cv_numberrange_interval TYPE cl_numberrange_runtime=>nr_interval VALUE '01',
       cv_numberrange_object   TYPE cl_numberrange_runtime=>nr_object   VALUE '/DMO/TRV_M' ##NO_TEXT,
@@ -68,7 +69,8 @@ CLASS /dmo/cl_data_generator_managed IMPLEMENTATION.
 
 
     " bookings
-    SELECT * FROM /dmo/booking INTO TABLE @DATA(lt_booking). "#EC CI_NOWHERE
+    SELECT * FROM /dmo/booking      "#EC CI_ALL_FIELDS_NEEDED
+      INTO TABLE @DATA(lt_booking). "#EC CI_NOWHERE
     DATA lt_booking_m TYPE STANDARD TABLE OF /dmo/booking_m.
     lt_booking_m = CORRESPONDING #( lt_booking ).
     " copy status and last_changed_at from travels
@@ -83,7 +85,7 @@ CLASS /dmo/cl_data_generator_managed IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-    out->write( ' --> /DMO/BOOKING_M' ).
+    out->write( ' --> /DMO/BOOKING_M' ) ##NO_TEXT.
     DELETE FROM /dmo/booking_m.                         "#EC CI_NOWHERE
     INSERT /dmo/booking_m FROM TABLE @lt_booking_m.
 
@@ -98,7 +100,7 @@ CLASS /dmo/cl_data_generator_managed IMPLEMENTATION.
                                                   MAPPING last_changed_at = lastchangedat
                                                           EXCEPT * ).
 
-    out->write( ' --> /DMO/BOOKSUPPL_M' ).
+    out->write( ' --> /DMO/BOOKSUPPL_M' ) ##NO_TEXT.
     DELETE FROM /dmo/booksuppl_m.                       "#EC CI_NOWHERE
     INSERT /dmo/booksuppl_m FROM TABLE @lt_booksuppl_m.
 

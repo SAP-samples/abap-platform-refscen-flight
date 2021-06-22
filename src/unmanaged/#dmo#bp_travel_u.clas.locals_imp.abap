@@ -384,7 +384,7 @@ CLASS lhc_travel IMPLEMENTATION.
             reported         = reported-travel
         ).
 
-      IF failed_added = abap_false.
+      IF failed_added = abap_true.
         LOOP AT <travel>-%target ASSIGNING FIELD-SYMBOL(<booking>).
           map_messages_assoc_to_booking(
             EXPORTING

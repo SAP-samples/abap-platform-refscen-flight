@@ -55,7 +55,8 @@ CLASS lhc_booking IMPLEMENTATION.
       LOOP AT bookings INTO booking WHERE BookingID IS INITIAL.
         max_bookingid += 1.
         APPEND VALUE #( %tky      = booking-%tky
-                        BookingID = max_bookingid ) TO bookings_update.
+                        BookingID = max_bookingid
+                      ) TO bookings_update.
 
       ENDLOOP.
     ENDLOOP.
@@ -161,7 +162,8 @@ CLASS lhc_booking IMPLEMENTATION.
                                                                 textid = /dmo/cm_flight_messages=>ENTER_CUSTOMER_ID
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = booking-%tky ]-target-%tky )
-                        %element-CustomerID = if_abap_behv=>mk-on ) TO reported-booking.
+                        %element-CustomerID = if_abap_behv=>mk-on
+                       ) TO reported-booking.
 
       ELSEIF booking-CustomerID IS NOT INITIAL AND NOT line_exists( valid_customers[ customer_id = booking-CustomerID ] ).
         APPEND VALUE #(  %tky = booking-%tky ) TO failed-booking.
@@ -173,7 +175,8 @@ CLASS lhc_booking IMPLEMENTATION.
                                                                 customer_id = booking-customerId
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = booking-%tky ]-target-%tky )
-                        %element-CustomerID = if_abap_behv=>mk-on ) TO reported-booking.
+                        %element-CustomerID = if_abap_behv=>mk-on
+                       ) TO reported-booking.
       ENDIF.
 
     ENDLOOP.
@@ -211,7 +214,8 @@ CLASS lhc_booking IMPLEMENTATION.
                                                                 textid = /dmo/cm_flight_messages=>ENTER_AIRLINE_ID
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path              = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
-                        %element-AirlineID = if_abap_behv=>mk-on ) TO reported-booking.
+                        %element-AirlineID = if_abap_behv=>mk-on
+                       ) TO reported-booking.
       ENDIF.
       " Raise message for non existing connection ID
       IF <booking>-ConnectionID IS INITIAL.
@@ -223,7 +227,8 @@ CLASS lhc_booking IMPLEMENTATION.
                                                                 textid = /dmo/cm_flight_messages=>ENTER_CONNECTION_ID
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
-                        %element-ConnectionID = if_abap_behv=>mk-on ) TO reported-booking.
+                        %element-ConnectionID = if_abap_behv=>mk-on
+                       ) TO reported-booking.
       ENDIF.
       " Raise message for non existing flight date
       IF <booking>-FlightDate IS INITIAL.
@@ -235,7 +240,8 @@ CLASS lhc_booking IMPLEMENTATION.
                                                                 textid = /dmo/cm_flight_messages=>ENTER_FLIGHT_DATE
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
-                        %element-FlightDate = if_abap_behv=>mk-on ) TO reported-booking.
+                        %element-FlightDate = if_abap_behv=>mk-on
+                       ) TO reported-booking.
       ENDIF.
       " check if flight connection exists
       IF <booking>-AirlineID IS NOT INITIAL AND
@@ -256,11 +262,12 @@ CLASS lhc_booking IMPLEMENTATION.
                                                                 textid      = /dmo/cm_flight_messages=>NO_FLIGHT_EXISTS
                                                                 carrier_id  = <booking>-AirlineID
                                                                 flight_date = <booking>-FlightDate
-                                                                severity = if_abap_behv_message=>severity-error )
-                        %path                  = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
-                        %element-FlightDate    = if_abap_behv=>mk-on
-                        %element-AirlineID     = if_abap_behv=>mk-on
-                        %element-ConnectionID  = if_abap_behv=>mk-on ) TO reported-booking.
+                                                                severity    = if_abap_behv_message=>severity-error )
+                          %path                  = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
+                          %element-FlightDate    = if_abap_behv=>mk-on
+                          %element-AirlineID     = if_abap_behv=>mk-on
+                          %element-ConnectionID  = if_abap_behv=>mk-on
+                        ) TO reported-booking.
 
         ENDIF.
 

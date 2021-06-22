@@ -340,7 +340,7 @@ CLASS lhc_booking IMPLEMENTATION.
           failed   = failed-booking
           reported = reported-booking ).
 
-      IF failed_added = abap_false.
+      IF failed_added = abap_true.
         LOOP AT <booking>-%target ASSIGNING FIELD-SYMBOL(<bookingsupplement>).
           map_messages_assoc_to_booksupp(
             EXPORTING

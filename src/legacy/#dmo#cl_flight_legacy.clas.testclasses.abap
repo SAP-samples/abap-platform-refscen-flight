@@ -263,7 +263,7 @@ CLASS ltc_travel IMPLEMENTATION.
     SELECT FROM /dmo/travel FIELDS createdby, createdat, status WHERE travel_id = @ls_travel_1-travel_id OR travel_id = @ls_travel_2-travel_id INTO TABLE @DATA(lt_travel) ##SELECT_FAE_WITH_LOB[DESCRIPTION].
     cl_abap_unit_assert=>assert_equals( msg = 'cannot read created travel'  exp = 2  act = lines( lt_travel ) ).
 
-    DATA(ls_travel) = lt_travel[ 1 ].
+    DATA(ls_travel) = lt_travel[ 1 ]. "#EC CI_NOORDER
 
     cl_abap_unit_assert=>assert_equals( msg = 'createdby' exp = ls_travel-createdby act = sy-uname ).
     cl_abap_unit_assert=>assert_number_between( msg = 'createdat' number = ls_travel-createdat lower = lv_start upper = lv_end ).

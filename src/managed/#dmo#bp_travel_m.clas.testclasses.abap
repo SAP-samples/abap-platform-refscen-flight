@@ -180,7 +180,7 @@ CLASS test_readonly_methods IMPLEMENTATION.
 
   METHOD teardown.
     " clean up any involved entity
-    ROLLBACK ENTITIES.
+    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
   ENDMETHOD.
 
   METHOD class_teardown.
@@ -304,7 +304,7 @@ CLASS test_writing_methods IMPLEMENTATION.
 
   METHOD teardown.
     " clean up any involved entity
-    ROLLBACK ENTITIES.
+    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
   ENDMETHOD.
   METHOD class_teardown.
     " stop mocking
@@ -434,7 +434,7 @@ CLASS test_using_entity_stub IMPLEMENTATION.
     cl_abap_behv_test_environment=>unset_test_double( root = '/DMO/TRAVEL_D' ).
 
     " clean up any involved entity (should not be necessary as we mocked the entity, just to be safe).
-    ROLLBACK ENTITIES.
+    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
   ENDMETHOD.
 
 

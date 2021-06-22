@@ -29,7 +29,6 @@ authorization master(global)
   delete;
 
   // instance action and dynamic action control
-  //action  ( features: instance, authorization : none ) acceptTravel result [1] $self;
   action  ( features: instance ) acceptTravel result [1] $self;
   action  ( features: instance ) rejectTravel result [1] $self;
 
@@ -37,7 +36,6 @@ authorization master(global)
   internal action ReCalcTotalPrice;
 
   // instance action for copying travel instances
-  //action ( authorization : none ) copyTravel result [1] $self;
   action copyTravel result [1] $self;
 
   // validations
@@ -45,6 +43,7 @@ authorization master(global)
   validation validateAgency   on save { create; field agency_id; }
   validation validateDates    on save { create; field begin_date, end_date; }
   validation validateStatus   on save { create; field overall_status; }
+
 
   determination calculateTotalPrice on modify {create; field booking_fee, currency_code; }
 

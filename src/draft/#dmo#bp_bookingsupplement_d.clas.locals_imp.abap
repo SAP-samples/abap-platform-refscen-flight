@@ -46,7 +46,8 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
       LOOP AT bookingsupplements INTO bookingsupplement WHERE BookingSupplementID IS INITIAL.
         max_bookingsupplementid += 1.
         APPEND VALUE #( %tky                = bookingsupplement-%tky
-                        bookingsupplementid = max_bookingsupplementid ) TO bookingsupplements_update.
+                        bookingsupplementid = max_bookingsupplementid
+                      ) TO bookingsupplements_update.
 
       ENDLOOP.
     ENDLOOP.
@@ -119,7 +120,8 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
     LOOP AT bookingsupplements ASSIGNING FIELD-SYMBOL(<bookingsupplement>).
 
       APPEND VALUE #(  %tky        = <bookingsupplement>-%tky
-                       %state_area = 'VALIDATE_SUPPLEMENT' ) TO reported-bookingsupplement.
+                       %state_area = 'VALIDATE_SUPPLEMENT'
+                    ) TO reported-bookingsupplement.
 
       IF <bookingsupplement>-SupplementID IS  INITIAL.
         APPEND VALUE #( %tky = <bookingsupplement>-%tky ) TO failed-bookingsupplement.
@@ -131,7 +133,8 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ source-%tky = <bookingsupplement>-%tky ]-target-%tky
                                                          travel-%tky  = booksuppl_travel_links[ source-%tky  = <bookingsupplement>-%tky ]-target-%tky )
-                        %element-SupplementID = if_abap_behv=>mk-on ) TO reported-bookingsupplement.
+                        %element-SupplementID = if_abap_behv=>mk-on
+                       ) TO reported-bookingsupplement.
 
 
       ELSEIF <bookingsupplement>-SupplementID IS NOT INITIAL AND NOT line_exists( valid_supplements[ supplement_id = <bookingsupplement>-SupplementID ] ).
@@ -144,7 +147,8 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
                                                                 severity = if_abap_behv_message=>severity-error )
                         %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ source-%tky = <bookingsupplement>-%tky ]-target-%tky
                                                         travel-%tky  = booksuppl_travel_links[ source-%tky  = <bookingsupplement>-%tky ]-target-%tky )
-                        %element-SupplementID = if_abap_behv=>mk-on ) TO reported-bookingsupplement.
+                        %element-SupplementID = if_abap_behv=>mk-on
+                       ) TO reported-bookingsupplement.
       ENDIF.
 
     ENDLOOP.

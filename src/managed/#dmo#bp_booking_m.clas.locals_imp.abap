@@ -1,10 +1,14 @@
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
-    METHODS calculatetotalprice FOR DETERMINE ON MODIFY IMPORTING keys FOR booking~calculatetotalprice.
-    METHODS validate_booking_status        FOR VALIDATE  ON SAVE   IMPORTING keys FOR booking~validatestatus.
-    METHODS get_features                   FOR FEATURES            IMPORTING keys REQUEST requested_features FOR booking RESULT result.
-    METHODS earlynumbering_cba_booksupplem FOR NUMBERING           IMPORTING entities FOR CREATE booking\_booksupplement.
+    METHODS calculatetotalprice FOR DETERMINE ON MODIFY
+       IMPORTING keys FOR booking~calculatetotalprice.
+    METHODS validateStatus FOR VALIDATE  ON SAVE
+       IMPORTING keys FOR booking~validatestatus.
+    METHODS get_features FOR INSTANCE FEATURES
+       IMPORTING keys REQUEST requested_features FOR booking RESULT result.
+    METHODS earlynumbering_cba_booksupplem FOR NUMBERING
+       IMPORTING entities FOR CREATE booking\_booksupplement.
 
 
 *    METHODS check_authority_for_booking  FOR AUTHORIZATION IMPORTING it_booking_key REQUEST is_request FOR booking RESULT result.
@@ -26,9 +30,9 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY travel
         EXECUTE recalctotalprice
         FROM CORRESPONDING #( keys )
-    REPORTED DATA(lt_reported).
+    REPORTED DATA(reported_modify).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP reported_modify ).
   ENDMETHOD.
 
 **********************************************************************
@@ -36,35 +40,37 @@ CLASS lhc_travel IMPLEMENTATION.
 * Validates booking status when saving booking data
 *
 **********************************************************************
-  METHOD validate_booking_status.
+  METHOD validateStatus.
 
 
     READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
       ENTITY booking
         FIELDS ( booking_status )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(lt_booking_result).
+      RESULT DATA(bookings).
 
-    LOOP AT lt_booking_result INTO DATA(ls_booking_result).
-      CASE ls_booking_result-booking_status.
+    LOOP AT bookings INTO DATA(booking).
+      CASE booking-booking_status.
         WHEN 'N'.  " New
         WHEN 'X'.  " Canceled
         WHEN 'B'.  " Booked
 
-          APPEND VALUE #(  %tky                 = ls_booking_result-%tky
-                           %state_area          = 'VALIDATE_BOOKINGSTATUS' ) TO reported-booking.
+          APPEND VALUE #(  %tky                 = booking-%tky
+                           %state_area          = 'VALIDATE_BOOKINGSTATUS'
+                        ) TO reported-booking.
 
         WHEN OTHERS.
-          APPEND VALUE #( %key = ls_booking_result-%key ) TO failed-booking.
+          APPEND VALUE #( %key = booking-%key ) TO failed-booking.
 
-          APPEND VALUE #( %key = ls_booking_result-%key
+          APPEND VALUE #( %key = booking-%key
                           %state_area         = 'VALIDATE_BOOKINGSTATUS'
                           %msg = NEW /dmo/cm_flight_messages(
                                textid = /dmo/cm_flight_messages=>status_invalid
-                               status = ls_booking_result-booking_status
+                               status = booking-booking_status
                                severity = if_abap_behv_message=>severity-error )
                           %element-booking_status = if_abap_behv=>mk-on
-                          %path = VALUE #( travel-travel_id    = ls_booking_result-travel_id ) ) TO reported-booking.
+                          %path = VALUE #( travel-travel_id    = booking-travel_id )
+                        ) TO reported-booking.
       ENDCASE.
 
     ENDLOOP.
@@ -83,12 +89,12 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY booking
          FIELDS ( booking_id booking_status )
          WITH CORRESPONDING #( keys )
-      RESULT    DATA(lt_booking_result)
+      RESULT    DATA(bookings)
       FAILED failed.
 
-    result = VALUE #( FOR ls_travel IN lt_booking_result
-                       ( %key                   = ls_travel-%key
-                         %assoc-_booksupplement = COND #( WHEN ls_travel-booking_status = 'B'
+    result = VALUE #( FOR booking IN bookings
+                       ( %key                   = booking-%key
+                         %assoc-_booksupplement = COND #( WHEN booking-booking_status = 'B'
                                                           THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  ) ) ).
 
   ENDMETHOD.

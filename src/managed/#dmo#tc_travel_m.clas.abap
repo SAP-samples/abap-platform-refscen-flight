@@ -85,7 +85,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
 
   METHOD teardown.
     cds_test_environment->clear_doubles(  ).
-    ROLLBACK ENTITIES.
+    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
   ENDMETHOD.
 
 
@@ -154,17 +154,17 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( msg = 'commit_failed'   act = commit_failed ).
     cl_abap_unit_assert=>assert_initial( msg = 'commit_reported' act = commit_reported ).
 
-    SELECT * FROM /dmo/i_travel_m INTO TABLE @DATA(lt_travel). "#EC CI_NOWHERE
-    cl_abap_unit_assert=>assert_not_initial( msg = 'travel from db' act = lt_travel ).
+    SELECT single FROM /dmo/i_travel_m FIELDS overall_status, total_price INTO @DATA(ls_travel). "#EC CI_NOWHERE
+    cl_abap_unit_assert=>assert_not_initial( msg = 'travel from db' act = ls_travel ).
 
     " assert that the action has changed the overall status
-    cl_abap_unit_assert=>assert_equals( msg = 'status' exp = 'A' act = lt_travel[ 1 ]-overall_status ).
+    cl_abap_unit_assert=>assert_equals( msg = 'status' exp = 'A' act = ls_travel-overall_status ).
 
     " total_price = SUM( flight_price ) + SUM ( supplement price ) + booking_fee
-    cl_abap_unit_assert=>assert_equals( msg = 'total price incl. booking_fee' exp = '2210.50' act = lt_travel[ 1 ]-total_price ).
+    cl_abap_unit_assert=>assert_equals( msg = 'total price incl. booking_fee' exp = '2210.50' act = ls_travel-total_price ).
 
-    SELECT * FROM /dmo/log_travel INTO TABLE @DATA(log_travel). "#EC CI_NOWHERE
-    cl_abap_unit_assert=>assert_not_initial( msg = '/DMO/LOG_TRAVEL' act = log_travel ).
+    SELECT single @abap_true FROM /dmo/log_travel INTO @DATA(log_travel). "#EC CI_NOWHERE
+    cl_abap_unit_assert=>assert_true( msg = '/DMO/LOG_TRAVEL' act = log_travel ).
   ENDMETHOD.
 
 ENDCLASS.
