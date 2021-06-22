@@ -91,7 +91,7 @@ CLASS /dmo/tc_travel_proc_m_o2_odata  IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD teardown.
-    ROLLBACK ENTITIES.
+    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
   ENDMETHOD.
 
   METHOD class_teardown.
@@ -144,12 +144,12 @@ CLASS /dmo/tc_travel_proc_m_o2_odata  IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( msg = 'description' exp = ls_business_data-description act = lt_read_travel[ 1 ]-description ).
 
     " check data also from Database
-    SELECT * FROM /dmo/i_travel_m INTO TABLE @DATA(lt_travel). "#EC CI_NOWHERE
-    cl_abap_unit_assert=>assert_not_initial( msg = 'travel from db' act = lt_travel ).
+    SELECT single @abap_true FROM /dmo/i_travel_m INTO @DATA(lv_travel). "#EC CI_NOWHERE
+    cl_abap_unit_assert=>assert_true( msg = 'travel from db' act = lv_travel ).
 
     " check also log written by "additional save" functionality
-    SELECT * FROM /dmo/log_travel INTO TABLE @DATA(log_travel). "#EC CI_NOWHERE
-    cl_abap_unit_assert=>assert_not_initial( msg = '/DMO/LOG_TRAVEL' act = log_travel ).
+    SELECT single @abap_true FROM /dmo/log_travel INTO @DATA(log_travel). "#EC CI_NOWHERE
+    cl_abap_unit_assert=>assert_true( msg = '/DMO/LOG_TRAVEL' act = log_travel ).
 
   ENDMETHOD.
 

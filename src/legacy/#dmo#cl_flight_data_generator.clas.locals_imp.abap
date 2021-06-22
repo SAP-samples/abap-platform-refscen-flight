@@ -573,7 +573,7 @@ CLASS lcl_airport_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_data.
-    rt_data = VALUE tt_airport( ##NO_TEXT
+    rt_data = VALUE tt_airport( ##NO_TEXT ##STRING_OK
           " Europe
           ( airport_id = 'FRA'    name = 'Frankfurt Airport'                      city = 'Frankfurt/Main'                    country = 'DE' )
           ( airport_id = 'HAM'    name = 'Hamburg Airport'                        city = 'Hamburg'                           country = 'DE' )
@@ -1214,7 +1214,7 @@ CLASS lcl_customer_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD build_last_names.
-    rt_data = VALUE tt_last_name( ##NO_TEXT
+    rt_data = VALUE tt_last_name( ##NO_TEXT ##STRING_OK
           ( last_name = 'Buchholm')
           ( last_name = 'Vrsic')
           ( last_name = 'Jeremias')
@@ -1353,14 +1353,14 @@ CLASS lcl_customer_data_generator IMPLEMENTATION.
             last_name  = ls_last_name-last_name
             title      = COND /dmo/title( WHEN ls_first_name-gender = 'M' THEN 'Mr.'
                                           WHEN ls_first_name-gender = 'F' THEN 'Mrs.'
-                                          ELSE 'Martian' )
+                                          ELSE 'Martian' ) ##NO_TEXT
         ) TO rt_data.
       ENDDO.
     ENDLOOP.
   ENDMETHOD.
 
   METHOD build_city.
-    rt_data = VALUE tt_city( ##NO_TEXT
+    rt_data = VALUE tt_city( ##NO_TEXT ##STRING_OK
               ( country = 'DE' postal_code =    '23496' city = 'Dielheim')
               ( country = 'SI' postal_code =     '1000' city = 'Ljubljana')
               ( country = 'DE' postal_code =    '86343' city = 'Koenigsbrunn')
@@ -1464,7 +1464,7 @@ CLASS lcl_customer_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD build_street.
-    rt_data = VALUE tt_street( ##NO_TEXT
+    rt_data = VALUE tt_street( ##NO_TEXT ##STRING_OK
         ( country = 'AT' streets = VALUE tt_street_per_country( ( 'Hasnerstrasse' ) ) )
         ( country = 'BE' streets = VALUE tt_street_per_country( ( 'rue Voltaire' ) ) )
         ( country = 'CH' streets = VALUE tt_street_per_country( ( 'rue de Moillebeau' ) ) )
@@ -1791,12 +1791,12 @@ CLASS lcl_status_vh_data_generator IMPLEMENTATION.
     IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
     ENDIF.
     DELETE FROM:
-       /dmo/trvl_stat,
-       /dmo/oall_stat,
-       /dmo/book_stat,
-       /dmo/trvl_stat_t,
-       /dmo/oall_stat_t,
-       /dmo/book_stat_t.
+       /dmo/trvl_stat,   "#EC CI_NOWHERE
+       /dmo/oall_stat,   "#EC CI_NOWHERE
+       /dmo/book_stat,   "#EC CI_NOWHERE
+       /dmo/trvl_stat_t, "#EC CI_NOWHERE
+       /dmo/oall_stat_t, "#EC CI_NOWHERE
+       /dmo/book_stat_t. "#EC CI_NOWHERE
 
 
     IF out IS BOUND.  out->write( '--> Travel Status' ) ##no_text.
@@ -1822,7 +1822,7 @@ CLASS lcl_status_vh_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD _Travel_status.
-    travel_status = VALUE type_travel_status(
+    travel_status = VALUE type_travel_status( ##NO_TEXT
         language = 'E'
           ( travel_status = 'N'  text = 'New'       )
           ( travel_status = 'B'  text = 'Booked'    )
@@ -1832,7 +1832,7 @@ CLASS lcl_status_vh_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD _overall_status.
-    overall_status = VALUE type_overall_status(
+    overall_status = VALUE type_overall_status( ##NO_TEXT
         language = 'E'
           ( overall_status = 'O'  text = 'Open'      )
           ( overall_status = 'A'  text = 'Accepted'  )
@@ -1841,7 +1841,7 @@ CLASS lcl_status_vh_data_generator IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD _booking_status.
-    booking_status = VALUE type_booking_status(
+    booking_status = VALUE type_booking_status( ##NO_TEXT
         language = 'E'
           ( booking_status = 'N'  text = 'New'       )
           ( booking_status = 'B'  text = 'Booked'    )

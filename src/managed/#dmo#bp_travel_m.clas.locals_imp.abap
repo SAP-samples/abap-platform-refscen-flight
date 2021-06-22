@@ -8,23 +8,33 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
 
     TYPES tt_travel_update TYPE TABLE FOR UPDATE /DMO/I_Travel_M.
 
-    METHODS validate_customer          FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validatecustomer.
-    METHODS validate_agency            FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validateagency.
-    METHODS validate_dates             FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validatedates.
-    METHODS validate_travel_status     FOR VALIDATE ON SAVE IMPORTING keys FOR travel~validatestatus.
+    METHODS validate_customer FOR VALIDATE ON SAVE
+      IMPORTING keys FOR travel~validatecustomer.
+    METHODS validate_agency FOR VALIDATE ON SAVE
+      IMPORTING keys FOR travel~validateagency.
+    METHODS validate_dates  FOR VALIDATE ON SAVE
+      IMPORTING keys FOR travel~validatedates.
+    METHODS validate_travel_status FOR VALIDATE ON SAVE
+      IMPORTING keys FOR travel~validatestatus.
 
-    METHODS copyTravel                 FOR MODIFY IMPORTING   keys FOR ACTION travel~copyTravel                RESULT result.
-    METHODS set_status_accepted        FOR MODIFY IMPORTING   keys FOR ACTION travel~accepttravel              RESULT result.
-    METHODS set_status_rejected        FOR MODIFY IMPORTING   keys FOR ACTION travel~rejecttravel              RESULT result.
-    METHODS get_features               FOR FEATURES IMPORTING keys REQUEST    requested_features FOR travel    RESULT result.
+    METHODS copyTravel FOR MODIFY
+      IMPORTING   keys FOR ACTION travel~copyTravel RESULT result.
+    METHODS set_status_accepted FOR MODIFY
+      IMPORTING   keys FOR ACTION travel~accepttravel RESULT result.
+    METHODS set_status_rejected FOR MODIFY
+      IMPORTING   keys FOR ACTION travel~rejecttravel RESULT result.
+
+    METHODS get_features FOR INSTANCE FEATURES
+      IMPORTING keys REQUEST requested_features FOR travel RESULT result.
+
     METHODS recalctotalprice FOR MODIFY
-
-
       IMPORTING keys FOR ACTION travel~recalctotalprice.
     METHODS calculatetotalprice FOR DETERMINE ON MODIFY
       IMPORTING keys FOR travel~calculatetotalprice.
+
     METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
       IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
+
     METHODS earlynumbering_cba_booking FOR NUMBERING
       IMPORTING entities FOR CREATE travel\_booking.
     METHODS earlynumbering_create FOR NUMBERING
@@ -48,34 +58,34 @@ CLASS lhc_travel IMPLEMENTATION.
     ENTITY travel
      FIELDS ( customer_id )
      WITH CORRESPONDING #(  keys )
-    RESULT DATA(lt_travel).
+    RESULT DATA(travels).
 
-    DATA lt_customer TYPE SORTED TABLE OF /dmo/customer WITH UNIQUE KEY customer_id.
+    DATA customers TYPE SORTED TABLE OF /dmo/customer WITH UNIQUE KEY customer_id.
 
     " Optimization of DB select: extract distinct non-initial customer IDs
-    lt_customer = CORRESPONDING #( lt_travel DISCARDING DUPLICATES MAPPING customer_id = customer_id EXCEPT * ).
-    DELETE lt_customer WHERE customer_id IS INITIAL.
-    IF lt_customer IS NOT INITIAL.
+    customers = CORRESPONDING #( travels DISCARDING DUPLICATES MAPPING customer_id = customer_id EXCEPT * ).
+    DELETE customers WHERE customer_id IS INITIAL.
+    IF customers IS NOT INITIAL.
 
       " Check if customer ID exists
       SELECT FROM /dmo/customer FIELDS customer_id
-        FOR ALL ENTRIES IN @lt_customer
-        WHERE customer_id = @lt_customer-customer_id
-        INTO TABLE @DATA(lt_customer_db).
+        FOR ALL ENTRIES IN @customers
+        WHERE customer_id = @customers-customer_id
+        INTO TABLE @DATA(customers_db).
     ENDIF.
     " Raise msg for non existing and initial customer id
-    LOOP AT lt_travel INTO DATA(ls_travel).
-      IF ls_travel-customer_id IS INITIAL
-         OR NOT line_exists( lt_customer_db[ customer_id = ls_travel-customer_id ] ).
+    LOOP AT travels INTO DATA(travel).
+      IF travel-customer_id IS INITIAL
+         OR NOT line_exists( customers_db[ customer_id = travel-customer_id ] ).
 
-        APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed-travel.
-        APPEND VALUE #(  travel_id = ls_travel-travel_id
-                         %msg = NEW /dmo/cm_flight_messages(
-                              customer_id = ls_travel-customer_id
-                              textid = /dmo/cm_flight_messages=>customer_unkown
-                              severity = if_abap_behv_message=>severity-error )
-                         %element-customer_id = if_abap_behv=>mk-on )
-          TO reported-travel.
+        APPEND VALUE #(  travel_id = travel-travel_id ) TO failed-travel.
+        APPEND VALUE #(  travel_id = travel-travel_id
+                         %msg      = NEW /dmo/cm_flight_messages(
+                                                     customer_id = travel-customer_id
+                                                     textid      = /dmo/cm_flight_messages=>customer_unkown
+                                                     severity    = if_abap_behv_message=>severity-error )
+                         %element-customer_id = if_abap_behv=>mk-on
+                      ) TO reported-travel.
       ENDIF.
     ENDLOOP.
 
@@ -93,34 +103,35 @@ CLASS lhc_travel IMPLEMENTATION.
     ENTITY travel
      FIELDS ( agency_id )
      WITH CORRESPONDING #(  keys )
-    RESULT DATA(lt_travel).
+    RESULT DATA(travels).
 
-    DATA lt_agency TYPE SORTED TABLE OF /dmo/agency WITH UNIQUE KEY agency_id.
+    DATA agencies TYPE SORTED TABLE OF /dmo/agency WITH UNIQUE KEY agency_id.
 
     " Optimization of DB select: extract distinct non-initial agency IDs
-    lt_agency = CORRESPONDING #(  lt_travel DISCARDING DUPLICATES MAPPING agency_id = agency_id EXCEPT * ).
-    DELETE lt_agency WHERE agency_id IS INITIAL.
-    IF  lt_agency IS NOT INITIAL.
+    agencies = CORRESPONDING #(  travels DISCARDING DUPLICATES MAPPING agency_id = agency_id EXCEPT * ).
+    DELETE agencies WHERE agency_id IS INITIAL.
+    IF  agencies IS NOT INITIAL.
 
       " check if agency ID exist
       SELECT FROM /dmo/agency FIELDS agency_id
-        FOR ALL ENTRIES IN @lt_agency
-        WHERE agency_id = @lt_agency-agency_id
-        INTO TABLE @DATA(lt_agency_db).
+        FOR ALL ENTRIES IN @agencies
+        WHERE agency_id = @agencies-agency_id
+        INTO TABLE @DATA(agencies_db).
     ENDIF.
 
     " Raise msg for non existing and initial agency id
-    LOOP AT lt_travel INTO DATA(ls_travel).
-      IF ls_travel-agency_id IS INITIAL
-         OR NOT line_exists( lt_agency_db[ agency_id = ls_travel-agency_id ] ).
-        APPEND VALUE #(  travel_id = ls_travel-travel_id ) TO failed-travel.
-        APPEND VALUE #(  travel_id = ls_travel-travel_id
-                         %msg = NEW /dmo/cm_flight_messages(
-                          textid = /dmo/cm_flight_messages=>agency_unkown
-                          agency_id = ls_travel-agency_id
-                          severity = if_abap_behv_message=>severity-error )
-                         %element-agency_id = if_abap_behv=>mk-on )
-          TO reported-travel.
+    LOOP AT travels INTO DATA(travel).
+      IF travel-agency_id IS INITIAL
+         OR NOT line_exists( agencies_db[ agency_id = travel-agency_id ] ).
+
+        APPEND VALUE #(  travel_id = travel-travel_id ) TO failed-travel.
+        APPEND VALUE #(  travel_id = travel-travel_id
+                         %msg      = NEW /dmo/cm_flight_messages(
+                                          textid    = /dmo/cm_flight_messages=>agency_unkown
+                                          agency_id = travel-agency_id
+                                          severity  = if_abap_behv_message=>severity-error )
+                         %element-agency_id = if_abap_behv=>mk-on
+                      ) TO reported-travel.
       ENDIF.
     ENDLOOP.
 
@@ -137,38 +148,39 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY travel
         FIELDS ( begin_date end_date )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(lt_travel_result).
+      RESULT DATA(travels).
 
-    LOOP AT lt_travel_result INTO DATA(ls_travel_result).
+    LOOP AT travels INTO DATA(travel).
 
-      IF ls_travel_result-end_date < ls_travel_result-begin_date.  "end_date before begin_date
+      IF travel-end_date < travel-begin_date.  "end_date before begin_date
 
-        APPEND VALUE #( %key        = ls_travel_result-%key
-                        travel_id   = ls_travel_result-travel_id ) TO failed-travel.
+        APPEND VALUE #( %key        = travel-%key
+                        travel_id   = travel-travel_id ) TO failed-travel.
 
-        APPEND VALUE #( %key     = ls_travel_result-%key
+        APPEND VALUE #( %key     = travel-%key
                         %msg = NEW /dmo/cm_flight_messages(
-                               textid = /dmo/cm_flight_messages=>begin_date_bef_end_date
-                               severity = if_abap_behv_message=>severity-error
-                               begin_date = ls_travel_result-begin_date
-                               end_date = ls_travel_result-end_date
-                               travel_id = ls_travel_result-travel_id
-                          )
+                                         textid     = /dmo/cm_flight_messages=>begin_date_bef_end_date
+                                         severity   = if_abap_behv_message=>severity-error
+                                         begin_date = travel-begin_date
+                                         end_date   = travel-end_date
+                                         travel_id  = travel-travel_id )
                         %element-begin_date = if_abap_behv=>mk-on
-                        %element-end_date   = if_abap_behv=>mk-on ) TO reported-travel.
+                        %element-end_date   = if_abap_behv=>mk-on
+                     ) TO reported-travel.
 
-      ELSEIF ls_travel_result-begin_date < cl_abap_context_info=>get_system_date( ).  "begin_date must be in the future
+      ELSEIF travel-begin_date < cl_abap_context_info=>get_system_date( ).  "begin_date must be in the future
 
-        APPEND VALUE #( %key        = ls_travel_result-%key
-                        travel_id   = ls_travel_result-travel_id ) TO failed-travel.
+        APPEND VALUE #( %key        = travel-%key
+                        travel_id   = travel-travel_id
+                      ) TO failed-travel.
 
-        APPEND VALUE #( %key = ls_travel_result-%key
+        APPEND VALUE #( %key = travel-%key
                         %msg = NEW /dmo/cm_flight_messages(
                                textid = /dmo/cm_flight_messages=>begin_date_on_or_bef_sysdate
                                severity = if_abap_behv_message=>severity-error )
-
                         %element-begin_date = if_abap_behv=>mk-on
-                        %element-end_date   = if_abap_behv=>mk-on ) TO reported-travel.
+                        %element-end_date   = if_abap_behv=>mk-on
+                      ) TO reported-travel.
       ENDIF.
 
     ENDLOOP.
@@ -186,23 +198,24 @@ CLASS lhc_travel IMPLEMENTATION.
         ENTITY travel
           FIELDS ( overall_status )
           WITH CORRESPONDING #( keys )
-        RESULT DATA(lt_travel_result).
+        RESULT DATA(travels).
 
-    LOOP AT lt_travel_result INTO DATA(ls_travel_result).
-      CASE ls_travel_result-overall_status.
+    LOOP AT travels INTO DATA(travel).
+      CASE travel-overall_status.
         WHEN 'O'.  " Open
         WHEN 'X'.  " Cancelled
         WHEN 'A'.  " Accepted
 
         WHEN OTHERS.
-          APPEND VALUE #( %key = ls_travel_result-%key ) TO failed-travel.
+          APPEND VALUE #( %key = travel-%key ) TO failed-travel.
 
-          APPEND VALUE #( %key = ls_travel_result-%key
+          APPEND VALUE #( %key = travel-%key
                           %msg = NEW /dmo/cm_flight_messages(
                                textid = /dmo/cm_flight_messages=>status_invalid
                                severity = if_abap_behv_message=>severity-error
-                               status = ls_travel_result-overall_status )
-                          %element-overall_status = if_abap_behv=>mk-on ) TO reported-travel.
+                               status = travel-overall_status )
+                          %element-overall_status = if_abap_behv=>mk-on
+                        ) TO reported-travel.
       ENDCASE.
 
     ENDLOOP.
@@ -383,18 +396,18 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY travel
          FIELDS (  travel_id overall_status )
          WITH CORRESPONDING #( keys )
-       RESULT DATA(lt_travel_result)
+       RESULT DATA(travels)
        FAILED failed.
 
 
-    result = VALUE #( FOR ls_travel IN lt_travel_result
-                       ( %key                           = ls_travel-%key
-                         %features-%action-rejecttravel = COND #( WHEN ls_travel-overall_status = 'X'
-                                                                    THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  )
-                         %features-%action-accepttravel = COND #( WHEN ls_travel-overall_status = 'A'
-                                                                    THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
-                         %assoc-_booking                = COND #( WHEN ls_travel-overall_status = 'X'
-                                                                    THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
+    result = VALUE #( FOR travel IN travels
+                       ( %key                           = travel-%key
+                         %features-%action-rejecttravel = COND #( WHEN travel-overall_status = 'X'
+                                                                  THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  )
+                         %features-%action-accepttravel = COND #( WHEN travel-overall_status = 'A'
+                                                                  THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
+                         %assoc-_booking                = COND #( WHEN travel-overall_status = 'X'
+                                                                  THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled   )
                       ) ).
 
   ENDMETHOD.
@@ -499,9 +512,9 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY travel
         EXECUTE recalctotalprice
         FROM CORRESPONDING #( keys )
-    REPORTED DATA(lt_reported).
+    REPORTED DATA(reported_modify).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP reported_modify ).
   ENDMETHOD.
 
   METHOD earlynumbering_create.
@@ -645,6 +658,8 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD get_global_authorizations.
   ENDMETHOD.
 
+
+
 ENDCLASS.
 
 
@@ -667,49 +682,49 @@ CLASS lcl_save IMPLEMENTATION.
 *
 ********************************************************************************
 
-    DATA lt_travel_log   TYPE STANDARD TABLE OF /dmo/log_travel.
-    DATA lt_travel_log_c TYPE STANDARD TABLE OF /dmo/log_travel.
-    DATA lt_travel_log_u TYPE STANDARD TABLE OF /dmo/log_travel.
+    DATA travel_log        TYPE STANDARD TABLE OF /dmo/log_travel.
+    DATA travel_log_create TYPE STANDARD TABLE OF /dmo/log_travel.
+    DATA travel_log_update TYPE STANDARD TABLE OF /dmo/log_travel.
 
     " (1) Get instance data of all instances that have been created
     IF create-travel IS NOT INITIAL.
       " Creates internal table with instance data
-      lt_travel_log = CORRESPONDING #( create-travel ).
+      travel_log = CORRESPONDING #( create-travel ).
 
-      LOOP AT lt_travel_log ASSIGNING FIELD-SYMBOL(<fs_travel_log_c>).
-        <fs_travel_log_c>-changing_operation = 'CREATE'.
+      LOOP AT travel_log ASSIGNING FIELD-SYMBOL(<travel_log>).
+        <travel_log>-changing_operation = 'CREATE'.
 
         " Generate time stamp
-        GET TIME STAMP FIELD <fs_travel_log_c>-created_at.
+        GET TIME STAMP FIELD <travel_log>-created_at.
 
         " Read travel instance data into ls_travel that includes %control structure
-        READ TABLE create-travel WITH TABLE KEY entity COMPONENTS travel_id = <fs_travel_log_c>-travel_id INTO DATA(ls_travel).
+        READ TABLE create-travel WITH TABLE KEY entity COMPONENTS travel_id = <travel_log>-travel_id INTO DATA(travel).
         IF sy-subrc = 0.
 
           " If new value of the booking_fee field created
-          IF ls_travel-%control-booking_fee = cl_abap_behv=>flag_changed.
+          IF travel-%control-booking_fee = cl_abap_behv=>flag_changed.
             " Generate uuid as value of the change_id field
             TRY.
-                <fs_travel_log_c>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+                <travel_log>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
               CATCH cx_uuid_error.
                 "handle exception
             ENDTRY.
-            <fs_travel_log_c>-changed_field_name = 'booking_fee'.
-            <fs_travel_log_c>-changed_value = ls_travel-booking_fee.
-            APPEND <fs_travel_log_c> TO lt_travel_log_c.
+            <travel_log>-changed_field_name = 'booking_fee'.
+            <travel_log>-changed_value = travel-booking_fee.
+            APPEND <travel_log> TO travel_log_create.
           ENDIF.
 
           " If new value of the overall_status field created
-          IF ls_travel-%control-overall_status = cl_abap_behv=>flag_changed.
+          IF travel-%control-overall_status = cl_abap_behv=>flag_changed.
             " Generate uuid as value of the change_id field
             TRY.
-                <fs_travel_log_c>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+                <travel_log>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
               CATCH cx_uuid_error.
                 "handle exception
             ENDTRY.
-            <fs_travel_log_c>-changed_field_name = 'overall_status'.
-            <fs_travel_log_c>-changed_value = ls_travel-overall_status.
-            APPEND <fs_travel_log_c> TO lt_travel_log_c.
+            <travel_log>-changed_field_name = 'overall_status'.
+            <travel_log>-changed_value = travel-overall_status.
+            APPEND <travel_log> TO travel_log_create.
           ENDIF.
 
           " IF  ls_travel-%control-...
@@ -719,53 +734,53 @@ CLASS lcl_save IMPLEMENTATION.
       ENDLOOP.
 
       " Inserts rows specified in lt_travel_log_c into the DB table /dmo/log_travel
-      INSERT /dmo/log_travel FROM TABLE @lt_travel_log_c.
+      INSERT /dmo/log_travel FROM TABLE @travel_log_create.
 
     ENDIF.
 
 
     " (2) Get instance data of all instances that have been updated during the transaction
     IF update-travel IS NOT INITIAL.
-      lt_travel_log = CORRESPONDING #( update-travel ).
+      travel_log = CORRESPONDING #( update-travel ).
 
-      LOOP AT update-travel ASSIGNING FIELD-SYMBOL(<fs_travel_log_u>).
+      LOOP AT update-travel ASSIGNING FIELD-SYMBOL(<travel_log_update>).
 
-        ASSIGN lt_travel_log[ travel_id = <fs_travel_log_u>-travel_id ] TO FIELD-SYMBOL(<fs_travel_db>).
+        ASSIGN travel_log[ travel_id = <travel_log_update>-travel_id ] TO FIELD-SYMBOL(<travel_log_db>).
 
-        <fs_travel_db>-changing_operation = 'UPDATE'.
+        <travel_log_db>-changing_operation = 'UPDATE'.
 
         " Generate time stamp
-        GET TIME STAMP FIELD <fs_travel_db>-created_at.
+        GET TIME STAMP FIELD <travel_log_db>-created_at.
 
 
-        IF <fs_travel_log_u>-%control-customer_id = if_abap_behv=>mk-on.
-          <fs_travel_db>-changed_value = <fs_travel_log_u>-customer_id.
+        IF <travel_log_update>-%control-customer_id = if_abap_behv=>mk-on.
+          <travel_log_db>-changed_value = <travel_log_update>-customer_id.
           " Generate uuid as value of the change_id field
           TRY.
-              <fs_travel_db>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+              <travel_log_db>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
             CATCH cx_uuid_error.
               "handle exception
           ENDTRY.
 
-          <fs_travel_db>-changed_field_name = 'customer_id'.
+          <travel_log_db>-changed_field_name = 'customer_id'.
 
-          APPEND <fs_travel_db> TO lt_travel_log_u.
+          APPEND <travel_log_db> TO travel_log_update.
 
         ENDIF.
 
-        IF <fs_travel_log_u>-%control-description = if_abap_behv=>mk-on.
-          <fs_travel_db>-changed_value = <fs_travel_log_u>-description.
+        IF <travel_log_update>-%control-description = if_abap_behv=>mk-on.
+          <travel_log_db>-changed_value = <travel_log_update>-description.
 
           " Generate uuid as value of the change_id field
           TRY.
-              <fs_travel_db>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+              <travel_log_db>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
             CATCH cx_uuid_error.
               "handle exception
           ENDTRY.
 
-          <fs_travel_db>-changed_field_name = 'description'.
+          <travel_log_db>-changed_field_name = 'description'.
 
-          APPEND <fs_travel_db> TO lt_travel_log_u.
+          APPEND <travel_log_db> TO travel_log_update.
 
         ENDIF.
 
@@ -775,20 +790,20 @@ CLASS lcl_save IMPLEMENTATION.
 
 
       " Inserts rows specified in lt_travel_log_u into the DB table /dmo/log_travel
-      INSERT /dmo/log_travel FROM TABLE @lt_travel_log_u.
+      INSERT /dmo/log_travel FROM TABLE @travel_log_update.
 
     ENDIF.
 
     " (3) Get keys of all travel instances that have been deleted during the transaction
     IF delete-travel IS NOT INITIAL.
-      lt_travel_log = CORRESPONDING #( delete-travel ).
-      LOOP AT lt_travel_log ASSIGNING FIELD-SYMBOL(<fs_travel_log_d>).
-        <fs_travel_log_d>-changing_operation = 'DELETE'.
+      travel_log = CORRESPONDING #( delete-travel ).
+      LOOP AT travel_log ASSIGNING FIELD-SYMBOL(<travel_log_delete>).
+        <travel_log_delete>-changing_operation = 'DELETE'.
         " Generate time stamp
-        GET TIME STAMP FIELD <fs_travel_log_d>-created_at.
+        GET TIME STAMP FIELD <travel_log_delete>-created_at.
         " Generate uuid as value of the change_id field
         TRY.
-            <fs_travel_log_d>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
+            <travel_log_delete>-change_id = cl_system_uuid=>create_uuid_x16_static( ) .
           CATCH cx_uuid_error.
             "handle exception
         ENDTRY.
@@ -796,7 +811,7 @@ CLASS lcl_save IMPLEMENTATION.
       ENDLOOP.
 
       " Inserts rows specified in lt_travel_log into the DB table /dmo/log_travel
-      INSERT /dmo/log_travel FROM TABLE @lt_travel_log.
+      INSERT /dmo/log_travel FROM TABLE @travel_log.
 
     ENDIF.
 
@@ -806,56 +821,56 @@ CLASS lcl_save IMPLEMENTATION.
 * Implements unmanaged save
 *
 ********************************************************************************
-    DATA lt_booksuppl_db TYPE STANDARD TABLE OF /dmo/booksuppl_m.
+    DATA booksuppls_db TYPE STANDARD TABLE OF /dmo/booksuppl_m.
 
     " (1) Get instance data of all instances that have been created
     IF create-booksuppl IS NOT INITIAL.
-      lt_booksuppl_db = CORRESPONDING #( create-booksuppl ).
+      booksuppls_db = CORRESPONDING #( create-booksuppl ).
 
-      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_C' EXPORTING values = lt_booksuppl_db .
+      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_C' EXPORTING values = booksuppls_db .
 
     ENDIF.
 
     " (2) Get instance data of all instances that have been updated during the transaction
-    lt_booksuppl_db = CORRESPONDING #( update-booksuppl ).
-    IF lt_booksuppl_db IS NOT INITIAL.
+    booksuppls_db = CORRESPONDING #( update-booksuppl ).
+    IF booksuppls_db IS NOT INITIAL.
 
       " Read all field values from database
-      SELECT * FROM /dmo/booksuppl_m FOR ALL ENTRIES IN @lt_booksuppl_db
-               WHERE booking_supplement_id = @lt_booksuppl_db-booking_supplement_id
-               INTO TABLE @lt_booksuppl_db .
+      SELECT * FROM /dmo/booksuppl_m FOR ALL ENTRIES IN @booksuppls_db
+               WHERE booking_supplement_id = @booksuppls_db-booking_supplement_id
+               INTO TABLE @booksuppls_db .
 
       " Take over field values that have been changed during the transaction
-      LOOP AT update-booksuppl ASSIGNING FIELD-SYMBOL(<ls_unmanaged_booksuppl>).
-        ASSIGN lt_booksuppl_db[ travel_id  = <ls_unmanaged_booksuppl>-travel_id
-                                booking_id = <ls_unmanaged_booksuppl>-booking_id
-                     booking_supplement_id = <ls_unmanaged_booksuppl>-booking_supplement_id
-                       ] TO FIELD-SYMBOL(<ls_booksuppl_db>).
+      LOOP AT update-booksuppl ASSIGNING FIELD-SYMBOL(<unmanaged_booksuppl>).
+        ASSIGN booksuppls_db[ travel_id  = <unmanaged_booksuppl>-travel_id
+                              booking_id = <unmanaged_booksuppl>-booking_id
+                   booking_supplement_id = <unmanaged_booksuppl>-booking_supplement_id
+                            ] TO FIELD-SYMBOL(<booksuppl_db>).
 
-        IF <ls_unmanaged_booksuppl>-%control-supplement_id = if_abap_behv=>mk-on.
-          <ls_booksuppl_db>-supplement_id = <ls_unmanaged_booksuppl>-supplement_id.
+        IF <unmanaged_booksuppl>-%control-supplement_id = if_abap_behv=>mk-on.
+          <booksuppl_db>-supplement_id = <unmanaged_booksuppl>-supplement_id.
         ENDIF.
 
-        IF <ls_unmanaged_booksuppl>-%control-price = if_abap_behv=>mk-on.
-          <ls_booksuppl_db>-price = <ls_unmanaged_booksuppl>-price.
+        IF <unmanaged_booksuppl>-%control-price = if_abap_behv=>mk-on.
+          <booksuppl_db>-price = <unmanaged_booksuppl>-price.
         ENDIF.
 
-        IF <ls_unmanaged_booksuppl>-%control-currency_code = if_abap_behv=>mk-on.
-          <ls_booksuppl_db>-currency_code = <ls_unmanaged_booksuppl>-currency_code.
+        IF <unmanaged_booksuppl>-%control-currency_code = if_abap_behv=>mk-on.
+          <booksuppl_db>-currency_code = <unmanaged_booksuppl>-currency_code.
         ENDIF.
 
       ENDLOOP.
 
       " Update the complete instance data
-      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_U' EXPORTING values = lt_booksuppl_db .
+      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_U' EXPORTING values = booksuppls_db .
 
     ENDIF.
 
     " (3) Get keys of all travel instances that have been deleted during the transaction
     IF delete-booksuppl IS NOT INITIAL.
-      lt_booksuppl_db = CORRESPONDING #( delete-booksuppl ).
+      booksuppls_db = CORRESPONDING #( delete-booksuppl ).
 
-      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_D' EXPORTING values = lt_booksuppl_db .
+      CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_D' EXPORTING values = booksuppls_db .
 
     ENDIF.
 

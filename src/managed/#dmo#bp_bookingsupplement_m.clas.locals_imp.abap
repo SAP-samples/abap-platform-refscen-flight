@@ -20,9 +20,9 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         EXECUTE ReCalcTotalPrice
         FROM CORRESPONDING #( keys )
-    REPORTED DATA(lt_reported).
+    REPORTED DATA(reported_modify).
 
-    reported = CORRESPONDING #( DEEP lt_reported ).
+    reported = CORRESPONDING #( DEEP reported_modify ).
   ENDMETHOD.
 
 
