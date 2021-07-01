@@ -45,9 +45,10 @@ Use the <em>zabapgit</em> program to install the <em>ABAP Flight Reference Scena
 4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `On-Premise-2020`.
 5.	Leave the other fields unchanged and choose `Create Online Repo`.
 6. Enter your credentials for abapgit. You will see the available artifacts to import into your ABAP system. 
-8.	Choose `Pull` and confirm every subpackage on your transport request. 
-8.	Select the package `/DMO/FLIGHT` to be overwritten with the demo content and again confirm the transport request. You will get an information screen telling you to only make repairs when they are urgent, which you can confirm.  
-9.	Once the cloning has finished, refresh your project tree.
+7.	Choose `Pull` and confirm every subpackage on your transport request. 
+8.	Select the package `/DMO/FLIGHT` to be overwritten with the demo content and again confirm the transport request. You will get an information screen telling you to only make repairs when they are urgent, which you can confirm. 
+9. In the following screen, select all inactive objects and confirm the activation. 
+10.	Once the cloning has finished, refresh your project tree.
 
 
 As a result of the installation procedure above, the ABAP system creates all development objects of the demo content and adds the following sub packages to the target package: 
