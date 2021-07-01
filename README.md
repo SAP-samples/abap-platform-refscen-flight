@@ -38,14 +38,14 @@ For more information, see [Setting the System Change Option](https://help.sap.co
 
 
 ## Download
-Use the <em>zabapgit</em> to install the <em>ABAP Flight Reference Scenario</em> by executing the following steps:
+Use the <em>zabapgit</em> program to install the <em>ABAP Flight Reference Scenario</em> by executing the following steps:
 1.	In your ABAP project, create the package `/DMO/FLIGHT` as target package for the demo content. Use `HOME` as software component. Assign it to a new transport request that you only use for the demo content import. 
 2.	In your ABAP project, run the program `zabapgit`.  
 3.	Choose `New Online` and enter the following URL of this repository  `https://github.com/SAP/abap-platform-refscen-flight.git`. 
-4.	In the package field, enter the newly created package `/DMO/FLIGHT`.
-5.	Leave the other fields unchanged and choose `OK`. You will see the available artifacts to import into your ABAP system. 
-6.	To select the on-premise branch, choose `Branch` > `Switch` and select `On-Premise-2020`. 
-7.	Choose `Pull` and confirm every subpackage on your transport request. 
+4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `On-Premise-2020`.
+5.	Leave the other fields unchanged and choose `Create Online Repo`.
+6. Enter your credentials for abapgit. You will see the available artifacts to import into your ABAP system. 
+8.	Choose `Pull` and confirm every subpackage on your transport request. 
 8.	Select the package `/DMO/FLIGHT` to be overwritten with the demo content and again confirm the transport request. You will get an information screen telling you to only make repairs when they are urgent, which you can confirm.  
 9.	Once the cloning has finished, refresh your project tree.
 
@@ -57,8 +57,6 @@ As a result of the installation procedure above, the ABAP system creates all dev
 * `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
 * `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
 * `/DMO/FLIGHT_DRAFT` - represents the transactional app with <em>draft</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/71ba2bec1d0d4f22bc344bba6b569f2e.html)).
-
-NOTE:`zabapgit` activates all imported development objects, but fails to manage the activation order for behavior definitions and projection behavior defintions. This results in errors in the import report of zabapgit. Despite finishing the import with errors, you can use the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar to activate the behavior definitions. All other development objects are already activated.
 
 
 NOTE: The demo packages do not include  <em>service definitions</em> or <em>service bindings</em>. They must be created to complete the services (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.

@@ -3,85 +3,46 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <BDEF>
-    <METADATA>
-     <NAME>/DMO/C_TRAVEL_D_D</NAME>
-     <TYPE>BDEF/BDO</TYPE>
-     <VERSION>active</VERSION>
-     <DESCRIPTION>Behavior for /DMO/C_TRAVEL_D_D</DESCRIPTION>
-     <DESCRIPTION_TEXT_LIMIT>60</DESCRIPTION_TEXT_LIMIT>
-     <LINKS>
-      <item>
-       <COMMON_ATTRIBUTES>
-        <UNDEFINED_ATTRIBUTES>
-         <item>
-          <NAME>etag</NAME>
-          <TEXT>20200807032518001text/plain_ok2DTkpsJmbna6U/FeFu3YZkQpA=</TEXT>
-         </item>
-        </UNDEFINED_ATTRIBUTES>
-       </COMMON_ATTRIBUTES>
-       <HREF>./%2Fdmo%2Fc_travel_d_d/source/main</HREF>
-       <REL>http://www.sap.com/adt/relations/source</REL>
-       <TYPE>text/plain</TYPE>
-       <TITLE>Source Content</TITLE>
-      </item>
-      <item>
-       <COMMON_ATTRIBUTES>
-        <UNDEFINED_ATTRIBUTES>
-         <item>
-          <NAME>etag</NAME>
-         </item>
-        </UNDEFINED_ATTRIBUTES>
-       </COMMON_ATTRIBUTES>
-       <HREF>./%2Fdmo%2Fc_travel_d_d/source/main</HREF>
-       <REL>http://www.sap.com/adt/relations/source</REL>
-       <TYPE>text/html</TYPE>
-       <TITLE>Source Content (HTML)</TITLE>
-      </item>
-      <item>
-       <HREF>./%2Fdmo%2Fc_travel_d_d/source/main/versions</HREF>
-       <REL>http://www.sap.com/adt/relations/versions</REL>
-       <TITLE>Historic versions</TITLE>
-      </item>
-      <item>
-       <HREF>./%2Fdmo%2Fc_travel_d_d/objectstructure</HREF>
-       <REL>http://www.sap.com/adt/relations/objectstructure</REL>
-       <TITLE>Object Structure</TITLE>
-      </item>
-      <item>
-       <HREF>/sap/bc/adt/vit/wb/object_type/bdefbdo/object_name/%2fDMO%2fC_TRAVEL_D_D</HREF>
-       <REL>self</REL>
-       <TYPE>application/vnd.sap.sapgui</TYPE>
-       <TITLE>Representation in SAP GUI</TITLE>
-      </item>
-     </LINKS>
-     <SOURCE_URI>./%2Fdmo%2Fc_travel_d_d/source/main</SOURCE_URI>
-     <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
-     <SOURCE_FIXED_POINT_ARITHMETIC>true</SOURCE_FIXED_POINT_ARITHMETIC>
-     <SOURCE_UNICODE_CHECKS_ACTIVE>true</SOURCE_UNICODE_CHECKS_ACTIVE>
-     <SYNTAX_CONFIGURATION>
-      <LANGUAGE>
-       <UNICODE_CHECK_ACTIVE>true</UNICODE_CHECK_ACTIVE>
-       <VERSION>X</VERSION>
-       <DESCRIPTION>Standard ABAP</DESCRIPTION>
-       <LINKS>
-        <item>
-         <COMMON_ATTRIBUTES>
-          <UNDEFINED_ATTRIBUTES>
-           <item>
-            <NAME>etag</NAME>
-            <TEXT>756</TEXT>
-           </item>
-          </UNDEFINED_ATTRIBUTES>
-         </COMMON_ATTRIBUTES>
-         <HREF>/sap/bc/adt/abapsource/parsers/rnd/grammar</HREF>
-         <REL>http://www.sap.com/adt/relations/abapsource/parser</REL>
-         <TYPE>text/plain</TYPE>
-         <TITLE>Standard ABAP</TITLE>
-        </item>
-       </LINKS>
-      </LANGUAGE>
-     </SYNTAX_CONFIGURATION>
-    </METADATA>
+    <NAME>/DMO/C_TRAVEL_D_D</NAME>
+    <TYPE>BDEF/BDO</TYPE>
+    <DESCRIPTION>Behavior for /DMO/C_TRAVEL_D_D</DESCRIPTION>
+    <DESCRIPTION_TEXT_LIMIT>60</DESCRIPTION_TEXT_LIMIT>
+    <LANGUAGE>EN</LANGUAGE>
+    <LINKS>
+     <item>
+      <HREF>./%2Fdmo%2Fc_travel_d_d/source/main/versions</HREF>
+      <REL>http://www.sap.com/adt/relations/versions</REL>
+      <TITLE>Historic versions</TITLE>
+     </item>
+     <item>
+      <HREF>./%2Fdmo%2Fc_travel_d_d/source/main</HREF>
+      <REL>http://www.sap.com/adt/relations/source</REL>
+      <TYPE>text/plain</TYPE>
+      <TITLE>Source Content</TITLE>
+     </item>
+     <item>
+      <HREF>./%2Fdmo%2Fc_travel_d_d/source/main</HREF>
+      <REL>http://www.sap.com/adt/relations/source</REL>
+      <TYPE>text/html</TYPE>
+      <TITLE>Source Content (HTML)</TITLE>
+     </item>
+     <item>
+      <HREF>./%2Fdmo%2Fc_travel_d_d/objectstructure</HREF>
+      <REL>http://www.sap.com/adt/relations/objectstructure</REL>
+      <TITLE>Object Structure</TITLE>
+     </item>
+     <item>
+      <HREF>/sap/bc/adt/vit/wb/object_type/bdefbdo/object_name/%2fDMO%2fC_TRAVEL_D_D</HREF>
+      <REL>self</REL>
+      <TYPE>application/vnd.sap.sapgui</TYPE>
+      <TITLE>Representation in SAP GUI</TITLE>
+     </item>
+    </LINKS>
+    <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+    <SOURCE_URI>./%2Fdmo%2Fc_travel_d_d/source/main</SOURCE_URI>
+    <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
+    <SOURCE_FIXED_POINT_ARITHMETIC>true</SOURCE_FIXED_POINT_ARITHMETIC>
+    <SOURCE_UNICODE_CHECKS_ACTIVE>true</SOURCE_UNICODE_CHECKS_ACTIVE>
    </BDEF>
   </asx:values>
  </asx:abap>
