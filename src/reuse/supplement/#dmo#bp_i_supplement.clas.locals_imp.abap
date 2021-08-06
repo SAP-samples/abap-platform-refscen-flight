@@ -1,4 +1,9 @@
-CLASS lhc_Supplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
+class ltc_supplement DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_Supplement DEFINITION
+  INHERITING FROM cl_abap_behavior_handler
+  FRIENDS ltc_supplement
+  .
+
   PRIVATE SECTION.
 
     METHODS validateprice  FOR VALIDATE ON SAVE

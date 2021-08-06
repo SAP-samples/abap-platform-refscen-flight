@@ -5,4 +5,6 @@ define service /DMO/UI_TRAVEL_Approver_M {
   expose /DMO/I_Customer as Passenger;
   expose /DMO/I_Agency as TravelAgency;
   expose I_Currency as Currency;
+  expose /DMO/I_Overall_Status_VH as OverallStatusVH;
+  expose /DMO/I_Booking_Status_VH as BookingStatusVH;
 }

@@ -1,4 +1,5 @@
-CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lhc_booking DEFINITION
+  INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
     TYPES tt_booking_failed   TYPE TABLE FOR FAILED   /dmo/i_booking_u.

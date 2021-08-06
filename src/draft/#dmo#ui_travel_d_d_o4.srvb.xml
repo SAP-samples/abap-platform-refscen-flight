@@ -10,6 +10,11 @@
      <LANGUAGE>EN</LANGUAGE>
      <LINKS>
       <item>
+       <HREF>versions</HREF>
+       <REL>http://www.sap.com/adt/relations/versions</REL>
+       <TITLE>Historic versions</TITLE>
+      </item>
+      <item>
        <HREF>/sap/bc/adt/businessservices/odatav4/%2FDMO%2FUI_TRAVEL_D_D_O4</HREF>
        <REL>http://www.sap.com/categories/odatav4</REL>
        <TYPE>application/vnd.sap.adt.businessservices.odatav4.v1+xml</TYPE>
@@ -20,6 +25,12 @@
        <REL>http://www.sap.com/categories/testclass</REL>
        <TYPE>application/vnd.sap.adt.businessservices.testclass.v1+xml</TYPE>
        <TITLE>TESTCLASS</TITLE>
+      </item>
+      <item>
+       <HREF>/sap/bc/adt/businessservices/semanticversion</HREF>
+       <REL>http://www.sap.com/categories/semanticversion</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.semanticversion.v1+xml</TYPE>
+       <TITLE>SemanticVersion</TITLE>
       </item>
      </LINKS>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
@@ -46,7 +57,6 @@
       </item>
      </SERVICES>
     </CONTENT>
-    <PUBLISHED>true</PUBLISHED>
     <BINDING_CREATED>true</BINDING_CREATED>
    </SRVB>
   </asx:values>

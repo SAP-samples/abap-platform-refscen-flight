@@ -7,6 +7,7 @@
 @Search.searchable: true
 
 define root view entity /DMO/C_Travel_Approver_M
+  provider contract transactional_query
   as projection on /DMO/I_Travel_M
 {
       @UI.facet: [ { id:              'Travel',

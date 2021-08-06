@@ -6,6 +6,7 @@
 @ObjectModel.semanticKey: ['TravelID']
 
 define root view entity /DMO/C_Travel_D_D
+  provider contract transactional_query
   as projection on /DMO/I_Travel_D
 
 {

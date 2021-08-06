@@ -5,6 +5,7 @@
 
 @Search.searchable: true
 define root view entity /DMO/C_Travel_U
+  provider contract transactional_query
   as projection on /DMO/I_Travel_U
 
 {     ///DMO/I_Travel_U
