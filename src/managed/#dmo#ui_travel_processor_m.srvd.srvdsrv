@@ -13,4 +13,6 @@ define service /DMO/UI_TRAVEL_Processor_M {
   expose /DMO/I_Airport as Airport;
   expose I_Currency as Currency;
   expose I_Country as Country;
+  expose /DMO/I_Overall_Status_VH as OverallStatusVH;
+  expose /DMO/I_Booking_Status_VH as BookingStatusVH;
 }

@@ -1,4 +1,6 @@
-CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lhc_travel DEFINITION
+   INHERITING FROM cl_abap_behavior_handler.
+
   PRIVATE SECTION.
 
     TYPES tt_travel_failed    TYPE TABLE FOR FAILED   /dmo/i_travel_u.
@@ -229,7 +231,7 @@ CLASS lhc_travel IMPLEMENTATION.
           EXPORTING
             travel_id        = <travel_to_read>-TravelID
             messages         = messages
-            IMPORTING
+          IMPORTING
             failed_added = DATA(failed_added)
           CHANGING
             failed           = failed-travel
@@ -427,8 +429,8 @@ CLASS lhc_travel IMPLEMENTATION.
 
           map_messages_assoc_to_booking(
               EXPORTING
-                travel_id        = <booking_create>-TravelID
-                booking_id       = <booking_create>-bookingID
+                travel_id        = TravelID
+                booking_id       = booking-booking_ID
                 messages         = messages
                 IMPORTING
                 failed_added = failed_added
@@ -575,7 +577,9 @@ ENDCLASS.
 * Saver class implements the save sequence for data persistence
 *
 **********************************************************************
-CLASS lsc_I_TRAVEL_U DEFINITION INHERITING FROM cl_abap_behavior_saver.
+CLASS lsc_I_TRAVEL_U DEFINITION
+  INHERITING FROM cl_abap_behavior_saver.
+
   PROTECTED SECTION.
 
     METHODS finalize REDEFINITION.

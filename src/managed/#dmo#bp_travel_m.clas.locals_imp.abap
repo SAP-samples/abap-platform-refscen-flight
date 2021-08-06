@@ -1,8 +1,7 @@
-CLASS test_readonly_methods DEFINITION DEFERRED FOR TESTING.
-CLASS test_writing_methods  DEFINITION DEFERRED FOR TESTING.
+CLASS ltc_managed DEFINITION DEFERRED FOR TESTING.
 CLASS test_using_entity_stub  DEFINITION DEFERRED FOR TESTING.
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
-  FRIENDS test_readonly_methods test_writing_methods test_using_entity_stub.
+  FRIENDS ltc_managed test_using_entity_stub.
 
   PRIVATE SECTION.
 

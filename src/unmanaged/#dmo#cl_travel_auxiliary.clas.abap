@@ -7,6 +7,13 @@ CLASS /dmo/cl_travel_auxiliary DEFINITION
 
   PUBLIC SECTION.
 
+    "! Calculates the <em>fail_cause</em> according to the message class and ID.  If the the message is raised in a dependent
+    "! like <em>Create by Association</em> this is also taken in account.
+    "!
+    "! @parameter msgid | <p class="shorttext synchronized" lang="en">Message class</p>
+    "! @parameter msgno | <p class="shorttext synchronized" lang="en">Message ID</p>
+    "! @parameter is_dependend | <p class="shorttext synchronized" lang="en">Is this message raised in a dependent situation</p>
+    "! @parameter fail_cause | <p class="shorttext synchronized" lang="en"></p>
     CLASS-METHODS get_cause_from_message
       IMPORTING
         msgid             TYPE symsgid

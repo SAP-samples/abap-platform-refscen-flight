@@ -75,12 +75,12 @@ CLASS lhc_Supplement IMPLEMENTATION.
 
           "If suppl_text was created in the current LUW, perform an update based on %cid
         ELSEIF line_exists(  suppltext_for_new_suppl[ KEY cid %is_draft = supplement_update-%is_draft
-                                                          %cid_ref  = supplement_update-%cid_ref ] ).
+                                                              %cid_ref  = supplement_update-%cid_ref ] ).
           APPEND tabix TO relates_update.
 
           APPEND VALUE #( %tky             = suppl_text_tky
                           %cid_ref         = suppltext_for_new_suppl[ %is_draft = supplement_update-%is_draft
-                                                                  %cid_ref  = supplement_update-%cid_ref ]-%target[ 1 ]-%cid
+                                                                      %cid_ref  = supplement_update-%cid_ref ]-%target[ 1 ]-%cid
                           description      = supplement_update-SupplementDescription
                           %control         = VALUE #( description = supplement_update-%control-SupplementDescription )
                         ) TO supplementtext_update.
@@ -97,7 +97,7 @@ CLASS lhc_Supplement IMPLEMENTATION.
                                                 languagecode  = suppl_text_tky-LanguageCode
                                                 description   = supplement_update-SupplementDescription
                                                 %control      = VALUE #( languagecode = if_abap_behv=>mk-on
-                                                                         description   = supplement_update-%control-SupplementDescription )
+                                                                         description  = supplement_update-%control-SupplementDescription )
                                              ) )
                          ) TO suppltext_for_existing_suppl.
         ENDIF.

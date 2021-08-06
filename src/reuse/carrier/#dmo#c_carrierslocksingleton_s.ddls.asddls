@@ -5,6 +5,7 @@
 @ObjectModel.semanticKey: ['CarrierSingletonID']
 
 define root view entity /DMO/C_CarriersLockSingleton_S
+  provider contract transactional_query
   as projection on /DMO/I_CarriersLockSingleton_S
 {
   key CarrierSingletonID,

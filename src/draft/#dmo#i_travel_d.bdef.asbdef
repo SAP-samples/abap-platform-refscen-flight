@@ -14,16 +14,16 @@ etag master LocalLastChangedAt
   create;
   update;
   delete;
-  association _Booking { create ( features : instance ) ; with draft; }
+  association _Booking { create ( features : instance, authorization: update ) ; with draft; }
 
   field ( numbering : managed, readonly ) TravelUUID;
   field ( readonly ) TravelID, OverallStatus, TotalPrice, LocalCreatedAt, LocalCreatedBy, LocalLastChangedAt, LocalLastChangedBy;
   field ( mandatory ) CustomerID, AgencyID, BeginDate, EndDate;
   field ( features : instance ) BookingFee;
 
-  action ( features : instance ) acceptTravel result [1] $self;
-  action ( features : instance ) rejectTravel result [1] $self;
-  action ( features : instance ) deductDiscount parameter /dmo/a_travel_discount result [1] $self;
+  action ( features : instance, authorization: update ) acceptTravel result [1] $self;
+  action ( features : instance, authorization: update ) rejectTravel result [1] $self;
+  action ( features : instance, authorization: update ) deductDiscount parameter /dmo/a_travel_discount result [1] $self;
   internal action reCalcTotalPrice;
 
   determination setTravelNumber on save { create; }
@@ -78,9 +78,9 @@ etag master LocalLastChangedAt
 {
   update;
   delete;
-  association _BookingSupplement { create; with draft; }
+  association _BookingSupplement { create ( authorization: update ) ; with draft; }
 
-  association _Travel { with draft; }
+  association _Travel  { with draft; }
 
   field ( numbering : managed, readonly ) BookingUUID;
   field ( readonly ) TravelUUID, BookingID, BookingDate, LocalLastChangedAt;

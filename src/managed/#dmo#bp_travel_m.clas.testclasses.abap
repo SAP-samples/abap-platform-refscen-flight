@@ -1,268 +1,554 @@
-"! This class tests some read only methods ( get_featues, validate_travel_status)
-"! <br/>Data to be read is mocked by the cds test double framework
-"! <br/>Additional data is mocked by the osql test double framework
-"! <br/>Features used:
-"! <ul>
-"! <li>CREATE OBJECT FOR TESTING</li>
-"! <li>CL_CDS_TEST_ENVIRONMENT</li>
-"! <li>CL_OSQL_TEST_ENVIRONMENT</li>
-"! </ul>
-CLASS test_readonly_methods DEFINITION FINAL FOR TESTING
+"! @testing BDEF:/DMO/I_Travel_M
+CLASS ltc_managed DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
-
   PRIVATE SECTION.
-    CLASS-DATA: class_under_test     TYPE REF TO lhc_travel,  " the class to be tested
+
+    CLASS-DATA: class_under_test     TYPE REF TO lhc_travel,
                 cds_test_environment TYPE REF TO if_cds_test_environment,
                 sql_test_environment TYPE REF TO if_osql_test_environment.
 
-    "! setup test double framework
-    CLASS-METHODS class_setup.
+    CLASS-METHODS:
+      "! Instantiate class under test and setup test double frameworks
+      class_setup,
 
-    "! reset test doubles
-    METHODS setup.
+      "! Destroy test environments and test doubles
+      class_teardown.
 
-    "! Test of validation method validate_travel_status
-    METHODS validate_travel_status FOR TESTING.
+    METHODS:
+      "! Reset test doubles
+      setup,
 
-    METHODS get_features FOR TESTING.
+      "! Reset transactional buffer
+      teardown,
 
-    METHODS validate_customer FOR TESTING.
+      "! Check instance with overall status 'Open'
+      validate_travel_status_open    FOR TESTING,
 
-    "! rollback any changes
-    METHODS teardown.
+      "! Check instance with overall status 'Accepted'
+      validate_travel_status_acpt    FOR TESTING,
 
-    "! stop test doubles
-    CLASS-METHODS class_teardown.
+      "! Check instance with overall status 'Rejected'
+      validate_travel_status_rej     FOR TESTING,
+
+      "! Check instance with invalid overall status
+      validate_travel_status_invalid FOR TESTING,
+
+
+
+      "! Check returned features for instance with overall status 'Open'
+      get_features_open          FOR TESTING,
+
+      "! Check returned features for instance with overall status 'Accepted'
+      get_features_accepted      FOR TESTING,
+
+      "! Check returned features for instance with overall status 'Rejected'
+      get_features_rejected      FOR TESTING,
+
+      "! Check returned features for instance with invalid overall status
+      get_features_invalidstatus FOR TESTING,
+
+      "! Check returned features for instance with invalid key
+      get_features_invalidkey    FOR TESTING,
+
+
+
+      "! Check instance with valid customer ID
+      validate_customer_valid   FOR TESTING,
+
+      "! Check instance with invalid customer ID
+      validate_customer_invalid FOR TESTING,
+
+      "! Check instance with initial customer ID
+      validate_customer_initial FOR TESTING,
+
+
+
+      "! Check set_status_accepted action
+      set_status_accepted FOR TESTING.
+
+
+
 ENDCLASS.
 
-CLASS test_readonly_methods IMPLEMENTATION.
+CLASS ltc_managed IMPLEMENTATION.
 
   METHOD class_setup.
-    " Create the Class under Test
-    " The class is abstract but can be constructed with the FOR TESTING
     CREATE OBJECT class_under_test FOR TESTING.
-
-    " Create test doubles for database dependencies
-    " The EML READ operation will then also access the test doubles
     cds_test_environment = cl_cds_test_environment=>create( i_for_entity = '/DMO/I_TRAVEL_M' ).
-    cds_test_environment->enable_double_redirection( ).
-
     sql_test_environment = cl_osql_test_environment=>create( i_dependency_list = VALUE #( ( '/DMO/CUSTOMER' ) ) ).
   ENDMETHOD.
 
   METHOD setup.
-    " clear the content of the test double per test
     cds_test_environment->clear_doubles( ).
     sql_test_environment->clear_doubles( ).
   ENDMETHOD.
 
-  METHOD validate_travel_status.
-    " fill in test data
-    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
-    travel_mock_data = VALUE #( ( travel_id = 42 overall_status = 'A' )
-                                ( travel_id = 43 overall_status = 'B' ) " invalid status
-                                ( travel_id = 44 overall_status = 'O' ) ).
-    cds_test_environment->insert_test_data( i_data = travel_mock_data ).
+  METHOD teardown.
+    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
+  ENDMETHOD.
 
-    " call the method to be tested
+  METHOD class_teardown.
+    cds_test_environment->destroy( ).
+    sql_test_environment->destroy( ).
+  ENDMETHOD.
+
+  METHOD validate_travel_status_open.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '52' overall_status = 'O' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
     DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
     DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
 
+    " Call method to be tested
     class_under_test->validate_travel_status(
       EXPORTING
         keys     = CORRESPONDING #( travel_mock_data )
+
       CHANGING
         failed   = failed
         reported = reported
     ).
 
-    " check that failed has the relevant travel_id
-    cl_abap_unit_assert=>assert_not_initial( msg = 'failed' act = failed ).
-    cl_abap_unit_assert=>assert_equals( msg = 'failed-travelid' act = failed-travel[ 1 ]-travel_id exp = 43 ).
-
-    " check that reported also has the correct travel_id, the %element flagged and a message posted
-    cl_abap_unit_assert=>assert_not_initial( msg = 'reported' act = reported ).
-    DATA(reported_travel) = reported-travel[ 1 ].
-    cl_abap_unit_assert=>assert_equals( msg = 'reported-travelid' act = reported_travel-travel_id  exp = 43 ).
-    cl_abap_unit_assert=>assert_equals( msg = 'reported-%element' act = reported_travel-%element-overall_status  exp = if_abap_behv=>mk-on ).
-    cl_abap_unit_assert=>assert_bound(  msg = 'reported-%msg'     act = reported_travel-%msg ).
+    " Check for content in failed and reported
+    cl_abap_unit_assert=>assert_initial( msg = 'failed' act = failed ).
+    cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
   ENDMETHOD.
 
-  METHOD get_features.
-    " fill in test data
+
+  METHOD validate_travel_status_acpt.
+
+    " Fill in test data
     DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
-    travel_mock_data = VALUE #( ( travel_id = 42 overall_status = 'A' )
-                                ( travel_id = 43 overall_status = 'X' )
-                                ( travel_id = 44 overall_status = 'O' ) ).
-    cds_test_environment->insert_test_data( i_data = travel_mock_data ).
+    travel_mock_data = VALUE #( ( travel_id = '52' overall_status = 'A' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call method to be tested
+    class_under_test->validate_travel_status(
+      EXPORTING
+        keys     = CORRESPONDING #( travel_mock_data )
+
+      CHANGING
+        failed   = failed
+        reported = reported
+    ).
+
+    " Check for content in failed and reported
+    cl_abap_unit_assert=>assert_initial( msg = 'failed' act = failed ).
+    cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
+
+  ENDMETHOD.
 
 
-    " call the method to be tested
+  METHOD validate_travel_status_rej.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '52' overall_status = 'X' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call method to be tested
+    class_under_test->validate_travel_status(
+      EXPORTING
+        keys     = CORRESPONDING #( travel_mock_data )
+
+      CHANGING
+        failed   = failed
+        reported = reported
+    ).
+
+    " Check for content in failed and reported
+    cl_abap_unit_assert=>assert_initial( msg = 'failed' act = failed ).
+    cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_travel_status_invalid.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '52' overall_status = 'T' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call method to be tested
+    class_under_test->validate_travel_status(
+      EXPORTING
+        keys     = CORRESPONDING #( travel_mock_data )
+
+      CHANGING
+        failed   = failed
+        reported = reported
+    ).
+
+    " Check number of returned instances in failed-travel
+    cl_abap_unit_assert=>assert_equals( act = lines( failed-travel ) exp = 1 msg = 'lines in failed-travel' ).
+
+    " Check travel id in failed-travel
+    cl_abap_unit_assert=>assert_equals( act = failed-travel[ 1 ]-travel_id exp = '52' msg = 'travel id in failed-travel'  ).
+
+
+
+    " Check number of returned instances in reported-travel
+    cl_abap_unit_assert=>assert_equals( act = lines( reported-travel ) exp = 1 msg = 'lines in reported-travel' ).
+
+    " Check travel id in reported-travel
+    cl_abap_unit_assert=>assert_equals( act = reported-travel[ 1 ]-travel_id  exp = '52' msg = 'travel id in reported-travel' ).
+
+    " Check marked field in reported-travel
+    cl_abap_unit_assert=>assert_equals( act = reported-travel[ 1 ]-%element-overall_status  exp = if_abap_behv=>mk-on msg = 'field overall status in reported-travel' ).
+
+    " Check message reference in reported-travel
+    cl_abap_unit_assert=>assert_bound( act = reported-travel[ 1 ]-%msg msg = 'message reference in reported-travel' ).
+
+  ENDMETHOD.
+
+
+
+  METHOD get_features_open.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' overall_status = 'O' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required table and structures
     DATA result  TYPE TABLE FOR INSTANCE FEATURES RESULT /dmo/i_travel_m\\travel.
     DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
     DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
 
+    " Call the method to be tested
     class_under_test->get_features(
       EXPORTING
         keys               = CORRESPONDING #(  travel_mock_data )
-        requested_features = VALUE #(  %action-accepttravel = if_abap_behv=>mk-on )
+        requested_features = VALUE #(  %action-accepttravel = if_abap_behv=>mk-on
+                                       %action-rejectTravel = if_abap_behv=>mk-on
+                                       %assoc-_Booking      = if_abap_behv=>mk-on )
+
       CHANGING
         result             = result
         failed             = failed
         reported           = reported
     ).
 
-    " get_features should only fail on invalid keys
-    cl_abap_unit_assert=>assert_initial( msg = 'failed' act = failed ).
-    cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
-
-
-    " copy only relevant fields travel_id and %action-accepttravel
-    DATA actual LIKE result.
-    actual = CORRESPONDING #( result MAPPING travel_id = travel_id
-                                  (  %action = %action MAPPING accepttravel = accepttravel EXCEPT * ) EXCEPT * ).
-
+    " Check result
     DATA expected LIKE result.
-    expected  = VALUE #( ( travel_id = 42 %action-accepttravel = if_abap_behv=>fc-o-disabled )
-                         ( travel_id = 43 %action-accepttravel = if_abap_behv=>fc-o-enabled  )
-                         ( travel_id = 44 %action-accepttravel = if_abap_behv=>fc-o-enabled  ) ).
+    expected  = VALUE #( ( travel_id            = '43'
+                           %action-accepttravel = if_abap_behv=>fc-o-enabled
+                           %action-rejectTravel = if_abap_behv=>fc-o-enabled
+                           %assoc-_Booking      = if_abap_behv=>fc-o-enabled ) ).
 
-    cl_abap_unit_assert=>assert_equals( msg = 'result' exp = expected act = actual ).
+    cl_abap_unit_assert=>assert_equals( msg = 'result' exp = expected act = result ).
+
   ENDMETHOD.
 
-  METHOD validate_customer.
-    " fill in test data for entity travel
-    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
-    travel_mock_data = VALUE #( ( travel_id = 42 customer_id = '' )
-                                ( travel_id = 43 customer_id = '1' )
-                                ( travel_id = 44 customer_id = '2' ) ).
-    cds_test_environment->insert_test_data( i_data = travel_mock_data ).
 
-    " fill in mock data for customer table
+  METHOD get_features_accepted.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' overall_status = 'A' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required table and structures
+    DATA result  TYPE TABLE FOR INSTANCE FEATURES RESULT /dmo/i_travel_m\\travel.
+    DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
+
+    " Call the method to be tested
+    class_under_test->get_features(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+        requested_features = VALUE #(  %action-accepttravel = if_abap_behv=>mk-on
+                                       %action-rejectTravel = if_abap_behv=>mk-on
+                                       %assoc-_Booking      = if_abap_behv=>mk-on )
+
+      CHANGING
+        result             = result
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check result
+    DATA expected LIKE result.
+    expected  = VALUE #( ( travel_id            = '43'
+                           %action-accepttravel = if_abap_behv=>fc-o-disabled
+                           %action-rejectTravel = if_abap_behv=>fc-o-enabled
+                           %assoc-_Booking      = if_abap_behv=>fc-o-enabled ) ).
+
+    cl_abap_unit_assert=>assert_equals( msg = 'result' exp = expected act = result ).
+
+  ENDMETHOD.
+
+
+  METHOD get_features_rejected.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' overall_status = 'X' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required table and structures
+    DATA result  TYPE TABLE FOR INSTANCE FEATURES RESULT /dmo/i_travel_m\\travel.
+    DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
+
+    " Call method to be tested
+    class_under_test->get_features(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+        requested_features = VALUE #(  %action-accepttravel = if_abap_behv=>mk-on
+                                       %action-rejectTravel = if_abap_behv=>mk-on
+                                       %assoc-_Booking      = if_abap_behv=>mk-on )
+
+      CHANGING
+        result             = result
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check result
+    DATA expected LIKE result.
+    expected  = VALUE #( ( travel_id            = '43'
+                           %action-accepttravel = if_abap_behv=>fc-o-enabled
+                           %action-rejectTravel = if_abap_behv=>fc-o-disabled
+                           %assoc-_Booking      = if_abap_behv=>fc-o-disabled ) ).
+
+    cl_abap_unit_assert=>assert_equals( msg = 'result' exp = expected act = result ).
+
+  ENDMETHOD.
+
+
+
+  METHOD get_features_invalidstatus.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' overall_status = 'T' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required table and structures
+    DATA result  TYPE TABLE FOR INSTANCE FEATURES RESULT /dmo/i_travel_m\\travel.
+    DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
+
+    " Call the method to be tested
+    class_under_test->get_features(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+        requested_features = VALUE #(  %action-accepttravel = if_abap_behv=>mk-on
+                                       %action-rejectTravel = if_abap_behv=>mk-on
+                                       %assoc-_Booking      = if_abap_behv=>mk-on )
+
+      CHANGING
+        result             = result
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check result
+    DATA expected LIKE result.
+    expected  = VALUE #( ( travel_id            = '43'
+                           %action-accepttravel = if_abap_behv=>fc-o-enabled
+                           %action-rejectTravel = if_abap_behv=>fc-o-enabled
+                           %assoc-_Booking      = if_abap_behv=>fc-o-enabled ) ).
+
+    cl_abap_unit_assert=>assert_equals( msg = 'result' exp = expected act = result ).
+
+  ENDMETHOD.
+
+
+
+  METHOD get_features_invalidkey.
+
+    " Declare required table and structures
+    DATA result  TYPE TABLE FOR INSTANCE FEATURES RESULT /dmo/i_travel_m\\travel.
+    DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
+
+    " Call the method to be tested with invalid/not existing key
+    class_under_test->get_features(
+      EXPORTING
+        keys               = VALUE #( ( travel_id = '43' ) )
+        requested_features = VALUE #(  %action-accepttravel = if_abap_behv=>mk-on
+                                       %action-rejectTravel = if_abap_behv=>mk-on
+                                       %assoc-_Booking      = if_abap_behv=>mk-on )
+
+      CHANGING
+        result             = result
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check number of returned instances in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'lines in failed-travel' act = lines( failed-travel ) exp = 1 ).
+
+    " Check travel id in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'travel id in failed-travel' act = failed-travel[ 1 ]-travel_id exp = '43' ).
+
+    " Check fail-cause in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'fail-cause in failed-travel' act = failed-travel[ 1 ]-%fail-cause exp = if_abap_behv=>cause-not_found ).
+
+  ENDMETHOD.
+
+  METHOD validate_customer_valid.
+
+    " Fill in test data for entity travel
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' customer_id = '1' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Fill in test data for customer table
     DATA customer_mock_data TYPE STANDARD TABLE OF /dmo/customer.
     customer_mock_data = VALUE #(  (  customer_id = '1' ) ).
-    sql_test_environment->insert_test_data( i_data = customer_mock_data ).
+    sql_test_environment->insert_test_data( customer_mock_data ).
 
-    " call the method to be tested
+    " Declare required structures
     DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
     DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
 
+    " Call the method to be tested
     class_under_test->validate_customer(
       EXPORTING
         keys               = CORRESPONDING #(  travel_mock_data )
+
       CHANGING
         failed             = failed
         reported           = reported
     ).
 
-    IF NOT line_exists( failed-travel[ KEY entity travel_id = 42 ] ).
-      cl_abap_unit_assert=>fail( msg = 'No failed for empty customer id'  ).
-    ENDIF.
-    IF NOT line_exists( failed-travel[ KEY entity travel_id = 44 ] ).
-      cl_abap_unit_assert=>fail( msg = 'No failed for nonexisting customer'  ).
-    ENDIF.
-    IF     line_exists( failed-travel[ KEY entity travel_id = 43 ] ).
-      cl_abap_unit_assert=>fail( msg = 'Failed for existing customer'  ).
-    ENDIF.
+    " Check for content in failed and reported
+    cl_abap_unit_assert=>assert_initial( msg = 'failed' act = failed ).
+    cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
-    IF NOT line_exists( reported-travel[ KEY entity travel_id = 42 ] ).
-      cl_abap_unit_assert=>fail( msg = 'No reported for empty customer id'  ).
-    ENDIF.
-    IF NOT line_exists( reported-travel[ KEY entity travel_id = 44 ] ).
-      cl_abap_unit_assert=>fail( msg = 'No reported for nonexisting customer'  ).
-    ENDIF.
-    IF     line_exists( reported-travel[ KEY entity travel_id = 43 ] ).
-      cl_abap_unit_assert=>fail( msg = 'Reported for existing customer'  ).
-    ENDIF.
   ENDMETHOD.
 
-  METHOD teardown.
-    " clean up any involved entity
-    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
-  ENDMETHOD.
+  METHOD validate_customer_invalid.
 
-  METHOD class_teardown.
-    " stop mocking
-    cds_test_environment->destroy( ).
-  ENDMETHOD.
-
-ENDCLASS.
-
-"""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
-
-
-"! This class tests some methods with EML MODIFY
-"! <br/>Data to be read is mocked by the cds test double framework
-"! <br/>Data is written into the buffer of the entity but not to the database
-"!
-"! <br/>Features used:
-"! <ul><li>CREATE OBJECT FOR TESTING</li><li>CL_CDS_TEST_ENVIRONMENT</li></ul>
-"! Drawbacks
-"! <ul><li>Determinations might be called during modify, disturbing the test<li>
-"! <li>Cannot use IN LOCAL MODE, so reading data back might not work</li></ul>
-CLASS test_writing_methods DEFINITION FINAL FOR TESTING
-  DURATION SHORT
-  RISK LEVEL HARMLESS.
-
-  PRIVATE SECTION.
-    CLASS-DATA: class_under_test     TYPE REF TO lhc_travel,  " the class to be tested
-                cds_test_environment TYPE REF TO if_cds_test_environment.
-
-    "! setup test double framework
-    CLASS-METHODS class_setup.
-
-    "! reset test doubles
-    METHODS setup.
-
-
-
-    METHODS set_status_completed FOR TESTING RAISING cx_static_check.
-
-    "! rollback any changes
-    METHODS teardown.
-
-    "! stop test doubles
-    CLASS-METHODS class_teardown.
-ENDCLASS.
-
-CLASS test_writing_methods IMPLEMENTATION.
-
-  METHOD class_setup.
-    " Create the Class under Test
-    " The class is abstract but can be constructed with the FOR TESTING
-    CREATE OBJECT class_under_test FOR TESTING.
-
-    " Create test doubles for database dependencies
-    " The EML READ operation will then also access the test doubles
-    cds_test_environment = cl_cds_test_environment=>create( i_for_entity = '/DMO/I_TRAVEL_M' ).
-    cds_test_environment->enable_double_redirection( ).
-  ENDMETHOD.
-
-  METHOD setup.
-    " clear the content of the test double per test
-    cds_test_environment->clear_doubles( ).
-  ENDMETHOD.
-
-  METHOD set_status_completed.
-    " fill in test data for entity travel
+    " Fill in test data for entity travel
     DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
-    travel_mock_data = VALUE #( ( travel_id = 42 overall_status = 'A' )
-                                ( travel_id = 43 overall_status = 'B' )
-                                ( travel_id = 44 overall_status = 'X' ) ).
-    cds_test_environment->insert_test_data( i_data = travel_mock_data ).
+    travel_mock_data = VALUE #( ( travel_id = '43' customer_id = '1' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call the method to be tested
+    class_under_test->validate_customer(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+
+      CHANGING
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check number of returned instances in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'lines in failed-travel' act = lines( failed-travel ) exp = 1 ).
+
+    " Check travel id in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'travel id in failed-travel' act = failed-travel[ 1 ]-travel_id exp = '43' ).
 
 
-    " call the method to be tested
-    DATA result TYPE TABLE FOR ACTION RESULT /dmo/i_travel_m\\travel~accepttravel.
-    DATA mapped TYPE RESPONSE FOR MAPPED EARLY /dmo/i_travel_m.
-    DATA failed TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
+    " Check number of returned instances in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'lines in reported-travel' act = lines( reported-travel ) exp = 1 ).
+
+    " Check travel id in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'travel id in reported-travel' act = reported-travel[ 1 ]-travel_id  exp = '43' ).
+
+    " Check marked field in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'field customer id in reported-travel' act = reported-travel[ 1 ]-%element-customer_id  exp = if_abap_behv=>mk-on ).
+
+    " Check message reference in reported-travel
+    cl_abap_unit_assert=>assert_bound(  msg = 'message reference in reported-travel' act = reported-travel[ 1 ]-%msg ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_customer_initial.
+
+    " Fill in test data for entity travel
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' customer_id = '' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call the method to be tested
+    class_under_test->validate_customer(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+
+      CHANGING
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check number of returned instances in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'lines in failed-travel' act = lines( failed-travel ) exp = 1 ).
+
+    " Check travel id in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'travel id in failed-travel' act = failed-travel[ 1 ]-travel_id exp = '43' ).
+
+
+
+    " Check number of returned instances in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'lines in reported-travel' act = lines( reported-travel ) exp = 1 ).
+
+    " Check travel id in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'travel id in reported-travel' act = reported-travel[ 1 ]-travel_id  exp = '43' ).
+
+    " Check marked field in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'field customer id in reported-travel' act = reported-travel[ 1 ]-%element-customer_id  exp = if_abap_behv=>mk-on ).
+
+    " Check message reference in reported-travel
+    cl_abap_unit_assert=>assert_bound(  msg = 'message reference in reported-travel' act = reported-travel[ 1 ]-%msg ).
+
+  ENDMETHOD.
+
+
+
+  METHOD set_status_accepted.
+
+    " Fill in test data
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '42' overall_status = 'A' )
+                                ( travel_id = '43' overall_status = 'B' )
+                                ( travel_id = '44' overall_status = 'X' )
+                                ( travel_id = '45' overall_status = '' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required table and structures
+    DATA result   TYPE TABLE FOR ACTION RESULT /dmo/i_travel_m\\travel~accepttravel.
+    DATA mapped   TYPE RESPONSE FOR MAPPED EARLY /dmo/i_travel_m.
+    DATA failed   TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_m.
     DATA reported TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_m.
 
+    " Call the method to be tested
     class_under_test->set_status_accepted(
       EXPORTING
         keys     = CORRESPONDING #(  travel_mock_data )
+
       CHANGING
         result   = result
         mapped   = mapped
@@ -270,17 +556,18 @@ CLASS test_writing_methods IMPLEMENTATION.
         reported = reported
     ).
 
+    " Check for content in mapped, failed and reported
     cl_abap_unit_assert=>assert_initial( msg = 'mapped' act = mapped ).
     cl_abap_unit_assert=>assert_initial( msg = 'failed' act = failed ).
     cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
 
-    " expect input keys and output keys to be same and overall_status everywhere = 'A'
+    " Check action result for fields of interest: travel_id, %param-travel_id, %param-overall_status.
     DATA exp LIKE result.
-    exp = VALUE #(  ( travel_id = 42 %param-travel_id = 42 %param-overall_status = 'A' )
-                    ( travel_id = 43 %param-travel_id = 43 %param-overall_status = 'A' )
-                    ( travel_id = 44 %param-travel_id = 44 %param-overall_status = 'A' ) ).
+    exp = VALUE #(  ( travel_id = 42 %param-travel_id = '42' %param-overall_status = 'A' )
+                    ( travel_id = 43 %param-travel_id = '43' %param-overall_status = 'A' )
+                    ( travel_id = 44 %param-travel_id = '44' %param-overall_status = 'A' )
+                    ( travel_id = 45 %param-travel_id = '45' %param-overall_status = 'A' ) ).
 
-    " copy only fields of interest = travel_id, %param-travel_id, %param-overall_status.
     DATA act LIKE result.
     act = CORRESPONDING #( result MAPPING travel_id = travel_id
                                        (  %param = %param MAPPING travel_id = travel_id
@@ -290,7 +577,11 @@ CLASS test_writing_methods IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( msg = 'action result' exp = exp act = act ).
 
 
-    "additionally check by reading entity state
+
+
+
+    " Additionally check modified instances
+
     READ ENTITY /dmo/i_travel_m
       FIELDS ( travel_id overall_status ) WITH CORRESPONDING #( travel_mock_data )
       RESULT DATA(read_result).
@@ -298,20 +589,15 @@ CLASS test_writing_methods IMPLEMENTATION.
     act = VALUE #( FOR t IN read_result ( travel_id = t-travel_id
                                           %param-travel_id = t-travel_id
                                           %param-overall_status = t-overall_status ) ).
+
     cl_abap_unit_assert=>assert_equals( msg = 'read result' exp = exp act = act ).
+
   ENDMETHOD.
 
-
-  METHOD teardown.
-    " clean up any involved entity
-    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
-  ENDMETHOD.
-  METHOD class_teardown.
-    " stop mocking
-    cds_test_environment->destroy( ).
-  ENDMETHOD.
 
 ENDCLASS.
+
+
 
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
 """""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""""
@@ -434,7 +720,7 @@ CLASS test_using_entity_stub IMPLEMENTATION.
     cl_abap_behv_test_environment=>unset_test_double( root = '/DMO/TRAVEL_D' ).
 
     " clean up any involved entity (should not be necessary as we mocked the entity, just to be safe).
-    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
+    ROLLBACK ENTITIES.                                 "#EC CI_ROLLBACK
   ENDMETHOD.
 
 

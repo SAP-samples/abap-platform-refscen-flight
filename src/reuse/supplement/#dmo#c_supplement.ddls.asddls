@@ -6,6 +6,7 @@
 @ObjectModel.semanticKey: ['SupplementID']
 
 define root view entity /DMO/C_Supplement
+  provider contract transactional_query
   as projection on /DMO/I_Supplement
 {
 
