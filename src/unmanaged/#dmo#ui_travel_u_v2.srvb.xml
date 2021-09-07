@@ -5,35 +5,8 @@
    <SRVB>
     <METADATA>
      <NAME>/DMO/UI_TRAVEL_U_V2</NAME>
-     <TYPE>SRVB/SVB</TYPE>
+     <VERSION>active</VERSION>
      <DESCRIPTION>UI service for managing travels (V2)</DESCRIPTION>
-     <LANGUAGE>EN</LANGUAGE>
-     <LINKS>
-      <item>
-       <HREF>versions</HREF>
-       <REL>http://www.sap.com/adt/relations/versions</REL>
-       <TITLE>Historic versions</TITLE>
-      </item>
-      <item>
-       <HREF>/sap/bc/adt/businessservices/odatav2/%2FDMO%2FUI_TRAVEL_U_V2</HREF>
-       <REL>http://www.sap.com/categories/odatav2</REL>
-       <TYPE>application/vnd.sap.adt.businessservices.odatav2.v2+xml</TYPE>
-       <TITLE>ODATAV2</TITLE>
-      </item>
-      <item>
-       <HREF>/sap/bc/adt/businessservices/testclass</HREF>
-       <REL>http://www.sap.com/categories/testclass</REL>
-       <TYPE>application/vnd.sap.adt.businessservices.testclass.v1+xml</TYPE>
-       <TITLE>TESTCLASS</TITLE>
-      </item>
-      <item>
-       <HREF>/sap/bc/adt/businessservices/semanticversion</HREF>
-       <REL>http://www.sap.com/categories/semanticversion</REL>
-       <TYPE>application/vnd.sap.adt.businessservices.semanticversion.v1+xml</TYPE>
-       <TITLE>SemanticVersion</TITLE>
-      </item>
-     </LINKS>
-     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     </METADATA>
     <CONTENT>
      <BIND_TYPE_IMPL>

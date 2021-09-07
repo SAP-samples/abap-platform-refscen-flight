@@ -120,9 +120,9 @@ CLASS lhc_travel IMPLEMENTATION.
 
       APPEND VALUE #( %tky                = <key_with_valid_discount>-%tky
                       %msg                = NEW /dmo/cm_flight_messages(
-                             textid = /dmo/cm_flight_messages=>discount_invalid
-                             severity = if_abap_behv_message=>severity-error )
-                             %element-TotalPrice = if_abap_behv=>mk-on
+                                                textid = /dmo/cm_flight_messages=>discount_invalid
+                                                severity = if_abap_behv_message=>severity-error )
+                      %element-TotalPrice = if_abap_behv=>mk-on
                     ) TO reported-travel.
 
       DELETE keys_with_valid_discount.
@@ -279,8 +279,7 @@ CLASS lhc_travel IMPLEMENTATION.
      ENTITY Travel
        FIELDS ( OverallStatus )
        WITH CORRESPONDING #( keys )
-     RESULT DATA(travels)
-     FAILED DATA(read_failed).
+     RESULT DATA(travels).
 
     "If Status is already set, do nothing
     DELETE travels WHERE OverallStatus IS NOT INITIAL.
