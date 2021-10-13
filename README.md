@@ -17,12 +17,13 @@ To import the reference scenario into your on-premise ABAP system, follow the st
 
 * [READ-ME](../On-Premise-1909/README.md) of branch <em>On-Premise-1909</em> (Application Server ABAP 7.54)
 * [READ-ME](../On-Premise-2020/README.md) of branch <em>On-Premise-2020</em> (Application Server ABAP 7.55)
+* [READ-ME](../On-Premise-2021/README.md) of branch <em>On-Premise-2021</em> (Application Server ABAP 7.56)
 
-For more information about the ABAP Flight Reference Scenario, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/def316685ad14033b051fc4b88db07c8.html).
+For more information about the ABAP Flight Reference Scenario, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/def316685ad14033b051fc4b88db07c8.html).
 
 ## How to obtain support
 This project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
 ## License
-Copyright (c) 2018-2021 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the SAP Sample Code License except as noted otherwise in the [LICENSE](LICENSES/Apache-2.0.txt) file.
+Copyright (c) 2018-2022 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the SAP Sample Code License except as noted otherwise in the [LICENSE](LICENSES/Apache-2.0.txt) file.
 
