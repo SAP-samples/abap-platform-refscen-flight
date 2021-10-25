@@ -48,8 +48,8 @@ CLASS ltc_supplement DEFINITION FINAL FOR TESTING
       earlynumbering_wrong_category FOR TESTING RAISING cx_static_check,
 
 
-      "! Checks that { @link ..lhc_Supplement.METH:earlynumbering_create } returns initial values
-      "! for <em>mapped</em>, <em>failed</em> and <em>reported</em>.
+      "! Checks that { @link ..lhc_Supplement.METH:get_global_authorizations } returns initial values
+      "! for <em>result</em> and <em>reported</em>.
       get_global_authorizations     FOR TESTING RAISING cx_static_check.
 
 ENDCLASS.

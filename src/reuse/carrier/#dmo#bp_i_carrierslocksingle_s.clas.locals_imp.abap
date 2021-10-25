@@ -1,4 +1,8 @@
-CLASS lhc_carrier DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lthc_carrier DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_carrier DEFINITION
+  INHERITING FROM cl_abap_behavior_handler
+  FRIENDS lthc_carrier
+  .
 
   PRIVATE SECTION.
 
@@ -46,15 +50,18 @@ CLASS lhc_carrier IMPLEMENTATION.
                                                        textid        = /dmo/cx_carriers_s=>airline_still_used
                                                        severity      = if_abap_behv_message=>severity-information
                                                        airline_id    = <carrier>-AirlineID )
-*                        %delete                     = if_abap_behv=>mk-on
+                        %delete                     = if_abap_behv=>mk-on
                         %path-carrierslocksingleton = CORRESPONDING #( <carrier> )
                       ) TO reported-carrier.
+      ELSE.
+        APPEND VALUE #( %tky    = <carrier>-%tky
+                        %delete = if_abap_behv=>fc-o-enabled ) TO result.
       ENDIF.
     ENDLOOP.
 
   ENDMETHOD.
 
-METHOD validateCurrencyCode.
+  METHOD validateCurrencyCode.
 
     DATA: currency_codes TYPE SORTED TABLE OF I_Currency WITH UNIQUE KEY Currency.
 
@@ -141,7 +148,11 @@ METHOD validateCurrencyCode.
 
 ENDCLASS.
 
-CLASS lhc_CarriersLockSingleton DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lthc_CarriersLockSingleton DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_CarriersLockSingleton DEFINITION
+  INHERITING FROM cl_abap_behavior_handler
+  FRIENDS lthc_carrierslocksingleton
+  .
   PRIVATE SECTION.
 
     METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
@@ -157,7 +168,11 @@ CLASS lhc_CarriersLockSingleton IMPLEMENTATION.
 ENDCLASS.
 
 
-CLASS lsc_I_CARRIERSLOCKSINGLETON_S DEFINITION INHERITING FROM cl_abap_behavior_saver.
+CLASS ltsc_I_CARRIERSLOCKSINGLETON_S DEFINITION DEFERRED FOR TESTING.
+CLASS lsc_I_CARRIERSLOCKSINGLETON_S DEFINITION
+  INHERITING FROM cl_abap_behavior_saver
+  FRIENDS ltsc_I_CARRIERSLOCKSINGLETON_S
+  .
   PROTECTED SECTION.
 
     METHODS save_modified REDEFINITION.

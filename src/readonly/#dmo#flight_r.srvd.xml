@@ -5,14 +5,14 @@
    <SRVD>
     <NAME>/DMO/FLIGHT_R</NAME>
     <TYPE>SRVD/SRV</TYPE>
-    <DESCRIPTION>Service Definition for Managing Flight</DESCRIPTION>
+    <DESCRIPTION>Service Definition for Managing Flights</DESCRIPTION>
     <LANGUAGE>EN</LANGUAGE>
     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     <SOURCE_URI>./%2Fdmo%2Fflight_r/source/main</SOURCE_URI>
     <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
     <SOURCE_ORIGIN_DESCRIPTION>ABAP Development Tools</SOURCE_ORIGIN_DESCRIPTION>
     <SRVD_SOURCE_TYPE>S</SRVD_SOURCE_TYPE>
-    <SRVD_SOURCE_TYPE_DESC>Service Definition</SRVD_SOURCE_TYPE_DESC>
+    <SRVD_SOURCE_TYPE_DESC>Definition</SRVD_SOURCE_TYPE_DESC>
    </SRVD>
   </asx:values>
  </asx:abap>

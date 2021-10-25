@@ -7,7 +7,7 @@ implementation in class /DMO/BP_TRAVEL_U unique
 etag master LastChangedAt
 lock master
 authorization master ( global )
-
+late numbering
 {
   field ( readonly ) TravelID;
   field ( mandatory ) AgencyID, CustomerID, BeginDate, EndDate;
@@ -18,22 +18,22 @@ authorization master ( global )
 
   action ( features : instance ) set_status_booked result [1] $self;
 
-  association _Booking { create (features: instance); }
+  association _Booking { create ( features : instance ); }
 
 
   mapping for /dmo/travel control /dmo/s_travel_intx
   {
-    AgencyID      = agency_id;
-    BeginDate     = begin_date;
-    BookingFee    = booking_fee;
-    CurrencyCode  = currency_code;
-    CustomerID    = customer_id;
-    EndDate       = end_date;
+    AgencyID = agency_id;
+    BeginDate = begin_date;
+    BookingFee = booking_fee;
+    CurrencyCode = currency_code;
+    CustomerID = customer_id;
+    EndDate = end_date;
     LastChangedAt = lastchangedat;
-    Memo          = description;
-    Status        = status;
-    TotalPrice    = total_price;
-    TravelID      = travel_id;
+    Memo = description;
+    Status = status;
+    TotalPrice = total_price;
+    TravelID = travel_id;
   }
 }
 
@@ -43,7 +43,7 @@ implementation in class /DMO/BP_BOOKING_U unique
 etag dependent by _Travel
 lock dependent by _Travel
 authorization dependent by _Travel
-
+late numbering
 {
   field ( readonly ) TravelID, BookingID;
   field ( mandatory ) BookingDate, CustomerID, AirlineID, ConnectionID, FlightDate;
@@ -57,15 +57,15 @@ authorization dependent by _Travel
 
   mapping for /dmo/booking control /dmo/s_booking_intx
   {
-    AirlineID    = carrier_id;
-    BookingDate  = booking_date;
-    BookingID    = booking_id;
+    AirlineID = carrier_id;
+    BookingDate = booking_date;
+    BookingID = booking_id;
     ConnectionID = connection_id;
     CurrencyCode = currency_code;
-    CustomerID   = customer_id;
-    FlightDate   = flight_date;
-    FlightPrice  = flight_price;
-    TravelID     = travel_id;
+    CustomerID = customer_id;
+    FlightDate = flight_date;
+    FlightPrice = flight_price;
+    TravelID = travel_id;
   }
 
 }
@@ -76,11 +76,11 @@ implementation in class /DMO/BP_BOOKINGSUPPLEMENT_U unique
 etag dependent by _Travel
 lock dependent by _Travel
 authorization dependent by _Travel
-
+late numbering
 {
 
   field ( readonly ) TravelID, BookingID, BookingSupplementID;
-  field ( mandatory: create, readonly : update ) SupplementID;
+  field ( mandatory : create, readonly : update ) SupplementID;
   field ( mandatory ) Price;
 
 
@@ -88,16 +88,16 @@ authorization dependent by _Travel
   update;
   delete;
 
-  association _Travel;
+  association _Travel abbreviation Travel;
   association _Booking;
 
   mapping for /dmo/book_suppl control /dmo/s_booking_supplement_intx
   {
-    BookingID           = booking_id;
+    BookingID = booking_id;
     BookingSupplementID = booking_supplement_id;
-    CurrencyCode        = currency_code;
-    Price               = price;
-    SupplementID        = supplement_id;
-    TravelID            = travel_id;
+    CurrencyCode = currency_code;
+    Price = price;
+    SupplementID = supplement_id;
+    TravelID = travel_id;
   }
 }

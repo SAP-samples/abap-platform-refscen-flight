@@ -35,7 +35,7 @@ etag master LocalLastChangedAt
   validation validateDates on save { create; field BeginDate, EndDate; }
   validation validateAuthOnCreate on save { create; }
 
-  draft action resume;
+  draft action Resume;
   draft action Edit;
   draft action Activate;
   draft action Discard;
@@ -45,6 +45,7 @@ etag master LocalLastChangedAt
     validation validateAgency;
     validation validateCustomer;
     validation validateDates;
+    validation validateAuthOnCreate;
     validation Booking ~ validateCustomer;
     validation Booking ~ validateConnection;
     validation Bookingsupplement ~ validateSupplement; }

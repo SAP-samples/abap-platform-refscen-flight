@@ -1,6 +1,6 @@
-CLASS ltc_draft DEFINITION DEFERRED FOR TESTING.
+CLASS ltc_travel DEFINITION DEFERRED FOR TESTING.
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
- FRIENDS ltc_draft.
+ FRIENDS ltc_travel.
 
   PRIVATE SECTION.
 
@@ -69,9 +69,7 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         UPDATE FIELDS (  OverallStatus )
         WITH VALUE #( FOR key IN keys ( %tky          = key-%tky
-                                        OverallStatus = travel_status-accepted ) )
-    FAILED failed
-    REPORTED reported.
+                                        OverallStatus = travel_status-accepted ) ).
 
     "Read changed data for action result
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
@@ -92,9 +90,7 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         UPDATE FIELDS (  OverallStatus )
         WITH VALUE #( FOR key IN keys ( %tky          = key-%tky
-                                        OverallStatus = travel_status-rejected ) )
-    FAILED failed
-    REPORTED reported.
+                                        OverallStatus = travel_status-rejected ) ).
 
     "Read changed data for action result
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
@@ -104,7 +100,7 @@ CLASS lhc_travel IMPLEMENTATION.
       RESULT DATA(travels).
 
     result = VALUE #( FOR travel IN travels ( %tky   = travel-%tky
-                                                %param = travel ) ).
+                                              %param = travel ) ).
 
   ENDMETHOD.
 
@@ -116,13 +112,14 @@ CLASS lhc_travel IMPLEMENTATION.
                                                         OR %param-discount_percent > 100
                                                         OR %param-discount_percent <= 0.
 
-      APPEND VALUE #( %tky                = <key_with_valid_discount>-%tky ) TO failed-travel.
+      APPEND VALUE #( %tky                       = <key_with_valid_discount>-%tky ) TO failed-travel.
 
-      APPEND VALUE #( %tky                = <key_with_valid_discount>-%tky
-                      %msg                = NEW /dmo/cm_flight_messages(
-                             textid = /dmo/cm_flight_messages=>discount_invalid
-                             severity = if_abap_behv_message=>severity-error )
-                             %element-TotalPrice = if_abap_behv=>mk-on
+      APPEND VALUE #( %tky                       = <key_with_valid_discount>-%tky
+                      %msg                       = NEW /dmo/cm_flight_messages(
+                                                       textid = /dmo/cm_flight_messages=>discount_invalid
+                                                       severity = if_abap_behv_message=>severity-error )
+                      %element-TotalPrice        = if_abap_behv=>mk-on
+                      %op-%action-deductDiscount = if_abap_behv=>mk-on
                     ) TO reported-travel.
 
       DELETE keys_with_valid_discount.
@@ -135,14 +132,11 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         FIELDS ( BookingFee )
         WITH CORRESPONDING #( keys_with_valid_discount )
-      RESULT DATA(travels)
-      FAILED DATA(read_failed).
-
-    failed = CORRESPONDING #( DEEP read_failed ).
+      RESULT DATA(travels).
 
     LOOP AT travels ASSIGNING FIELD-SYMBOL(<travel>).
       DATA percentage TYPE decfloat16.
-      DATA(discount_percent) = keys_with_valid_discount[ key draft %tky = <travel>-%tky ]-%param-discount_percent.
+      DATA(discount_percent) = keys_with_valid_discount[ %tky = <travel>-%tky ]-%param-discount_percent.
       percentage =  discount_percent / 100 .
       DATA(reduced_fee) = <travel>-BookingFee * ( 1 - percentage ) .
 
@@ -155,9 +149,7 @@ CLASS lhc_travel IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
        UPDATE FIELDS ( BookingFee )
-       WITH travels_for_update
-    FAILED DATA(update_failed)
-    REPORTED DATA(update_reported).
+       WITH travels_for_update.
 
     "Read changed data for action result
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
@@ -184,8 +176,7 @@ CLASS lhc_travel IMPLEMENTATION.
          ENTITY Travel
             FIELDS ( BookingFee CurrencyCode )
             WITH CORRESPONDING #( keys )
-         RESULT DATA(travels)
-         FAILED failed.
+         RESULT DATA(travels).
 
     DELETE travels WHERE CurrencyCode IS INITIAL.
 
@@ -264,13 +255,10 @@ CLASS lhc_travel IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
         UPDATE FIELDS ( TravelID )
-        WITH VALUE #( FOR ls_travel IN travels INDEX INTO i (
-                           %tky      = ls_travel-%tky
-                           TravelID  = max_travelid + i ) )
-    REPORTED DATA(update_reported).
+        WITH VALUE #( FOR travel IN travels INDEX INTO i (
+                           %tky      = travel-%tky
+                           TravelID  = max_travelid + i ) ).
 
-    "fill reported
-    reported = CORRESPONDING #( DEEP update_reported ).
   ENDMETHOD.
 
   METHOD setStatusToOpen.
@@ -279,8 +267,7 @@ CLASS lhc_travel IMPLEMENTATION.
      ENTITY Travel
        FIELDS ( OverallStatus )
        WITH CORRESPONDING #( keys )
-     RESULT DATA(travels)
-     FAILED DATA(read_failed).
+     RESULT DATA(travels).
 
     "If Status is already set, do nothing
     DELETE travels WHERE OverallStatus IS NOT INITIAL.
@@ -290,10 +277,7 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         UPDATE FIELDS ( OverallStatus )
         WITH VALUE #( FOR travel IN travels ( %tky          = travel-%tky
-                                              OverallStatus = travel_status-open ) )
-    REPORTED DATA(update_reported).
-
-    reported = CORRESPONDING #( DEEP update_reported ).
+                                              OverallStatus = travel_status-open ) ).
 
   ENDMETHOD.
 
@@ -302,10 +286,7 @@ CLASS lhc_travel IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
-        FROM CORRESPONDING #( keys )
-    REPORTED DATA(update_reported).
-
-    reported = CORRESPONDING #( DEEP update_reported ).
+        FROM CORRESPONDING #( keys ).
 
   ENDMETHOD.
 
@@ -315,10 +296,7 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         FIELDS ( CustomerID )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(travels)
-      FAILED DATA(read_failed).
-
-    failed =  CORRESPONDING #( DEEP read_failed  ).
+      RESULT DATA(travels).
 
     DATA customers TYPE SORTED TABLE OF /dmo/customer WITH UNIQUE KEY customer_id.
 
@@ -377,10 +355,7 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         FIELDS ( AgencyID TravelID )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(travels)
-      FAILED DATA(read_failed).
-
-    failed =  CORRESPONDING #( DEEP read_failed  ).
+      RESULT DATA(travels).
 
     DATA agencies TYPE SORTED TABLE OF /dmo/agency WITH UNIQUE KEY agency_id.
 
@@ -389,14 +364,14 @@ CLASS lhc_travel IMPLEMENTATION.
     DELETE agencies WHERE agency_id IS INITIAL.
 
     IF  agencies IS NOT INITIAL.
-      " Check if customer ID exists
+      " Check if Agency ID exists
       SELECT FROM /dmo/agency FIELDS agency_id, country_code
                               FOR ALL ENTRIES IN @agencies
                               WHERE agency_id = @agencies-agency_id
         INTO TABLE @DATA(valid_agencies).
     ENDIF.
 
-    " Raise message for non existing customer id
+    " Raise message for non existing Agency id
     LOOP AT travels INTO DATA(travel).
       APPEND VALUE #(  %tky               = travel-%tky
                        %state_area        = 'VALIDATE_AGENCY'
@@ -453,14 +428,12 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD validateDates.
+
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS (  BeginDate EndDate TravelID )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(travels)
-      FAILED DATA(read_failed).
-
-    failed =  CORRESPONDING #( DEEP read_failed  ).
+      RESULT DATA(travels).
 
     LOOP AT travels INTO DATA(travel).
 
@@ -550,6 +523,7 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_global_authorizations.
+
     IF requested_authorizations-%create EQ if_abap_behv=>mk-on.
       IF is_create_granted( ) = abap_true.
         result-%create = if_abap_behv=>auth-allowed.
@@ -719,26 +693,27 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         FIELDS ( AgencyID )
         WITH CORRESPONDING #( keys )
-    RESULT DATA(travels)
-    FAILED failed.
+        RESULT DATA(travels)
+      FAILED failed.
 
     CHECK travels IS NOT INITIAL.
 
     "Select country_code and agency of corresponding persistent travel instance
     "authorization  only checked against instance that have active persistence
-    SELECT  FROM /dmo/a_travel_d AS travel  INNER JOIN /dmo/agency AS agency
-          ON travel~agency_id = agency~agency_id
-          FIELDS travel~travel_uuid , travel~agency_id, agency~country_code
-          FOR ALL ENTRIES IN @travels WHERE travel_uuid EQ @travels-TravelUUID
-          INTO  TABLE @DATA(travel_agency_country).
+    SELECT FROM /dmo/a_travel_d AS travel
+      INNER JOIN /dmo/agency    AS agency ON travel~agency_id = agency~agency_id
+      FIELDS travel~travel_uuid , travel~agency_id, agency~country_code
+      FOR ALL ENTRIES IN @travels
+      WHERE travel_uuid EQ @travels-TravelUUID
+      INTO  TABLE @DATA(travel_agency_country).
 
 
     "edit is treated like update
-    update_requested = COND #( WHEN requested_authorizations-%update                = if_abap_behv=>mk-on OR
-                                    requested_authorizations-%action-Edit           = if_abap_behv=>mk-on
+    update_requested = COND #( WHEN requested_authorizations-%update      = if_abap_behv=>mk-on
+                                 OR requested_authorizations-%action-Edit = if_abap_behv=>mk-on
                                THEN abap_true ELSE abap_false ).
 
-    delete_requested = COND #( WHEN requested_authorizations-%delete                = if_abap_behv=>mk-on
+    delete_requested = COND #( WHEN requested_authorizations-%delete      = if_abap_behv=>mk-on
                                THEN abap_true ELSE abap_false ).
 
 
@@ -792,9 +767,11 @@ CLASS lhc_travel IMPLEMENTATION.
         ENDIF.
       ENDIF.
 
-      APPEND VALUE #( LET upd_auth = COND #( WHEN update_granted = abap_true THEN if_abap_behv=>auth-allowed
+      APPEND VALUE #( LET upd_auth = COND #( WHEN update_granted = abap_true
+                                             THEN if_abap_behv=>auth-allowed
                                              ELSE if_abap_behv=>auth-unauthorized )
-                          del_auth = COND #( WHEN delete_granted = abap_true THEN if_abap_behv=>auth-allowed
+                          del_auth = COND #( WHEN delete_granted = abap_true
+                                             THEN if_abap_behv=>auth-allowed
                                              ELSE if_abap_behv=>auth-unauthorized )
                       IN
                        %tky = travel-%tky
@@ -805,24 +782,23 @@ CLASS lhc_travel IMPLEMENTATION.
                     ) TO result.
     ENDLOOP.
 
-
   ENDMETHOD.
 
   METHOD validateAuthOnCreate.
+
     DATA: create_granted      TYPE abap_boolean,
           agency_country_code TYPE land1.
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
-    ENTITY Travel
-      FIELDS ( AgencyID )
-      WITH CORRESPONDING #( keys )
-    RESULT DATA(travels)
-    FAILED DATA(read_failed).
+      ENTITY Travel
+        FIELDS ( AgencyID )
+        WITH CORRESPONDING #( keys )
+        RESULT DATA(travels).
 
-    failed = CORRESPONDING #( DEEP read_failed ).
     CHECK travels IS NOT INITIAL.
 
-    SELECT FROM /dmo/agency FIELDS agency_id, country_code
+    SELECT FROM /dmo/agency
+      FIELDS agency_id, country_code
       FOR ALL ENTRIES IN @travels
       WHERE agency_id = @travels-AgencyID
       INTO TABLE @DATA(agency_country_codes).

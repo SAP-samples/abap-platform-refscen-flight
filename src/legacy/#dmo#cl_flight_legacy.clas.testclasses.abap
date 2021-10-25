@@ -53,6 +53,8 @@ CLASS ltc_travel DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
 
     "! Create and check a single travel
     METHODS create                      FOR TESTING RAISING cx_static_check.
+    "! Create and check a single travel in late numbering mode
+    METHODS create_late_numbering       FOR TESTING RAISING cx_static_check.
     "! Try to create a travel with an unknown agency -> ERROR
     METHODS c_agency_unknown            FOR TESTING RAISING cx_static_check.
     "! Try to create a travel with an unknown customer -> ERROR
@@ -108,6 +110,10 @@ CLASS ltc_travel DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS.
     METHODS u_no_control                FOR TESTING RAISING cx_static_check.
     "! Try to change the travel status to an invalid value -> ERROR
     METHODS u_status_invalid            FOR TESTING RAISING cx_static_check.
+    "! Checks if a travel_id is valid otherwise return message
+    METHODS check_travel_id             FOR TESTING RAISING cx_static_check.
+    "! Checks if a travel_id is drawn in late numbering mode and skipped in early
+    METHODS adjust_numbers              FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS /dmo/cl_flight_legacy DEFINITION LOCAL FRIENDS ltc_travel.
@@ -237,6 +243,52 @@ CLASS ltc_travel IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD create_late_numbering.
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count1). "#EC CI_NOWHERE
+
+    DATA lv_start TYPE timestampl.
+    GET TIME STAMP FIELD lv_start.
+
+    gr_cut->create_travel( EXPORTING is_travel         = VALUE #( agency_id = gv_agency_id_1  customer_id = gv_customer_id_2   begin_date = '20190101'  end_date = '20190201' )
+                                     iv_numbering_mode = /dmo/if_flight_legacy=>numbering_mode-late
+                           IMPORTING es_travel         = DATA(ls_travel_new)
+                                     et_messages       = DATA(lt_messages) ).
+    cl_abap_unit_assert=>assert_initial( lt_messages ).
+    cl_abap_unit_assert=>assert_not_initial( ls_travel_new-travel_id ).
+    gr_cut->adjust_numbers(
+        IMPORTING
+          et_travel_mapping       = DATA(lt_travel_mapping)
+          et_booking_mapping      = DATA(lt_booking_mapping)
+          et_bookingsuppl_mapping = DATA(lt_bookingsuppl_mapping)
+      ).
+    cl_abap_unit_assert=>assert_not_initial( lt_travel_mapping       ).
+    cl_abap_unit_assert=>assert_initial(     lt_booking_mapping      ).
+    cl_abap_unit_assert=>assert_initial(     lt_bookingsuppl_mapping ).
+    gr_cut->save( ).
+
+    DATA(lv_travel_id_final) = lt_travel_mapping[ 1 ]-final-travel_id.
+
+    DATA lv_end TYPE timestampl.
+    GET TIME STAMP FIELD lv_end.
+
+    SELECT COUNT( * ) FROM /dmo/travel INTO @DATA(lv_count2). "#EC CI_NOWHERE
+    cl_abap_unit_assert=>assert_equals( msg = 'create should add a travel'  exp = 1  act = lv_count2 - lv_count1 ).
+
+    SELECT FROM /dmo/travel FIELDS createdby, createdat, status WHERE travel_id = @lv_travel_id_final INTO TABLE @DATA(lt_travel).
+    cl_abap_unit_assert=>assert_equals( msg = 'cannot read created travel' exp = 1 act = lines(  lt_travel ) ).
+    DATA(ls_travel) = lt_travel[ 1 ].
+
+    cl_abap_unit_assert=>assert_equals( msg = 'createdby' exp = ls_travel-createdby act = sy-uname ).
+    cl_abap_unit_assert=>assert_number_between( msg = 'createdat' number = ls_travel-createdat lower = lv_start upper = lv_end ).
+
+    cl_abap_unit_assert=>assert_equals( msg = 'status' act = ls_travel-status exp = CONV /dmo/travel_status( /dmo/if_flight_legacy=>travel_status-new ) ).
+
+    _delete_existing_travel( lv_travel_id_final ).
+
+    ROLLBACK WORK.                                     "#EC CI_ROLLBACK
+  ENDMETHOD.
+
+
   METHOD create_mutiple_calls.
     DATA lv_start TYPE timestampl.
     GET TIME STAMP FIELD lv_start.
@@ -263,7 +315,7 @@ CLASS ltc_travel IMPLEMENTATION.
     SELECT FROM /dmo/travel FIELDS createdby, createdat, status WHERE travel_id = @ls_travel_1-travel_id OR travel_id = @ls_travel_2-travel_id INTO TABLE @DATA(lt_travel) ##SELECT_FAE_WITH_LOB[DESCRIPTION].
     cl_abap_unit_assert=>assert_equals( msg = 'cannot read created travel'  exp = 2  act = lines( lt_travel ) ).
 
-    DATA(ls_travel) = lt_travel[ 1 ]. "#EC CI_NOORDER
+    DATA(ls_travel) = lt_travel[ 1 ].                   "#EC CI_NOORDER
 
     cl_abap_unit_assert=>assert_equals( msg = 'createdby' exp = ls_travel-createdby act = sy-uname ).
     cl_abap_unit_assert=>assert_number_between( msg = 'createdat' number = ls_travel-createdat lower = lv_start upper = lv_end ).
@@ -1047,6 +1099,120 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( lt_messages ).
     gr_cut->save( ).
   ENDMETHOD.
+
+  METHOD check_travel_id.
+    "Test Travel IDs
+    CONSTANTS cv_travel_id_initial          TYPE /dmo/travel_id VALUE IS INITIAL.
+    CONSTANTS cv_travel_id_in_delete_buffer TYPE /dmo/travel_id VALUE '123'.
+    CONSTANTS cv_travel_id_in_create_buffer TYPE /dmo/travel_id VALUE '321'.
+    DATA      lv_travel_id_in_db            TYPE /dmo/travel_id.
+    DATA      lv_travel_id_unknown          TYPE /dmo/travel_id.
+
+    "Other variables
+    DATA lv_travel_id_is_valid TYPE abap_bool.
+    DATA: lt_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
+
+    "setup
+    DATA(lo_buffer) = NEW lcl_travel_buffer( ).
+    lo_buffer->mt_delete_buffer = VALUE #( ( travel_id = cv_travel_id_in_delete_buffer ) ).
+    lo_buffer->mt_create_buffer = VALUE #( ( travel_id = cv_travel_id_in_create_buffer ) ).
+    SELECT SINGLE FROM /dmo/travel FIELDS MAX( travel_id ) INTO @lv_travel_id_in_db.
+    lv_travel_id_unknown = lv_travel_id_in_db + 1.
+
+    "Check if travel_id is initial
+    CLEAR lt_messages.
+    CLEAR lv_travel_id_is_valid.
+    lv_travel_id_is_valid = lo_buffer->check_travel_id(
+                                EXPORTING
+                                  iv_travel_id = cv_travel_id_initial
+                                CHANGING
+                                  ct_messages  = lt_messages
+                              ).
+    cl_abap_unit_assert=>assert_equals( exp = abap_false  act = lv_travel_id_is_valid ).
+    cl_abap_unit_assert=>assert_not_initial( act = lt_messages ).
+
+    "Check if travel_id is in delete buffer
+    CLEAR lt_messages.
+    CLEAR lv_travel_id_is_valid.
+    lv_travel_id_is_valid = lo_buffer->check_travel_id(
+                                EXPORTING
+                                  iv_travel_id = cv_travel_id_in_delete_buffer
+                                CHANGING
+                                  ct_messages  = lt_messages
+                              ).
+    cl_abap_unit_assert=>assert_equals( exp = abap_false  act = lv_travel_id_is_valid ).
+    cl_abap_unit_assert=>assert_not_initial( act = lt_messages ).
+
+    "Check if travel_id is unknown
+    CLEAR lt_messages.
+    CLEAR lv_travel_id_is_valid.
+    lv_travel_id_is_valid = lo_buffer->check_travel_id(
+                                EXPORTING
+                                  iv_travel_id = lv_travel_id_unknown
+                                CHANGING
+                                  ct_messages  = lt_messages
+                              ).
+    cl_abap_unit_assert=>assert_equals( exp = abap_false  act = lv_travel_id_is_valid ).
+    cl_abap_unit_assert=>assert_not_initial( act = lt_messages ).
+
+    "Check if travel_id is in create buffer
+    CLEAR lt_messages.
+    CLEAR lv_travel_id_is_valid.
+    lv_travel_id_is_valid = lo_buffer->check_travel_id(
+                                EXPORTING
+                                  iv_travel_id = cv_travel_id_in_create_buffer
+                                CHANGING
+                                  ct_messages  = lt_messages
+                              ).
+    cl_abap_unit_assert=>assert_equals( exp = abap_true  act = lv_travel_id_is_valid ).
+    cl_abap_unit_assert=>assert_initial( act = lt_messages ).
+
+    "Check if travel_id is in db and therefore valid
+    CLEAR lt_messages.
+    CLEAR lv_travel_id_is_valid.
+    lv_travel_id_is_valid = lo_buffer->check_travel_id(
+                                EXPORTING
+                                  iv_travel_id = lv_travel_id_in_db
+                                CHANGING
+                                  ct_messages  = lt_messages
+                              ).
+    cl_abap_unit_assert=>assert_equals( exp = abap_true  act = lv_travel_id_is_valid ).
+    cl_abap_unit_assert=>assert_initial( lt_messages ).
+  ENDMETHOD.
+
+  METHOD adjust_numbers.
+    CONSTANTS cv_travel_id_early       TYPE /dmo/travel_id VALUE '42'.
+    DATA      lv_travel_id_preliminary TYPE /dmo/travel_id.
+
+    DATA lt_mapping TYPE /dmo/if_flight_legacy=>tt_ln_travel_mapping.
+
+    DATA(lo_buffer) = NEW lcl_travel_buffer( ).
+
+    "early
+    CLEAR lt_mapping.
+    CLEAR lo_buffer->mt_create_buffer.
+    lo_buffer->mt_create_buffer = VALUE #( ( travel_id = cv_travel_id_early ) ).
+
+    lt_mapping = lo_buffer->adjust_numbers( ).
+    cl_abap_unit_assert=>assert_initial( lt_mapping ).
+
+
+    "late
+    CLEAR lt_mapping.
+    CLEAR lo_buffer->mt_create_buffer.
+    lv_travel_id_preliminary = /dmo/if_flight_legacy=>late_numbering_boundary + 1.
+    lo_buffer->mt_create_buffer = VALUE #( ( travel_id = lv_travel_id_preliminary ) ).
+
+    lt_mapping = lo_buffer->adjust_numbers( ).
+
+    cl_abap_unit_assert=>assert_not_initial( lt_mapping ).
+    cl_abap_unit_assert=>assert_equals( act = lines( lt_mapping )  exp = 1 ).
+    cl_abap_unit_assert=>assert_not_initial( lt_mapping[ 1 ]-final-travel_id ).
+    cl_abap_unit_assert=>assert_equals( act = lt_mapping[ 1 ]-preliminary-travel_id  exp = lv_travel_id_preliminary ).
+
+    ROLLBACK WORK.                                     "#EC CI_ROLLBACK
+  ENDMETHOD.
+
 ENDCLASS.
 
 
@@ -1146,6 +1312,8 @@ CLASS ltc_booking DEFINITION FOR TESTING DURATION SHORT RISK LEVEL HARMLESS INHE
     METHODS c_currency_code_unknown  FOR TESTING RAISING cx_static_check.
     "! Try to update a booking with an unknown currency code -> ERROR
     METHODS u_currency_code_unknown  FOR TESTING RAISING cx_static_check.
+    "! Checks if a travel_id is drawn in late numbering mode and skipped in early and the booking_id is copied
+    METHODS adjust_numbers              FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS /dmo/cl_flight_legacy DEFINITION LOCAL FRIENDS ltc_booking.
@@ -2225,6 +2393,54 @@ CLASS ltc_booking IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( lt_messages ).
     gr_cut->save( ).
   ENDMETHOD.
+
+  METHOD adjust_numbers.
+    CONSTANTS cv_travel_id_preliminary_1 TYPE /dmo/travel_id VALUE '1337'.
+    CONSTANTS cv_travel_id_final_1       TYPE /dmo/travel_id VALUE '42'.
+    CONSTANTS cv_travel_id_final_2       TYPE /dmo/travel_id VALUE '314'.
+    CONSTANTS cv_booking_id_final_1      TYPE /dmo/booking_id VALUE '1'.
+    CONSTANTS cv_booking_id_final_2      TYPE /dmo/booking_id VALUE '2'.
+
+    DATA lt_mapping TYPE /dmo/if_flight_legacy=>tt_ln_booking_mapping.
+
+    DATA(lo_buffer) = NEW lcl_booking_buffer( ).
+
+
+    lo_buffer->mt_create_buffer = VALUE #(
+        ( travel_id = cv_travel_id_preliminary_1  booking_id = cv_booking_id_final_1 )
+        ( travel_id = cv_travel_id_final_2        booking_id = cv_booking_id_final_2 )
+      ).
+
+    lt_mapping = lo_buffer->adjust_numbers(
+                   VALUE #( ( preliminary = VALUE #( travel_id = cv_travel_id_preliminary_1 )
+                              final       = VALUE #( travel_id = cv_travel_id_final_1       ) ) )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( lt_mapping ).
+    cl_abap_unit_assert=>assert_equals( act = lines( lt_mapping )  exp = 2 ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = lt_mapping[
+                  preliminary-travel_id  = cv_travel_id_preliminary_1
+                  preliminary-booking_id = cv_booking_id_final_1
+                ]-final
+        exp = VALUE /dmo/if_flight_legacy=>ts_ln_booking(
+                  travel_id  = cv_travel_id_final_1
+                  booking_id = cv_booking_id_final_1
+                )
+      ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = lt_mapping[
+                  preliminary-travel_id  = cv_travel_id_final_2
+                  preliminary-booking_id = cv_booking_id_final_2
+                ]-final
+        exp = VALUE /dmo/if_flight_legacy=>ts_ln_booking(
+                  travel_id  = cv_travel_id_final_2
+                  booking_id = cv_booking_id_final_2
+                )
+      ).
+  ENDMETHOD.
 ENDCLASS.
 
 
@@ -2333,6 +2549,9 @@ CLASS ltc_booking_supplement DEFINITION FINAL FOR TESTING DURATION SHORT RISK LE
                                             is_booking_supplement        TYPE /dmo/s_booking_supplement_in
                                             iv_save                      TYPE abap_bool DEFAULT abap_true
                                   RETURNING VALUE(rs_booking_supplement) TYPE /dmo/book_suppl.
+
+    "! Checks if a travel_id is drawn in late numbering mode and skipped in early and the booking_id + booking_supplement_id is copied
+    METHODS adjust_numbers              FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 CLASS /dmo/cl_flight_legacy DEFINITION LOCAL FRIENDS ltc_booking_supplement.
@@ -4045,5 +4264,59 @@ CLASS ltc_booking_supplement IMPLEMENTATION.
     IF iv_save = abap_true.
       gr_cut->save( ).
     ENDIF.
+  ENDMETHOD.
+
+  METHOD adjust_numbers.
+    CONSTANTS cv_travel_id_preliminary_1 TYPE /dmo/travel_id VALUE '1337'.
+    CONSTANTS cv_travel_id_final_1       TYPE /dmo/travel_id VALUE '42'.
+    CONSTANTS cv_travel_id_final_2       TYPE /dmo/travel_id VALUE '314'.
+    CONSTANTS cv_booking_id_final_1      TYPE /dmo/booking_id VALUE '61'.
+    CONSTANTS cv_booking_id_final_2      TYPE /dmo/booking_id VALUE '62'.
+    CONSTANTS cv_booksuppl_id_final_1    TYPE /dmo/booking_supplement_id VALUE '1'.
+    CONSTANTS cv_booksuppl_id_final_2    TYPE /dmo/booking_supplement_id VALUE '2'.
+
+    DATA lt_mapping TYPE /dmo/if_flight_legacy=>tt_ln_bookingsuppl_mapping.
+
+    DATA(lo_buffer) = NEW lcl_booking_supplement_buffer( ).
+
+
+    lo_buffer->mt_create_buffer = VALUE #(
+        ( travel_id = cv_travel_id_preliminary_1  booking_id = cv_booking_id_final_1  booking_supplement_id = cv_booksuppl_id_final_1 )
+        ( travel_id = cv_travel_id_final_2        booking_id = cv_booking_id_final_2  booking_supplement_id = cv_booksuppl_id_final_2 )
+      ).
+
+    lt_mapping = lo_buffer->adjust_numbers(
+                   VALUE #( ( preliminary = VALUE #( travel_id = cv_travel_id_preliminary_1  booking_id = cv_booking_id_final_1 )
+                              final       = VALUE #( travel_id = cv_travel_id_final_1        booking_id = cv_booking_id_final_1 ) ) )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( lt_mapping ).
+    cl_abap_unit_assert=>assert_equals( act = lines( lt_mapping )  exp = 2 ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = lt_mapping[
+                  preliminary-travel_id             = cv_travel_id_preliminary_1
+                  preliminary-booking_id            = cv_booking_id_final_1
+                  preliminary-booking_supplement_id = cv_booksuppl_id_final_1
+                ]-final
+        exp = VALUE /dmo/if_flight_legacy=>ts_ln_bookingsuppl(
+                  travel_id             = cv_travel_id_final_1
+                  booking_id            = cv_booking_id_final_1
+                  booking_supplement_id = cv_booksuppl_id_final_1
+                )
+      ).
+
+    cl_abap_unit_assert=>assert_equals(
+        act = lt_mapping[
+                  preliminary-travel_id             = cv_travel_id_final_2
+                  preliminary-booking_id            = cv_booking_id_final_2
+                  preliminary-booking_supplement_id = cv_booksuppl_id_final_2
+                ]-final
+        exp = VALUE /dmo/if_flight_legacy=>ts_ln_bookingsuppl(
+                  travel_id             = cv_travel_id_final_2
+                  booking_id            = cv_booking_id_final_2
+                  booking_supplement_id = cv_booksuppl_id_final_2
+                )
+      ).
   ENDMETHOD.
 ENDCLASS.

@@ -1,4 +1,6 @@
-CLASS lhc_bookingsupplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS ltc_BookingSupplement DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_BookingSupplement DEFINITION INHERITING FROM cl_abap_behavior_handler
+ FRIENDS ltc_BookingSupplement.
 
   PRIVATE SECTION.
 
@@ -55,10 +57,7 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
     " Provide a booking ID for all bookings that have none.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement
-        UPDATE FIELDS ( BookingSupplementID ) WITH bookingsupplements_update
-      REPORTED DATA(update_reported).
-
-    reported = CORRESPONDING #( DEEP update_reported ).
+        UPDATE FIELDS ( BookingSupplementID ) WITH bookingsupplements_update.
 
   ENDMETHOD.
 
@@ -74,10 +73,7 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
-          FROM CORRESPONDING  #( travels )
-    REPORTED DATA(action_reported).
-
-    reported = CORRESPONDING #( DEEP action_reported ).
+          FROM CORRESPONDING  #( travels ).
 
   ENDMETHOD.
 

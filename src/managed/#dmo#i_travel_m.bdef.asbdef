@@ -17,7 +17,7 @@ authorization master(global)
   // mandatory fields that are required to create a travel
   field ( mandatory ) agency_id, customer_id, begin_date, end_date, overall_status, booking_fee, currency_code;
 
-  // Fields that are mandatory for create but should be read-only afterwards
+  // Semantic Key field, which is readonly for the consumer, value is assigned in early numbering
   field ( readonly ) travel_id;
 
   // mapping entity's field types with table field types
@@ -35,8 +35,8 @@ authorization master(global)
   // internal action that is called by determinations
   internal action ReCalcTotalPrice;
 
-  // instance action for copying travel instances
-  action copyTravel result [1] $self;
+  // instance factory action for copying travel instances
+  factory action copyTravel [1];
 
   // validations
   validation validateCustomer on save { create; field customer_id; }
@@ -66,13 +66,12 @@ authorization dependent by _Travel
 {
   // static field control
   field ( mandatory ) carrier_id, connection_id, flight_date, booking_status;
-  field ( readonly ) travel_id;
+  field ( readonly ) travel_id, booking_id;
 
   // mapping entity's field types with table field types
   mapping for /DMO/BOOKING_M corresponding;
 
   // Fields that are mandatory for create but should be read-only afterwards
-  field ( readonly ) booking_id;
   field ( mandatory : create, readonly : update) booking_date, customer_id;
 
   // standard operations for booking entity

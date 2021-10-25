@@ -5,7 +5,7 @@
    <DDLS>
     <DDLNAME>/DMO/C_TRAVEL_PROCESSOR_M</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
-    <DDTEXT>Travel projection view</DDTEXT>
+    <DDTEXT>  Travel projection view</DDTEXT>
     <SOURCE_TYPE>P</SOURCE_TYPE>
    </DDLS>
   </asx:values>

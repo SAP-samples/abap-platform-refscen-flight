@@ -3,7 +3,7 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS calculatetotalprice FOR DETERMINE ON MODIFY
        IMPORTING keys FOR booking~calculatetotalprice.
-    METHODS validateStatus FOR VALIDATE  ON SAVE
+    METHODS validateStatus FOR VALIDATE ON SAVE
        IMPORTING keys FOR booking~validatestatus.
     METHODS get_features FOR INSTANCE FEATURES
        IMPORTING keys REQUEST requested_features FOR booking RESULT result.
@@ -11,37 +11,24 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
        IMPORTING entities FOR CREATE booking\_booksupplement.
 
 
-*    METHODS check_authority_for_booking  FOR AUTHORIZATION IMPORTING it_booking_key REQUEST is_request FOR booking RESULT result.
 
 
 ENDCLASS.
 
 CLASS lhc_travel IMPLEMENTATION.
 
-********************************************************************************
-*
-* Calculates total flight price
-*
-********************************************************************************
   METHOD calculatetotalprice.
-
 
     MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
       ENTITY travel
         EXECUTE recalctotalprice
-        FROM CORRESPONDING #( keys )
-    REPORTED DATA(reported_modify).
+        FROM CORRESPONDING #( keys ).
 
-    reported = CORRESPONDING #( DEEP reported_modify ).
   ENDMETHOD.
 
-**********************************************************************
-*
-* Validates booking status when saving booking data
-*
-**********************************************************************
-  METHOD validateStatus.
 
+
+  METHOD validateStatus.
 
     READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
       ENTITY booking
@@ -60,14 +47,14 @@ CLASS lhc_travel IMPLEMENTATION.
                         ) TO reported-booking.
 
         WHEN OTHERS.
-          APPEND VALUE #( %key = booking-%key ) TO failed-booking.
+          APPEND VALUE #( %tky = booking-%tky ) TO failed-booking.
 
-          APPEND VALUE #( %key = booking-%key
+          APPEND VALUE #( %tky = booking-%tky
                           %state_area         = 'VALIDATE_BOOKINGSTATUS'
                           %msg = NEW /dmo/cm_flight_messages(
-                               textid = /dmo/cm_flight_messages=>status_invalid
-                               status = booking-booking_status
-                               severity = if_abap_behv_message=>severity-error )
+                                     textid = /dmo/cm_flight_messages=>status_invalid
+                                     status = booking-booking_status
+                                     severity = if_abap_behv_message=>severity-error )
                           %element-booking_status = if_abap_behv=>mk-on
                           %path = VALUE #( travel-travel_id    = booking-travel_id )
                         ) TO reported-booking.
@@ -78,45 +65,21 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
 
-********************************************************************************
-*
-* Triggers feature control for booking data
-*
-********************************************************************************
   METHOD get_features.
 
     READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
       ENTITY booking
          FIELDS ( booking_id booking_status )
          WITH CORRESPONDING #( keys )
-      RESULT    DATA(bookings)
+      RESULT DATA(bookings)
       FAILED failed.
 
     result = VALUE #( FOR booking IN bookings
-                       ( %key                   = booking-%key
+                       ( %tky                   = booking-%tky
                          %assoc-_booksupplement = COND #( WHEN booking-booking_status = 'B'
                                                           THEN if_abap_behv=>fc-o-disabled ELSE if_abap_behv=>fc-o-enabled  ) ) ).
 
   ENDMETHOD.
-
-********************************************************************************
-*
-* Implements what operations and actions are not allowed for booking instances
-*
-********************************************************************************
-
-*  METHOD check_authority_for_booking.
-*
-*    LOOP AT it_booking_key INTO DATA(ls_booking_key).
-*
-*      result = VALUE #( ( travel_id           = ls_booking_key-travel_id
-*                          booking_id          = ls_booking_key-booking_id
-*                          %action-createBookingSupplement = if_abap_behv=>auth-unauthorized
-*                      ) ).
-*
-*    ENDLOOP.
-*
-*  ENDMETHOD.
 
 
 
@@ -126,8 +89,7 @@ CLASS lhc_travel IMPLEMENTATION.
     READ ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
       ENTITY booking BY \_booksupplement
         FROM CORRESPONDING #( entities )
-        LINK DATA(booking_supplements)
-      FAILED failed.
+        LINK DATA(booking_supplements).
 
     " Loop over all unique tky (TravelID + BookingID)
     LOOP AT entities ASSIGNING FIELD-SYMBOL(<booking_group>) GROUP BY <booking_group>-%tky.
