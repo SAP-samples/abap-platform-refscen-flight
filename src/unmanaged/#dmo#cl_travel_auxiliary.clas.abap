@@ -38,7 +38,7 @@ CLASS /dmo/cl_travel_auxiliary IMPLEMENTATION.
           OR '017'  "Booking does not exist
           OR '021'. "BookingSupplement does not exist
           IF is_dependend = abap_true.
-            fail_cause = if_abap_behv=>cause-unspecific.
+            fail_cause = if_abap_behv=>cause-dependency.
           ELSE.
             fail_cause = if_abap_behv=>cause-not_found.
           ENDIF.

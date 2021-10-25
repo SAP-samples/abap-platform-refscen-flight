@@ -1,4 +1,6 @@
-CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS ltc_booking DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler
+ FRIENDS ltc_booking.
 
   PRIVATE SECTION.
     CONSTANTS:
@@ -37,7 +39,7 @@ CLASS lhc_booking IMPLEMENTATION.
 
     " Process all affected travels. Read respective bookings for one travel
     LOOP AT travels INTO DATA(travel).
-      READ ENTITIES OF /dmo/i_travel_d IN LOCAL MODE
+      READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
         ENTITY Travel BY \_Booking
           FIELDS ( BookingID )
           WITH VALUE #( ( %tky = travel-%tky ) )
@@ -64,11 +66,8 @@ CLASS lhc_booking IMPLEMENTATION.
     " Provide a booking ID for all bookings that have none.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY booking
-        UPDATE FIELDS ( BookingID ) WITH bookings_update
-      REPORTED DATA(update_reported).
-
-    reported = CORRESPONDING #( DEEP update_reported ).
-
+        UPDATE FIELDS ( BookingID )
+        WITH bookings_update.
 
   ENDMETHOD.
 
@@ -90,10 +89,7 @@ CLASS lhc_booking IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Booking
         UPDATE  FIELDS ( BookingDate )
-        WITH CORRESPONDING #( bookings )
-    REPORTED DATA(update_reported).
-
-    reported = CORRESPONDING #( DEEP update_reported ).
+        WITH CORRESPONDING #( bookings ).
 
   ENDMETHOD.
 
@@ -110,10 +106,7 @@ CLASS lhc_booking IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
-          FROM CORRESPONDING  #( travels )
-    REPORTED DATA(action_reported).
-
-    reported = CORRESPONDING #( DEEP action_reported ).
+          FROM CORRESPONDING  #( travels ).
 
   ENDMETHOD.
 
@@ -124,10 +117,7 @@ CLASS lhc_booking IMPLEMENTATION.
       ENTITY Booking
         FIELDS (  CustomerID )
         WITH CORRESPONDING #( keys )
-    RESULT DATA(bookings)
-    FAILED DATA(read_failed).
-
-    failed = CORRESPONDING #( DEEP read_failed ).
+    RESULT DATA(bookings).
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel
@@ -189,10 +179,7 @@ CLASS lhc_booking IMPLEMENTATION.
       ENTITY Booking
         FIELDS ( BookingID AirlineID ConnectionID FlightDate )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(bookings)
-      FAILED DATA(read_failed).
-
-    failed = CORRESPONDING #( DEEP read_failed ).
+      RESULT DATA(bookings).
 
     READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel

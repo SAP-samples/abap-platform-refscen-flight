@@ -25,6 +25,7 @@ CLASS /dmo/cl_flight_legacy DEFINITION
     METHODS create_travel IMPORTING is_travel             TYPE /dmo/s_travel_in
                                     it_booking            TYPE /dmo/t_booking_in OPTIONAL
                                     it_booking_supplement TYPE /dmo/t_booking_supplement_in OPTIONAL
+                                    iv_numbering_mode     TYPE /dmo/if_flight_legacy=>t_numbering_mode DEFAULT /dmo/if_flight_legacy=>numbering_mode-early
                           EXPORTING es_travel             TYPE /dmo/travel
                                     et_booking            TYPE /dmo/t_booking
                                     et_booking_supplement TYPE /dmo/t_booking_supplement
@@ -48,6 +49,9 @@ CLASS /dmo/cl_flight_legacy DEFINITION
                                  et_booking             TYPE /dmo/t_booking
                                  et_booking_supplement  TYPE /dmo/t_booking_supplement
                                  et_messages            TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
+    METHODS adjust_numbers EXPORTING et_travel_mapping       TYPE /dmo/if_flight_legacy=>tt_ln_travel_mapping
+                                     et_booking_mapping      TYPE /dmo/if_flight_legacy=>tt_ln_booking_mapping
+                                     et_bookingsuppl_mapping TYPE /dmo/if_flight_legacy=>tt_ln_bookingsuppl_mapping.
     METHODS save.
     METHODS initialize.
     METHODS convert_messages IMPORTING it_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message
@@ -99,7 +103,7 @@ ENDCLASS.
 
 
 
-CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
+CLASS /dmo/cl_flight_legacy IMPLEMENTATION.
 
 
   METHOD calculate_flight_price.
@@ -131,11 +135,16 @@ CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
   METHOD create_travel.
     CLEAR: es_travel, et_booking, et_booking_supplement, et_messages.
 
+    " Numbering mode has to be either Early or Late.
+    ASSERT iv_numbering_mode EQ /dmo/if_flight_legacy=>numbering_mode-early OR
+           iv_numbering_mode EQ /dmo/if_flight_legacy=>numbering_mode-late.
+
     " Travel
-    lcl_travel_buffer=>get_instance( )->cud_prep( EXPORTING it_travel   = VALUE #( ( CORRESPONDING #( is_travel ) ) )
-                                                            it_travelx  = VALUE #( ( travel_id = is_travel-travel_id  action_code = /dmo/if_flight_legacy=>action_code-create ) )
-                                                  IMPORTING et_travel   = DATA(lt_travel)
-                                                            et_messages = et_messages ).
+    lcl_travel_buffer=>get_instance( )->cud_prep( EXPORTING it_travel         = VALUE #( ( CORRESPONDING #( is_travel ) ) )
+                                                            it_travelx        = VALUE #( ( travel_id = is_travel-travel_id  action_code = /dmo/if_flight_legacy=>action_code-create ) )
+                                                            iv_numbering_mode = iv_numbering_mode
+                                                  IMPORTING et_travel         = DATA(lt_travel)
+                                                            et_messages       = et_messages ).
     IF et_messages IS INITIAL.
       ASSERT lines( lt_travel ) = 1.
       es_travel = lt_travel[ 1 ].
@@ -319,6 +328,12 @@ CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD adjust_numbers.
+    et_travel_mapping       = lcl_travel_buffer=>get_instance( )->adjust_numbers( ).
+    et_booking_mapping      = lcl_booking_buffer=>get_instance( )->adjust_numbers( et_travel_mapping ).
+    et_bookingsuppl_mapping = lcl_booking_supplement_buffer=>get_instance( )->adjust_numbers( et_booking_mapping ).
+  ENDMETHOD.
+
   METHOD save.
     lcl_travel_buffer=>get_instance( )->save( ).
     lcl_booking_buffer=>get_instance( )->save( ).
@@ -460,7 +475,7 @@ CLASS /DMO/CL_FLIGHT_LEGACY IMPLEMENTATION.
         LOOP AT et_booking ASSIGNING FIELD-SYMBOL(<s_booking>).
           LOOP AT it_bookingx TRANSPORTING NO FIELDS WHERE booking_id = <s_booking>-booking_id
             AND ( action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-create )
-               OR action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-update ) ).  "#EC CI_SORTSEQ
+               OR action_code = CONV /dmo/action_code( /dmo/if_flight_legacy=>action_code-update ) ). "#EC CI_SORTSEQ
             EXIT.
           ENDLOOP.
           IF sy-subrc <> 0.

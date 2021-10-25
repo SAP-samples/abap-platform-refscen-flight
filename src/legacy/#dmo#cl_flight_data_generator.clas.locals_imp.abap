@@ -1791,12 +1791,12 @@ CLASS lcl_status_vh_data_generator IMPLEMENTATION.
     IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
     ENDIF.
     DELETE FROM:
-       /dmo/trvl_stat,   "#EC CI_NOWHERE
-       /dmo/oall_stat,   "#EC CI_NOWHERE
-       /dmo/book_stat,   "#EC CI_NOWHERE
-       /dmo/trvl_stat_t, "#EC CI_NOWHERE
-       /dmo/oall_stat_t, "#EC CI_NOWHERE
-       /dmo/book_stat_t. "#EC CI_NOWHERE
+       /dmo/trvl_stat,                                  "#EC CI_NOWHERE
+       /dmo/oall_stat,                                  "#EC CI_NOWHERE
+       /dmo/book_stat,                                  "#EC CI_NOWHERE
+       /dmo/trvl_stat_t,                                "#EC CI_NOWHERE
+       /dmo/oall_stat_t,                                "#EC CI_NOWHERE
+       /dmo/book_stat_t.                                "#EC CI_NOWHERE
 
 
     IF out IS BOUND.  out->write( '--> Travel Status' ) ##no_text.
@@ -2094,16 +2094,12 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
 
   METHOD set_numberrange.
 
-    CONSTANTS:
-      cv_fromnumber TYPE cl_numberrange_intervals=>nr_nriv_line-fromnumber VALUE '00000001',
-      cv_tonumber   TYPE cl_numberrange_intervals=>nr_nriv_line-tonumber   VALUE '99999999'.
-
     /dmo/cl_flight_data_generator=>reset_numberrange_interval(
       EXPORTING
         numberrange_object   = cv_numberrange_object
         numberrange_interval = cv_numberrange_interval
-        fromnumber           = cv_fromnumber
-        tonumber             = cv_tonumber ).
+        fromnumber           = CONV cl_numberrange_intervals=>nr_nriv_line-fromnumber( '00000001' )
+        tonumber             = CONV cl_numberrange_intervals=>nr_nriv_line-tonumber( CONV /dmo/travel_id( /dmo/if_flight_legacy=>late_numbering_boundary - 1 ) ) ).
 
   ENDMETHOD.
 

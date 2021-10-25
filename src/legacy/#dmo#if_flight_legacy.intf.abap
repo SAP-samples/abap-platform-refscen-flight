@@ -4,34 +4,6 @@
 INTERFACE /dmo/if_flight_legacy
   PUBLIC.
 
-***********************
-* Version information *
-***********************
-  CONSTANTS co_version_major TYPE int2 VALUE 3.
-  CONSTANTS co_version_minor TYPE int2 VALUE 0.
-
-  " Please do NOT delete old comments
-  " Version x.x  Date xx.xx.xxxx  Description ...
-  "         0.9       25.07.2018  More or less ready!
-  "         0.91      02.08.2018  Derivations and checks for price / currency
-  "                               Documentation
-  "         0.92      03.08.2018  Commented out locking
-  "         0.93      09.08.2018  Data Generator Bug Fix; Description searchable short string
-  "         0.94      24.08.2018  Minor corrections
-  "         0.95      07.09.2018  Derivation of Total Price, minor corrections
-  "         0.96      17.09.2018  Performance DELETE
-  "         0.961     18.09.2018  Removed +=
-  "         0.962     18.09.2018  Removed ABAPDoc from FuBa, Switched Function Group to Unicode
-  "         1.00      27.09.2018  No real change, only release
-  "         1.01      28.09.2018  Minor text adjustments
-  "         1.02      22.10.2018  Data generator adjustment
-  "                               Unit Test moved from function group into separate ABAP class
-  "         2.00      05.03.2019  Added ReadOnly and Unmanaged Content
-  "                               Added AMDP class with Currency Conversion
-  "                               (Re-)Added ABAPDoc to FuBa
-  "         3.00      06.08.2019  Cloud Platform 1908
-  "                               Added Managed sub package
-
 ******************************
 * Database table table types *
 ******************************
@@ -73,17 +45,17 @@ INTERFACE /dmo/if_flight_legacy
 * IMPORTANT: When you add or remove fields from /dmo/TRAVEL, /dmo/BOOKING, /dmo/BOOK_SUPPL you need to change the following types *
 ***********************************************************************************************************************************
 
-    "! <strong>Flag structure for Travel data. </strong><br/>
-    "! Each component identifies if the corresponding data has been changed.
-    "! Where <em>abap_true</em> represents a change.
+  "! <strong>Flag structure for Travel data. </strong><br/>
+  "! Each component identifies if the corresponding data has been changed.
+  "! Where <em>abap_true</em> represents a change.
   TYPES ts_travel_intx TYPE /dmo/s_travel_intx.
-    "! <strong>Flag structure for Booking data. </strong><br/>
-    "! Each component identifies if the corresponding data has been changed.
-    "! Where <em>abap_true</em> represents a change.
+  "! <strong>Flag structure for Booking data. </strong><br/>
+  "! Each component identifies if the corresponding data has been changed.
+  "! Where <em>abap_true</em> represents a change.
   TYPES ts_booking_intx TYPE /dmo/s_booking_intx.
-    "! <strong>Flag structure for Booking Supplement data. </strong><br/>
-    "! Each component identifies if the corresponding data has been changed.
-    "! Where <em>abap_true</em> represents a change.
+  "! <strong>Flag structure for Booking Supplement data. </strong><br/>
+  "! Each component identifies if the corresponding data has been changed.
+  "! Where <em>abap_true</em> represents a change.
   TYPES ts_booking_supplement_intx TYPE /dmo/s_booking_supplement_intx.
 
 
@@ -181,6 +153,57 @@ INTERFACE /dmo/if_flight_legacy
   "! INcoming flag table type of the node Booking Supplement.  It contains key and the bit flag to the corresponding fields.
   TYPES tt_booking_supplement_inx TYPE /dmo/t_booking_supplement_inx.
 
+
+
+**********************************************************************
+* Late Numbering
+**********************************************************************
+  TYPES:
+    BEGIN OF ts_ln_travel,
+      travel_id TYPE /dmo/travel_id,
+    END OF ts_ln_travel,
+    BEGIN OF ts_ln_travel_mapping,
+      preliminary TYPE ts_ln_travel,
+      final       TYPE ts_ln_travel,
+    END OF ts_ln_travel_mapping,
+    tt_ln_travel_mapping TYPE STANDARD TABLE OF ts_ln_travel_mapping WITH DEFAULT KEY,
+
+    BEGIN OF ts_ln_booking,
+      travel_id  TYPE /dmo/travel_id,
+      booking_id TYPE /dmo/booking_id,
+    END OF ts_ln_booking,
+    BEGIN OF ts_ln_booking_mapping,
+      preliminary TYPE ts_ln_booking,
+      final       TYPE ts_ln_booking,
+    END OF ts_ln_booking_mapping,
+    tt_ln_booking_mapping TYPE STANDARD TABLE OF ts_ln_booking_mapping WITH DEFAULT KEY,
+
+    BEGIN OF ts_ln_bookingsuppl,
+      travel_id             TYPE /dmo/travel_id,
+      booking_id            TYPE /dmo/booking_id,
+      booking_supplement_id TYPE /dmo/booking_supplement_id,
+    END OF ts_ln_bookingsuppl,
+    BEGIN OF ts_ln_bookingsuppl_mapping,
+      preliminary TYPE ts_ln_bookingsuppl,
+      final       TYPE ts_ln_bookingsuppl,
+    END OF ts_ln_bookingsuppl_mapping,
+    tt_ln_bookingsuppl_mapping TYPE STANDARD TABLE OF ts_ln_bookingsuppl_mapping WITH DEFAULT KEY.
+
+
+  TYPES:
+    t_numbering_mode TYPE c LENGTH 1 .
+
+  CONSTANTS:
+    "! Travel-ID boundary for early/late numbering differentiation
+    "! The value itself will never be used. Values below indicate early numbering. Values above, late numbering.
+    late_numbering_boundary TYPE /dmo/travel_id VALUE '90000000',
+    "! Constants for Numbering Mode
+    BEGIN OF numbering_mode,
+      "! Early Internal Numbering
+      early TYPE t_numbering_mode VALUE 'E',
+      "! Late Numbering
+      late  TYPE t_numbering_mode VALUE 'L',
+    END OF numbering_mode.
 
 
 *****************

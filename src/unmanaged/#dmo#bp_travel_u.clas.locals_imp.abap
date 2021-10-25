@@ -1,5 +1,8 @@
+CLASS ltcl_handler DEFINITION DEFERRED FOR TESTING.
 CLASS lhc_travel DEFINITION
-   INHERITING FROM cl_abap_behavior_handler.
+   INHERITING FROM cl_abap_behavior_handler
+   FRIENDS ltcl_handler
+   .
 
   PRIVATE SECTION.
 
@@ -51,9 +54,7 @@ CLASS lhc_travel DEFINITION
 
     METHODS map_messages_assoc_to_booking
       IMPORTING
-        cid          TYPE string          OPTIONAL
-        travel_id    TYPE /dmo/travel_id  OPTIONAL
-        booking_id   TYPE /dmo/booking_id OPTIONAL
+        cid          TYPE string
         is_dependend TYPE abap_bool       DEFAULT  abap_false
         messages     TYPE /dmo/t_message
       EXPORTING
@@ -114,10 +115,11 @@ CLASS lhc_travel IMPLEMENTATION.
 
       CALL FUNCTION '/DMO/FLIGHT_TRAVEL_CREATE'
         EXPORTING
-          is_travel   = CORRESPONDING /dmo/s_travel_in( travel_in )
+          is_travel         = CORRESPONDING /dmo/s_travel_in( travel_in )
+          iv_numbering_mode = /dmo/if_flight_legacy=>numbering_mode-late
         IMPORTING
-          es_travel   = travel_out
-          et_messages = messages.
+          es_travel         = travel_out
+          et_messages       = messages.
 
       map_messages(
           EXPORTING
@@ -376,14 +378,14 @@ CLASS lhc_travel IMPLEMENTATION.
 
       map_messages(
           EXPORTING
-            cid       = <travel>-%cid_ref
-            travel_id = <travel>-TravelID
-            messages  = messages
+            cid          = <travel>-%cid_ref
+            travel_id    = <travel>-TravelID
+            messages     = messages
           IMPORTING
             failed_added = DATA(failed_added)
           CHANGING
-            failed           = failed-travel
-            reported         = reported-travel
+            failed       = failed-travel
+            reported     = reported-travel
         ).
 
       IF failed_added = abap_true.
@@ -391,8 +393,6 @@ CLASS lhc_travel IMPLEMENTATION.
           map_messages_assoc_to_booking(
             EXPORTING
               cid          = <booking>-%cid
-              travel_id    = <travel>-TravelID
-              booking_id   = <booking>-BookingID
               is_dependend = abap_true
               messages     = messages
             CHANGING
@@ -429,14 +429,13 @@ CLASS lhc_travel IMPLEMENTATION.
 
           map_messages_assoc_to_booking(
               EXPORTING
-                travel_id        = TravelID
-                booking_id       = booking-booking_ID
-                messages         = messages
-                IMPORTING
+                cid          = <booking_create>-%cid
+                messages     = messages
+              IMPORTING
                 failed_added = failed_added
               CHANGING
-                failed           = failed-booking
-                reported         = reported-booking
+                failed       = failed-booking
+                reported     = reported-booking
             ).
 
           IF failed_added = abap_false.
@@ -538,12 +537,11 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD map_messages_assoc_to_booking.
+    ASSERT cid is not initial.  "In a create case, the %cid has to be present
     failed_added = abap_false.
     LOOP AT messages INTO DATA(message).
       IF message-msgty = 'E' OR message-msgty = 'A'.
         APPEND VALUE #( %cid        = cid
-                        travelid    = travel_id
-                        bookingid   = booking_id
                         %fail-cause = /dmo/cl_travel_auxiliary=>get_cause_from_message(
                                         msgid = message-msgid
                                         msgno = message-msgno
@@ -561,9 +559,7 @@ CLASS lhc_travel IMPLEMENTATION.
                                         v2       = message-msgv2
                                         v3       = message-msgv3
                                         v4       = message-msgv4 )
-                      %cid          = cid
-                      TravelID      = travel_id
-                      bookingID     = booking_id )
+                      %cid          = cid )
              TO reported.
     ENDLOOP.
   ENDMETHOD.
@@ -577,14 +573,19 @@ ENDCLASS.
 * Saver class implements the save sequence for data persistence
 *
 **********************************************************************
+CLASS ltcl_saver DEFINITION DEFERRED FOR TESTING.
 CLASS lsc_I_TRAVEL_U DEFINITION
-  INHERITING FROM cl_abap_behavior_saver.
+  INHERITING FROM cl_abap_behavior_saver
+  FRIENDS ltcl_saver
+  .
 
   PROTECTED SECTION.
 
     METHODS finalize REDEFINITION.
 
     METHODS check_before_save REDEFINITION.
+
+    METHODS adjust_numbers REDEFINITION.
 
     METHODS save REDEFINITION.
 
@@ -600,6 +601,35 @@ CLASS lsc_I_TRAVEL_U IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD check_before_save.
+  ENDMETHOD.
+
+  METHOD adjust_numbers.
+
+    DATA: travel_mapping       TYPE /dmo/if_flight_legacy=>tt_ln_travel_mapping,
+          booking_mapping      TYPE /dmo/if_flight_legacy=>tt_ln_booking_mapping,
+          bookingsuppl_mapping TYPE /dmo/if_flight_legacy=>tt_ln_bookingsuppl_mapping.
+
+    CALL FUNCTION '/DMO/FLIGHT_TRAVEL_ADJ_NUMBERS'
+      IMPORTING
+        et_travel_mapping       = travel_mapping
+        et_booking_mapping      = booking_mapping
+        et_bookingsuppl_mapping = bookingsuppl_mapping.
+
+    mapped-travel            = VALUE #( FOR travel IN travel_mapping             ( %tmp                = VALUE #( TravelID = travel-preliminary-travel_id )
+                                                                                   TravelID            = travel-final-travel_id ) ).
+
+    mapped-booking           = VALUE #( FOR booking IN booking_mapping           ( %tmp                = VALUE #( TravelID  = booking-preliminary-travel_id
+                                                                                                                  BookingID = booking-preliminary-booking_id )
+                                                                                   TravelID            = booking-final-travel_id
+                                                                                   BookingID           = booking-final-booking_id ) ).
+
+    mapped-bookingsupplement = VALUE #( FOR bookingsuppl IN bookingsuppl_mapping ( %tmp                = VALUE #( TravelID            = bookingsuppl-preliminary-travel_id
+                                                                                                                  BookingID           = bookingsuppl-preliminary-booking_id
+                                                                                                                  BookingSupplementID = bookingsuppl-preliminary-booking_supplement_id )
+                                                                                   TravelID            = bookingsuppl-final-travel_id
+                                                                                   BookingID           = bookingsuppl-final-booking_id
+                                                                                   BookingSupplementID = bookingsuppl-final-booking_supplement_id ) ).
+
   ENDMETHOD.
 
   METHOD save.

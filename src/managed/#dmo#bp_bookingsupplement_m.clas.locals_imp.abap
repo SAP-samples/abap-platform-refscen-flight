@@ -7,24 +7,13 @@ ENDCLASS.
 
 CLASS lhc_travel IMPLEMENTATION.
 
-********************************************************************************
-*
-* Calculates total supplement price
-*
-********************************************************************************
   METHOD calculateTotalPrice.
-
-
 
     MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY Travel
         EXECUTE ReCalcTotalPrice
-        FROM CORRESPONDING #( keys )
-    REPORTED DATA(reported_modify).
+        FROM CORRESPONDING #( keys ).
 
-    reported = CORRESPONDING #( DEEP reported_modify ).
   ENDMETHOD.
-
-
 
 ENDCLASS.

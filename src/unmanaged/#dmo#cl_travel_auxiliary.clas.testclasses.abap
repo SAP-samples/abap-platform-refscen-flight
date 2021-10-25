@@ -29,8 +29,7 @@ CLASS ltcl_mapping IMPLEMENTATION.
         msgid        = '/DMO/CM_FLIGHT_LEGAC'
 
         is_dependend = abap_true
-          "fail_cause = if_abap_behv=>cause-dependency
-          fail_cause = if_abap_behv=>cause-unspecific
+          fail_cause = if_abap_behv=>cause-dependency
           ( msgno = '009' )
           ( msgno = '016' )
           ( msgno = '017' )

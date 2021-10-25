@@ -1,5 +1,8 @@
+CLASS ltcl_handler DEFINITION DEFERRED FOR TESTING.
 CLASS lhc_booking DEFINITION
-  INHERITING FROM cl_abap_behavior_handler.
+  INHERITING FROM cl_abap_behavior_handler
+  FRIENDS ltcl_handler
+  .
   PRIVATE SECTION.
 
     TYPES tt_booking_failed   TYPE TABLE FOR FAILED   /dmo/i_booking_u.
@@ -40,17 +43,14 @@ CLASS lhc_booking DEFINITION
 
     METHODS map_messages_assoc_to_booksupp
       IMPORTING
-        cid                   TYPE string OPTIONAL
-        travel_id             TYPE /dmo/travel_id OPTIONAL
-        booking_id            TYPE /dmo/booking_id OPTIONAL
-        booking_supplement_id TYPE /dmo/booking_supplement_id OPTIONAL
-        is_dependend          TYPE abap_bool DEFAULT abap_false
-        messages              TYPE /dmo/t_message
+        cid          TYPE string
+        is_dependend TYPE abap_bool DEFAULT abap_false
+        messages     TYPE /dmo/t_message
       EXPORTING
-        failed_added          TYPE abap_bool
+        failed_added TYPE abap_bool
       CHANGING
-        failed                TYPE tt_bookingsupplement_failed
-        reported              TYPE tt_bookingsupplement_reported.
+        failed       TYPE tt_bookingsupplement_failed
+        reported     TYPE tt_bookingsupplement_reported.
 
 ENDCLASS.
 
@@ -332,6 +332,7 @@ CLASS lhc_booking IMPLEMENTATION.
 
       map_messages(
         EXPORTING
+          cid        = <booking>-%cid_ref
           travel_id  = <booking>-travelid
           booking_id = <booking>-bookingid
           messages   = messages
@@ -345,28 +346,24 @@ CLASS lhc_booking IMPLEMENTATION.
         LOOP AT <booking>-%target ASSIGNING FIELD-SYMBOL(<bookingsupplement>).
           map_messages_assoc_to_booksupp(
             EXPORTING
-              cid                   = <bookingsupplement>-%cid
-              travel_id             = <booking>-TravelID
-              booking_id            = <booking>-BookingID
-              booking_supplement_id = <bookingsupplement>-BookingSupplementID
-              is_dependend          = abap_true
-              messages              = messages
+              cid          = <bookingsupplement>-%cid
+              is_dependend = abap_true
+              messages     = messages
             CHANGING
-              failed                = failed-bookingsupplement
-              reported              = reported-bookingsupplement
+              failed       = failed-bookingsupplement
+              reported     = reported-bookingsupplement
           ).
         ENDLOOP.
 
       ELSE.
 
         " Look up for maximum booking supplement ID for a given travel/booking
-        " lt_booksupplement_old provides sorted values, therefore the last value is maximum value
-        last_bookingsupplement_id = REDUCE #( INIT res = 0
+        last_bookingsupplement_id = REDUCE #( INIT res TYPE /dmo/booking_supplement_id
                                               FOR old IN booksupplements_old
                                                 USING KEY primary_key
                                                 WHERE ( travel_id  = parent_key-travelid
                                                     AND booking_id = parent_key-bookingid )
-                                              NEXT res = old-booking_supplement_id ).
+                                              NEXT res = COND #( WHEN old-booking_supplement_id > res THEN old-booking_supplement_id ELSE res ) ).
 
         LOOP AT <booking>-%target ASSIGNING FIELD-SYMBOL(<supplement>).
 
@@ -398,27 +395,23 @@ CLASS lhc_booking IMPLEMENTATION.
 
           map_messages_assoc_to_booksupp(
             EXPORTING
-              cid                   = <supplement>-%cid
-              travel_id             = booksupplement-travel_id
-              booking_id            = booksupplement-booking_id
-              booking_supplement_id = booksupplement-booking_supplement_id
-              is_dependend          = abap_true
-              messages              = messages
+              cid          = <supplement>-%cid
+              is_dependend = abap_true
+              messages     = messages
             IMPORTING
-              failed_added          = failed_added
+              failed_added = failed_added
             CHANGING
-              failed                = failed-bookingsupplement
-              reported              = reported-bookingsupplement
+              failed       = failed-bookingsupplement
+              reported     = reported-bookingsupplement
           ).
 
           IF failed_added = abap_false.
-            INSERT VALUE #( %cid      = <supplement>-%cid
-                            travelid  = parent_key-travelid
-                            bookingid = parent_key-bookingid
+            INSERT VALUE #( %cid                = <supplement>-%cid
+                            travelid            = parent_key-travelid
+                            bookingid           = parent_key-bookingid
                             bookingsupplementid = booksupplement-booking_supplement_id )
-                   INTO TABLE mapped-bookingsupplement.
+                 INTO TABLE mapped-bookingsupplement.
           ENDIF.
-
 
         ENDLOOP.
       ENDIF.
@@ -462,34 +455,29 @@ CLASS lhc_booking IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD map_messages_assoc_to_booksupp.
+    ASSERT cid IS NOT INITIAL.  "In a create case, the %cid has to be present
     failed_added = abap_false.
     LOOP AT messages INTO DATA(message).
       IF message-msgty = 'E' OR message-msgty = 'A'.
-        APPEND VALUE #( %cid                = cid
-                        travelid            = travel_id
-                        bookingid           = booking_id
-                        bookingsupplementid = booking_supplement_id
-                        %fail-cause         = /dmo/cl_travel_auxiliary=>get_cause_from_message(
-                                                msgid = message-msgid
-                                                msgno = message-msgno
-                                                is_dependend = is_dependend
-                                              ) )
+        APPEND VALUE #( %cid        = cid
+                        %fail-cause = /dmo/cl_travel_auxiliary=>get_cause_from_message(
+                                        msgid        = message-msgid
+                                        msgno        = message-msgno
+                                        is_dependend = is_dependend
+                                      ) )
             TO failed.
         failed_added = abap_true.
       ENDIF.
 
-      APPEND VALUE #( %msg                = new_message(
-                                               id       = message-msgid
-                                               number   = message-msgno
-                                               severity = if_abap_behv_message=>severity-error
-                                               v1       = message-msgv1
-                                               v2       = message-msgv2
-                                               v3       = message-msgv3
-                                               v4       = message-msgv4 )
-                      %cid                = cid
-                      TravelID            = travel_id
-                      BookingID           = booking_id
-                      bookingsupplementid = booking_supplement_id )
+      APPEND VALUE #( %msg = new_message(
+                                id       = message-msgid
+                                number   = message-msgno
+                                severity = if_abap_behv_message=>severity-error
+                                v1       = message-msgv1
+                                v2       = message-msgv2
+                                v3       = message-msgv3
+                                v4       = message-msgv4 )
+                      %cid = cid )
         TO reported.
     ENDLOOP.
   ENDMETHOD.

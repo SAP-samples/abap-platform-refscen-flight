@@ -43,10 +43,12 @@ CLASS lcl_common_checks IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 
-
-CLASS lcl_booking_supplement_buffer DEFINITION FINAL CREATE PRIVATE.
+CLASS ltc_booking_supplement DEFINITION DEFERRED.
+CLASS lcl_booking_supplement_buffer DEFINITION FINAL CREATE PRIVATE FRIENDS ltc_booking_supplement.
   PUBLIC SECTION.
     CLASS-METHODS: get_instance RETURNING VALUE(ro_instance) TYPE REF TO lcl_booking_supplement_buffer.
+    METHODS adjust_numbers IMPORTING it_booking_mapping             TYPE /dmo/if_flight_legacy=>tt_ln_booking_mapping
+                           RETURNING VALUE(rt_bookingsuppl_mapping) TYPE /dmo/if_flight_legacy=>tt_ln_bookingsuppl_mapping.
     METHODS save.
     METHODS initialize.
     "! Prepare changes in a temporary buffer
@@ -393,10 +395,53 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD adjust_numbers.
+    DATA: lt_create_buffer TYPE /dmo/t_booking_supplement.
+
+    ASSERT mt_create_buffer_2 IS INITIAL.
+    ASSERT mt_update_buffer_2 IS INITIAL.
+    ASSERT mt_delete_buffer_2 IS INITIAL.
+
+    CHECK mt_create_buffer IS NOT INITIAL.    "Any Create to be processed?
+
+    LOOP AT mt_create_buffer INTO DATA(ls_create_buffer).
+      READ TABLE it_booking_mapping INTO DATA(ls_booking_mapping) WITH KEY preliminary-travel_id  = ls_create_buffer-travel_id
+                                                                           preliminary-booking_id = ls_create_buffer-booking_id.
+      " If found we replace the number - otherwise we simply return the mapping a=a
+      IF sy-subrc EQ 0.
+        APPEND VALUE #( preliminary = VALUE #( travel_id             = ls_create_buffer-travel_id
+                                               booking_id            = ls_create_buffer-booking_id
+                                               booking_supplement_id = ls_create_buffer-booking_supplement_id )
+                        final       = VALUE #( travel_id             = ls_booking_mapping-final-travel_id
+                                               booking_id            = ls_booking_mapping-final-booking_id
+                                               booking_supplement_id = ls_create_buffer-booking_supplement_id ) ) TO rt_bookingsuppl_mapping.
+
+        ls_create_buffer-travel_id  = ls_booking_mapping-final-travel_id.
+        ls_create_buffer-booking_id = ls_booking_mapping-final-booking_id.
+      ELSE.
+        APPEND VALUE #( preliminary = VALUE #( travel_id             = ls_create_buffer-travel_id
+                                               booking_id            = ls_create_buffer-booking_id
+                                               booking_supplement_id = ls_create_buffer-booking_supplement_id )
+                        final       = VALUE #( travel_id             = ls_create_buffer-travel_id
+                                               booking_id            = ls_create_buffer-booking_id
+                                               booking_supplement_id = ls_create_buffer-booking_supplement_id ) ) TO rt_bookingsuppl_mapping.
+      ENDIF.
+      INSERT ls_create_buffer INTO TABLE lt_create_buffer.
+    ENDLOOP.
+    mt_create_buffer = lt_create_buffer.
+  ENDMETHOD.
+
   METHOD save.
     ASSERT mt_create_buffer_2 IS INITIAL.
     ASSERT mt_update_buffer_2 IS INITIAL.
     ASSERT mt_delete_buffer_2 IS INITIAL.
+
+    " Make sure no preliminary travel_id is remaining (late numbering use-case)
+    " If this dump happens, call adjust numbers before executing save
+    IF mt_create_buffer IS NOT INITIAL.
+      ASSERT mt_create_buffer[ lines( mt_create_buffer ) ]-travel_id < /dmo/if_flight_legacy=>late_numbering_boundary.
+    ENDIF.
+
     INSERT /dmo/book_suppl FROM TABLE @mt_create_buffer.
     UPDATE /dmo/book_suppl FROM TABLE @mt_update_buffer.
     DELETE /dmo/book_suppl FROM TABLE @( CORRESPONDING #( mt_delete_buffer ) ).
@@ -611,10 +656,12 @@ CLASS lcl_booking_supplement_buffer IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 
-
-CLASS lcl_booking_buffer DEFINITION FINAL CREATE PRIVATE.
+CLASS ltc_booking DEFINITION DEFERRED.
+CLASS lcl_booking_buffer DEFINITION FINAL CREATE PRIVATE FRIENDS ltc_booking.
   PUBLIC SECTION.
     CLASS-METHODS: get_instance RETURNING VALUE(ro_instance) TYPE REF TO lcl_booking_buffer.
+    METHODS adjust_numbers IMPORTING it_travel_mapping         TYPE /dmo/if_flight_legacy=>tt_ln_travel_mapping
+                           RETURNING VALUE(rt_booking_mapping) TYPE /dmo/if_flight_legacy=>tt_ln_booking_mapping.
     METHODS save.
     METHODS initialize.
     METHODS check_booking_id IMPORTING iv_travel_id       TYPE /dmo/travel_id
@@ -928,10 +975,48 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD adjust_numbers.
+    DATA: lt_create_buffer TYPE /dmo/t_booking.
+
+    ASSERT mt_create_buffer_2 IS INITIAL.
+    ASSERT mt_update_buffer_2 IS INITIAL.
+    ASSERT mt_delete_buffer_2 IS INITIAL.
+
+    CHECK mt_create_buffer IS NOT INITIAL.   "Any Create to be processed?
+
+    LOOP AT mt_create_buffer INTO DATA(ls_create_buffer).
+      READ TABLE it_travel_mapping INTO DATA(ls_travel_mapping) WITH KEY preliminary-travel_id = ls_create_buffer-travel_id.
+
+      " If found we replace the number - otherwise we simply return the mapping a=a
+      IF sy-subrc EQ 0.
+        APPEND VALUE #( preliminary = VALUE #( travel_id  = ls_create_buffer-travel_id
+                                               booking_id = ls_create_buffer-booking_id )
+                        final       = VALUE #( travel_id  = ls_travel_mapping-final-travel_id
+                                               booking_id = ls_create_buffer-booking_id ) ) TO rt_booking_mapping.
+
+        ls_create_buffer-travel_id = ls_travel_mapping-final-travel_id.
+      ELSE.
+        APPEND VALUE #( preliminary = VALUE #( travel_id  = ls_create_buffer-travel_id
+                                               booking_id = ls_create_buffer-booking_id )
+                        final       = VALUE #( travel_id  = ls_create_buffer-travel_id
+                                               booking_id = ls_create_buffer-booking_id ) ) TO rt_booking_mapping.
+      ENDIF.
+      INSERT ls_create_buffer INTO TABLE lt_create_buffer.
+    ENDLOOP.
+    mt_create_buffer = lt_create_buffer.
+  ENDMETHOD.
+
   METHOD save.
     ASSERT mt_create_buffer_2 IS INITIAL.
     ASSERT mt_update_buffer_2 IS INITIAL.
     ASSERT mt_delete_buffer_2 IS INITIAL.
+
+    " Make sure no preliminary travel_id is remaining (late numbering use-case)
+    " If this dump happens, call adjust numbers before executing save
+    IF mt_create_buffer IS NOT INITIAL.
+      ASSERT mt_create_buffer[ lines( mt_create_buffer ) ]-travel_id < /dmo/if_flight_legacy=>late_numbering_boundary.
+    ENDIF.
+
     INSERT /dmo/booking FROM TABLE @mt_create_buffer.
     UPDATE /dmo/booking FROM TABLE @mt_update_buffer.
     DELETE /dmo/booking FROM TABLE @( CORRESPONDING #( mt_delete_buffer ) ).
@@ -1198,12 +1283,13 @@ CLASS lcl_booking_buffer IMPLEMENTATION.
   ENDMETHOD.
 ENDCLASS.
 
-
-CLASS lcl_travel_buffer DEFINITION FINAL CREATE PRIVATE.
+CLASS ltc_travel DEFINITION DEFERRED.
+CLASS lcl_travel_buffer DEFINITION FINAL CREATE PRIVATE FRIENDS ltc_travel.
   PUBLIC SECTION.
     CLASS-METHODS: get_instance RETURNING VALUE(ro_instance) TYPE REF TO lcl_travel_buffer.
     METHODS set_status_to_booked IMPORTING iv_travel_id TYPE /dmo/travel_id
                                  EXPORTING et_messages  TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
+    METHODS adjust_numbers RETURNING VALUE(rt_travel_mapping) TYPE /dmo/if_flight_legacy=>tt_ln_travel_mapping.
     METHODS save.
     METHODS initialize.
     METHODS check_travel_id IMPORTING iv_travel_id       TYPE /dmo/travel_id
@@ -1215,6 +1301,7 @@ CLASS lcl_travel_buffer DEFINITION FINAL CREATE PRIVATE.
     METHODS cud_prep IMPORTING it_travel          TYPE /dmo/t_travel
                                it_travelx         TYPE /dmo/t_travelx
                                iv_no_delete_check TYPE abap_bool OPTIONAL
+                               iv_numbering_mode  TYPE /dmo/if_flight_legacy=>t_numbering_mode DEFAULT /dmo/if_flight_legacy=>numbering_mode-early
                      EXPORTING et_travel          TYPE /dmo/t_travel
                                et_messages        TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
     "! Add content of the temporary buffer to the real buffer and clear the temporary buffer
@@ -1228,6 +1315,9 @@ CLASS lcl_travel_buffer DEFINITION FINAL CREATE PRIVATE.
 
   PRIVATE SECTION.
     CLASS-DATA go_instance TYPE REF TO lcl_travel_buffer.
+
+    DATA: gv_last_late_number TYPE /dmo/travel_id VALUE /dmo/if_flight_legacy=>late_numbering_boundary.
+
     " Main buffer
     DATA: mt_create_buffer TYPE /dmo/t_travel,
           mt_update_buffer TYPE /dmo/t_travel,
@@ -1239,9 +1329,10 @@ CLASS lcl_travel_buffer DEFINITION FINAL CREATE PRIVATE.
 
     DATA mt_agency_id   TYPE SORTED TABLE OF /dmo/agency_id   WITH UNIQUE KEY table_line.
 
-    METHODS _create IMPORTING it_travel   TYPE /dmo/t_travel
-                    EXPORTING et_travel   TYPE /dmo/t_travel
-                              et_messages TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
+    METHODS _create IMPORTING it_travel         TYPE /dmo/t_travel
+                              iv_numbering_mode TYPE /dmo/if_flight_legacy=>t_numbering_mode
+                    EXPORTING et_travel         TYPE /dmo/t_travel
+                              et_messages       TYPE /dmo/if_flight_legacy=>tt_if_t100_message.
     METHODS _update IMPORTING it_travel   TYPE /dmo/t_travel
                               it_travelx  TYPE /dmo/t_travelx
                     EXPORTING et_travel   TYPE /dmo/t_travel
@@ -1314,52 +1405,71 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
     CHECK lt_travel_to_process IS NOT INITIAL.
 
     " Get Numbers
-    TRY.
-        cl_numberrange_runtime=>number_get(
-          EXPORTING
-            nr_range_nr       = '01'
-            object            = '/DMO/TRAVL'
-            quantity          = CONV #( lines( lt_travel_to_process ) )
-          IMPORTING
-            number            = DATA(lv_key)
-            returncode        = DATA(lv_return_code)
-            returned_quantity = DATA(lv_returned_quantity)
-        ).
-      CATCH cx_number_ranges INTO DATA(lx_number_ranges).
-        APPEND lx_number_ranges TO et_messages.
+    IF iv_numbering_mode EQ /dmo/if_flight_legacy=>numbering_mode-late.
+
+      LOOP AT lt_travel_to_process INTO ls_travel_create ##INTO_OK.
+        " standard determinations
+        ls_travel_create-createdby = sy-uname.
+        GET TIME STAMP FIELD ls_travel_create-createdat.
+        ls_travel_create-lastchangedby = ls_travel_create-createdby.
+        ls_travel_create-lastchangedat = ls_travel_create-createdat.
+        ls_travel_create-status = /dmo/if_flight_legacy=>travel_status-new.
+
+        " Late Numbering - Assign a temporary Travel ID (starting with '9...').
+        gv_last_late_number = gv_last_late_number + 1.
+        ASSERT gv_last_late_number IS NOT INITIAL.
+        ls_travel_create-travel_id = gv_last_late_number.
+
+        INSERT ls_travel_create INTO TABLE mt_create_buffer_2.
+      ENDLOOP.
+
+    ELSE.
+      TRY.
+          cl_numberrange_runtime=>number_get(
+            EXPORTING
+              nr_range_nr       = '01'
+              object            = '/DMO/TRAVL'
+              quantity          = CONV #( lines( lt_travel_to_process ) )
+            IMPORTING
+              number            = DATA(lv_key)
+              returncode        = DATA(lv_return_code)
+              returned_quantity = DATA(lv_returned_quantity)
+          ).
+        CATCH cx_number_ranges INTO DATA(lx_number_ranges).
+          APPEND lx_number_ranges TO et_messages.
+          EXIT.
+      ENDTRY.
+
+
+      IF lv_return_code = '2' OR lv_return_code = '3'.
+        APPEND NEW /dmo/cx_flight_legacy( textid = /dmo/cx_flight_legacy=>travel_nr_last_number ) TO et_messages.
         EXIT.
-    ENDTRY.
+      ENDIF.
+
+      ASSERT lv_returned_quantity = lines( lt_travel_to_process ).
+
+      lv_travel_id_max = CONV i( lv_key ) - lines( lt_travel_to_process ).
+
+      LOOP AT lt_travel_to_process INTO ls_travel_create ##INTO_OK.
+
+        " standard determinations
+        ls_travel_create-createdby = sy-uname.
+        GET TIME STAMP FIELD ls_travel_create-createdat.
+        ls_travel_create-lastchangedby = ls_travel_create-createdby.
+        ls_travel_create-lastchangedat = ls_travel_create-createdat.
+        ls_travel_create-status = /dmo/if_flight_legacy=>travel_status-new.
 
 
-    IF lv_return_code = '2' OR lv_return_code = '3'.
-      APPEND NEW /dmo/cx_flight_legacy( textid = /dmo/cx_flight_legacy=>travel_nr_last_number ) TO et_messages.
-      EXIT.
+
+        " **Internal** numbering: Override travel_id
+        lv_travel_id_max = lv_travel_id_max + 1.
+        ASSERT lv_travel_id_max IS NOT INITIAL.
+        ls_travel_create-travel_id = lv_travel_id_max.
+
+        INSERT ls_travel_create INTO TABLE mt_create_buffer_2.
+      ENDLOOP.
     ENDIF.
-
-    ASSERT lv_returned_quantity = lines( lt_travel_to_process ).
-
-    lv_travel_id_max = CONV i( lv_key ) - lines( lt_travel_to_process ).
-
-    LOOP AT lt_travel_to_process INTO ls_travel_create ##INTO_OK.
-
-      " standard determinations
-      ls_travel_create-createdby = sy-uname.
-      GET TIME STAMP FIELD ls_travel_create-createdat.
-      ls_travel_create-lastchangedby = ls_travel_create-createdby.
-      ls_travel_create-lastchangedat = ls_travel_create-createdat.
-      ls_travel_create-status = /dmo/if_flight_legacy=>travel_status-new.
-
-
-
-      " **Internal** numbering: Override travel_id
-      lv_travel_id_max = lv_travel_id_max + 1.
-      ASSERT lv_travel_id_max IS NOT INITIAL.
-      ls_travel_create-travel_id = lv_travel_id_max.
-
-      INSERT ls_travel_create INTO TABLE mt_create_buffer_2.
-
-      et_travel = mt_create_buffer_2.
-    ENDLOOP.
+    et_travel = mt_create_buffer_2.
   ENDMETHOD.
 
 
@@ -1564,10 +1674,75 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
   ENDMETHOD.
 
 
+  METHOD adjust_numbers.
+    DATA: lv_is_early_numbering_used TYPE abap_bool VALUE abap_false,
+          lv_is_late_numbering_used  TYPE abap_bool VALUE abap_false,
+          lt_create_buffer           TYPE /dmo/t_travel,
+          lv_travel_id               TYPE /dmo/travel_id.
+
+
+    ASSERT mt_create_buffer_2 IS INITIAL.
+    ASSERT mt_update_buffer_2 IS INITIAL.
+    ASSERT mt_delete_buffer_2 IS INITIAL.
+
+    CHECK mt_create_buffer IS NOT INITIAL.  "Any Create to be processed?
+
+    " As the table is sorted by the key travel_id the first entry will be the lowest travel_id and the last entry the highest travel_id
+    IF mt_create_buffer[ 1 ]-travel_id > /dmo/if_flight_legacy=>late_numbering_boundary.
+      lv_is_late_numbering_used = abap_true.
+    ENDIF.
+    IF mt_create_buffer[ lines( mt_create_buffer ) ]-travel_id < /dmo/if_flight_legacy=>late_numbering_boundary.
+      lv_is_early_numbering_used = abap_true.
+    ENDIF.
+
+    " Mixed Numbering (late+early) is not supported
+    ASSERT lv_is_late_numbering_used NE lv_is_early_numbering_used.
+
+    " Are we in Late Numbering mode? -> Process Late Numbering
+    IF lv_is_late_numbering_used EQ abap_true.
+      TRY.
+          cl_numberrange_runtime=>number_get(
+            EXPORTING
+              nr_range_nr       = '01'
+              object            = '/DMO/TRAVL'
+              quantity          = CONV #( lines( mt_create_buffer ) )
+            IMPORTING
+              number            = DATA(lv_key)
+              returncode        = DATA(lv_return_code)
+              returned_quantity = DATA(lv_returned_quantity)
+          ).
+        CATCH cx_number_ranges INTO DATA(lx_number_ranges).
+          ASSERT 1 = 2.
+      ENDTRY.
+      ASSERT lv_returned_quantity = lines( mt_create_buffer ).
+
+      lv_travel_id = CONV i( lv_key ) - lines( mt_create_buffer ).
+
+      LOOP AT mt_create_buffer INTO DATA(ls_create_buffer).
+        lv_travel_id = lv_travel_id + 1.
+        ASSERT lv_travel_id IS NOT INITIAL.
+
+        APPEND VALUE #( preliminary = VALUE #( travel_id = ls_create_buffer-travel_id )
+                        final       = VALUE #( travel_id = lv_travel_id ) ) TO rt_travel_mapping.
+
+        ls_create_buffer-travel_id = lv_travel_id.
+        INSERT ls_create_buffer INTO TABLE lt_create_buffer.
+      ENDLOOP.
+      mt_create_buffer = lt_create_buffer.
+    ENDIF.
+  ENDMETHOD.
+
   METHOD save.
     ASSERT mt_create_buffer_2 IS INITIAL.
     ASSERT mt_update_buffer_2 IS INITIAL.
     ASSERT mt_delete_buffer_2 IS INITIAL.
+
+    " Make sure no preliminary travel_id is remaining (late numbering use-case)
+    " If this dump occurs, call adjust numbers before executing save
+    IF mt_create_buffer IS NOT INITIAL.
+      ASSERT mt_create_buffer[ lines( mt_create_buffer ) ]-travel_id < /dmo/if_flight_legacy=>late_numbering_boundary.
+    ENDIF.
+
     INSERT /dmo/travel FROM TABLE @mt_create_buffer.
     UPDATE /dmo/travel FROM TABLE @mt_update_buffer.
     DELETE /dmo/travel FROM TABLE @( CORRESPONDING #( mt_delete_buffer ) ).
@@ -1635,9 +1810,10 @@ CLASS lcl_travel_buffer IMPLEMENTATION.
       ENDCASE.
     ENDLOOP.
 
-    _create( EXPORTING it_travel   = lt_travel_c
-             IMPORTING et_travel   = et_travel
-                       et_messages = et_messages ).
+    _create( EXPORTING it_travel         = lt_travel_c
+                       iv_numbering_mode = iv_numbering_mode
+             IMPORTING et_travel         = et_travel
+                       et_messages       = et_messages ).
 
     _update( EXPORTING it_travel   = lt_travel_u
                        it_travelx  = lt_travelx_u

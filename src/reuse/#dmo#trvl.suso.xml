@@ -13,9 +13,6 @@
     <OBJECT>/DMO/TRVL</OBJECT>
     <TTEXT>Authorization Object for Travel Scenario</TTEXT>
    </TOBJT>
-   <TOBJVORFLG>
-    <OBJCT>/DMO/TRVL</OBJCT>
-   </TOBJVORFLG>
    <TACTZ>
     <TACTZ>
      <BROBJ>/DMO/TRVL</BROBJ>
