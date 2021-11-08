@@ -23,7 +23,8 @@ Use the abapGit plug-in to install the <em>ABAP Flight Reference Scenario</em> b
 5. Select the branch <em>BTP-ABAP</em> and enter the newly created package `/DMO/FLIGHT` as the target package and choose <em>Next</em>.
 6. Create a new transport request that you only use for this demo content installation (recommendation) and choose <em>Finish</em> to link the Git repository to your ABAP cloud project. The repository appears in the abapGit Repositories View with status <em>Linked</em>.
 7. Right-click on the new ABAP repository and choose `pull` to start the cloning of the repository contents. Note that this procedure may take a few minutes. 
-8. Once the cloning has finished, the status is set to `Pulled Successfully`. (Refresh the `abapGit Repositories` view to see the progress of the import). Then refresh your project tree. 
+8. Once the cloning has finished, the status is set to `Pulled Successfully`. (Refresh the `abapGit Repositories` view to see the progress of the import). Then refresh your project tree.
+In some cases there is an error message stating that the object /DMO/TRVL has already been exported. This error message is displayed after right-clicking on the the ABAP repository and then selecting 'Show Object Log...'. You can ignore this error message.
 
 As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
