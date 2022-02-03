@@ -5,8 +5,8 @@
    <DDLS>
     <DDLNAME>/DMO/I_BOOKING_D</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
-    <DDTEXT>Booking View Entity for Draft RefScen</DDTEXT>
-    <SOURCE_TYPE>W</SOURCE_TYPE>
+    <DDTEXT>Booking Interface Projection View for Draft RefScen</DDTEXT>
+    <SOURCE_TYPE>P</SOURCE_TYPE>
    </DDLS>
   </asx:values>
  </asx:abap>

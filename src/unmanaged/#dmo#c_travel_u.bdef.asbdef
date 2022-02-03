@@ -1,4 +1,5 @@
 projection;
+strict;
 
 define behavior for /DMO/C_Travel_U alias travel
 
@@ -28,4 +29,5 @@ use etag
   use delete;
 
   use association _Travel;
+  use association _Booking;
 }

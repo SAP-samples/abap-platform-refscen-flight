@@ -1,4 +1,4 @@
-"! @testing BDEF:/DMO/I_BookingSupplement_D
+"! @testing BDEF:/DMO/R_BookingSupplement_D
 CLASS ltc_BookingSupplement DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
@@ -75,9 +75,9 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     CREATE OBJECT class_under_test FOR TESTING.
     cds_test_environment = cl_cds_test_environment=>create_for_multiple_cds(
                                VALUE #(
-                                   ( i_for_entity = '/DMO/I_TRAVEL_D'            )
-                                   ( i_for_entity = '/DMO/I_BOOKING_D'           )
-                                   ( i_for_entity = '/DMO/I_BOOKINGSUPPLEMENT_D' )
+                                   ( i_for_entity = '/DMO/R_Travel_D'            )
+                                   ( i_for_entity = '/DMO/R_Booking_D'           )
+                                   ( i_for_entity = '/DMO/R_BookingSupplement_D' )
                                  )
                              ).
     cds_test_environment->enable_double_redirection(  ).
@@ -122,9 +122,9 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
   METHOD setBookSupplNumber_idempotence.
     DATA:
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/I_BookingSupplement_D WITH KEY bookinguuid,
-      exp_bookingsupplements      TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\BookingSupplement,
-      reported                    TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_d.
+      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/R_BookingSupplement_D WITH KEY bookinguuid,
+      exp_bookingsupplements      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\BookingSupplement,
+      reported                    TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     bookingsupplement_mock_data = VALUE #( ( booksuppl_uuid = uuid1  parent_uuid = booking_uuid1  booking_supplement_id = '1' ) ).
     cds_test_environment->insert_test_data( bookingsupplement_mock_data ).
@@ -142,7 +142,7 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /dmo/i_travel_d
+    READ ENTITIES OF /DMO/R_Travel_D
       ENTITY BookingSupplement
         FIELDS ( BookingSupplementID BookingUUID ) WITH CORRESPONDING #( bookingsupplements_to_test )
         RESULT DATA(read_result).
@@ -158,9 +158,9 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
   METHOD setbooksupplnumber_newbsids.
     DATA:
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/I_BookingSupplement_D WITH KEY bookinguuid,
-      exp_bookingsupplements      TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\BookingSupplement,
-      reported                    TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_d.
+      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/R_BookingSupplement_D WITH KEY bookinguuid,
+      exp_bookingsupplements      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\BookingSupplement,
+      reported                    TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     bookingsupplement_mock_data = VALUE #(
          ( booksuppl_uuid = uuid1  parent_uuid = booking_uuid1 )
@@ -182,7 +182,7 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /dmo/i_travel_d
+    READ ENTITIES OF /DMO/R_Travel_D
       ENTITY BookingSupplement
         FIELDS ( BookingSupplementID BookingUUID ) WITH CORRESPONDING #( bookingsupplements_to_test )
         RESULT DATA(read_result).
@@ -208,9 +208,9 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
   METHOD setBookSupplNumber_mixed.
     DATA:
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/I_BookingSupplement_D WITH KEY bookinguuid,
-      exp_bookingsupplements      TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\BookingSupplement,
-      reported                    TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_d.
+      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/R_BookingSupplement_D WITH KEY bookinguuid,
+      exp_bookingsupplements      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\BookingSupplement,
+      reported                    TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     bookingsupplement_mock_data = VALUE #(
         ( booksuppl_uuid = uuid1  parent_uuid = booking_uuid1 )
@@ -244,7 +244,7 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /dmo/i_travel_d
+    READ ENTITIES OF /DMO/R_Travel_D
       ENTITY BookingSupplement
         FIELDS ( BookingSupplementID BookingUUID ) WITH CORRESPONDING #( bookingsupplements_to_test )
         RESULT DATA(read_result).
@@ -265,8 +265,8 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
 
     DATA:
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/I_BookingSupplement_D WITH KEY bookinguuid,
-      reported                    TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_d.
+      bookingsupplements_to_test  TYPE STANDARD TABLE OF /DMO/R_BookingSupplement_D WITH KEY bookinguuid,
+      reported                    TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     bookingsupplement_mock_data = VALUE #(
         price  = c_supplement_price
@@ -289,7 +289,7 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /dmo/i_travel_d
+    READ ENTITIES OF /DMO/R_Travel_D
       ENTITY Travel
         FIELDS ( TravelUUID TotalPrice ) WITH VALUE #( ( %is_draft = if_abap_behv=>mk-off  TravelUUID = travel_uuid1 ) )
         RESULT DATA(read_result).
@@ -311,9 +311,9 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     DATA:
       supplement_mock_data TYPE STANDARD TABLE OF /dmo/supplement,
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      bookingsupplements_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\BookingSupplement~validateSupplement,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      bookingsupplements_to_test   TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\BookingSupplement~validateSupplement,
+      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     supplement_mock_data = VALUE #( ( supplement_id = c_supplement_id ) ).
     sql_test_environment->insert_test_data( supplement_mock_data ).
@@ -355,9 +355,9 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     DATA:
       supplement_mock_data TYPE STANDARD TABLE OF /dmo/supplement,
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      bookingsupplements_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\BookingSupplement~validateSupplement,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      bookingsupplements_to_test   TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\BookingSupplement~validateSupplement,
+      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     supplement_mock_data = VALUE #( ( supplement_id = c_supplement_id ) ).
     sql_test_environment->insert_test_data( supplement_mock_data ).
@@ -404,9 +404,9 @@ CLASS ltc_BookingSupplement IMPLEMENTATION.
     DATA:
       supplement_mock_data TYPE STANDARD TABLE OF /dmo/supplement,
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      bookingsupplements_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\BookingSupplement~validateSupplement,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      bookingsupplements_to_test   TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\BookingSupplement~validateSupplement,
+      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     supplement_mock_data = VALUE #( ( supplement_id = c_supplement_id ) ).
     sql_test_environment->insert_test_data( supplement_mock_data ).

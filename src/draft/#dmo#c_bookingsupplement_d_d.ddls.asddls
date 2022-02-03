@@ -6,7 +6,7 @@
 @ObjectModel.semanticKey: ['BookingSupplementID']
 
 define view entity /DMO/C_BookingSupplement_D_D
-  as projection on /DMO/I_BookingSupplement_D
+  as projection on /DMO/R_BookingSupplement_D
 {
   key BookSupplUUID,
 

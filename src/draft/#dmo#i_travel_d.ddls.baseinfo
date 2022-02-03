@@ -3,7 +3,7 @@
 {
 "FROM":
 [
-"/DMO/A_TRAVEL_D"
+"/DMO/R_TRAVEL_D"
 ],
 "ASSOCIATED":
 [
@@ -14,8 +14,12 @@
 "I_CURRENCY"
 ],
 "BASE":
-[],
+[
+"/DMO/R_TRAVEL_D"
+],
 "ANNO_REF":
+[],
+"SCALAR_FUNCTION":
 [],
 "VERSION":0,
 "ANNOREF_EVALUATION_ERROR":""

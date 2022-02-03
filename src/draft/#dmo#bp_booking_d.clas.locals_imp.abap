@@ -27,11 +27,11 @@ CLASS lhc_booking IMPLEMENTATION.
 
   METHOD setBookingNumber.
     DATA max_bookingid TYPE /dmo/booking_id.
-    DATA bookings_update TYPE TABLE FOR UPDATE /DMO/I_Travel_D\\Booking.
+    DATA bookings_update TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\Booking.
 
     "Read all travels for the requested bookings
     " If multiple bookings of the same travel are requested, the travel is returned only once.
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel
         FIELDS ( TravelUUID )
         WITH CORRESPONDING #( keys )
@@ -39,7 +39,7 @@ CLASS lhc_booking IMPLEMENTATION.
 
     " Process all affected travels. Read respective bookings for one travel
     LOOP AT travels INTO DATA(travel).
-      READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
         ENTITY Travel BY \_Booking
           FIELDS ( BookingID )
           WITH VALUE #( ( %tky = travel-%tky ) )
@@ -64,7 +64,7 @@ CLASS lhc_booking IMPLEMENTATION.
     ENDLOOP.
 
     " Provide a booking ID for all bookings that have none.
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY booking
         UPDATE FIELDS ( BookingID )
         WITH bookings_update.
@@ -73,7 +73,7 @@ CLASS lhc_booking IMPLEMENTATION.
 
   METHOD setBookingDate.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking
         FIELDS ( BookingDate )
         WITH CORRESPONDING #( keys )
@@ -86,7 +86,7 @@ CLASS lhc_booking IMPLEMENTATION.
       <booking>-BookingDate = cl_abap_context_info=>get_system_date( ).
     ENDLOOP.
 
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking
         UPDATE  FIELDS ( BookingDate )
         WITH CORRESPONDING #( bookings ).
@@ -96,14 +96,14 @@ CLASS lhc_booking IMPLEMENTATION.
   METHOD calculateTotalPrice.
 
     " Read all parent UUIDs
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel
         FIELDS ( TravelUUID  )
         WITH CORRESPONDING #(  keys  )
       RESULT DATA(travels).
 
     " Trigger Re-Calculation on Root Node
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
           FROM CORRESPONDING  #( travels ).
@@ -113,13 +113,13 @@ CLASS lhc_booking IMPLEMENTATION.
 
   METHOD validateCustomer.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking
         FIELDS (  CustomerID )
         WITH CORRESPONDING #( keys )
     RESULT DATA(bookings).
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel
         FROM CORRESPONDING #( bookings )
       LINK DATA(travel_booking_links).
@@ -175,13 +175,13 @@ CLASS lhc_booking IMPLEMENTATION.
 
   METHOD validateConnection.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking
         FIELDS ( BookingID AirlineID ConnectionID FlightDate )
         WITH CORRESPONDING #( keys )
       RESULT DATA(bookings).
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Booking BY \_Travel
         FROM CORRESPONDING #( bookings )
       LINK DATA(travel_booking_links).

@@ -4,7 +4,7 @@
 @Metadata.allowExtensions: true
 @Search.searchable: true
 define view entity /DMO/C_Booking_A_D
-  as projection on /DMO/I_Booking_D
+  as projection on /DMO/R_Booking_D
 {
   key BookingUUID,
 
