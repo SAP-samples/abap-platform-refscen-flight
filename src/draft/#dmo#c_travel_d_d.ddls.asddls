@@ -7,7 +7,7 @@
 
 define root view entity /DMO/C_Travel_D_D
   provider contract transactional_query
-  as projection on /DMO/I_Travel_D
+  as projection on /DMO/R_Travel_D
 
 {
   key TravelUUID,

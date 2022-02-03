@@ -5,8 +5,8 @@
    <DDLS>
     <DDLNAME>/DMO/I_TRAVEL_D</DDLNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
-    <DDTEXT>Travel View Entity for Draft RefScen</DDTEXT>
-    <SOURCE_TYPE>W</SOURCE_TYPE>
+    <DDTEXT>Travel Interface Projection View for Draft RefScen</DDTEXT>
+    <SOURCE_TYPE>P</SOURCE_TYPE>
    </DDLS>
   </asx:values>
  </asx:abap>

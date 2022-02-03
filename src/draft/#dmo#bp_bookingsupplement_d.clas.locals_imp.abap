@@ -18,11 +18,11 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
   METHOD setBookSupplNumber.
     DATA max_bookingsupplementid TYPE /dmo/booking_supplement_id.
-    DATA bookingsupplements_update TYPE TABLE FOR UPDATE /DMO/I_Travel_D\\BookingSupplement.
+    DATA bookingsupplements_update TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\BookingSupplement.
 
     "Read all bookings for the requested booking supplements
     " If multiple booking supplements of the same booking are requested, the booking is returned only once.
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement BY \_Booking
         FIELDS (  BookingUUID  )
         WITH CORRESPONDING #( keys )
@@ -30,7 +30,7 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
     " Process all affected bookings. Read respective booking supplements for one booking
     LOOP AT bookings INTO DATA(ls_booking).
-      READ ENTITIES OF /dmo/i_travel_d IN LOCAL MODE
+      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
         ENTITY Booking BY \_BookingSupplement
           FIELDS ( BookingSupplementID )
           WITH VALUE #( ( %tky = ls_booking-%tky ) )
@@ -55,7 +55,7 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
     ENDLOOP.
 
     " Provide a booking ID for all bookings that have none.
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement
         UPDATE FIELDS ( BookingSupplementID ) WITH bookingsupplements_update.
 
@@ -63,14 +63,14 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
   METHOD calculateTotalPrice.
     " Read all parent UUIDs
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement BY \_Travel
         FIELDS ( TravelUUID  )
         WITH CORRESPONDING #(  keys  )
       RESULT DATA(travels).
 
     " Trigger Re-Calculation on Root Node
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
           FROM CORRESPONDING  #( travels ).
@@ -79,7 +79,7 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
   METHOD validateSupplement.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement
         FIELDS ( SupplementID )
         WITH CORRESPONDING #(  keys )
@@ -88,12 +88,12 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
 
     failed = CORRESPONDING #( DEEP read_failed ).
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement BY \_Booking
         FROM CORRESPONDING #( bookingsupplements )
       LINK DATA(booksuppl_booking_links).
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY BookingSupplement BY \_Travel
         FROM CORRESPONDING #( bookingsupplements )
       LINK DATA(booksuppl_travel_links).

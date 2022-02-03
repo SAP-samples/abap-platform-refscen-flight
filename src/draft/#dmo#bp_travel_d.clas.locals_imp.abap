@@ -65,14 +65,14 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD acceptTravel.
 
     "Modify travel instance
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         UPDATE FIELDS (  OverallStatus )
         WITH VALUE #( FOR key IN keys ( %tky          = key-%tky
                                         OverallStatus = travel_status-accepted ) ).
 
     "Read changed data for action result
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         ALL FIELDS WITH
         CORRESPONDING #( keys )
@@ -86,14 +86,14 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD rejectTravel.
 
     "Modify travel instance
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         UPDATE FIELDS (  OverallStatus )
         WITH VALUE #( FOR key IN keys ( %tky          = key-%tky
                                         OverallStatus = travel_status-rejected ) ).
 
     "Read changed data for action result
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         ALL FIELDS WITH
         CORRESPONDING #( keys )
@@ -105,7 +105,7 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD deductDiscount.
-    DATA travels_for_update TYPE TABLE FOR UPDATE /DMO/I_Travel_D.
+    DATA travels_for_update TYPE TABLE FOR UPDATE /DMO/R_Travel_D.
     DATA(keys_with_valid_discount) = keys.
 
     LOOP AT keys_with_valid_discount ASSIGNING FIELD-SYMBOL(<key_with_valid_discount>) WHERE %param-discount_percent IS INITIAL
@@ -128,7 +128,7 @@ CLASS lhc_travel IMPLEMENTATION.
     CHECK keys_with_valid_discount IS NOT INITIAL.
 
     "get total price
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS ( BookingFee )
         WITH CORRESPONDING #( keys_with_valid_discount )
@@ -146,13 +146,13 @@ CLASS lhc_travel IMPLEMENTATION.
     ENDLOOP.
 
     "update total price with reduced price
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
        UPDATE FIELDS ( BookingFee )
        WITH travels_for_update.
 
     "Read changed data for action result
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         ALL FIELDS WITH
         CORRESPONDING #( travels )
@@ -172,7 +172,7 @@ CLASS lhc_travel IMPLEMENTATION.
     DATA: amount_per_currencycode TYPE STANDARD TABLE OF ty_amount_per_currencycode.
 
     " Read all relevant travel instances.
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
          ENTITY Travel
             FIELDS ( BookingFee CurrencyCode )
             WITH CORRESPONDING #( keys )
@@ -186,7 +186,7 @@ CLASS lhc_travel IMPLEMENTATION.
                                            currency_code = <travel>-CurrencyCode ) ).
 
       " Read all associated bookings and add them to the total price.
-      READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
         ENTITY Travel BY \_Booking
           FIELDS ( FlightPrice CurrencyCode )
         WITH VALUE #( ( %tky = <travel>-%tky ) )
@@ -198,7 +198,7 @@ CLASS lhc_travel IMPLEMENTATION.
       ENDLOOP.
 
       " Read all associated booking supplements and add them to the total price.
-      READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
         ENTITY Booking BY \_BookingSupplement
           FIELDS ( BookSupplPrice CurrencyCode )
         WITH VALUE #( FOR rba_booking IN bookings ( %tky = rba_booking-%tky ) )
@@ -230,7 +230,7 @@ CLASS lhc_travel IMPLEMENTATION.
     ENDLOOP.
 
     " write back the modified total_price of travels
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY travel
         UPDATE FIELDS ( TotalPrice )
         WITH CORRESPONDING #( travels ).
@@ -239,7 +239,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD setTravelNumber.
     "Ensure idempotence
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS ( TravelID )
         WITH CORRESPONDING #( keys )
@@ -252,7 +252,7 @@ CLASS lhc_travel IMPLEMENTATION.
     SELECT SINGLE FROM /dmo/a_travel_d FIELDS MAX( travel_id ) INTO @DATA(max_travelid).
 
     "update involved instances
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         UPDATE FIELDS ( TravelID )
         WITH VALUE #( FOR travel IN travels INDEX INTO i (
@@ -263,7 +263,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD setStatusToOpen.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
      ENTITY Travel
        FIELDS ( OverallStatus )
        WITH CORRESPONDING #( keys )
@@ -273,7 +273,7 @@ CLASS lhc_travel IMPLEMENTATION.
     DELETE travels WHERE OverallStatus IS NOT INITIAL.
     CHECK travels IS NOT INITIAL.
 
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         UPDATE FIELDS ( OverallStatus )
         WITH VALUE #( FOR travel IN travels ( %tky          = travel-%tky
@@ -283,7 +283,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD calculateTotalPrice.
 
-    MODIFY ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    MODIFY ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         EXECUTE reCalcTotalPrice
         FROM CORRESPONDING #( keys ).
@@ -292,7 +292,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD validateCustomer.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS ( CustomerID )
         WITH CORRESPONDING #( keys )
@@ -351,7 +351,7 @@ CLASS lhc_travel IMPLEMENTATION.
     DATA: modification_granted TYPE abap_boolean,
           agency_country_code  TYPE land1.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS ( AgencyID TravelID )
         WITH CORRESPONDING #( keys )
@@ -429,7 +429,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD validateDates.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS (  BeginDate EndDate TravelID )
         WITH CORRESPONDING #( keys )
@@ -492,7 +492,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
   METHOD get_instance_features.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS ( OverallStatus )
         WITH CORRESPONDING #( keys )
@@ -689,7 +689,7 @@ CLASS lhc_travel IMPLEMENTATION.
           update_granted   TYPE abap_bool,
           delete_granted   TYPE abap_bool.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS ( AgencyID )
         WITH CORRESPONDING #( keys )
@@ -789,7 +789,7 @@ CLASS lhc_travel IMPLEMENTATION.
     DATA: create_granted      TYPE abap_boolean,
           agency_country_code TYPE land1.
 
-    READ ENTITIES OF /DMO/I_Travel_D IN LOCAL MODE
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
       ENTITY Travel
         FIELDS ( AgencyID )
         WITH CORRESPONDING #( keys )

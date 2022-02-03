@@ -1,4 +1,4 @@
-"! @testing BDEF:/DMO/I_TRAVEL_D
+"! @testing BDEF:/DMO/R_Travel_D
 CLASS ltc_travel DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
@@ -153,9 +153,9 @@ CLASS ltc_travel IMPLEMENTATION.
     CREATE OBJECT class_under_test FOR TESTING.
     cds_test_environment = cl_cds_test_environment=>create_for_multiple_cds(
                                VALUE #(
-                                   ( i_for_entity = '/DMO/I_TRAVEL_D'            )
-                                   ( i_for_entity = '/DMO/I_BOOKING_D'           )
-                                   ( i_for_entity = '/DMO/I_BOOKINGSUPPLEMENT_D' )
+                                   ( i_for_entity = '/DMO/R_Travel_D'            )
+                                   ( i_for_entity = '/DMO/R_Booking_D'           )
+                                   ( i_for_entity = '/DMO/R_BookingSupplement_D' )
                                  )
                              ).
     cds_test_environment->enable_double_redirection(  ).
@@ -184,9 +184,9 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD settravelnumber_idempotence.
     DATA:
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE STANDARD TABLE OF /dmo/i_travel_d WITH KEY TravelUUID,
-      exp_travels      TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\travel,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test  TYPE STANDARD TABLE OF /DMO/R_Travel_D WITH KEY TravelUUID,
+      exp_travels      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     travel_mock_data = VALUE #( ( travel_uuid = uuid1  travel_id = '1' ) ).
     cds_test_environment->insert_test_data( travel_mock_data ).
@@ -204,7 +204,7 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -220,9 +220,9 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD settravelnumber_newtravelids.
     DATA:
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE STANDARD TABLE OF /dmo/i_travel_d WITH KEY TravelUUID,
-      exp_travels      TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\travel,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test  TYPE STANDARD TABLE OF /DMO/R_Travel_D WITH KEY TravelUUID,
+      exp_travels      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     travel_mock_data = VALUE #( ( travel_uuid = uuid1 )
                                 ( travel_uuid = uuid2 ) ).
@@ -240,7 +240,7 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -264,9 +264,9 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD settravelnumber_mixed.
     DATA:
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE STANDARD TABLE OF /dmo/i_travel_d WITH KEY TravelUUID,
-      exp_travels      TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\travel,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test  TYPE STANDARD TABLE OF /DMO/R_Travel_D WITH KEY TravelUUID,
+      exp_travels      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     travel_mock_data = VALUE #( ( travel_uuid = uuid1 )
                                 ( travel_uuid = uuid2 travel_id = '1' )
@@ -292,7 +292,7 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -309,13 +309,13 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD accepttravel.
     DATA:
       travel_mock_data   TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test    TYPE STANDARD TABLE OF /dmo/i_travel_d WITH KEY TravelUUID,
-      exp_travels_action TYPE TABLE FOR ACTION RESULT /dmo/i_travel_d\\travel~acceptTravel,
-      exp_travel_read    TYPE STRUCTURE FOR READ RESULT /dmo/i_travel_d\\travel,
-      result             TYPE TABLE FOR ACTION RESULT  /DMO/I_Travel_D\\Travel~acceptTravel,
-      mapped             TYPE RESPONSE FOR MAPPED EARLY  /DMO/I_Travel_D,
-      failed             TYPE RESPONSE FOR FAILED EARLY  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED EARLY  /DMO/I_Travel_D.
+      travels_to_test    TYPE STANDARD TABLE OF /DMO/R_Travel_D WITH KEY TravelUUID,
+      exp_travels_action TYPE TABLE FOR ACTION RESULT /DMO/R_Travel_D\\travel~acceptTravel,
+      exp_travel_read    TYPE STRUCTURE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      result             TYPE TABLE FOR ACTION RESULT  /DMO/R_Travel_D\\Travel~acceptTravel,
+      mapped             TYPE RESPONSE FOR MAPPED EARLY  /DMO/R_Travel_D,
+      failed             TYPE RESPONSE FOR FAILED EARLY  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED EARLY  /DMO/R_Travel_D.
 
     travel_mock_data = VALUE #( ( travel_uuid = uuid1  overall_status = class_under_test->travel_status-open ) ).
     cds_test_environment->insert_test_data( travel_mock_data ).
@@ -354,7 +354,7 @@ CLASS ltc_travel IMPLEMENTATION.
       ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -371,13 +371,13 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD rejecttravel.
     DATA:
       travel_mock_data   TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test    TYPE STANDARD TABLE OF /dmo/i_travel_d WITH KEY TravelUUID,
-      exp_travels_action TYPE TABLE FOR ACTION RESULT /dmo/i_travel_d\\travel~rejectTravel,
-      exp_travel_read    TYPE STRUCTURE FOR READ RESULT /dmo/i_travel_d\\travel,
-      result             TYPE TABLE FOR ACTION RESULT  /DMO/I_Travel_D\\Travel~rejectTravel,
-      mapped             TYPE RESPONSE FOR MAPPED EARLY  /DMO/I_Travel_D,
-      failed             TYPE RESPONSE FOR FAILED EARLY  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED EARLY  /DMO/I_Travel_D.
+      travels_to_test    TYPE STANDARD TABLE OF /DMO/R_Travel_D WITH KEY TravelUUID,
+      exp_travels_action TYPE TABLE FOR ACTION RESULT /DMO/R_Travel_D\\travel~rejectTravel,
+      exp_travel_read    TYPE STRUCTURE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      result             TYPE TABLE FOR ACTION RESULT  /DMO/R_Travel_D\\Travel~rejectTravel,
+      mapped             TYPE RESPONSE FOR MAPPED EARLY  /DMO/R_Travel_D,
+      failed             TYPE RESPONSE FOR FAILED EARLY  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED EARLY  /DMO/R_Travel_D.
 
     travel_mock_data = VALUE #( ( travel_uuid = uuid1  overall_status = class_under_test->travel_status-open ) ).
     cds_test_environment->insert_test_data( travel_mock_data ).
@@ -416,7 +416,7 @@ CLASS ltc_travel IMPLEMENTATION.
       ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -432,13 +432,13 @@ CLASS ltc_travel IMPLEMENTATION.
 
   METHOD deductdiscount_invalid_param.
     TYPES:
-      t_keys TYPE TABLE FOR KEY OF /DMO/I_Travel_D\\Travel.
+      t_keys TYPE TABLE FOR KEY OF /DMO/R_Travel_D\\Travel.
     DATA:
-      travels_to_test TYPE TABLE FOR ACTION IMPORT /dmo/i_travel_d\\travel~deductDiscount,
-      result          TYPE TABLE FOR ACTION RESULT  /DMO/I_Travel_D\\Travel~deductDiscount,
-      mapped          TYPE RESPONSE FOR MAPPED EARLY  /DMO/I_Travel_D,
-      failed          TYPE RESPONSE FOR FAILED EARLY  /DMO/I_Travel_D,
-      reported        TYPE RESPONSE FOR REPORTED EARLY  /DMO/I_Travel_D.
+      travels_to_test TYPE TABLE FOR ACTION IMPORT /DMO/R_Travel_D\\travel~deductDiscount,
+      result          TYPE TABLE FOR ACTION RESULT  /DMO/R_Travel_D\\Travel~deductDiscount,
+      mapped          TYPE RESPONSE FOR MAPPED EARLY  /DMO/R_Travel_D,
+      failed          TYPE RESPONSE FOR FAILED EARLY  /DMO/R_Travel_D,
+      reported        TYPE RESPONSE FOR REPORTED EARLY  /DMO/R_Travel_D.
 
 
     travels_to_test = VALUE #(
@@ -476,13 +476,13 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD deductdiscount_success.
     DATA:
       travel_mock_data   TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test    TYPE TABLE FOR ACTION IMPORT /dmo/i_travel_d\\travel~deductdiscount,
-      exp_travels_action TYPE TABLE FOR ACTION RESULT /dmo/i_travel_d\\travel~deductdiscount,
-      exp_travel_read    TYPE STRUCTURE FOR READ RESULT /dmo/i_travel_d\\travel,
-      result             TYPE TABLE FOR ACTION RESULT  /DMO/I_Travel_D\\Travel~deductdiscount,
-      mapped             TYPE RESPONSE FOR MAPPED EARLY  /DMO/I_Travel_D,
-      failed             TYPE RESPONSE FOR FAILED EARLY  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED EARLY  /DMO/I_Travel_D.
+      travels_to_test    TYPE TABLE FOR ACTION IMPORT /DMO/R_Travel_D\\travel~deductdiscount,
+      exp_travels_action TYPE TABLE FOR ACTION RESULT /DMO/R_Travel_D\\travel~deductdiscount,
+      exp_travel_read    TYPE STRUCTURE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      result             TYPE TABLE FOR ACTION RESULT  /DMO/R_Travel_D\\Travel~deductdiscount,
+      mapped             TYPE RESPONSE FOR MAPPED EARLY  /DMO/R_Travel_D,
+      failed             TYPE RESPONSE FOR FAILED EARLY  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED EARLY  /DMO/R_Travel_D.
 
     travel_mock_data = VALUE #( ( travel_uuid = uuid1  booking_fee = '100'  currency_code = 'EUR' ) ).
     cds_test_environment->insert_test_data( travel_mock_data ).
@@ -523,7 +523,7 @@ CLASS ltc_travel IMPLEMENTATION.
       ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -554,11 +554,11 @@ CLASS ltc_travel IMPLEMENTATION.
       travel_mock_data            TYPE STANDARD TABLE OF /dmo/a_travel_d,
       booking_mock_data           TYPE STANDARD TABLE OF /dmo/a_booking_d,
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      travels_to_test             TYPE TABLE FOR ACTION IMPORT /dmo/i_travel_d\\travel~reCalcTotalPrice,
-      exp_travel_read             TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\travel,
-      mapped                      TYPE RESPONSE FOR MAPPED EARLY  /dmo/i_travel_d,
-      failed                      TYPE RESPONSE FOR FAILED EARLY  /dmo/i_travel_d,
-      reported                    TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_d.
+      travels_to_test             TYPE TABLE FOR ACTION IMPORT /DMO/R_Travel_D\\travel~reCalcTotalPrice,
+      exp_travel_read             TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      mapped                      TYPE RESPONSE FOR MAPPED EARLY  /DMO/R_Travel_D,
+      failed                      TYPE RESPONSE FOR FAILED EARLY  /DMO/R_Travel_D,
+      reported                    TYPE RESPONSE FOR REPORTED EARLY  /DMO/R_Travel_D.
 
     travels_to_test = VALUE #( ( %is_draft = if_abap_behv=>mk-off  traveluuid = uuid1 ) ).
 
@@ -600,7 +600,7 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID TotalPrice BookingFee CurrencyCode )
         WITH CORRESPONDING #( travels_to_test )
@@ -642,11 +642,11 @@ CLASS ltc_travel IMPLEMENTATION.
       travel_mock_data            TYPE STANDARD TABLE OF /dmo/a_travel_d,
       booking_mock_data           TYPE STANDARD TABLE OF /dmo/a_booking_d,
       bookingsupplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
-      travels_to_test             TYPE TABLE FOR ACTION IMPORT /dmo/i_travel_d\\travel~reCalcTotalPrice,
-      exp_travel_read             TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\travel,
-      mapped                      TYPE RESPONSE FOR MAPPED EARLY  /dmo/i_travel_d,
-      failed                      TYPE RESPONSE FOR FAILED EARLY  /dmo/i_travel_d,
-      reported                    TYPE RESPONSE FOR REPORTED EARLY  /dmo/i_travel_d.
+      travels_to_test             TYPE TABLE FOR ACTION IMPORT /DMO/R_Travel_D\\travel~reCalcTotalPrice,
+      exp_travel_read             TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      mapped                      TYPE RESPONSE FOR MAPPED EARLY  /DMO/R_Travel_D,
+      failed                      TYPE RESPONSE FOR FAILED EARLY  /DMO/R_Travel_D,
+      reported                    TYPE RESPONSE FOR REPORTED EARLY  /DMO/R_Travel_D.
 
     travels_to_test = VALUE #( ( %is_draft = if_abap_behv=>mk-off  traveluuid = uuid1 ) ).
 
@@ -690,7 +690,7 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID TotalPrice BookingFee CurrencyCode )
         WITH CORRESPONDING #( travels_to_test )
@@ -727,9 +727,9 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD setstatustoopen.
     DATA:
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE TABLE FOR DETERMINATION /dmo/i_travel_d\\travel~setStatusToOpen,
-      exp_travel_read  TYPE TABLE FOR READ RESULT /dmo/i_travel_d\\travel,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test  TYPE TABLE FOR DETERMINATION /DMO/R_Travel_D\\travel~setStatusToOpen,
+      exp_travel_read  TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\travel,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     travel_mock_data = VALUE #(
         ( travel_uuid = uuid1 )
@@ -748,7 +748,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_initial( reported ).
 
-    READ ENTITIES OF /DMO/I_Travel_D
+    READ ENTITIES OF /DMO/R_Travel_D
       Entity Travel
         FIELDS ( TravelID OverallStatus )
         WITH CORRESPONDING #( travels_to_test )
@@ -776,9 +776,9 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
       travel_mock_data   TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test    TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateCustomer,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test    TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateCustomer,
+      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
     sql_test_environment->insert_test_data( customer_mock_data ).
@@ -815,9 +815,9 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
       travel_mock_data   TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test    TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateCustomer,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test    TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateCustomer,
+      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
     sql_test_environment->insert_test_data( customer_mock_data ).
@@ -858,9 +858,9 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
       travel_mock_data   TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test    TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateCustomer,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test    TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateCustomer,
+      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
     sql_test_environment->insert_test_data( customer_mock_data ).
@@ -900,9 +900,9 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateagency,
-      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test  TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateagency,
+      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     agency_mock_data = VALUE #( ( agency_id = c_agency_id ) ).
     sql_test_environment->insert_test_data( agency_mock_data ).
@@ -939,9 +939,9 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateagency,
-      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test  TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateagency,
+      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     agency_mock_data = VALUE #( ( agency_id = c_agency_id ) ).
     sql_test_environment->insert_test_data( agency_mock_data ).
@@ -982,9 +982,9 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateagency,
-      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D.
+      travels_to_test  TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateagency,
+      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
 
     agency_mock_data = VALUE #( ( agency_id = c_agency_id ) ).
     sql_test_environment->insert_test_data( agency_mock_data ).
@@ -1020,9 +1020,9 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD validatedates_success.
     DATA:
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateDates,
-      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D,
+      travels_to_test  TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateDates,
+      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D,
       today            TYPE cl_abap_context_info=>ty_system_date,
       tomorrow         TYPE cl_abap_context_info=>ty_system_date.
 
@@ -1069,9 +1069,9 @@ CLASS ltc_travel IMPLEMENTATION.
       travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
       travels_to_check TYPE t_check_table,
       travel_to_check  TYPE t_check,
-      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateDates,
-      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/I_Travel_D,
-      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/I_Travel_D,
+      travels_to_test  TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateDates,
+      failed           TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D,
       one_week_ago     TYPE cl_abap_context_info=>ty_system_date,
       yesterday        TYPE cl_abap_context_info=>ty_system_date,
       today            TYPE cl_abap_context_info=>ty_system_date,
@@ -1147,22 +1147,22 @@ CLASS ltc_travel IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD get_instance_features.
-    TYPES: t_instance_feature TYPE STRUCTURE FOR INSTANCE FEATURES RESULT /dmo/i_travel_d\\travel,
+    TYPES: t_instance_feature TYPE STRUCTURE FOR INSTANCE FEATURES RESULT /DMO/R_Travel_D\\travel,
            BEGIN OF t_check.
              INCLUDE TYPE t_instance_feature.
-    TYPES: overallstatus TYPE /dmo/i_travel_d-OverallStatus,
+    TYPES: overallstatus TYPE /DMO/R_Travel_D-OverallStatus,
            END OF t_check,
            t_check_table TYPE STANDARD TABLE OF t_check WITH KEY traveluuid.
 
     DATA:
       check_table        TYPE t_check_table,
       travel_mock_data   TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      travels_to_test    TYPE TABLE FOR INSTANCE FEATURES KEY /dmo/i_travel_d\\travel,
-      requested_features TYPE STRUCTURE FOR INSTANCE FEATURES REQUEST /dmo/i_travel_d\\travel,
-      act_result         TYPE TABLE FOR INSTANCE FEATURES RESULT /dmo/i_travel_d\\travel,
-      exp_result         TYPE TABLE FOR INSTANCE FEATURES RESULT /dmo/i_travel_d\\travel,
-      reported           TYPE RESPONSE FOR REPORTED EARLY /DMO/I_Travel_D,
-      failed             TYPE RESPONSE FOR FAILED   EARLY /DMO/I_Travel_D.
+      travels_to_test    TYPE TABLE FOR INSTANCE FEATURES KEY /DMO/R_Travel_D\\travel,
+      requested_features TYPE STRUCTURE FOR INSTANCE FEATURES REQUEST /DMO/R_Travel_D\\travel,
+      act_result         TYPE TABLE FOR INSTANCE FEATURES RESULT /DMO/R_Travel_D\\travel,
+      exp_result         TYPE TABLE FOR INSTANCE FEATURES RESULT /DMO/R_Travel_D\\travel,
+      reported           TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D,
+      failed             TYPE RESPONSE FOR FAILED   EARLY /DMO/R_Travel_D.
 
     " In current implementation requested_features is not used.
     requested_features = VALUE #( ).
@@ -1247,10 +1247,10 @@ CLASS ltc_travel IMPLEMENTATION.
 
   METHOD get_global_authorizations.
     DATA:
-      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_travel_d\\travel,
-      exp_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_d\\travel,
-      act_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_d\\travel,
-      reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/i_travel_d.
+      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /DMO/R_Travel_D\\travel,
+      exp_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /DMO/R_Travel_D\\travel,
+      act_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /DMO/R_Travel_D\\travel,
+      reported                 TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D.
 
     requested_authorizations = VALUE #(
          %create      = if_abap_behv=>mk-on
@@ -1307,12 +1307,12 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       travel_mock_data         TYPE STANDARD TABLE OF /DMO/A_Travel_D,
       agency_mock_data         TYPE STANDARD TABLE OF /dmo/agency,
-      travels_to_test          TYPE TABLE FOR AUTHORIZATION KEY /dmo/i_travel_d\\travel,
-      requested_authorizations TYPE STRUCTURE FOR AUTHORIZATION REQUEST /dmo/i_travel_d\\travel,
-      act_result               TYPE TABLE FOR AUTHORIZATION RESULT /dmo/i_travel_d\\travel,
-      exp_result               TYPE TABLE FOR AUTHORIZATION RESULT /dmo/i_travel_d\\travel,
-      failed                   TYPE RESPONSE FOR FAILED EARLY /dmo/i_travel_d,
-      reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/i_travel_d.
+      travels_to_test          TYPE TABLE FOR AUTHORIZATION KEY /DMO/R_Travel_D\\travel,
+      requested_authorizations TYPE STRUCTURE FOR AUTHORIZATION REQUEST /DMO/R_Travel_D\\travel,
+      act_result               TYPE TABLE FOR AUTHORIZATION RESULT /DMO/R_Travel_D\\travel,
+      exp_result               TYPE TABLE FOR AUTHORIZATION RESULT /DMO/R_Travel_D\\travel,
+      failed                   TYPE RESPONSE FOR FAILED EARLY /DMO/R_Travel_D,
+      reported                 TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D.
 
     agency_mock_data = VALUE #(
         ( agency_id = c_agency1  country_code = c_country_de )
@@ -1372,9 +1372,9 @@ CLASS ltc_travel IMPLEMENTATION.
     DATA:
       travel_mock_data         TYPE STANDARD TABLE OF /DMO/A_Travel_D,
       agency_mock_data         TYPE STANDARD TABLE OF /dmo/agency,
-      travels_to_test          TYPE TABLE FOR VALIDATION /dmo/i_travel_d\\travel~validateAuthOnCreate,
-      failed                   TYPE RESPONSE FOR FAILED   late /dmo/i_travel_d,
-      reported                 TYPE RESPONSE FOR REPORTED late /dmo/i_travel_d.
+      travels_to_test          TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateAuthOnCreate,
+      failed                   TYPE RESPONSE FOR FAILED   late /DMO/R_Travel_D,
+      reported                 TYPE RESPONSE FOR REPORTED late /DMO/R_Travel_D.
 
     agency_mock_data = VALUE #(
         ( agency_id = c_agency1  country_code = c_country_de )

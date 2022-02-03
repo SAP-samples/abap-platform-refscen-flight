@@ -3,7 +3,7 @@
 {
 "FROM":
 [
-"/DMO/A_BOOKING_D"
+"/DMO/R_BOOKING_D"
 ],
 "ASSOCIATED":
 [
@@ -15,8 +15,12 @@
 "/DMO/I_TRAVEL_D"
 ],
 "BASE":
-[],
+[
+"/DMO/R_BOOKING_D"
+],
 "ANNO_REF":
+[],
+"SCALAR_FUNCTION":
 [],
 "VERSION":0,
 "ANNOREF_EVALUATION_ERROR":""

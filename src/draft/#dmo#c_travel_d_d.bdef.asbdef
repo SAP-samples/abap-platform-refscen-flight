@@ -2,7 +2,7 @@ projection;
 strict;
 use draft;
 
-define behavior for /DMO/C_TRAVEL_D_D alias Travel
+define behavior for /DMO/C_Travel_D_D alias Travel
 use etag
 {
   use create;
@@ -22,7 +22,7 @@ use etag
   use association _Booking { create; with draft; }
 }
 
-define behavior for /DMO/C_BOOKING_D_D alias Booking
+define behavior for /DMO/C_Booking_D_D alias Booking
 use etag
 {
   use update;
@@ -32,7 +32,7 @@ use etag
   use association _Travel { with draft; }
 }
 
-define behavior for /DMO/C_BOOKINGSUPPLEMENT_D_D alias BookingSupplement
+define behavior for /DMO/C_BookingSupplement_D_D alias BookingSupplement
 use etag
 {
   use update;
