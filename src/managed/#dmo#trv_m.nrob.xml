@@ -9,6 +9,7 @@
     <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </ATTRIBUTES>
    <TEXT>
+    <LANGU>E</LANGU>
     <OBJECT>/DMO/TRV_M</OBJECT>
     <TXT>Travel_ID number range object</TXT>
     <TXTSHORT>Travel_ID number...</TXTSHORT>

@@ -46,9 +46,10 @@ Use the <em>zabapgit_standalone</em> program to install the <em>ABAP Flight Refe
 5.	Leave the other fields unchanged and choose `Create Online Repo`.
 6. Enter your credentials for abapgit. You will see the available artifacts to import into your ABAP system. 
 7.	Choose `Pull` and confirm every subpackage on your transport request. 
-8.	Select the package `/DMO/FLIGHT` to be overwritten with the demo content and again confirm the transport request. You will get an information screen telling you to only make repairs when they are urgent, which you can confirm. You can also confirm the dialogue telling you that objects can only be created in the package of the namespace /DMO/.
-9. In the following screen, select all inactive objects and confirm the activation. 
-10.	Once the cloning has finished, refresh your project tree.
+8.	Select the package `/DMO/FLIGHT` to be overwritten with the demo content. In some cases, the shown ZABAPGIT dialogue offers you to delete the /DMO/ namespace locally. Do not delete the /DMO/ namespace locally because the pull operation will fail if no suiting namespace exists in your package.
+9. You will get an information screen telling you to only make repairs when they are urgent, which you can confirm. You can also confirm the dialogue telling you that objects can only be created in the package of the namespace /DMO/.  
+10. In the following screen, select all inactive objects and confirm the activation.
+11.	Once the cloning has finished, refresh your project tree.
 
 
 As a result of the installation procedure above, the ABAP system creates all development objects of the demo content and adds the following sub packages to the target package: 
