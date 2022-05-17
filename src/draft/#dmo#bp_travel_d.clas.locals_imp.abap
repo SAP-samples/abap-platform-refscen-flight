@@ -33,8 +33,7 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR Travel~validateAgency.
     METHODS validateDates FOR VALIDATE ON SAVE
       IMPORTING keys FOR Travel~validateDates.
-    METHODS validateauthoncreate FOR VALIDATE ON SAVE
-      IMPORTING keys FOR travel~validateauthoncreate.
+
 
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR Travel RESULT result.
@@ -43,6 +42,15 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR travel RESULT result.
 
+
+    METHODS precheck_create FOR PRECHECK
+      IMPORTING entities FOR CREATE travel.
+    METHODS precheck_update FOR PRECHECK
+      IMPORTING entities FOR UPDATE travel.
+
+
+    METHODS resume FOR MODIFY
+      IMPORTING keys FOR ACTION Travel~Resume.
 
 
     METHODS is_create_granted
@@ -57,6 +65,21 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
 
 
 
+
+    TYPES:
+      t_entities_create TYPE TABLE FOR CREATE /dmo/r_travel_d\\travel,
+      t_entities_update TYPE TABLE FOR UPDATE /dmo/r_travel_d\\travel,
+      t_failed_travel   TYPE TABLE FOR FAILED   EARLY /dmo/r_travel_d\\travel,
+      t_reported_travel TYPE TABLE FOR REPORTED EARLY /dmo/r_travel_d\\travel.
+
+
+    METHODS precheck_auth
+      IMPORTING
+        entities_create TYPE t_entities_create OPTIONAL
+        entities_update TYPE t_entities_update OPTIONAL
+      CHANGING
+        failed          TYPE t_failed_travel
+        reported        TYPE t_reported_travel.
 
 ENDCLASS.
 
@@ -399,28 +422,6 @@ CLASS lhc_travel IMPLEMENTATION.
                                                                 severity  = if_abap_behv_message=>severity-error )
                          %element-AgencyID  = if_abap_behv=>mk-on
                       ) TO reported-travel.
-        " If Agency ID is valid, check authorization
-      ELSE.
-
-        modification_granted = abap_false.
-
-        READ TABLE valid_agencies WITH KEY agency_id = travel-AgencyID
-             ASSIGNING FIELD-SYMBOL(<agency_country_code>).
-
-        modification_granted = is_update_granted( <agency_country_code>-country_code ).
-
-        IF modification_granted = abap_false.
-          APPEND VALUE #( %tky = travel-%tky ) TO failed-travel.
-
-          APPEND VALUE #(  %tky               = travel-%tky
-                           %state_area        = 'VALIDATE_AGENCY'
-                           %msg               = NEW /dmo/cm_flight_messages(
-                                                                  agency_id = travel-agencyid
-                                                                  textid    = /dmo/cm_flight_messages=>not_authorized_for_agencyid
-                                                                  severity  = if_abap_behv_message=>severity-error )
-                           %element-AgencyID  = if_abap_behv=>mk-on
-                        ) TO reported-travel.
-        ENDIF.
       ENDIF.
 
     ENDLOOP.
@@ -681,7 +682,6 @@ CLASS lhc_travel IMPLEMENTATION.
 
   ENDMETHOD.
 
-
   METHOD get_instance_authorizations.
 
     DATA: update_requested TYPE abap_bool,
@@ -784,54 +784,112 @@ CLASS lhc_travel IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD validateAuthOnCreate.
+  METHOD precheck_create.
+    precheck_auth(
+        EXPORTING
+          entities_create = entities
+        CHANGING
+          failed          = failed-travel
+          reported        = reported-travel
+      ).
+  ENDMETHOD.
 
-    DATA: create_granted      TYPE abap_boolean,
-          agency_country_code TYPE land1.
+  METHOD precheck_update.
+    precheck_auth(
+        EXPORTING
+          entities_update = entities
+        CHANGING
+          failed          = failed-travel
+          reported        = reported-travel
+      ).
+  ENDMETHOD.
 
-    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
-      ENTITY Travel
-        FIELDS ( AgencyID )
-        WITH CORRESPONDING #( keys )
-        RESULT DATA(travels).
+  METHOD precheck_auth.
+    DATA:
+      entities          TYPE t_entities_update,
+      operation         TYPE if_abap_behv=>t_char01,
+      agencies          TYPE SORTED TABLE OF /dmo/agency WITH UNIQUE KEY agency_id,
+      is_modify_granted TYPE abap_bool.
 
-    CHECK travels IS NOT INITIAL.
+    " Either entities_create or entities_update is provided.  NOT both and at least one.
+    ASSERT NOT ( entities_create IS INITIAL EQUIV entities_update IS INITIAL ).
 
-    SELECT FROM /dmo/agency
-      FIELDS agency_id, country_code
-      FOR ALL ENTRIES IN @travels
-      WHERE agency_id = @travels-AgencyID
+    IF entities_create IS NOT INITIAL.
+      entities = CORRESPONDING #( entities_create MAPPING %cid_ref = %cid ).
+      operation = if_abap_behv=>op-m-create.
+    ELSE.
+      entities = entities_update.
+      operation = if_abap_behv=>op-m-update.
+    ENDIF.
+
+    DELETE entities WHERE %control-AgencyID = if_abap_behv=>mk-off.
+
+    agencies = CORRESPONDING #( entities DISCARDING DUPLICATES MAPPING agency_id = AgencyID EXCEPT * ).
+    CHECK agencies IS NOT INITIAL.
+    SELECT FROM /dmo/agency FIELDS agency_id, country_code
+                            FOR ALL ENTRIES IN @agencies
+                            WHERE agency_id = @agencies-agency_id
       INTO TABLE @DATA(agency_country_codes).
 
-    LOOP AT travels INTO DATA(travel).
+    LOOP AT entities INTO DATA(entity).
+      is_modify_granted = abap_false.
 
-      APPEND VALUE #( %tky = travel-%tky
-                      %state_area = 'VALIDATE_AUTHORIZATION' ) TO reported-travel.
-
-      create_granted = abap_false.
-
-      READ TABLE agency_country_codes WITH KEY agency_id = travel-AgencyID
+      READ TABLE agency_country_codes WITH KEY agency_id = entity-AgencyID
                    ASSIGNING FIELD-SYMBOL(<agency_country_code>).
 
       "If invalid or initial AgencyID -> validateAgency
       CHECK sy-subrc = 0.
-      IF is_create_granted( <agency_country_code>-country_code  ) = abap_false.
-        APPEND VALUE #( %tky = travel-%tky ) TO failed-travel.
+      CASE operation.
+        WHEN if_abap_behv=>op-m-create. is_modify_granted = is_create_granted( <agency_country_code>-country_code ).
+        WHEN if_abap_behv=>op-m-update. is_modify_granted = is_update_granted( <agency_country_code>-country_code ).
+      ENDCASE.
+      IF is_modify_granted = abap_false.
+        APPEND VALUE #(
+                         %cid      = COND #( WHEN operation = if_abap_behv=>op-m-create THEN entity-%cid_ref )
+                         %tky      = entity-%tky
+                       ) TO failed.
 
-        APPEND VALUE #( %tky                = travel-%tky
-                        %state_area         = 'VALIDATE_AUTHORIZATION'
-                        %msg    = NEW /dmo/cm_flight_messages(
-                                                textid    = /dmo/cm_flight_messages=>not_authorized_for_agencyid
-                                                agency_id = travel-AgencyID
-                                                severity  = if_abap_behv_message=>severity-error )
-                        %element-AgencyID   = if_abap_behv=>mk-on
-                      ) TO reported-travel.
+        APPEND VALUE #(
+                         %cid      = COND #( WHEN operation = if_abap_behv=>op-m-create THEN entity-%cid_ref )
+                         %tky      = entity-%tky
+                         %msg      = NEW /dmo/cm_flight_messages(
+                                                 textid    = /dmo/cm_flight_messages=>not_authorized_for_agencyid
+                                                 agency_id = entity-AgencyID
+                                                 severity  = if_abap_behv_message=>severity-error )
+                         %element-AgencyID   = if_abap_behv=>mk-on
+                      ) TO reported.
       ENDIF.
-
     ENDLOOP.
+
   ENDMETHOD.
 
 
+  METHOD resume.
+    DATA:
+      entities_update TYPE t_entities_update.
 
+    READ ENTITIES OF /dmo/r_travel_d IN LOCAL MODE
+      ENTITY Travel
+        FIELDS ( AgencyID )
+        WITH VALUE #(
+                      FOR key IN keys
+                        %is_draft = if_abap_behv=>mk-on
+                        ( %key = key-%key )
+                    )
+        RESULT DATA(travels).
+
+    " Set %control-AgencyID (if set) to true, so that the precheck_auth checks the permissions.
+    entities_update = CORRESPONDING #( travels CHANGING CONTROL ).
+
+    IF entities_update IS NOT INITIAL.
+      precheck_auth(
+        EXPORTING
+          entities_update = entities_update
+        CHANGING
+          failed          = failed-travel
+          reported        = reported-travel
+      ).
+    ENDIF.
+  ENDMETHOD.
 
 ENDCLASS.

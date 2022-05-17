@@ -29,9 +29,12 @@ define view entity /DMO/C_BookSuppl_Processor_M
 
       @UI: { lineItem:       [ { position: 20, importance: #HIGH } ],
              identification: [ { position: 20 } ] }
-      @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_SUPPLEMENT', element: 'SupplementID' } ,
-                                           additionalBinding: [ { localElement: 'Price',  element: 'Price' },
-                                                                { localElement: 'CurrencyCode', element: 'CurrencyCode' }] }]
+      @Consumption.valueHelpDefinition: [ 
+          {  entity: {name: '/DMO/I_Supplement_StdVH', element: 'SupplementID' },
+             additionalBinding: [ { localElement: 'Price',        element: 'Price',        usage: #RESULT },
+                                  { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT }], 
+             useForValidation: true }
+        ]
       @ObjectModel.text.element: ['SupplementDescription']
       supplement_id               as SupplementID,
       _SupplementText.Description as SupplementDescription : localized,
@@ -41,7 +44,7 @@ define view entity /DMO/C_BookSuppl_Processor_M
       @Semantics.amount.currencyCode: 'CurrencyCode'
       price                       as Price,
 
-      @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }}]
+      @Consumption.valueHelpDefinition: [{entity: {name: 'I_CurrencyStdVH', element: 'Currency' }, useForValidation: true }]
       currency_code               as CurrencyCode,
 
       @UI.hidden: true

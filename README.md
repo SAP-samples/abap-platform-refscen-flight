@@ -39,7 +39,7 @@ NOTE: The service bindings of the develop scenarios are imported with the warnin
 
 To activate all development objects from the `/DMO/FLIGHT` package: 
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
-2. In the dialog that appears, select all development objects except for all service binding artifacts (`/DMO/API_TRAVEL_U_V2`, `/DMO/UI_CARRIERS_S_O4`, `/DMO/UI_FLIGHT_R_V2`, `/DMO/UI_SUPPLEMENT_04`, `/DMO/UI_TRAVEL_A_D_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_D_D_O4`, `/DMO/UI_TRAVEL_PROC_M_O2`, and `/DMO/UI_TRAVEL_U_V2`) in the transport request (that you created for the demo content installation) and choose `Activate`. 
+2. In the dialog that appears, select all development objects except for all service binding artifacts (`/DMO/API_TRAVEL_U_V2`, `/DMO/UI_CARRIERS_S_O4`, `/DMO/UI_FLIGHT_R_V2`, `/DMO/UI_SUPPLEMENT_04`, `/DMO/UI_TRAVEL_A_D_O2`, `/DMO/UI_TRAVEL_D_D_O2`, `/DMO/UI_TRAVEL_APPR_M_O2`, `/DMO/UI_TRAVEL_D_D_O4`, `/DMO/UI_TRAVEL_PROC_M_O2`, and `/DMO/UI_TRAVEL_U_V2`) in the transport request (that you created for the demo content installation) and choose `Activate`. 
 3. Service bindings can only be activated once the underlying service definition is activated. To activate the service bindings click the mass-activation icon again and select all service bindings and choose `Activate`.
 
 To generate service artifacts for the service bindings:

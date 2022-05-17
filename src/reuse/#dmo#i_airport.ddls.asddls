@@ -24,7 +24,7 @@ define view entity /DMO/I_Airport
 
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
-      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'country' } }]
+      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'Country' } }]
       Airport.country    as CountryCode,
 
       /* Associations */

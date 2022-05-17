@@ -37,7 +37,7 @@ define view entity /DMO/C_Booking_Processor_M
 
       @UI: { lineItem:       [ { position: 40, importance: #HIGH } ],
              identification: [ { position: 40 } ] }
-      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Customer', element: 'CustomerID' }}]
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Customer_StdVH', element: 'CustomerID' }, useForValidation: true}]
       @ObjectModel.text.element: ['CustomerName']
       @Search.defaultSearchElement: true
       customer_id        as CustomerID,
@@ -45,27 +45,40 @@ define view entity /DMO/C_Booking_Processor_M
 
       @UI: { lineItem:       [ { position: 50, importance: #HIGH } ],
              identification: [ { position: 50 } ] }
-      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Carrier', element: 'AirlineID' }}]
+      @Consumption.valueHelpDefinition: [ 
+          { entity: {name: '/DMO/I_Flight_StdVH', element: 'AirlineID'},
+            additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate',   usage: #RESULT},
+                                 { localElement: 'ConnectionID', element: 'ConnectionID', usage: #RESULT},
+                                 { localElement: 'FlightPrice',  element: 'Price',        usage: #RESULT},
+                                 { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT } ], 
+            useForValidation: true }
+        ]
       @ObjectModel.text.element: ['CarrierName']
       carrier_id         as CarrierID,
       _Carrier.Name      as CarrierName,
 
       @UI: { lineItem:       [ { position: 60, importance: #HIGH } ],
              identification: [ { position: 60 } ] }
-      @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_Flight', element: 'ConnectionID'},
-                                           additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate'},
-                                                                { localElement: 'CarrierID',    element: 'AirlineID'},
-                                                                { localElement: 'FlightPrice',  element: 'Price'},
-                                                                { localElement: 'CurrencyCode', element: 'CurrencyCode' } ] } ]
+      @Consumption.valueHelpDefinition: [ 
+          { entity: {name: '/DMO/I_Flight_StdVH', element: 'ConnectionID'},
+            additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate',   usage: #RESULT},
+                                 { localElement: 'CarrierID',    element: 'AirlineID',    usage: #FILTER_AND_RESULT},
+                                 { localElement: 'FlightPrice',  element: 'Price',        usage: #RESULT},
+                                 { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT } ], 
+            useForValidation: true }
+        ]
       connection_id      as ConnectionID,
 
       @UI: { lineItem:       [ { position: 70, importance: #HIGH } ],
              identification: [ { position: 70 } ] }
-      @Consumption.valueHelpDefinition: [ {entity: {name: '/DMO/I_Flight', element: 'FlightDate' },
-                                           additionalBinding: [ { localElement: 'ConnectionID', element: 'ConnectionID'},
-                                                                { localElement: 'CarrierID',    element: 'AirlineID'},
-                                                                { localElement: 'FlightPrice',  element: 'Price' },
-                                                                { localElement: 'CurrencyCode', element: 'CurrencyCode' }]}]
+      @Consumption.valueHelpDefinition: [ 
+          { entity: {name: '/DMO/I_Flight_StdVH', element: 'FlightDate'},
+            additionalBinding: [ { localElement: 'CarrierID',    element: 'AirlineID',    usage: #FILTER_AND_RESULT},
+                                 { localElement: 'ConnectionID', element: 'ConnectionID', usage: #FILTER_AND_RESULT},
+                                 { localElement: 'FlightPrice',  element: 'Price',        usage: #RESULT},
+                                 { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT } ], 
+            useForValidation: true }
+        ]
       flight_date        as FlightDate,
 
       @UI: { lineItem:       [ { position: 80, importance: #HIGH } ],
@@ -73,7 +86,7 @@ define view entity /DMO/C_Booking_Processor_M
       @Semantics.amount.currencyCode: 'CurrencyCode'
       flight_price       as FlightPrice,
 
-      @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }}]
+      @Consumption.valueHelpDefinition: [{entity: {name: 'I_CurrencyStdVH', element: 'Currency' }, useForValidation: true }]
       currency_code      as CurrencyCode,
 
       @UI: { lineItem:       [ { position: 90, importance: #HIGH, label: 'Status' } ],

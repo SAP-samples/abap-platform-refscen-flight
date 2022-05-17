@@ -137,10 +137,27 @@ CLASS ltc_travel DEFINITION FINAL FOR TESTING
       "! operations are always permitted.
       get_instance_authorizations        FOR TESTING,
 
-      "! Calls { @link ..lhc_travel.METH:validateAuthOnCreate }.
-      "! As by default we overwrite the authorization checks, so all
-      "! agencies are always to use.
-      validateAuthOnCreate        FOR TESTING.
+      "! Calls { @link ..lhc_travel.METH:precheck_create }.
+      "! Checks successfully data in create case when agency is provided.
+      "! Before image is a different agency then the provided one
+      precheck_create_provided        FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:precheck_create }.
+      "! Checks successfully data in create case when agency is empty.
+      precheck_create_empty        FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:precheck_update }.
+      "! Checks successfully data in update case when agency is provided.
+      "! Before image is a different agency then the provided one
+      precheck_update_provided        FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:precheck_update }.
+      "! Checks successfully data in update case when agency is empty.
+      precheck_update_empty        FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:resume }
+      "! for a key which can be resumed.
+      resume_success               FOR TESTING.
 
 
 
@@ -205,7 +222,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
 
@@ -241,7 +258,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
 
@@ -293,7 +310,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
 
@@ -355,7 +372,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
 
@@ -417,7 +434,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
 
@@ -524,7 +541,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID ) WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
 
@@ -601,7 +618,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID TotalPrice BookingFee CurrencyCode )
         WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -691,7 +708,7 @@ CLASS ltc_travel IMPLEMENTATION.
 
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID TotalPrice BookingFee CurrencyCode )
         WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -749,7 +766,7 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
     READ ENTITIES OF /DMO/R_Travel_D
-      Entity Travel
+      ENTITY Travel
         FIELDS ( TravelID OverallStatus )
         WITH CORRESPONDING #( travels_to_test )
         RESULT DATA(read_result).
@@ -1299,8 +1316,8 @@ CLASS ltc_travel IMPLEMENTATION.
 
   METHOD get_instance_authorizations.
     CONSTANTS:
-      c_agency1  TYPE /dmo/agency_id VALUE '1337',
-      c_agency2  TYPE /dmo/agency_id VALUE '1338',
+      c_agency1    TYPE /dmo/agency_id VALUE '1337',
+      c_agency2    TYPE /dmo/agency_id VALUE '1338',
       c_country_de TYPE /dmo/agency-country_code VALUE 'US' ##NO_TEXT,
       c_country_us TYPE /dmo/agency-country_code VALUE 'DE' ##NO_TEXT.
 
@@ -1362,19 +1379,19 @@ CLASS ltc_travel IMPLEMENTATION.
       ).
   ENDMETHOD.
 
-  METHOD validateauthoncreate.
+  METHOD precheck_create_provided.
     CONSTANTS:
-      c_agency1  TYPE /dmo/agency_id VALUE '1337',
-      c_agency2  TYPE /dmo/agency_id VALUE '1338',
+      c_agency1    TYPE /dmo/agency_id VALUE '1337',
+      c_agency2    TYPE /dmo/agency_id VALUE '1338',
       c_country_de TYPE /dmo/agency-country_code VALUE 'US' ##NO_TEXT,
       c_country_us TYPE /dmo/agency-country_code VALUE 'DE' ##NO_TEXT.
 
     DATA:
-      travel_mock_data         TYPE STANDARD TABLE OF /DMO/A_Travel_D,
-      agency_mock_data         TYPE STANDARD TABLE OF /dmo/agency,
-      travels_to_test          TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\travel~validateAuthOnCreate,
-      failed                   TYPE RESPONSE FOR FAILED   late /DMO/R_Travel_D,
-      reported                 TYPE RESPONSE FOR REPORTED late /DMO/R_Travel_D.
+      travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
+      agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
+      travels_to_test  TYPE TABLE FOR CREATE /DMO/R_Travel_D\\travel,
+      failed           TYPE RESPONSE FOR FAILED EARLY /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D.
 
     agency_mock_data = VALUE #(
         ( agency_id = c_agency1  country_code = c_country_de )
@@ -1384,27 +1401,208 @@ CLASS ltc_travel IMPLEMENTATION.
 
     travel_mock_data = VALUE #(
          ( travel_uuid = uuid1  agency_id = c_agency1 )
-         ( travel_uuid = uuid2  agency_id = c_agency2 )
        ).
     cds_test_environment->insert_test_data( travel_mock_data ).
 
-    travels_to_test = CORRESPONDING #( travel_mock_data MAPPING TravelUUID = travel_uuid ).
+    travels_to_test = VALUE #(
+        (
+          TravelUUID          = uuid1
+          AgencyID            = c_agency2
+          %control-TravelUUID = if_abap_behv=>mk-on
+          %control-AgencyID   = if_abap_behv=>mk-on
+        )
+      ).
 
-    class_under_test->validateAuthOnCreate(
+    class_under_test->precheck_create(
+        EXPORTING
+          entities                 = travels_to_test
+        CHANGING
+          failed                   = failed
+          reported                 = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( reported ).
+    cl_abap_unit_assert=>assert_initial( failed   ).
+  ENDMETHOD.
+
+  METHOD precheck_create_empty.
+    CONSTANTS:
+      c_agency1    TYPE /dmo/agency_id VALUE '1337',
+      c_agency2    TYPE /dmo/agency_id VALUE '1338',
+      c_country_de TYPE /dmo/agency-country_code VALUE 'US' ##NO_TEXT,
+      c_country_us TYPE /dmo/agency-country_code VALUE 'DE' ##NO_TEXT.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
+      agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
+      travels_to_test  TYPE TABLE FOR CREATE /DMO/R_Travel_D\\travel,
+      failed           TYPE RESPONSE FOR FAILED EARLY /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D.
+
+    agency_mock_data = VALUE #(
+        ( agency_id = c_agency1  country_code = c_country_de )
+        ( agency_id = c_agency2  country_code = c_country_us )
+      ).
+    sql_test_environment->insert_test_data( agency_mock_data ).
+
+    travel_mock_data = VALUE #(
+         ( travel_uuid = uuid1  agency_id = c_agency1 )
+       ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = VALUE #( ##NO_TEXT
+        (
+          TravelUUID           = uuid1
+          Description          = 'Test'
+          %control-TravelUUID  = if_abap_behv=>mk-on
+          %control-Description = if_abap_behv=>mk-on
+        )
+      ).
+
+    class_under_test->precheck_create(
+        EXPORTING
+          entities                 = travels_to_test
+        CHANGING
+          failed                   = failed
+          reported                 = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( reported ).
+    cl_abap_unit_assert=>assert_initial( failed   ).
+  ENDMETHOD.
+
+  METHOD precheck_update_provided.
+    CONSTANTS:
+      c_agency1    TYPE /dmo/agency_id VALUE '1337',
+      c_agency2    TYPE /dmo/agency_id VALUE '1338',
+      c_country_de TYPE /dmo/agency-country_code VALUE 'US' ##NO_TEXT,
+      c_country_us TYPE /dmo/agency-country_code VALUE 'DE' ##NO_TEXT.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
+      agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
+      travels_to_test  TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\travel,
+      failed           TYPE RESPONSE FOR FAILED EARLY /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D.
+
+    agency_mock_data = VALUE #(
+        ( agency_id = c_agency1  country_code = c_country_de )
+        ( agency_id = c_agency2  country_code = c_country_us )
+      ).
+    sql_test_environment->insert_test_data( agency_mock_data ).
+
+    travel_mock_data = VALUE #(
+         ( travel_uuid = uuid1  agency_id = c_agency1 )
+       ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = VALUE #(
+        (
+          TravelUUID          = uuid1
+          AgencyID            = c_agency2
+          %control-TravelUUID = if_abap_behv=>mk-on
+          %control-AgencyID   = if_abap_behv=>mk-on
+        )
+      ).
+
+    class_under_test->precheck_update(
+        EXPORTING
+          entities                 = travels_to_test
+        CHANGING
+          failed                   = failed
+          reported                 = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( reported ).
+    cl_abap_unit_assert=>assert_initial( failed   ).
+  ENDMETHOD.
+
+  METHOD precheck_update_empty.
+    CONSTANTS:
+      c_agency1    TYPE /dmo/agency_id VALUE '1337',
+      c_agency2    TYPE /dmo/agency_id VALUE '1338',
+      c_country_de TYPE /dmo/agency-country_code VALUE 'US' ##NO_TEXT,
+      c_country_us TYPE /dmo/agency-country_code VALUE 'DE' ##NO_TEXT.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
+      agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
+      travels_to_test  TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\travel,
+      failed           TYPE RESPONSE FOR FAILED EARLY /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D.
+
+    agency_mock_data = VALUE #(
+        ( agency_id = c_agency1  country_code = c_country_de )
+        ( agency_id = c_agency2  country_code = c_country_us )
+      ).
+    sql_test_environment->insert_test_data( agency_mock_data ).
+
+    travel_mock_data = VALUE #(
+         ( travel_uuid = uuid1  agency_id = c_agency1 )
+       ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = VALUE #( ##NO_TEXT
+        (
+          TravelUUID           = uuid1
+          Description          = 'Test'
+          %control-TravelUUID  = if_abap_behv=>mk-on
+          %control-Description = if_abap_behv=>mk-on
+        )
+      ).
+
+    class_under_test->precheck_update(
+        EXPORTING
+          entities                 = travels_to_test
+        CHANGING
+          failed                   = failed
+          reported                 = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( reported ).
+    cl_abap_unit_assert=>assert_initial( failed   ).
+  ENDMETHOD.
+
+  METHOD resume_success.
+    CONSTANTS:
+      c_agency1    TYPE /dmo/agency_id VALUE '1337',
+      c_agency2    TYPE /dmo/agency_id VALUE '1338',
+      c_country_de TYPE /dmo/agency-country_code VALUE 'US' ##NO_TEXT,
+      c_country_us TYPE /dmo/agency-country_code VALUE 'DE' ##NO_TEXT.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /DMO/A_Travel_D,
+      agency_mock_data TYPE STANDARD TABLE OF /dmo/agency,
+      travels_to_test  TYPE TABLE FOR ACTION IMPORT /dmo/r_travel_d\\travel~resume,
+      failed           TYPE RESPONSE FOR FAILED EARLY /DMO/R_Travel_D,
+      reported         TYPE RESPONSE FOR REPORTED EARLY /DMO/R_Travel_D,
+      mapped           TYPE RESPONSE FOR MAPPED /dmo/r_travel_d.
+
+    agency_mock_data = VALUE #(
+        ( agency_id = c_agency1  country_code = c_country_de )
+        ( agency_id = c_agency2  country_code = c_country_us )
+      ).
+    sql_test_environment->insert_test_data( agency_mock_data ).
+
+    travel_mock_data = VALUE #(
+         ( travel_uuid = uuid1  agency_id = c_agency1 )
+       ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = VALUE #( ( TravelUUID = uuid1 ) ).
+
+    class_under_test->resume(
         EXPORTING
           keys     = travels_to_test
         CHANGING
+          mapped   = mapped
           failed   = failed
           reported = reported
       ).
 
+    cl_abap_unit_assert=>assert_initial( mapped   ).
+    cl_abap_unit_assert=>assert_initial( reported ).
     cl_abap_unit_assert=>assert_initial( failed   ).
-
-    cl_abap_unit_assert=>assert_not_initial( reported ).
-    cl_abap_unit_assert=>assert_equals(
-        exp = lines( travel_mock_data )
-        act = lines( reported-travel )
-      ).
   ENDMETHOD.
 
 ENDCLASS.

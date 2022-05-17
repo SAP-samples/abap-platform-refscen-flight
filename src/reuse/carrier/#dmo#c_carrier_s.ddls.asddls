@@ -15,7 +15,7 @@ define view entity /DMO/C_Carrier_S
       
       Name,
       
-      @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }, useForValidation: true }]
+      @Consumption.valueHelpDefinition: [{entity: {name: 'I_CurrencyStdVH', element: 'Currency' }, useForValidation: true }]
       CurrencyCode,
       
       LocalLastChangedAt,

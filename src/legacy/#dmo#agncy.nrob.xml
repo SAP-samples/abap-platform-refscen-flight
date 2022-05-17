@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_NROB" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <ATTRIBUTES>
+    <OBJECT>/DMO/AGNCY</OBJECT>
+    <DOMLEN>/DMO/AGENCY_ID</DOMLEN>
+    <PERCENTAGE>10.0</PERCENTAGE>
+    <BUFFER>X</BUFFER>
+    <NOIVBUFFER>00000001</NOIVBUFFER>
+    <CHANGED_AT>20220503115535.912718</CHANGED_AT>
+    <CHANGED_BY>COLLETS</CHANGED_BY>
+    <ENAME>COLLETS</ENAME>
+    <EDATE>2022-03-29</EDATE>
+    <ETIME>16:40:17</ETIME>
+   </ATTRIBUTES>
+   <TEXT>
+    <LANGU>E</LANGU>
+    <OBJECT>/DMO/AGNCY</OBJECT>
+    <TXT>Agency IDs</TXT>
+    <TXTSHORT>Agency IDs</TXTSHORT>
+    <ENAME>COLLETS</ENAME>
+    <EDATE>2022-03-29</EDATE>
+    <ETIME>16:40:17</ETIME>
+   </TEXT>
+  </asx:values>
+ </asx:abap>
+</abapGit>

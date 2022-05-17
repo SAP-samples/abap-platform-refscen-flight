@@ -16,18 +16,20 @@ define view entity /DMO/C_BookingSupplement_U
 
   key BookingSupplementID,
 
-      @Consumption.valueHelpDefinition: [ {entity: { name:    '/DMO/I_SUPPLEMENT',
-                                                     element: 'SupplementID' },
-                                           additionalBinding: [ { localElement: 'Price',        element: 'Price'},
-                                                                { localElement: 'CurrencyCode', element: 'CurrencyCode' } ] } ]
+
+      @Consumption.valueHelpDefinition: [ 
+          {  entity: {name: '/DMO/I_Supplement_StdVH', element: 'SupplementID' },
+             additionalBinding: [ { localElement: 'Price',        element: 'Price',        usage: #RESULT },
+                                  { localElement: 'CurrencyCode', element: 'CurrencyCode', usage: #RESULT }], 
+             useForValidation: true }
+        ]
       @ObjectModel.text.element: ['SupplementText']
       SupplementID,
       _SupplementText.Description as SupplementText : localized,
 
       Price,
 
-      @Consumption.valueHelpDefinition: [ { entity: { name:    'I_Currency', 
-                                                      element: 'Currency' } } ]
+      @Consumption.valueHelpDefinition: [{entity: {name: 'I_CurrencyStdVH', element: 'Currency' }, useForValidation: true }]
       CurrencyCode,
 
 //      LastChangedAt,
