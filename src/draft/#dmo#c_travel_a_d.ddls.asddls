@@ -16,13 +16,13 @@ define root view entity /DMO/C_Travel_A_D
 
       @Search.defaultSearchElement: true
       @ObjectModel.text.element: ['AgencyName']
-      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency', element: 'AgencyID'  } }]
+      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency_StdVH', element: 'AgencyID'  }, useForValidation: true }]
       AgencyID,
       _Agency.Name       as AgencyName,
 
       @Search.defaultSearchElement: true
       @ObjectModel.text.element: ['CustomerName']
-      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Customer', element: 'CustomerID'  } }]
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Customer_StdVH', element: 'CustomerID' }, useForValidation: true}]
       CustomerID,
       _Customer.LastName as CustomerName,
 
@@ -34,7 +34,7 @@ define root view entity /DMO/C_Travel_A_D
 
       TotalPrice,
 
-      @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }}]
+      @Consumption.valueHelpDefinition: [{entity: {name: 'I_CurrencyStdVH', element: 'Currency' }, useForValidation: true }]
       CurrencyCode,
 
       Description,

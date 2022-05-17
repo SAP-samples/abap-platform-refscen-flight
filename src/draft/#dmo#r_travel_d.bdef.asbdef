@@ -11,8 +11,8 @@ total etag LastChangedAt
 authorization master ( global, instance )
 etag master LocalLastChangedAt
 {
-  create;
-  update;
+  create ( precheck );
+  update ( precheck );
   delete;
   association _Booking { create ( features : instance, authorization: update ) ; with draft; }
 
@@ -33,9 +33,8 @@ etag master LocalLastChangedAt
   validation validateCustomer on save { create; field CustomerID; }
   validation validateAgency on save { create; field AgencyID; }
   validation validateDates on save { create; field BeginDate, EndDate; }
-  validation validateAuthOnCreate on save { create; }
 
-  draft action Resume;
+  draft action Resume with additional implementation;
   draft action Edit;
   draft action Activate;
   draft action Discard;
@@ -45,7 +44,6 @@ etag master LocalLastChangedAt
     validation validateAgency;
     validation validateCustomer;
     validation validateDates;
-    validation validateAuthOnCreate;
     validation Booking ~ validateCustomer;
     validation Booking ~ validateConnection;
     validation Bookingsupplement ~ validateSupplement; }

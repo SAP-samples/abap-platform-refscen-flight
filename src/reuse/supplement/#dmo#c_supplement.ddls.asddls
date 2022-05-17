@@ -26,7 +26,7 @@ define root view entity /DMO/C_Supplement
       @Semantics.amount.currencyCode: 'CurrencyCode'
       Price                             as Price,
 
-      @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }}]
+      @Consumption.valueHelpDefinition: [{entity: {name: 'I_CurrencyStdVH', element: 'Currency' }, useForValidation: true }]
       CurrencyCode,
       
       LocalLastChangedAt,

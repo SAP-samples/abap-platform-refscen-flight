@@ -14,12 +14,12 @@ define view entity /DMO/I_Flight
 {
       @Search.defaultSearchElement: true
       @ObjectModel.text.association: '_Airline'
-      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Carrier' , element: 'AirlineID'} }]
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Carrier_StdVH', element: 'AirlineID' }, useForValidation: true}]
   key Flight.carrier_id     as AirlineID,
 
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
-      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Connection', element: 'ConnectionID'}, 
+      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Connection_StdVH', element: 'ConnectionID'}, 
                      additionalBinding: [{ element: 'AirlineID', localElement: 'AirlineID' }] }]
   key Flight.connection_id  as ConnectionID,
 

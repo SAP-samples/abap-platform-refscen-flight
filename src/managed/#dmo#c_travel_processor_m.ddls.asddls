@@ -35,7 +35,7 @@ define root view entity /DMO/C_Travel_Processor_M
           lineItem:       [ { position: 20, importance: #HIGH } ],
           identification: [ { position: 20 } ],
           selectionField: [ { position: 20 } ] }
-      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency', element: 'AgencyID'  } }]
+      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Agency_StdVH', element: 'AgencyID'  }, useForValidation: true }]
       @ObjectModel.text.element: ['AgencyName']
       @Search.defaultSearchElement: true
       agency_id          as AgencyID,
@@ -45,7 +45,7 @@ define root view entity /DMO/C_Travel_Processor_M
           lineItem:       [ { position: 30, importance: #HIGH } ],
           identification: [ { position: 30 } ],
           selectionField: [ { position: 30 } ] }
-      @Consumption.valueHelpDefinition: [{ entity : {name: '/DMO/I_Customer', element: 'CustomerID'  } }]
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Customer_StdVH', element: 'CustomerID' }, useForValidation: true}]
       @ObjectModel.text.element: ['CustomerName']
       @Search.defaultSearchElement: true
       customer_id        as CustomerID,
@@ -73,7 +73,7 @@ define root view entity /DMO/C_Travel_Processor_M
       @Semantics.amount.currencyCode: 'CurrencyCode'
       total_price        as TotalPrice,
 
-      @Consumption.valueHelpDefinition: [{entity: {name: 'I_Currency', element: 'Currency' }}]
+      @Consumption.valueHelpDefinition: [{entity: {name: 'I_CurrencyStdVH', element: 'Currency' }, useForValidation: true }]
       currency_code      as CurrencyCode,
 
       @UI: {

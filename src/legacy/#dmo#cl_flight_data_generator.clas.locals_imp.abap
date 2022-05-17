@@ -13,6 +13,15 @@ CLASS lcl_agency_data_generator DEFINITION CREATE PRIVATE.
       RETURNING VALUE(rt_data) TYPE tt_agency.
   PROTECTED SECTION.
   PRIVATE SECTION.
+    CONSTANTS:
+      cv_numberrange_interval TYPE cl_numberrange_runtime=>nr_interval VALUE '01',
+      cv_numberrange_object   TYPE cl_numberrange_runtime=>nr_object   VALUE '/DMO/AGNCY' ##NO_TEXT,
+      cv_agency_minimum       TYPE /DMO/AGENCY_ID VALUE '070001',
+      cv_agency_maximum       TYPE /DMO/AGENCY_ID VALUE '079999'.
+    CLASS-DATA gt_data TYPE lcl_agency_data_generator=>tt_agency.
+    CLASS-METHODS:
+      set_numberrange,
+      build_content.
 ENDCLASS.
 
 CLASS lcl_agency_data_generator IMPLEMENTATION.
@@ -21,6 +30,10 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
     IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
     ENDIF.
     DELETE FROM /dmo/agency.                            "#EC CI_NOWHERE
+
+    IF out IS BOUND.  out->write( '--> Set Numberranges.' ) ##NO_TEXT.
+    ENDIF.
+    set_numberrange( ).
 
     IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
     ENDIF.
@@ -34,10 +47,28 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+  METHOD set_numberrange.
+
+    /dmo/cl_flight_data_generator=>reset_numberrange_interval(
+        numberrange_object   = cv_numberrange_object
+        numberrange_interval = cv_numberrange_interval
+        fromnumber           = CONV cl_numberrange_intervals=>nr_nriv_line-fromnumber( cv_agency_minimum )
+        tonumber             = CONV cl_numberrange_intervals=>nr_nriv_line-tonumber(   cv_agency_maximum )
+      ).
+
+  ENDMETHOD.
+
   METHOD get_data.
-    rt_data = VALUE tt_agency(  ##NO_TEXT
-          ( agency_id = '070001'
-            name      = 'Sunshine Travel'
+    IF gt_data IS INITIAL.
+      build_content( ).
+    ENDIF.
+    rt_data = gt_data.
+  ENDMETHOD.
+
+
+  METHOD build_content.
+    gt_data = VALUE tt_agency(  ##NO_TEXT
+          ( name      = 'Sunshine Travel'
             street    = '134 West Street          '
             postal_code  = '54323                    '
             city      = 'Rochester                '
@@ -46,8 +77,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.sunshine-travel.sap               '
             email_address = 'info@sunshine-travel.sap               '
             )
-          ( agency_id = '070002'
-            name      = 'Fly High'
+          ( name      = 'Fly High'
             street    = 'Berliner Allee 11        '
             postal_code  = '40880                    '
             city      = 'Duesseldorf               '
@@ -56,8 +86,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.flyhigh.sap                       '
             email_address = 'info@flyhigh.sap                       '
             )
-          ( agency_id = '070003'
-            name      = 'Happy Hopping'
+          ( name      = 'Happy Hopping'
             street    = 'Calvinstr. 36            '
             postal_code  = '13467                    '
             city      = 'Berlin                   '
@@ -66,8 +95,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.haphop.sap                        '
             email_address = 'info@haphop.sap                        '
             )
-          ( agency_id = '070004'
-            name      = 'Pink Panther'
+          ( name      = 'Pink Panther'
             street    = 'Auf der Schanz 54        '
             postal_code  = '65936                    '
             city      = 'Frankfurt                '
@@ -76,8 +104,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.pinkpanther.sap'
             email_address = 'info@pinkpanther.sap                    '
             )
-          ( agency_id = '070005'
-            name      = 'Your Choice'
+          ( name      = 'Your Choice'
             street    = 'Gustav-Jung-Str. 425     '
             postal_code  = '90455'
             city      = 'Nuernberg'
@@ -86,8 +113,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.yc.sap'
             email_address = 'info@yc.sap'
             )
-          ( agency_id = '070006'
-            name      = 'Bella Italia'
+          ( name      = 'Bella Italia'
             street    = 'Via Marconi 123'
             postal_code  = '00139'
             city      = 'Roma'
@@ -96,8 +122,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.tours.it/Adventure/'
             email_address = 'info@tours.it/Adventure/'
             )
-          ( agency_id = '070007'
-            name      = 'Hot Socks Travel'
+          ( name      = 'Hot Socks Travel'
             street    = '224 Balnagask Rd          '
             postal_code  = '8053                    '
             city      = 'Sydney'
@@ -106,8 +131,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.hst.co.au'
             email_address = 'info@hst.co.au'
             )
-          ( agency_id = '070008'
-            name      = 'Burns Nuclear'
+          ( name      = 'Burns Nuclear'
             street    = '14 Science Park Drive'
             postal_code  = '118228'
             city      = 'Singapore'
@@ -116,8 +140,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.burns-burns-burns.sg'
             email_address = 'info@burns-burns-burns.sg'
             )
-          ( agency_id = '070009'
-            name      = 'Honauer Reisen GmbH'
+          ( name      = 'Honauer Reisen GmbH'
             street    = 'Baumgarten 8'
             postal_code  = '4212'
             city      = 'Neumarkt'
@@ -126,8 +149,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.honauer.at'
             email_address = 'info@honauer.at'
             )
-          ( agency_id = '070010'
-            name      = 'Travel from Walldorf'
+          ( name      = 'Travel from Walldorf'
             street    = 'Altonaer Str. 24         '
             postal_code  = '10557                    '
             city      = 'Berlin                   '
@@ -136,8 +158,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.travel-from-walldorf'
             email_address = 'info@travel-from-walldorf'
             )
-          ( agency_id = '070011'
-            name      = 'Voyager Enterprises'
+          ( name      = 'Voyager Enterprises'
             street    = 'Gustavslundsvaegen 151'
             postal_code  = '70563                    '
             city      = 'Stockholm                '
@@ -146,8 +167,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.starfleet.ufp'
             email_address = 'info@starfleet.ufp'
             )
-          ( agency_id = '070012'
-            name      = 'Ben McCloskey Ltd.'
+          ( name      = 'Ben McCloskey Ltd.'
             street    = '74 Court Oak Rd'
             postal_code  = 'B17 9TN'
             city      = 'Birmingham'
@@ -156,8 +176,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.ben-mcCloskey.co.uk'
             email_address = 'info@ben-mcCloskey.co.uk'
             )
-          ( agency_id = '070013'
-            name      = 'Pillepalle Trips'
+          ( name      = 'Pillepalle Trips'
             street    = 'Gorki Park 4             '
             postal_code  = '8008                   '
             city      = 'Zuerich                   '
@@ -166,8 +185,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.pi-pa-tri.sap'
             email_address = 'info@pi-pa-tri.sap'
             )
-          ( agency_id = '070014'
-            name      = 'Kangeroos'
+          ( name      = 'Kangeroos'
             street    = 'Lancaster drive 435      '
             postal_code  = '20001                    '
             city      = 'London                   '
@@ -176,8 +194,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.hopp.sap                          '
             email_address = 'info@hopp.sap                          '
             )
-          ( agency_id = '070015'
-            name      = 'Bavarian Castle'
+          ( name      = 'Bavarian Castle'
             street    = 'Pilnizerstr. 241         '
             postal_code  = '01069                    '
             city      = 'Dresden                  '
@@ -186,8 +203,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.neu.schwanstein.sap               '
             email_address = 'info@neu.schwanstein.sap               '
             )
-          ( agency_id = '070016'
-            name      = 'Ali''s Bazar'
+          ( name      = 'Ali''s Bazar'
             street    = '45, Mac Arthur Boulevard '
             postal_code  = '19113                    '
             city      = 'Boston                   '
@@ -196,8 +212,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.ali.sap                           '
             email_address = 'info@ali.sap                           '
             )
-          ( agency_id = '070017'
-            name      = 'Super Agency'
+          ( name      = 'Super Agency'
             street    = '50 Cranworth St'
             postal_code  = 'G12 8AG'
             city      = 'Glasgow'
@@ -206,8 +221,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.super.sap'
             email_address = 'info@super.sap'
             )
-          ( agency_id = '070018'
-            name      = 'Wang Chong'
+          ( name      = 'Wang Chong'
             street    = 'Gagarine Park            '
             postal_code  = '150021                   '
             city      = 'Moscow                   '
@@ -216,8 +230,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.wang.chong.sap'
             email_address = 'info@wang.chong.sap'
             )
-          ( agency_id = '070019'
-            name      = 'Around the World'
+          ( name      = 'Around the World'
             street    = 'An der Breiten Wiese 122 '
             postal_code  = '30625                    '
             city      = 'Hannover                 '
@@ -226,8 +239,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.atw.sap'
             email_address = 'info@atw.sap'
             )
-          ( agency_id = '070020'
-            name      = 'No Return'
+          ( name      = 'No Return'
             street    = 'Wahnheider Str. 57       '
             postal_code  = '51105                    '
             city      = 'Koeln                     '
@@ -236,8 +248,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.bye-bye.sap                       '
             email_address = 'info@bye-bye.sap                       '
             )
-          ( agency_id = '070021'
-            name      = 'Special Agency Peru'
+          ( name      = 'Special Agency Peru'
             street    = 'Triberger Str. 42        '
             postal_code  = '70569                    '
             city      = 'Stuttgart                '
@@ -246,8 +257,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.sap.com                           '
             email_address = 'info@sap.com                           '
             )
-          ( agency_id = '070022'
-            name      = 'Caribian Dreams'
+          ( name      = 'Caribian Dreams'
             street    = 'Deichstrasse 45           '
             postal_code  = '26721                    '
             city      = 'Emden                    '
@@ -256,8 +266,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.cuba-libre.sap                   '
             email_address = 'info@cuba-libre.sap                   '
             )
-          ( agency_id = '070023'
-            name      = 'Asia By Plane'
+          ( name      = 'Asia By Plane'
             street    = '6-9 Iidabashi 7-chome'
             postal_code  = '102-0072'
             city      = 'Tokyo                  '
@@ -266,8 +275,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.asia-by-plane.co.jp'
             email_address = 'info@asia-by-plane.co.jp'
             )
-          ( agency_id = '070024'
-            name      = 'Everywhere'
+          ( name      = 'Everywhere'
             street    = 'Regensburger Platz 23    '
             postal_code  = '81679                    '
             city      = 'Muenchen                  '
@@ -276,8 +284,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.everywhere.sap'
             email_address = 'info@everywhere.sap'
             )
-          ( agency_id = '070025'
-            name      = 'Happy Holiday'
+          ( name      = 'Happy Holiday'
             street    = 'Rastenburger Str. 12'
             postal_code  = '28779                    '
             city      = 'Bremen                   '
@@ -286,8 +293,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.haphol.sap'
             email_address = 'info@haphol.sap'
             )
-          ( agency_id = '070026'
-            name      = 'No Name'
+          ( name      = 'No Name'
             street    = 'Schwalbenweg 43          '
             postal_code  = '52078                    '
             city      = 'Aachen                   '
@@ -296,8 +302,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.nn.sap'
             email_address = 'info@nn.sap'
             )
-          ( agency_id = '070027'
-            name      = 'Fly Low'
+          ( name      = 'Fly Low'
             street    = 'Chemnitzer Str. 42       '
             postal_code  = '01187                    '
             city      = 'Dresden                  '
@@ -306,8 +311,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.fly-low.sap'
             email_address = 'info@fly-low.sap'
             )
-          ( agency_id = '070028'
-            name      = 'Aussie Travel'
+          ( name      = 'Aussie Travel'
             street    = 'Queens Road              '
             postal_code  = 'M8 7RYP                  '
             city      = 'Manchester               '
@@ -316,8 +320,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.down-under.sap'
             email_address = 'info@down-under.sap'
             )
-          ( agency_id = '070029'
-            name      = 'Up ''n'' Away'
+          ( name      = 'Up ''n'' Away'
             street    = 'Nackenbergerstr. 92      '
             postal_code  = '30625                    '
             city      = 'Hannover                 '
@@ -326,8 +329,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.una.sap                           '
             email_address = 'info@una.sap                           '
             )
-          ( agency_id = '070030'
-            name      = 'Trans World Travel'
+          ( name      = 'Trans World Travel'
             street    = '100 Industrial Drive     '
             postal_code  = '60804                    '
             city      = 'Chicago                  '
@@ -336,8 +338,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.twt.sap                           '
             email_address = 'info@twt.sap                           '
             )
-          ( agency_id = '070031'
-            name      = 'Bright Side of Life'
+          ( name      = 'Bright Side of Life'
             street    = '340 State Street         '
             postal_code  = '30432                    '
             city      = 'San Francisco            '
@@ -346,8 +347,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.ruebennase.sap                    '
             email_address = 'info@ruebennase.sap                    '
             )
-          ( agency_id = '070032'
-            name      = 'Sunny, Sunny, Sunny'
+          ( name      = 'Sunny, Sunny, Sunny'
             street    = '1300 State Street        '
             postal_code  = '19003                    '
             city      = 'Philadelphia             '
@@ -356,8 +356,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.s3.sap                           '
             email_address = 'info@s3.sap                           '
             )
-          ( agency_id = '070033'
-            name      = 'Fly & Smile'
+          ( name      = 'Fly & Smile'
             street    = 'Zeppelinstr. 17          '
             postal_code  = '60318                    '
             city      = 'Frankfurt                '
@@ -366,8 +365,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.fly-and-smile.sap            '
             email_address = 'info@fly-and-smile.sap            '
             )
-          ( agency_id = '070034'
-            name      = 'Supercheap'
+          ( name      = 'Supercheap'
             street    = '1400, Washington Circle  '
             postal_code  = '30439                    '
             city      = 'Los Angeles              '
@@ -376,8 +374,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.supercheap.sap                    '
             email_address = 'info@supercheap.sap                    '
             )
-          ( agency_id = '070035'
-            name      = 'Hitchhiker'
+          ( name      = 'Hitchhiker'
             street    = '21 Rue de Moselle        '
             postal_code  = '92132                    '
             city      = 'Issy-les-Moulineaux      '
@@ -386,8 +383,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.42.sap                            '
             email_address = 'info@42.sap                            '
             )
-          ( agency_id = '070036'
-            name      = 'Fly Now, Pay Later'
+          ( name      = 'Fly Now, Pay Later'
             street    = '100 Madison              '
             postal_code  = '11012                    '
             city      = 'New York                 '
@@ -396,8 +392,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.fn-pl.sap                         '
             email_address = 'info@fn-pl.sap                         '
             )
-          ( agency_id = '070037'
-            name      = 'Real Weird Vacation'
+          ( name      = 'Real Weird Vacation'
             street    = '949 5th Street           '
             postal_code  = 'V6T 1Z4'
             city      = 'Vancouver'
@@ -406,8 +401,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.reweva.sap                        '
             email_address = 'info@reweva.sap                        '
             )
-          ( agency_id = '070038'
-            name      = 'Cap Travels Ltd.'
+          ( name      = 'Cap Travels Ltd.'
             street    = '10 Mandela St'
             postal_code  = '2128'
             city      = 'Johannesburg'
@@ -416,8 +410,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.cap-travels.co.za'
             email_address = 'info@cap-travels.co.za'
             )
-          ( agency_id = '070039'
-            name      = 'Rainy, Stormy, Cloudy'
+          ( name      = 'Rainy, Stormy, Cloudy'
             street    = 'Lindenstr. 462           '
             postal_code  = '70563                    '
             city      = 'Stuttgart                '
@@ -426,8 +419,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.windy.sap/rsc/                    '
             email_address = 'info@windy.sap/rsc/                    '
             )
-          ( agency_id = '070040'
-            name      = 'Women only'
+          ( name      = 'Women only'
             street    = 'Kirchstr. 53             '
             postal_code  = '55124                    '
             city      = 'Mainz                    '
@@ -436,8 +428,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.women-only.sap                    '
             email_address = 'info@women-only.sap                    '
             )
-          ( agency_id = '070041'
-            name      = 'Maxitrip'
+          ( name      = 'Maxitrip'
             street    = 'Flugfeld 17'
             postal_code  = '65128'
             city      = 'Wiesbaden'
@@ -446,8 +437,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.maxitrip.sap'
             email_address = 'info@maxitrip.sap'
             )
-          ( agency_id = '070042'
-            name      = 'The Ultimate Answer'
+          ( name      = 'The Ultimate Answer'
             street    = 'Manchester Rd 20         '
             postal_code  = 'AB1 1SA                  '
             city      = 'Avon                     '
@@ -456,8 +446,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.thulan.sap                        '
             email_address = 'info@thulan.sap                        '
             )
-          ( agency_id = '070043'
-            name      = 'Intertravel'
+          ( name      = 'Intertravel'
             street    = 'Michigan Ave             '
             postal_code  = '60154                    '
             city      = 'Chicago                  '
@@ -466,8 +455,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.intertravel.sap                   '
             email_address = 'info@intertravel.sap                   '
             )
-          ( agency_id = '070044'
-            name      = 'Ultimate Goal'
+          ( name      = 'Ultimate Goal'
             street    = '300 Peach tree street Sou'
             postal_code  = '01069                    '
             city      = 'Atlanta                  '
@@ -476,9 +464,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.ultimate-goal.sap                 '
             email_address = 'info@ultimate-goal.sap                 '
             )
-          ( agency_id = '070045'
-            name      = 'Submit and Return'
-            street    = '20890 East Central Ave   '
+          ( street    = '20890 East Central Ave   '
             postal_code  = '30987                    '
             city      = 'Palo Alto                '
             country_code   = 'US '
@@ -486,8 +472,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.sar.sap                           '
             email_address = 'info@sar.sap                           '
             )
-          ( agency_id = '070046'
-            name      = 'Hendrik''s'
+          ( name      = 'Hendrik''s'
             street    = '1200 Industrial Drive    '
             postal_code  = '60153                    '
             city      = 'Chicago                  '
@@ -496,8 +481,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.essen.sap/150596                  '
             email_address = 'info@essen.sap/150596                  '
             )
-          ( agency_id = '070047'
-            name      = 'All British Air Planes'
+          ( name      = 'All British Air Planes'
             street    = '224 Tomato Lane          '
             postal_code  = '08965                    '
             city      = 'Vineland                 '
@@ -506,8 +490,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.abap.sap                           '
             email_address = 'info@abap.sap                           '
             )
-          ( agency_id = '070048'
-            name      = 'Rocky Horror Tours'
+          ( name      = 'Rocky Horror Tours'
             street    = '789 Santa Monica Blvd.   '
             postal_code  = '08934                    '
             city      = 'Santa Monica             '
@@ -516,8 +499,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.frank.furter.sap                  '
             email_address = 'info@frank.furter.sap                  '
             )
-          ( agency_id = '070049'
-            name      = 'Miles and More'
+          ( name      = 'Miles and More'
             street    = '777 Arlington Blvd.      '
             postal_code  = '46515                    '
             city      = 'Elkhart                  '
@@ -526,8 +508,7 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             web_address       = 'http://www.mam.sap'
             email_address = 'info@mam.sap'
             )
-          ( agency_id = '070050'
-            name      = 'Not Only By Bike'
+          ( name      = 'Not Only By Bike'
             street    = 'Saalburgstr. 765         '
             postal_code  = '60385                    '
             city      = 'Frankfurt                '
@@ -537,6 +518,29 @@ CLASS lcl_agency_data_generator IMPLEMENTATION.
             email_address = 'info@nobb.sap'
             )
    ).
+
+    DATA(lv_lines) = lines( gt_data ).
+    CHECK lv_lines > 0.
+    TRY.
+        cl_numberrange_runtime=>number_get(
+          EXPORTING
+            nr_range_nr = cv_numberrange_interval
+            object      = cv_numberrange_object
+            quantity    = CONV cl_numberrange_runtime=>nr_quantity( lv_lines )
+          IMPORTING
+            number      = DATA(lv_key)
+        ).
+        DATA(lv_maximum) = CONV i( lv_key+2 ).
+        DATA(lv_current) = lv_maximum - lv_lines.
+
+        LOOP AT gt_data ASSIGNING FIELD-SYMBOL(<agency>).
+          lv_current += 1.
+          <agency>-agency_id = CONV #( lv_current ).
+        ENDLOOP.
+      CATCH cx_number_ranges INTO DATA(lx).
+        " Should not happen.  If so, something is wrong
+        RAISE SHORTDUMP lx.
+    ENDTRY.
   ENDMETHOD.
 
 ENDCLASS.
@@ -874,6 +878,13 @@ CLASS lcl_flight_data_generator IMPLEMENTATION.
     IF gt_flights IS NOT INITIAL.
       rt_data = gt_flights.
       EXIT.
+    ENDIF.
+
+    IF gt_connections             IS INITIAL
+      OR gt_carrier               IS INITIAL
+      OR gt_plane_types           IS INITIAL
+      OR gt_connection_recurrency IS INITIAL.
+      build_dependent_content( ).
     ENDIF.
 
     LOOP AT gt_connections INTO DATA(ls_connection).
@@ -1555,7 +1566,7 @@ CLASS lcl_supplement_data_generator DEFINITION CREATE PRIVATE.
 
     TYPES tt_supplement_category_compl TYPE STANDARD TABLE OF /dmo/supplcat_t WITH KEY supplement_category language_code.
 
-    TYPES tt_supplement_complete TYPE STANDARD TABLE OF ty_supplement_complete WITH KEY supplement_id.
+    TYPES tt_supplement_complete TYPE STANDARD TABLE OF ty_supplement_complete WITH KEY supplement_id WITH NON-UNIQUE SORTED KEY category COMPONENTS supplement_category.
 
     CLASS-METHODS:
       get_data
@@ -1583,12 +1594,6 @@ CLASS lcl_supplement_data_generator DEFINITION CREATE PRIVATE.
 
     CLASS-METHODS:
       set_numberrange_intervals,
-
-      get_key
-        IMPORTING
-          iv_type       TYPE /dmo/supplement_category
-        RETURNING
-          VALUE(rv_key) TYPE /dmo/supplement_id,
 
       get_supplement_category
         RETURNING
@@ -1705,31 +1710,35 @@ CLASS lcl_supplement_data_generator IMPLEMENTATION.
         ( price = '80.00'  description = 'Bulky goods like sports equipment' )
       )  .
 
-      LOOP AT gt_data ASSIGNING FIELD-SYMBOL(<data>).
-        <data>-supplement_id = get_key( <data>-supplement_category ).
+
+      LOOP AT gt_supplement_category INTO DATA(ls_supplement_category) WHERE language_code = 'E'.
+        DATA(lv_lines) = lines( FILTER #( gt_data USING KEY category WHERE supplement_category = ls_supplement_category-supplement_category ) ).
+        CHECK lv_lines > 0.
+        TRY.
+            cl_numberrange_runtime=>number_get(
+              EXPORTING
+                nr_range_nr = cv_numberrange_interval
+                subobject   = CONV #( ls_supplement_category-supplement_category )
+                object      = cv_numberrange_object
+                quantity    = CONV cl_numberrange_runtime=>nr_quantity( lv_lines )
+              IMPORTING
+                number      = DATA(lv_key)
+            ).
+            DATA(lv_maximum) = CONV i( lv_key+2 ).
+            DATA(lv_current) = lv_maximum - lv_lines.
+            LOOP AT gt_data ASSIGNING FIELD-SYMBOL(<data>) USING KEY category WHERE supplement_category = ls_supplement_category-supplement_category.
+              lv_current += 1.
+              <data>-supplement_id = |{ ls_supplement_category-supplement_category }-{ lv_current  ALIGN = RIGHT  PAD = `0`  WIDTH = 4 }|.
+            ENDLOOP.
+          CATCH cx_number_ranges INTO DATA(lx).
+            " Should not happen.  If so, something is wrong
+            RAISE SHORTDUMP lx.
+        ENDTRY.
       ENDLOOP.
 
     ENDIF.
 
     rt_data = gt_data.
-  ENDMETHOD.
-
-  METHOD get_key.
-    TRY.
-        cl_numberrange_runtime=>number_get(
-          EXPORTING
-            nr_range_nr = cv_numberrange_interval
-            subobject   = CONV #( iv_type )
-            object      = cv_numberrange_object
-          IMPORTING
-            number      = DATA(lv_key)
-        ).
-      CATCH cx_number_ranges.
-        " Should not happen.  If so, something is wrong
-        ASSERT 1 = 0.
-    ENDTRY.
-    DATA(lv_num) = CONV i( lv_key+2 ).
-    rv_key = |{ iv_type }-{ lv_num  ALIGN = RIGHT  PAD = `0`  WIDTH = 4 }|.
   ENDMETHOD.
 
   METHOD set_numberrange_intervals.
@@ -1932,14 +1941,10 @@ CLASS lcl_travel_data_generator DEFINITION CREATE PRIVATE.
       go_ran_customer_travel         TYPE REF TO cl_abap_random_int,
       mv_datum                       TYPE d.
 
-    CLASS-METHODS:
-      get_data
-        RETURNING
-          VALUE(rt_data) TYPE tt_travel_complete,
+    CLASS-METHODS: get_data
+      RETURNING
+        VALUE(rt_data) TYPE tt_travel_complete,
       set_numberrange,
-      get_travel_id
-        RETURNING
-          VALUE(rv_travel_id) TYPE /dmo/travel_id,
       build_booking
         IMPORTING
           iv_travel_id       TYPE /dmo/booking-travel_id
@@ -2047,9 +2052,6 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
 
     DATA(lt_bookings) = build_booking( lv_travel_id ).
     WHILE lt_bookings IS NOT INITIAL.
-
-      lv_travel_id = get_travel_id( ).
-
       DATA(lv_travel_create_date_dats) = calc_days_before_book_or_today( lt_bookings[ 1 ]-booking_date ).
 
       DATA(lv_booking_fee) = calculate_booking_fee( lt_bookings ).
@@ -2090,6 +2092,35 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
 
       lt_bookings = build_booking( lv_travel_id ).
     ENDWHILE.
+
+    DATA(lv_lines) = lines( rt_data ).
+    CHECK lv_lines > 0.
+    TRY.
+        cl_numberrange_runtime=>number_get(
+          EXPORTING
+            nr_range_nr = cv_numberrange_interval
+            object      = cv_numberrange_object
+            quantity    = CONV cl_numberrange_runtime=>nr_quantity( lv_lines )
+          IMPORTING
+            number      = DATA(lv_key)
+        ).
+        DATA(lv_maximum) = CONV i( lv_key+2 ).
+        DATA(lv_current) = lv_maximum - lv_lines.
+
+        LOOP AT rt_data ASSIGNING FIELD-SYMBOL(<travel>).
+          lv_current += 1.
+          <travel>-travel_id = CONV #( lv_current ).
+          LOOP AT <travel>-bookings ASSIGNING FIELD-SYMBOL(<booking>).
+            <booking>-travel_id = CONV #( lv_current ).
+            LOOP AT <booking>-booking_supplements ASSIGNING FIELD-SYMBOL(<booking_supplement>).
+              <booking_supplement>-travel_id = CONV #( lv_current ).
+            ENDLOOP.
+          ENDLOOP.
+        ENDLOOP.
+      CATCH cx_number_ranges INTO DATA(lx).
+        " Should not happen.  If so, something is wrong
+        RAISE SHORTDUMP lx.
+    ENDTRY.
   ENDMETHOD.
 
   METHOD set_numberrange.
@@ -2102,24 +2133,6 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
         tonumber             = CONV cl_numberrange_intervals=>nr_nriv_line-tonumber( CONV /dmo/travel_id( /dmo/if_flight_legacy=>late_numbering_boundary - 1 ) ) ).
 
   ENDMETHOD.
-
-
-  METHOD get_travel_id.
-    TRY.
-        cl_numberrange_runtime=>number_get(
-          EXPORTING
-            nr_range_nr = cv_numberrange_interval
-            object      = cv_numberrange_object
-          IMPORTING
-            number      = DATA(lv_key)
-        ).
-      CATCH cx_number_ranges.
-        "should not happen
-        ASSERT 1 = 0.
-    ENDTRY.
-    rv_travel_id = CONV #( lv_key ).
-  ENDMETHOD.
-
 
   METHOD calc_days_before_book_or_today.
     cl_abap_tstmp=>td_add(

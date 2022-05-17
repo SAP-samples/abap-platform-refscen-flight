@@ -178,6 +178,8 @@ CLASS /dmo/cl_flight_data_generator IMPLEMENTATION.
           ENDIF.
         ENDIF.
 
+        COMMIT WORK.
+
       CATCH cx_nr_object_not_found INTO DATA(lx_nr_object_not_found).
       CATCH cx_nr_subobject        INTO DATA(lx_nr_subobject).
       CATCH cx_number_ranges       INTO DATA(lx_number_ranges).

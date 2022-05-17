@@ -5,14 +5,16 @@
 
 define view entity /DMO/I_Connection
   as select from /dmo/connection as Connection
-  
-  association [1..1] to /DMO/I_Carrier as _Airline  on $projection.AirlineID = _Airline.AirlineID
+
+  association [1..1] to /DMO/I_Carrier as _Airline            on $projection.AirlineID = _Airline.AirlineID
+  association [1..1] to /DMO/I_Airport as _DepartureAirport   on $projection.DepartureAirport = _DepartureAirport.AirportID
+  association [1..1] to /DMO/I_Airport as _DestinationAirport on $projection.DestinationAirport = _DestinationAirport.AirportID
 
 {
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
       @ObjectModel.text.association: '_Airline'
-      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Carrier', element: 'CarrierID'} }]
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Carrier', element: 'AirlineID' }, useForValidation: true}]
   key Connection.carrier_id      as AirlineID,
 
       @Search.defaultSearchElement: true
@@ -20,12 +22,12 @@ define view entity /DMO/I_Connection
 
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
-      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Airport', element: 'Airport_ID' } }]
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Airport', element: 'AirportID' }, useForValidation: true }]
       Connection.airport_from_id as DepartureAirport,
 
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
-      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Airport', element: 'Airport_ID' } }]
+      @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Airport', element: 'AirportID' }, useForValidation: true }]
       Connection.airport_to_id   as DestinationAirport,
 
       Connection.departure_time  as DepartureTime,
@@ -35,8 +37,10 @@ define view entity /DMO/I_Connection
       @Semantics.quantity.unitOfMeasure: 'DistanceUnit'
       Connection.distance        as Distance,
 
-      Connection.distance_unit   as DistanceUnit, 
-      
+      Connection.distance_unit   as DistanceUnit,
+
       /* Associations */
-      _Airline
+      _Airline,
+      _DepartureAirport,
+      _DestinationAirport
 }

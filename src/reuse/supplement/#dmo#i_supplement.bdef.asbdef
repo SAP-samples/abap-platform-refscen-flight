@@ -19,7 +19,7 @@ authorization master ( global )
   field ( mandatory: create, readonly : update ) SupplementCategory;
   field ( mandatory ) Price, CurrencyCode;
 
-  draft action resume;
+  draft action Resume;
   draft action Edit;
   draft action Activate;
   draft action Discard;

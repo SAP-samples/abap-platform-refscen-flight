@@ -33,6 +33,7 @@ define view entity /DMO/I_Connection_R
         @EndUserText.quickInfo: 'Airline that operates the flight.'
         @ObjectModel.text.association: '_Airline'
         @Search.defaultSearchElement: true
+        @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Carrier_StdVH', element: 'AirlineID' }, useForValidation: true}]
   key   Connection.carrier_id       as AirlineID,
 
         @UI.lineItem: [ { position: 20, label:'Connection Number' } ]
@@ -44,8 +45,7 @@ define view entity /DMO/I_Connection_R
         selectionField: [ { position: 10 }  ],
         identification:[ { position: 30, label: 'Departure Airport Code' } ] }
         @EndUserText.label: 'Departure Airport Code'
-        @Consumption.valueHelpDefinition: [{  entity: {   name: '/DMO/I_Airport',
-                              element:    'AirportID' } }]
+        @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Airport_StdVH', element: 'AirportID' }, useForValidation: true }]
         @Search.defaultSearchElement: true
         @Search.fuzzinessThreshold: 0.7
         Connection.airport_from_id  as DepartureAirport,
@@ -55,8 +55,7 @@ define view entity /DMO/I_Connection_R
         selectionField: [ { position: 20 }  ],
         identification:[ { position: 40, label: 'Destination Airport Code' } ] }
         @EndUserText.label: 'Destination Airport Code'
-        @Consumption.valueHelpDefinition: [{  entity: {   name: '/DMO/I_Airport' ,
-                                          element: 'AirportID' } }]
+        @Consumption.valueHelpDefinition: [{entity: {name: '/DMO/I_Airport_StdVH', element: 'AirportID' }, useForValidation: true }]
         @Search.defaultSearchElement: true
         @Search.fuzzinessThreshold: 0.7
         Connection.airport_to_id    as DestinationAirport,
