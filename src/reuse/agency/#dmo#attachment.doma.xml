@@ -3,13 +3,12 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <DD01V>
-    <DOMNAME>/DMO/AMOUNT</DOMNAME>
+    <DOMNAME>/DMO/ATTACHMENT</DOMNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
-    <DATATYPE>D34N</DATATYPE>
-    <LENG>000034</LENG>
-    <OUTPUTLEN>000046</OUTPUTLEN>
-    <DDTEXT>Flight Reference Scenario</DDTEXT>
+    <DATATYPE>RSTR</DATATYPE>
+    <DDTEXT>Attachment</DDTEXT>
     <DOMMASTER>E</DOMMASTER>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DD01V>
   </asx:values>
  </asx:abap>

@@ -76,7 +76,7 @@ CLASS /dmo/cl_flight_legacy DEFINITION
       calculate_flight_price
         IMPORTING
           iv_seats_occupied_percent TYPE /dmo/plane_seats_occupied
-          iv_flight_distance        TYPE i
+          iv_flight_distance        TYPE /dmo/flight_distance
         RETURNING
           VALUE(rv_price)           TYPE /dmo/flight_price ##RELAX.
 

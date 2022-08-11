@@ -125,10 +125,10 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
         APPEND VALUE #( %tky                  = <bookingsupplement>-%tky
                         %state_area           = 'VALIDATE_SUPPLEMENT'
                         %msg                  = NEW /dmo/cm_flight_messages(
-                                                                textid = /dmo/cm_flight_messages=>ENTER_SUPPLEMENT_ID
+                                                                textid = /dmo/cm_flight_messages=>enter_supplement_id
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ source-%tky = <bookingsupplement>-%tky ]-target-%tky
-                                                         travel-%tky  = booksuppl_travel_links[ source-%tky  = <bookingsupplement>-%tky ]-target-%tky )
+                        %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ KEY id  source-%tky = <bookingsupplement>-%tky ]-target-%tky
+                                                         travel-%tky  = booksuppl_travel_links[  KEY id  source-%tky = <bookingsupplement>-%tky ]-target-%tky )
                         %element-SupplementID = if_abap_behv=>mk-on
                        ) TO reported-bookingsupplement.
 
@@ -139,10 +139,10 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
         APPEND VALUE #( %tky                  = <bookingsupplement>-%tky
                         %state_area           = 'VALIDATE_SUPPLEMENT'
                         %msg                  = NEW /dmo/cm_flight_messages(
-                                                                textid = /dmo/cm_flight_messages=>SUPPLEMENT_UNKNOWN
+                                                                textid = /dmo/cm_flight_messages=>supplement_unknown
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ source-%tky = <bookingsupplement>-%tky ]-target-%tky
-                                                        travel-%tky  = booksuppl_travel_links[ source-%tky  = <bookingsupplement>-%tky ]-target-%tky )
+                        %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ KEY id  source-%tky = <bookingsupplement>-%tky ]-target-%tky
+                                                          travel-%tky = booksuppl_travel_links[  KEY id  source-%tky = <bookingsupplement>-%tky ]-target-%tky )
                         %element-SupplementID = if_abap_behv=>mk-on
                        ) TO reported-bookingsupplement.
       ENDIF.

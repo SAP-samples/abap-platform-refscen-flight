@@ -68,7 +68,7 @@ define view entity /DMO/I_Connection_R
         @UI: { identification:[ { position: 60, label: 'Arrival Time'  } ] }
         Connection.arrival_time     as ArrivalTime,
 
-        @Semantics.quantity.unitOfMeasure: 'DistanceUnit'
+//        @Semantics.quantity.unitOfMeasure: 'DistanceUnit'
         @UI: { identification:[ { position: 70, label: 'Distance' } ] }
         Connection.distance         as Distance,
 

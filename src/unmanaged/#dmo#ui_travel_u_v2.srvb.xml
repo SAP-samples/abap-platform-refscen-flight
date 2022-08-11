@@ -7,12 +7,23 @@
      <NAME>/DMO/UI_TRAVEL_U_V2</NAME>
      <TYPE>SRVB/SVB</TYPE>
      <DESCRIPTION>UI service for managing travels (V2)</DESCRIPTION>
-     <LANGUAGE>EN</LANGUAGE>
      <LINKS>
+      <item>
+       <HREF>/sap/bc/adt/documentation/ktd/documents/zsb_ktd_travel</HREF>
+       <REL>http://www.sap.com/adt/relations/dita/documentation</REL>
+       <TYPE>application/vnd.sap.adt.sktdv2+xml</TYPE>
+       <TITLE>DITA Documentation</TITLE>
+      </item>
       <item>
        <HREF>versions</HREF>
        <REL>http://www.sap.com/adt/relations/versions</REL>
        <TITLE>Historic versions</TITLE>
+      </item>
+      <item>
+       <HREF>/sap/bc/adt/repository/informationsystem/abaplanguageversions?uri=%2Fsap%2Fbc%2Fadt%2Fbusinessservices%2Fbindings%2F%252fdmo%252fui_travel_u_v2</HREF>
+       <REL>http://www.sap.com/adt/relations/informationsystem/abaplanguageversions</REL>
+       <TYPE>application/vnd.sap.adt.nameditems.v1+xml</TYPE>
+       <TITLE>Allowed ABAP language versions</TITLE>
       </item>
       <item>
        <HREF>/sap/bc/adt/businessservices/odatav2/%2FDMO%2FUI_TRAVEL_U_V2</HREF>
@@ -27,12 +38,19 @@
        <TITLE>TESTCLASS</TITLE>
       </item>
       <item>
+       <HREF>/sap/bc/adt/businessservices/testclass</HREF>
+       <REL>http://www.sap.com/categories/testclass</REL>
+       <TYPE>application/vnd.sap.adt.businessservices.testclassv4.v1+xml</TYPE>
+       <TITLE>TESTCLASSV4</TITLE>
+      </item>
+      <item>
        <HREF>/sap/bc/adt/businessservices/semanticversion</HREF>
        <REL>http://www.sap.com/categories/semanticversion</REL>
        <TYPE>application/vnd.sap.adt.businessservices.semanticversion.v1+xml</TYPE>
        <TITLE>SemanticVersion</TITLE>
       </item>
      </LINKS>
+     <RESPONSIBLE>BARZEWSKI</RESPONSIBLE>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     </METADATA>
     <CONTENT>
@@ -47,16 +65,23 @@
        <SERVICE_CONTENT>
         <item>
          <SERVICE_VERSION>0001</SERVICE_VERSION>
+         <RELEASE_STATE>NOT_RELEASED</RELEASE_STATE>
          <SRVD_REF>
           <URI>/sap/bc/adt/ddic/srvd/sources/%2fdmo%2ftravel_u</URI>
           <TYPE>SRVD/SRV</TYPE>
           <NAME>/DMO/TRAVEL_U</NAME>
          </SRVD_REF>
+         <BIND_TYPE_DATA>
+          <CONTENT>
+           <ENCODING>base64</ENCODING>
+          </CONTENT>
+         </BIND_TYPE_DATA>
         </item>
        </SERVICE_CONTENT>
       </item>
      </SERVICES>
     </CONTENT>
+    <PUBLISHED>true</PUBLISHED>
     <BINDING_CREATED>true</BINDING_CREATED>
    </SRVB>
   </asx:values>

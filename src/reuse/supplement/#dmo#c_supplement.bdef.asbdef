@@ -1,5 +1,5 @@
 projection implementation in class /dmo/bp_c_supplement unique;
-strict;
+strict(2);
 use draft;
 
 define behavior for /DMO/C_Supplement alias Supplement

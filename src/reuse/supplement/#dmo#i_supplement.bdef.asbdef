@@ -1,5 +1,5 @@
 managed implementation in class /dmo/bp_i_supplement unique;
-strict;
+strict(2);
 with draft;
 
 define behavior for /DMO/I_Supplement alias Supplement

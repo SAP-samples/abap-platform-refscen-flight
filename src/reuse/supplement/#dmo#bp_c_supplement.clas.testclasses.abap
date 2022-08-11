@@ -11,10 +11,14 @@ CLASS lcl_test_double DEFINITION FOR TESTING.
     DATA:
       supplement_create TYPE TABLE FOR CREATE /DMO/I_Supplement\\Supplement,
       supplement_update TYPE TABLE FOR UPDATE /DMO/I_Supplement\\Supplement,
+      supplement_failed TYPE RESPONSE FOR FAILED /DMO/I_Supplement,
+
       text_create       TYPE TABLE FOR CREATE /DMO/I_Supplement\\Supplement\_SupplementText,
       text_update       TYPE TABLE FOR UPDATE /DMO/I_Supplement\\SupplementText,
 
-      text_rba_link     TYPE TABLE FOR READ LINK   /DMO/I_Supplement\\Supplement\_SupplementText.
+      text_rba_link     TYPE TABLE FOR READ LINK   /DMO/I_Supplement\\Supplement\_SupplementText,
+
+      text_read_failed  TYPE RESPONSE FOR FAILED /DMO/I_Supplement.
 ENDCLASS.
 
 CLASS lcl_test_double IMPLEMENTATION.
@@ -51,6 +55,8 @@ CLASS lcl_test_double IMPLEMENTATION.
           cl_abap_unit_assert=>fail( 'Unexpected Operation' ).
       ENDCASE.
     ENDLOOP.
+
+    failed = supplement_failed.
   ENDMETHOD.
 
   METHOD if_abap_behavior_testdouble~read.
@@ -87,6 +93,7 @@ CLASS lcl_test_double IMPLEMENTATION.
         APPEND LINES OF links_to_be_added TO <links>.
       ENDLOOP.
     ENDLOOP.
+    failed = text_read_failed.
   ENDMETHOD.
 ENDCLASS.
 
@@ -148,7 +155,15 @@ CLASS ltcl_augmentation DEFINITION FINAL FOR TESTING
       "! This should lead to a set of { @link ..lhc_Supplement.METH:augment.DATA:entities_update }.
       "! The base BO should receive an <em>update</em> for <em>Supplement</em> with initial <em>%control</em>
       "! and a <em>update</em> for the <em>SupplementText</em>.
-      text_update                   FOR TESTING RAISING cx_static_check.
+      text_update                   FOR TESTING RAISING cx_static_check,
+
+      "! Checks if { @link ..lhc_Supplement.METH:augment } sets the correct failed cause if
+      "! the instance is not found.
+      update_with_invalid_keys      FOR TESTING RAISING cx_static_check,
+
+      "! Checks if { @link ..lhc_Supplement.METH:augment } sets the correct failed cause if
+      "! the instance is not found and does not augment.
+      update_invalid_keys_descr     FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 
@@ -169,7 +184,7 @@ CLASS ltcl_augmentation IMPLEMENTATION.
 
   METHOD teardown.
     cl_abap_behv_test_environment=>unset_test_double( root = lcl_test_double=>supplement_entity_name ).
-    ROLLBACK ENTITIES. "#EC CI_ROLLBACK
+    ROLLBACK ENTITIES.                                 "#EC CI_ROLLBACK
   ENDMETHOD.
 
   METHOD supplement_create.
@@ -483,6 +498,108 @@ CLASS ltcl_augmentation IMPLEMENTATION.
                                         act = act_i_update-LanguageCode ).
     cl_abap_unit_assert=>assert_equals( exp = c_update-SupplementDescription
                                         act = act_i_update-Description ).
+  ENDMETHOD.
+
+  METHOD update_with_invalid_keys.
+    TYPES:
+      t_c_failed_supplement     LIKE LINE OF failed-supplement,
+      t_c_failed_supplement_tky TYPE t_c_failed_supplement-%tky.
+
+    DATA:
+      c_update_no_key      TYPE STRUCTURE FOR UPDATE /DMO/C_Supplement\\Supplement,
+      c_update_invalid_key TYPE STRUCTURE FOR UPDATE /DMO/C_Supplement\\Supplement,
+      i_update             TYPE STRUCTURE FOR UPDATE /DMO/I_Supplement\\Supplement.
+
+    c_update_no_key      = VALUE #( %is_draft = if_abap_behv=>mk-on  SupplementID = ''     ).
+    c_update_invalid_key = VALUE #( %is_draft = if_abap_behv=>mk-on  SupplementID = 'TEST' ).
+
+    entity_double->text_read_failed-supplement = VALUE #(
+        %fail = VALUE #( cause = if_abap_behv=>cause-not_found )
+        ( %tky = CORRESPONDING #( c_update_no_key-%tky )       )
+        ( %tky = CORRESPONDING #( c_update_invalid_key-%tky )  )
+      ).
+
+    entity_double->supplement_failed = entity_double->text_read_failed.
+
+    MODIFY ENTITIES OF /dmo/c_supplement
+      ENTITY Supplement
+        UPDATE
+          FIELDS ( SupplementDescription Price CurrencyCode )
+          WITH VALUE #( ( c_update_no_key ) ( c_update_invalid_key ) )
+      MAPPED    mapped
+      FAILED    failed
+      REPORTED  reported.
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 2
+        act = lines( failed-supplement )
+      ).
+
+
+    cl_abap_unit_assert=>assert_not_initial( VALUE #( failed-supplement[ KEY draft  %tky = CORRESPONDING #( c_update_no_key-%tky     ) ] OPTIONAL ) ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = if_abap_behv=>cause-not_found
+        act = failed-supplement[ KEY draft  %tky = c_update_no_key-%tky      ]-%fail-cause
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( VALUE #( failed-supplement[ KEY draft  %tky = CORRESPONDING #( c_update_invalid_key-%tky ) ] OPTIONAL ) ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = if_abap_behv=>cause-not_found
+        act = failed-supplement[ KEY draft  %tky = c_update_invalid_key-%tky ]-%fail-cause
+      ).
+  ENDMETHOD.
+
+  METHOD update_invalid_keys_descr.
+    TYPES:
+      t_c_failed_supplement     LIKE LINE OF failed-supplement,
+      t_c_failed_supplement_tky TYPE t_c_failed_supplement-%tky.
+
+    DATA:
+      c_update_no_flag     TYPE STRUCTURE FOR UPDATE /DMO/C_Supplement\\Supplement,
+      c_update_invalid_key TYPE STRUCTURE FOR UPDATE /DMO/C_Supplement\\Supplement,
+      i_update             TYPE STRUCTURE FOR UPDATE /DMO/I_Supplement\\Supplement.
+
+    c_update_no_flag     = VALUE #( %is_draft = if_abap_behv=>mk-on  SupplementID = 'TEST1'  SupplementDescription = 'Test'  %control-SupplementDescription = if_abap_behv=>mk-off ).
+    c_update_invalid_key = VALUE #( %is_draft = if_abap_behv=>mk-on  SupplementID = 'TEST2'  SupplementDescription = 'Test'  %control-SupplementDescription = if_abap_behv=>mk-on  ).
+
+    entity_double->text_read_failed-supplement = VALUE #(
+        %fail = VALUE #( cause = if_abap_behv=>cause-not_found )
+        ( %tky = CORRESPONDING #( c_update_no_flag-%tky )       )
+        ( %tky = CORRESPONDING #( c_update_invalid_key-%tky )  )
+      ).
+
+    entity_double->supplement_failed = entity_double->text_read_failed.
+
+    MODIFY ENTITIES OF /dmo/c_supplement
+      ENTITY Supplement
+        UPDATE
+          FIELDS ( SupplementDescription Price CurrencyCode )
+          WITH VALUE #( ( c_update_no_flag ) ( c_update_invalid_key ) )
+      MAPPED    mapped
+      FAILED    failed
+      REPORTED  reported.
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 2
+        act = lines( failed-supplement )
+      ).
+
+
+    cl_abap_unit_assert=>assert_not_initial( VALUE #( failed-supplement[ KEY draft  %tky = CORRESPONDING #( c_update_no_flag-%tky    ) ] OPTIONAL ) ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = if_abap_behv=>cause-not_found
+        act = failed-supplement[ KEY draft  %tky = c_update_no_flag-%tky     ]-%fail-cause
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( VALUE #( failed-supplement[ KEY draft  %tky = CORRESPONDING #( c_update_invalid_key-%tky ) ] OPTIONAL ) ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = if_abap_behv=>cause-not_found
+        act = failed-supplement[ KEY draft  %tky = c_update_invalid_key-%tky ]-%fail-cause
+      ).
+
+    cl_abap_unit_assert=>assert_initial( entity_double->text_update ).
   ENDMETHOD.
 
 ENDCLASS.

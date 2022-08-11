@@ -159,7 +159,7 @@ CLASS lhc_travel IMPLEMENTATION.
 
     LOOP AT travels ASSIGNING FIELD-SYMBOL(<travel>).
       DATA percentage TYPE decfloat16.
-      DATA(discount_percent) = keys_with_valid_discount[ %tky = <travel>-%tky ]-%param-discount_percent.
+      DATA(discount_percent) = keys_with_valid_discount[ KEY id  %tky = <travel>-%tky ]-%param-discount_percent.
       percentage =  discount_percent / 100 .
       DATA(reduced_fee) = <travel>-BookingFee * ( 1 - percentage ) .
 
@@ -400,7 +400,7 @@ CLASS lhc_travel IMPLEMENTATION.
                        %state_area        = 'VALIDATE_AGENCY'
                     ) TO reported-travel.
 
-      IF travel-AgencyID IS  INITIAL.
+      IF travel-AgencyID IS INITIAL.
         APPEND VALUE #( %tky = travel-%tky ) TO failed-travel.
 
         APPEND VALUE #( %tky                = travel-%tky

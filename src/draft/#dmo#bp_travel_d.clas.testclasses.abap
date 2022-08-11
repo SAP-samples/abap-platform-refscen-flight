@@ -85,7 +85,7 @@ CLASS ltc_travel DEFINITION FINAL FOR TESTING
       validateCustomer_not_exist    FOR TESTING,
 
       "! Calls { @link ..lhc_travel.METH:validateAgency }
-      "! and checks if an existing agency is set and authorized to consume.
+      "! and checks if an existing agency is set.
       validateAgency_success        FOR TESTING,
 
       "! Calls { @link ..lhc_travel.METH:validateAgency }
