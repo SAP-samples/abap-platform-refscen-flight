@@ -1,0 +1,113 @@
+@Metadata.layer: #CUSTOMER
+
+
+@UI: { headerInfo: {
+                     typeName: 'Review',
+                     typeNamePlural: 'Reviews',
+                     title: { type: #STANDARD, value: 'ReviewId' }
+                   },
+       presentationVariant: [{
+           sortOrder: [{ by: 'LocalCreatedAt', direction: #DESC }],
+           visualizations: [{type: #AS_LINEITEM}]
+         }]
+     }
+
+annotate view /DMO/ZZ_C_Agency_ReviewTP with
+{
+
+  @UI.facet: [
+      {
+        id:            'Review',
+        purpose:       #STANDARD,
+        type:          #IDENTIFICATION_REFERENCE,
+        label:         'Review',
+        position:      10
+      },
+      {
+        id:            'HelpfulID',
+        purpose:       #HEADER,
+        type:          #DATAPOINT_REFERENCE,
+        label:         'Helpful',
+        position:      10,
+        targetQualifier: 'HelpfulCount'
+      }
+    ]
+
+  @UI.hidden: true
+  AgencyId;
+  @UI.hidden: true
+  ReviewId;
+
+
+  @UI:{
+        dataPoint: {
+          title: 'Rating'
+          ,visualization: #RATING
+          ,targetValue: 5
+        },
+        lineItem:
+          [
+            {
+              position: 10,
+              label: 'Rating',
+              importance: #HIGH
+              ,valueQualifier: 'Rating'
+              ,type: #AS_DATAPOINT
+            }
+          ],
+        identification: [
+            {
+              position: 10,
+              label: 'Rating',
+              importance: #HIGH
+              ,type: #AS_DATAPOINT
+            }
+          ]
+  }
+  Rating;
+
+  @UI.lineItem: [{ position: 20 }]
+  @UI.identification: [{ position: 20 }]
+  @UI.multiLineText: true
+  FreeTextComment;
+
+
+  @UI:{
+        dataPoint: {
+          title: 'Helpful',
+          targetValueElement: 'HelpfulTotal'
+          ,visualization: #PROGRESS
+        },
+        lineItem: [
+            {
+              position: 50,
+              label: 'Helpful',
+              importance: #HIGH
+              ,type: #AS_DATAPOINT
+              ,valueQualifier: 'Progress'
+            }
+          ]
+  }
+  HelpfulCount;
+
+  @UI.hidden: true
+  HelpfulTotal;
+
+  @UI.lineItem:       [
+      { type: #FOR_ACTION, dataAction: '/DMO/reviewWasHelpful',    label: 'Helpful'     },
+      { type: #FOR_ACTION, dataAction: '/DMO/reviewWasNotHelpful', label: 'Not Helpful' },
+      { position: 3 }
+   ]
+  @UI.identification: [
+      { type: #FOR_ACTION, dataAction: '/DMO/reviewWasHelpful',    label: 'Helpful'     },
+      { type: #FOR_ACTION, dataAction: '/DMO/reviewWasNotHelpful', label: 'Not Helpful' },
+      { position: 3 }
+   ]
+  Reviewer;
+
+  @UI.hidden: true
+  LocalCreatedAt;
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+}

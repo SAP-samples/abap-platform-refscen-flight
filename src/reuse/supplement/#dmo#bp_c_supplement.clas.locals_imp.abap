@@ -50,11 +50,16 @@ CLASS lhc_Supplement IMPLEMENTATION.
 
       READ ENTITIES OF /DMO/I_Supplement
         ENTITY Supplement BY \_SupplementText
-        FROM CORRESPONDING #( entities_update )
-      LINK DATA(link).
+          FROM CORRESPONDING #( entities_update )
+          LINK DATA(link)
+        FAILED DATA(link_failed).
 
-      "Handle update requests
-      LOOP AT entities_update INTO DATA(supplement_update).
+      "To prevent empty updates, we check if something has changed for the text node.
+      LOOP AT entities_update INTO DATA(supplement_update) WHERE %control-SupplementDescription = if_abap_behv=>mk-on.
+
+        "To prevent an update on a text node for a non-existing supplement, we check against the failed-supplement table.
+        CHECK NOT line_exists( link_failed-supplement[ KEY draft  %tky = CORRESPONDING #( supplement_update-%tky ) ] ).
+
         DATA(tabix) = sy-tabix.
 
         "Create variable for %tky for target entity instances

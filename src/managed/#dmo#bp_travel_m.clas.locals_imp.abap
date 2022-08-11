@@ -1,7 +1,8 @@
 CLASS ltc_managed DEFINITION DEFERRED FOR TESTING.
+CLASS ltc_travl_not_in_documentation DEFINITION DEFERRED FOR TESTING.
 CLASS test_using_entity_stub  DEFINITION DEFERRED FOR TESTING.
 CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
-  FRIENDS ltc_managed test_using_entity_stub.
+  FRIENDS ltc_managed test_using_entity_stub ltc_travl_not_in_documentation.
 
   PRIVATE SECTION.
 
@@ -565,7 +566,10 @@ CLASS lhc_travel IMPLEMENTATION.
 ENDCLASS.
 
 
-CLASS lcl_save DEFINITION INHERITING FROM cl_abap_behavior_saver.
+
+CLASS ltc_save_not_in_documentation DEFINITION DEFERRED FOR TESTING.
+CLASS lcl_save DEFINITION INHERITING FROM cl_abap_behavior_saver
+  FRIENDS ltc_save_not_in_documentation.
 
   PROTECTED SECTION.
     METHODS save_modified REDEFINITION.
@@ -727,14 +731,14 @@ CLASS lcl_save IMPLEMENTATION.
 
     " (1) Get instance data of all instances that have been created
     IF create-booksuppl IS NOT INITIAL.
-      booksuppls_db = CORRESPONDING #( create-booksuppl ).
+      booksuppls_db = CORRESPONDING #( create-booksuppl MAPPING FROM ENTITY ).
 
       CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_C' EXPORTING values = booksuppls_db.
 
     ENDIF.
 
     " (2) Get instance data of all instances that have been updated during the transaction
-    booksuppls_db = CORRESPONDING #( update-booksuppl ).
+    booksuppls_db = CORRESPONDING #( update-booksuppl MAPPING FROM ENTITY ).
     IF booksuppls_db IS NOT INITIAL.
 
       " Read all field values from database
@@ -770,7 +774,7 @@ CLASS lcl_save IMPLEMENTATION.
 
     " (3) Get keys of all travel instances that have been deleted during the transaction
     IF delete-booksuppl IS NOT INITIAL.
-      booksuppls_db = CORRESPONDING #( delete-booksuppl ).
+      booksuppls_db = CORRESPONDING #( delete-booksuppl MAPPING FROM ENTITY ).
 
       CALL FUNCTION '/DMO/FLIGHT_BOOKSUPPL_D' EXPORTING values = booksuppls_db.
 

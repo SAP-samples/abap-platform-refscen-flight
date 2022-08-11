@@ -1,5 +1,5 @@
 managed;
-strict;
+strict(2);
 with draft;
 
 define behavior for /DMO/R_Travel_D alias Travel

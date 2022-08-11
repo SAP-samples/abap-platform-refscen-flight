@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_TABL" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD02V>
+    <TABNAME>/DMO/S_EXT_INCL_AGENCY</TABNAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <TABCLASS>INTTAB</TABCLASS>
+    <LANGDEP>X</LANGDEP>
+    <DDTEXT>Extension Include</DDTEXT>
+    <MASTERLANG>E</MASTERLANG>
+    <EXCLASS>4</EXCLASS>
+    <FIELD_SUFFIX>ZAG</FIELD_SUFFIX>
+    <QUOTA_MAX_FIELDS>00350</QUOTA_MAX_FIELDS>
+    <QUOTA_MAX_BYTES>0003500</QUOTA_MAX_BYTES>
+    <QUOTA_SHARE_PARTNER>050</QUOTA_SHARE_PARTNER>
+    <QUOTA_SHARE_CUSTOMER>050</QUOTA_SHARE_CUSTOMER>
+   </DD02V>
+   <DD03P_TABLE>
+    <DD03P>
+     <FIELDNAME>DUMMY_FIELD</FIELDNAME>
+     <ADMINFIELD>0</ADMINFIELD>
+     <INTTYPE>C</INTTYPE>
+     <INTLEN>000002</INTLEN>
+     <DATATYPE>CHAR</DATATYPE>
+     <LENG>000001</LENG>
+     <MASK>  CHAR</MASK>
+    </DD03P>
+    <DD03P>
+     <FIELDNAME>.INCLU--AP</FIELDNAME>
+     <ADMINFIELD>0</ADMINFIELD>
+     <PRECFIELD>/DMO/ZZ_S_EXT_AGENCY_SLOGAN</PRECFIELD>
+     <MASK>      S</MASK>
+     <DDTEXT>Extend structure</DDTEXT>
+     <COMPTYPE>S</COMPTYPE>
+    </DD03P>
+   </DD03P_TABLE>
+  </asx:values>
+ </asx:abap>
+</abapGit>

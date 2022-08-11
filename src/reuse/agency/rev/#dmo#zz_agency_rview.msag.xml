@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/ZZ_AGENCY_RVIEW</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message Class for Agency Review</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/ZZ_AGENCY_RVIEW</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Rating must be between 1 and 5.</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

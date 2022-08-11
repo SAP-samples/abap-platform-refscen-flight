@@ -1,0 +1,5 @@
+@EndUserText.label: 'Agency'
+@AbapCatalog.extensibility.extensible: true
+define service /DMO/UI_AGENCY {
+  expose /DMO/C_AgencyTP as Agency;
+}

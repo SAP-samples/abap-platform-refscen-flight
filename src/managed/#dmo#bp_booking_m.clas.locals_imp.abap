@@ -1,4 +1,6 @@
-CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
+class ltcl_booking DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler
+  FRIENDS ltcl_booking.
   PRIVATE SECTION.
 
     METHODS calculatetotalprice FOR DETERMINE ON MODIFY
@@ -15,14 +17,17 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
 ENDCLASS.
 
-CLASS lhc_travel IMPLEMENTATION.
+CLASS lhc_booking IMPLEMENTATION.
 
   METHOD calculatetotalprice.
+    DATA: travel_ids TYPE STANDARD TABLE OF /dmo/i_travel_m WITH UNIQUE HASHED KEY key COMPONENTS travel_id.
 
-    MODIFY ENTITIES OF /dmo/i_travel_m IN LOCAL MODE
-      ENTITY travel
-        EXECUTE recalctotalprice
-        FROM CORRESPONDING #( keys ).
+    travel_ids = CORRESPONDING #( keys DISCARDING DUPLICATES MAPPING travel_id = travel_id ).
+
+    MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY Travel
+        EXECUTE ReCalcTotalPrice
+        FROM CORRESPONDING #( travel_ids ).
 
   ENDMETHOD.
 
@@ -42,15 +47,10 @@ CLASS lhc_travel IMPLEMENTATION.
         WHEN 'X'.  " Canceled
         WHEN 'B'.  " Booked
 
-          APPEND VALUE #(  %tky                 = booking-%tky
-                           %state_area          = 'VALIDATE_BOOKINGSTATUS'
-                        ) TO reported-booking.
-
         WHEN OTHERS.
           APPEND VALUE #( %tky = booking-%tky ) TO failed-booking.
 
           APPEND VALUE #( %tky = booking-%tky
-                          %state_area         = 'VALIDATE_BOOKINGSTATUS'
                           %msg = NEW /dmo/cm_flight_messages(
                                      textid = /dmo/cm_flight_messages=>status_invalid
                                      status = booking-booking_status

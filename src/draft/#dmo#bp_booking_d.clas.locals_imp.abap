@@ -149,9 +149,9 @@ CLASS lhc_booking IMPLEMENTATION.
         APPEND VALUE #( %tky                = booking-%tky
                         %state_area         = 'VALIDATE_CUSTOMER'
                          %msg                = NEW /dmo/cm_flight_messages(
-                                                                textid = /dmo/cm_flight_messages=>ENTER_CUSTOMER_ID
+                                                                textid = /dmo/cm_flight_messages=>enter_customer_id
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = booking-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
                         %element-CustomerID = if_abap_behv=>mk-on
                        ) TO reported-booking.
 
@@ -161,10 +161,10 @@ CLASS lhc_booking IMPLEMENTATION.
         APPEND VALUE #( %tky                = booking-%tky
                         %state_area         = 'VALIDATE_CUSTOMER'
                          %msg                = NEW /dmo/cm_flight_messages(
-                                                                textid = /dmo/cm_flight_messages=>CUSTOMER_UNKOWN
+                                                                textid = /dmo/cm_flight_messages=>customer_unkown
                                                                 customer_id = booking-customerId
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = booking-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
                         %element-CustomerID = if_abap_behv=>mk-on
                        ) TO reported-booking.
       ENDIF.
@@ -198,9 +198,9 @@ CLASS lhc_booking IMPLEMENTATION.
         APPEND VALUE #( %tky                = <booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
                          %msg                = NEW /dmo/cm_flight_messages(
-                                                                textid = /dmo/cm_flight_messages=>ENTER_AIRLINE_ID
+                                                                textid = /dmo/cm_flight_messages=>enter_airline_id
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path              = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
+                        %path              = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = <booking>-%tky ]-target-%tky )
                         %element-AirlineID = if_abap_behv=>mk-on
                        ) TO reported-booking.
       ENDIF.
@@ -211,9 +211,9 @@ CLASS lhc_booking IMPLEMENTATION.
         APPEND VALUE #( %tky                = <booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
                         %msg                = NEW /dmo/cm_flight_messages(
-                                                                textid = /dmo/cm_flight_messages=>ENTER_CONNECTION_ID
+                                                                textid = /dmo/cm_flight_messages=>enter_connection_id
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = <booking>-%tky ]-target-%tky )
                         %element-ConnectionID = if_abap_behv=>mk-on
                        ) TO reported-booking.
       ENDIF.
@@ -224,9 +224,9 @@ CLASS lhc_booking IMPLEMENTATION.
         APPEND VALUE #( %tky                = <booking>-%tky
                         %state_area         = 'VALIDATE_CONNECTION'
                         %msg                = NEW /dmo/cm_flight_messages(
-                                                                textid = /dmo/cm_flight_messages=>ENTER_FLIGHT_DATE
+                                                                textid = /dmo/cm_flight_messages=>enter_flight_date
                                                                 severity = if_abap_behv_message=>severity-error )
-                        %path               = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
+                        %path               = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = <booking>-%tky ]-target-%tky )
                         %element-FlightDate = if_abap_behv=>mk-on
                        ) TO reported-booking.
       ENDIF.
@@ -246,11 +246,11 @@ CLASS lhc_booking IMPLEMENTATION.
           APPEND VALUE #( %tky                 = <booking>-%tky
                           %state_area          = 'VALIDATE_CONNECTION'
                           %msg                 = NEW /dmo/cm_flight_messages(
-                                                                textid      = /dmo/cm_flight_messages=>NO_FLIGHT_EXISTS
+                                                                textid      = /dmo/cm_flight_messages=>no_flight_exists
                                                                 carrier_id  = <booking>-AirlineID
                                                                 flight_date = <booking>-FlightDate
                                                                 severity    = if_abap_behv_message=>severity-error )
-                          %path                  = VALUE #( travel-%tky = travel_booking_links[ source-%tky = <booking>-%tky ]-target-%tky )
+                          %path                  = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = <booking>-%tky ]-target-%tky )
                           %element-FlightDate    = if_abap_behv=>mk-on
                           %element-AirlineID     = if_abap_behv=>mk-on
                           %element-ConnectionID  = if_abap_behv=>mk-on
