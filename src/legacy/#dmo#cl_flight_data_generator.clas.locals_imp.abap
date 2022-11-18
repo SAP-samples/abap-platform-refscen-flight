@@ -16,8 +16,8 @@ CLASS lcl_agency_data_generator DEFINITION CREATE PRIVATE.
     CONSTANTS:
       cv_numberrange_interval TYPE cl_numberrange_runtime=>nr_interval VALUE '01',
       cv_numberrange_object   TYPE cl_numberrange_runtime=>nr_object   VALUE '/DMO/AGNCY' ##NO_TEXT,
-      cv_agency_minimum       TYPE /DMO/AGENCY_ID VALUE '070001',
-      cv_agency_maximum       TYPE /DMO/AGENCY_ID VALUE '079999'.
+      cv_agency_minimum       TYPE /dmo/agency_id VALUE '070001',
+      cv_agency_maximum       TYPE /dmo/agency_id VALUE '079999'.
     CLASS-DATA gt_data TYPE lcl_agency_data_generator=>tt_agency.
     CLASS-METHODS:
       set_numberrange,
@@ -1830,7 +1830,7 @@ CLASS lcl_status_vh_data_generator IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
-  METHOD _Travel_status.
+  METHOD _travel_status.
     travel_status = VALUE type_travel_status( ##NO_TEXT
         language = 'E'
           ( travel_status = 'N'  text = 'New'       )
@@ -1941,13 +1941,12 @@ CLASS lcl_travel_data_generator DEFINITION CREATE PRIVATE.
       go_ran_customer_travel         TYPE REF TO cl_abap_random_int,
       mv_datum                       TYPE d.
 
-    CLASS-METHODS: get_data
-      RETURNING
-        VALUE(rt_data) TYPE tt_travel_complete,
+    CLASS-METHODS:
+      get_data
+        RETURNING
+          VALUE(rt_data) TYPE tt_travel_complete,
       set_numberrange,
       build_booking
-        IMPORTING
-          iv_travel_id       TYPE /dmo/booking-travel_id
         RETURNING
           VALUE(rt_bookings) TYPE tt_booking_complete,
       build_dependend_content,
@@ -1959,7 +1958,6 @@ CLASS lcl_travel_data_generator DEFINITION CREATE PRIVATE.
           VALUE(rs_flight)   TYPE /dmo/flight,
       generate_booking_supplements
         IMPORTING
-          iv_travel_id   TYPE /dmo/booking-travel_id
           iv_booking_id  TYPE /dmo/booking-booking_id
         RETURNING
           VALUE(rt_data) TYPE tt_booking_supplements,
@@ -2049,8 +2047,8 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
     build_dependend_content( ).
     set_today( ).
 
+    DATA(lt_bookings) = build_booking( ).
 
-    DATA(lt_bookings) = build_booking( lv_travel_id ).
     WHILE lt_bookings IS NOT INITIAL.
       DATA(lv_travel_create_date_dats) = calc_days_before_book_or_today( lt_bookings[ 1 ]-booking_date ).
 
@@ -2062,7 +2060,6 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
       lastchangedat_stamp = lastchangedat_stamp + generate_random_time( ).
 
       APPEND VALUE ty_travel_complete(
-          travel_id     = lv_travel_id
           agency_id     = gt_agency[ go_ran_agency->get_next( ) ]-agency_id
           customer_id   = generate_travel_customer_id( lt_bookings )
           begin_date    = lt_bookings[ 1 ]-flight_date
@@ -2090,7 +2087,7 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
           bookings      = lt_bookings
       ) TO rt_data.
 
-      lt_bookings = build_booking( lv_travel_id ).
+      lt_bookings = build_booking( ).
     ENDWHILE.
 
     DATA(lv_lines) = lines( rt_data ).
@@ -2252,7 +2249,6 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
       APPEND LINES OF VALUE tt_booking_complete(
       FOR i = 1  THEN i + 1  WHILE i <= lines( lt_customer_id )
          (
-            travel_id           = iv_travel_id
             booking_id          = lv_booking_id + i
             booking_date        = lv_booking_date
             customer_id         = lt_customer_id[ i ]
@@ -2261,7 +2257,7 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
             flight_date         = <flight>-flight_date
             flight_price        = lv_price
             currency_code       = <flight>-currency_code
-            booking_supplements = generate_booking_supplements( iv_travel_id = iv_travel_id   iv_booking_id = CONV /dmo/booking-booking_id( lv_booking_id + i ) )
+            booking_supplements = generate_booking_supplements( CONV /dmo/booking-booking_id( lv_booking_id + i ) )
           )
       ) TO rt_bookings.
 
@@ -2316,13 +2312,14 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
         FOR     i = 1
           THEN  i + 1
           WHILE i <= go_ran_booking_supplement_amnt->get_next( )
-          LET   j = go_ran_booking_supplement_id->get_next( ) IN
-          ( travel_id             = iv_travel_id
+          LET   j =  go_ran_booking_supplement_id->get_next( ) IN
+          (
             booking_id            = iv_booking_id
             booking_supplement_id = i
             supplement_id         = gt_supplements[ j ]-supplement_id
             price                 = gt_supplements[ j ]-price
-            currency_code         = gt_supplements[ j ]-currency_code )
+            currency_code         = gt_supplements[ j ]-currency_code
+          )
     ).
   ENDMETHOD.
 

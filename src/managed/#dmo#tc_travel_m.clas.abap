@@ -125,6 +125,8 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     REPORTED DATA(reported_commit).
 
     " Commit failed as begin_date is invalid ( must be after system date )
+    cl_abap_unit_assert=>assert_subrc( exp = 4 ).
+
     cl_abap_unit_assert=>assert_equals( act = lines( failed_commit-travel ) exp = 1 ).
     cl_abap_unit_assert=>assert_not_initial( act = failed_commit-travel[ 1 ]-travel_id ).
 
@@ -177,6 +179,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     REPORTED DATA(reported_commit).
 
     " Commit was successful
+    cl_abap_unit_assert=>assert_subrc( exp = 0 ).
     cl_abap_unit_assert=>assert_initial( act = failed_commit ).
     cl_abap_unit_assert=>assert_initial( act = reported_commit ).
 
@@ -506,6 +509,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     FAILED DATA(failed_commit)
     REPORTED DATA(reported_commit).
 
+    cl_abap_unit_assert=>assert_subrc( exp = 0 ).
     cl_abap_unit_assert=>assert_initial( act = failed_commit ).
     cl_abap_unit_assert=>assert_initial( act = reported_commit ).
 

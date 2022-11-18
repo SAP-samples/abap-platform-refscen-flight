@@ -26,8 +26,10 @@ ENDCLASS.
 CLASS lhc_booking IMPLEMENTATION.
 
   METHOD setBookingNumber.
-    DATA max_bookingid TYPE /dmo/booking_id.
-    DATA bookings_update TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\Booking.
+    DATA:
+      max_bookingid   TYPE /dmo/booking_id,
+      bookings_update TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\Booking,
+      booking         TYPE STRUCTURE FOR READ RESULT /DMO/R_Booking_D.
 
     "Read all travels for the requested bookings
     " If multiple bookings of the same travel are requested, the travel is returned only once.
@@ -37,29 +39,37 @@ CLASS lhc_booking IMPLEMENTATION.
         WITH CORRESPONDING #( keys )
       RESULT DATA(travels).
 
-    " Process all affected travels. Read respective bookings for one travel
+    " Read all bookings for all affected travels
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Travel BY \_Booking
+        FIELDS ( BookingID )
+        WITH CORRESPONDING #( travels )
+        LINK DATA(booking_links)
+      RESULT DATA(bookings).
+
+    " Process all affected travels.
     LOOP AT travels INTO DATA(travel).
-      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
-        ENTITY Travel BY \_Booking
-          FIELDS ( BookingID )
-          WITH VALUE #( ( %tky = travel-%tky ) )
-        RESULT DATA(bookings).
 
       " find max used bookingID in all bookings of this travel
       max_bookingid = '0000'.
-      LOOP AT bookings INTO DATA(booking).
+      LOOP AT booking_links INTO DATA(booking_link) USING KEY id WHERE source-%tky = travel-%tky.
+        " Short dump occurs if link table does not match read table, which must never happen
+        booking = bookings[ KEY id  %tky = booking_link-target-%tky ].
         IF booking-BookingID > max_bookingid.
           max_bookingid = booking-BookingID.
         ENDIF.
       ENDLOOP.
 
       "Provide a booking ID for all bookings of this travel that have none.
-      LOOP AT bookings INTO booking WHERE BookingID IS INITIAL.
-        max_bookingid += 1.
-        APPEND VALUE #( %tky      = booking-%tky
-                        BookingID = max_bookingid
-                      ) TO bookings_update.
-
+      LOOP AT booking_links INTO booking_link USING KEY id WHERE source-%tky = travel-%tky.
+        " Short dump occurs if link table does not match read table, which must never happen
+        booking = bookings[ KEY id  %tky = booking_link-target-%tky ].
+        IF booking-BookingID IS INITIAL.
+          max_bookingid += 1.
+          APPEND VALUE #( %tky      = booking-%tky
+                          BookingID = max_bookingid
+                        ) TO bookings_update.
+        ENDIF.
       ENDLOOP.
     ENDLOOP.
 

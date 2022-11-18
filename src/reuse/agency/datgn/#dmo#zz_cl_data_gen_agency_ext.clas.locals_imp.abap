@@ -323,7 +323,7 @@ CREATE PRIVATE.
       mv_rating       TYPE /dmo/zz_rating,
       ms_agency       TYPE /dmo/agency,
       mv_text         TYPE /dmo/zz_free_text_comment,
-      mt_root_visited TYPE RANGE OF i.
+      mt_root_visited TYPE STANDARD TABLE OF i.
 
     METHODS:
       constructor
@@ -611,13 +611,13 @@ CLASS lcl_review_text IMPLEMENTATION.
   METHOD _get_new_root.
     DATA(lt_posible_next_root) = mt_roots_by_rating[ rating = mv_rating ]-roots.
 
-    IF mt_root_visited IS NOT INITIAL.
-      DELETE lt_posible_next_root WHERE id IN mt_root_visited. "#EC CI_SORTSEQ
-    ENDIF.
+    LOOP AT mt_root_visited INTO DATA(lv_root_visited).
+      DELETE lt_posible_next_root WHERE id = lv_root_visited.
+    ENDLOOP.
 
     IF lt_posible_next_root IS NOT INITIAL.
       next = lt_posible_next_root[ floor( go_rnd->get_next( ) * lines( lt_posible_next_root ) ) + 1 ].
-      APPEND VALUE #( low = next-id  sign = 'I'  option = 'EQ' ) TO mt_root_visited.
+      APPEND next-id TO mt_root_visited.
     ENDIF.
   ENDMETHOD.
 

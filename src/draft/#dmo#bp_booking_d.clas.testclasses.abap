@@ -38,7 +38,7 @@ CLASS ltc_booking DEFINITION FINAL FOR TESTING
     METHODS:
       "! Checks if { @link ..lhc_booking.METH:setbookingNumber } draws the correct numbers
       "! when applying without an ID.
-      setbookingNumber_idempotence   FOR TESTING,
+      setbookingnumber_idempotence   FOR TESTING,
 
       "! Checks if { @link ..lhc_booking.METH:setbookingNumber } doesn't draw a number
       "! when applying bookings with an ID.
@@ -50,35 +50,35 @@ CLASS ltc_booking DEFINITION FINAL FOR TESTING
 
       "! Checks if { @link ..lhc_booking.METH:setBookingDate } draws the current date
       "! and doesn't overwrite existing dates.
-      setBookingDate         FOR TESTING,
+      setbookingdate         FOR TESTING,
 
       "! Calls { @link ..lhc_booking.METH:calculateTotalPrice } and expects
       "! that afterwards the totalprice is adjusted.
-      calculateTotalPrice         FOR TESTING,
+      calculatetotalprice         FOR TESTING,
 
       "! Calls { @link ..lhc_Booking.METH:validateCustomer }
       "! and checks if an existing customer is set.
-      validateCustomer_success      FOR TESTING,
+      validatecustomer_success      FOR TESTING,
 
       "! Calls { @link ..lhc_Booking.METH:validateCustomer }
       "! and checks for a message for an initial customer.
-      validateCustomer_initial      FOR TESTING,
+      validatecustomer_initial      FOR TESTING,
 
       "! Calls { @link ..lhc_Booking.METH:validateCustomer }
       "! and checks for a message for a non-existing customer.
-      validateCustomer_not_exist    FOR TESTING,
+      validatecustomer_not_exist    FOR TESTING,
 
       "! Calls { @link ..lhc_Booking.METH:validateConnection }
       "! and checks if an existing Connection is set.
-      validateConnection_success      FOR TESTING,
+      validateconnection_success      FOR TESTING,
 
       "! Calls { @link ..lhc_Booking.METH:validateConnection }
       "! and checks for a message for an initial Connection.
-      validateConnection_initial      FOR TESTING,
+      validateconnection_initial      FOR TESTING,
 
       "! Calls { @link ..lhc_Booking.METH:validateConnection }
       "! and checks for a message for a non-existing Connection.
-      validateConnection_not_exist    FOR TESTING.
+      validateconnection_not_exist    FOR TESTING.
 
 
 ENDCLASS.
@@ -131,9 +131,9 @@ CLASS ltc_booking IMPLEMENTATION.
   METHOD setbookingnumber_idempotence.
     DATA:
       booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test  TYPE STANDARD TABLE OF /DMO/R_Booking_D WITH KEY bookinguuid,
-      exp_bookings      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\booking,
-      reported          TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      bookings_to_test  TYPE STANDARD TABLE OF /dmo/r_booking_d WITH KEY bookinguuid,
+      exp_bookings      TYPE TABLE FOR READ RESULT /dmo/r_travel_d\\booking,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
     booking_mock_data = VALUE #( ( booking_uuid = uuid1  parent_uuid = travel_uuid1  booking_id = '1' ) ).
     cds_test_environment->insert_test_data( booking_mock_data ).
@@ -151,9 +151,9 @@ CLASS ltc_booking IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/R_Travel_D
-      ENTITY Booking
-        FIELDS ( bookingid TravelUUID ) WITH CORRESPONDING #( bookings_to_test )
+    READ ENTITIES OF /dmo/r_travel_d
+      ENTITY booking
+        FIELDS ( bookingid traveluuid ) WITH CORRESPONDING #( bookings_to_test )
         RESULT DATA(read_result).
 
     cl_abap_unit_assert=>assert_equals(
@@ -167,9 +167,9 @@ CLASS ltc_booking IMPLEMENTATION.
   METHOD setbookingnumber_newbookingids.
     DATA:
       booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test  TYPE STANDARD TABLE OF /DMO/R_Booking_D WITH KEY bookinguuid,
-      exp_bookings      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\booking,
-      reported          TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      bookings_to_test  TYPE STANDARD TABLE OF /dmo/r_booking_d WITH KEY bookinguuid,
+      exp_bookings      TYPE TABLE FOR READ RESULT /dmo/r_travel_d\\booking,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
     booking_mock_data = VALUE #(
          ( booking_uuid = uuid1  parent_uuid = travel_uuid1 )
@@ -191,12 +191,12 @@ CLASS ltc_booking IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/R_Travel_D
-      ENTITY Booking
-        FIELDS ( bookingid TravelUUID ) WITH CORRESPONDING #( bookings_to_test )
-        RESULT DATA(read_result).
+    READ ENTITIES OF /dmo/r_travel_d
+      ENTITY booking
+        FIELDS ( bookingid traveluuid ) WITH CORRESPONDING #( bookings_to_test )
+        RESULT DATA(read_results).
 
-    SORT read_result BY TravelUUID ASCENDING  bookingid ASCENDING.
+    SORT read_results BY traveluuid ASCENDING  bookingid ASCENDING.
 
     exp_bookings = VALUE #(
         %is_draft = if_abap_behv=>mk-off
@@ -206,9 +206,17 @@ CLASS ltc_booking IMPLEMENTATION.
           ( bookinguuid = uuid4  traveluuid = travel_uuid2  bookingid = '2' )
         ).
 
+    " Delete BookingUUID as the order of it should not relate to given (new) BookingIDs.
+    DATA: empty_booking LIKE LINE OF read_results.
+    MODIFY exp_bookings FROM empty_booking TRANSPORTING bookinguuid WHERE bookingid <> empty_booking-bookingid.
+    MODIFY read_results FROM empty_booking TRANSPORTING bookinguuid WHERE bookingid <> empty_booking-bookingid.
+
+    SORT read_results BY traveluuid ASCENDING  bookingid ASCENDING.
+    SORT exp_bookings BY traveluuid ASCENDING  bookingid ASCENDING.
+
     cl_abap_unit_assert=>assert_equals(
         exp = exp_bookings
-        act = read_result
+        act = read_results
       ).
   ENDMETHOD.
 
@@ -217,9 +225,9 @@ CLASS ltc_booking IMPLEMENTATION.
   METHOD setbookingnumber_mixed.
     DATA:
       booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test  TYPE STANDARD TABLE OF /DMO/R_Booking_D WITH KEY bookinguuid,
-      exp_bookings      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\booking,
-      reported          TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      bookings_to_test  TYPE STANDARD TABLE OF /dmo/r_booking_d WITH KEY bookinguuid,
+      exp_bookings      TYPE TABLE FOR READ RESULT /dmo/r_travel_d\\booking,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
     booking_mock_data = VALUE #(
         ( booking_uuid = uuid1  parent_uuid = travel_uuid1 )
@@ -253,17 +261,32 @@ CLASS ltc_booking IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/R_Travel_D
-      ENTITY Booking
-        FIELDS ( bookingid TravelUUID ) WITH CORRESPONDING #( bookings_to_test )
-        RESULT DATA(read_result).
+    READ ENTITIES OF /dmo/r_travel_d
+      ENTITY booking
+        FIELDS ( bookingid traveluuid ) WITH CORRESPONDING #( bookings_to_test )
+        RESULT DATA(read_results).
 
-    SORT read_result  BY TravelUUID ASCENDING  bookingid ASCENDING.
-    SORT exp_bookings BY TravelUUID ASCENDING  bookingid ASCENDING.
+    " Ensure the given (existing) BookingIDs are still in place for the related BookingUUID before we delete the BookingUUID.
+    LOOP AT booking_mock_data INTO DATA(booking_mock) WHERE booking_id IS NOT INITIAL.
+      DATA(read_result) = VALUE #( read_results[ KEY id  %is_draft = if_abap_behv=>mk-off  bookinguuid = booking_mock-booking_uuid ] OPTIONAL ).
+      cl_abap_unit_assert=>assert_not_initial( read_result ).
+      cl_abap_unit_assert=>assert_equals(
+          exp = booking_mock-booking_id
+          act = read_result-bookingid
+        ).
+    ENDLOOP.
+
+    " Delete BookingUUID as the order of it should not relate to given (new) BookingIDs.
+    DATA: empty_booking LIKE LINE OF read_results.
+    MODIFY exp_bookings FROM empty_booking TRANSPORTING bookinguuid WHERE bookingid <> empty_booking-bookingid.
+    MODIFY read_results FROM empty_booking TRANSPORTING bookinguuid WHERE bookingid <> empty_booking-bookingid.
+
+    SORT read_results BY traveluuid ASCENDING  bookingid ASCENDING.
+    SORT exp_bookings BY traveluuid ASCENDING  bookingid ASCENDING.
 
     cl_abap_unit_assert=>assert_equals(
         exp = exp_bookings
-        act = read_result
+        act = read_results
       ).
   ENDMETHOD.
 
@@ -271,9 +294,9 @@ CLASS ltc_booking IMPLEMENTATION.
   METHOD setbookingdate.
     DATA:
       booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test  TYPE STANDARD TABLE OF /DMO/R_Booking_D WITH KEY bookinguuid,
-      exp_bookings      TYPE TABLE FOR READ RESULT /DMO/R_Travel_D\\booking,
-      reported          TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D,
+      bookings_to_test  TYPE STANDARD TABLE OF /dmo/r_booking_d WITH KEY bookinguuid,
+      exp_bookings      TYPE TABLE FOR READ RESULT /dmo/r_travel_d\\booking,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d,
       today             TYPE cl_abap_context_info=>ty_system_date,
       a_week_ago        TYPE cl_abap_context_info=>ty_system_date.
 
@@ -291,14 +314,14 @@ CLASS ltc_booking IMPLEMENTATION.
 
     exp_bookings = VALUE #(
         %is_draft  = if_abap_behv=>mk-off
-        TravelUUID = travel_uuid1
+        traveluuid = travel_uuid1
           ( bookinguuid = uuid1  bookingdate = today      )
           ( bookinguuid = uuid2  bookingdate = a_week_ago )
           ( bookinguuid = uuid3  bookingdate = today      )
         ).
 
 
-    class_under_test->setBookingDate(
+    class_under_test->setbookingdate(
        EXPORTING
          keys     = CORRESPONDING #( bookings_to_test )
        CHANGING
@@ -308,12 +331,12 @@ CLASS ltc_booking IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/R_Travel_D
-      ENTITY Booking
-        FIELDS ( BookingDate TravelUUID ) WITH CORRESPONDING #( bookings_to_test )
+    READ ENTITIES OF /dmo/r_travel_d
+      ENTITY booking
+        FIELDS ( bookingdate traveluuid ) WITH CORRESPONDING #( bookings_to_test )
         RESULT DATA(read_result).
 
-    SORT read_result  BY BookingUUID ASCENDING.
+    SORT read_result  BY bookinguuid ASCENDING.
 
     cl_abap_unit_assert=>assert_equals(
         exp = exp_bookings
@@ -327,8 +350,8 @@ CLASS ltc_booking IMPLEMENTATION.
 
     DATA:
       booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test  TYPE STANDARD TABLE OF /DMO/R_Booking_D WITH KEY bookinguuid,
-      reported          TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      bookings_to_test  TYPE STANDARD TABLE OF /dmo/r_booking_d WITH KEY bookinguuid,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
     booking_mock_data = VALUE #(
         flight_price  = c_flight_price
@@ -351,16 +374,16 @@ CLASS ltc_booking IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( reported ).
 
 
-    READ ENTITIES OF /DMO/R_Travel_D
-      ENTITY Travel
-        FIELDS ( TravelUUID TotalPrice ) WITH VALUE #( ( %is_draft = if_abap_behv=>mk-off  TravelUUID = travel_uuid1 ) )
+    READ ENTITIES OF /dmo/r_travel_d
+      ENTITY travel
+        FIELDS ( traveluuid totalprice ) WITH VALUE #( ( %is_draft = if_abap_behv=>mk-off  traveluuid = travel_uuid1 ) )
         RESULT DATA(read_result).
 
     cl_abap_unit_assert=>assert_not_initial( read_result ).
 
     cl_abap_unit_assert=>assert_equals(
         exp = CONV /dmo/total_price( c_flight_price * lines( booking_mock_data ) )
-        act = read_result[ 1 ]-TotalPrice
+        act = read_result[ 1 ]-totalprice
       ).
 
   ENDMETHOD.
@@ -372,9 +395,9 @@ CLASS ltc_booking IMPLEMENTATION.
     DATA:
       customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
       booking_mock_data  TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test   TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\booking~validateCustomer,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validatecustomer,
+      failed             TYPE RESPONSE FOR FAILED LATE  /dmo/r_travel_d,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
     customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
     sql_test_environment->insert_test_data( customer_mock_data ).
@@ -384,9 +407,9 @@ CLASS ltc_booking IMPLEMENTATION.
       ).
     cds_test_environment->insert_test_data( booking_mock_data ).
 
-    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookingUUID = booking_uuid ).
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
 
-    class_under_test->validateCustomer(
+    class_under_test->validatecustomer(
         EXPORTING
           keys     = bookings_to_test
         CHANGING
@@ -411,9 +434,9 @@ CLASS ltc_booking IMPLEMENTATION.
     DATA:
       customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
       booking_mock_data  TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test   TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\Booking~validateCustomer,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validatecustomer,
+      failed             TYPE RESPONSE FOR FAILED LATE  /dmo/r_travel_d,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
     customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
     sql_test_environment->insert_test_data( customer_mock_data ).
@@ -423,9 +446,9 @@ CLASS ltc_booking IMPLEMENTATION.
       ).
     cds_test_environment->insert_test_data( booking_mock_data ).
 
-    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookingUUID = booking_uuid ).
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
 
-    class_under_test->validateCustomer(
+    class_under_test->validatecustomer(
         EXPORTING
           keys     = bookings_to_test
         CHANGING
@@ -454,9 +477,9 @@ CLASS ltc_booking IMPLEMENTATION.
     DATA:
       customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
       booking_mock_data  TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test   TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\Booking~validateCustomer,
-      failed             TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
-      reported           TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validatecustomer,
+      failed             TYPE RESPONSE FOR FAILED LATE  /dmo/r_travel_d,
+      reported           TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
     customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
     sql_test_environment->insert_test_data( customer_mock_data ).
@@ -466,9 +489,9 @@ CLASS ltc_booking IMPLEMENTATION.
       ).
     cds_test_environment->insert_test_data( booking_mock_data ).
 
-    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookingUUID = booking_uuid ).
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
 
-    class_under_test->validateCustomer(
+    class_under_test->validatecustomer(
         EXPORTING
           keys     = bookings_to_test
         CHANGING
@@ -490,20 +513,20 @@ CLASS ltc_booking IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD validateConnection_success.
+  METHOD validateconnection_success.
     CONSTANTS:
-      c_airline TYPE /dmo/carrier_id VALUE 'TS',
-      c_connection TYPE /dmo/connection_id VALUE '123',
+      c_airline     TYPE /dmo/carrier_id VALUE 'TS',
+      c_connection  TYPE /dmo/connection_id VALUE '123',
       c_flight_date TYPE /dmo/flight_date VALUE '20200202'.
 
     DATA:
-      flight_mock_data TYPE STANDARD TABLE OF /dmo/flight,
-      booking_mock_data    TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test     TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\booking~validateConnection,
-      failed               TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
-      reported             TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      flight_mock_data  TYPE STANDARD TABLE OF /dmo/flight,
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateconnection,
+      failed            TYPE RESPONSE FOR FAILED LATE  /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
-    flight_mock_data = VALUE #( ( carrier_id = c_airline  Connection_id = c_connection  flight_date = c_flight_date ) ).
+    flight_mock_data = VALUE #( ( carrier_id = c_airline  connection_id = c_connection  flight_date = c_flight_date ) ).
     sql_test_environment->insert_test_data( flight_mock_data ).
 
     booking_mock_data = VALUE #(
@@ -511,15 +534,15 @@ CLASS ltc_booking IMPLEMENTATION.
           booking_uuid  = uuid1
           parent_uuid   = travel_uuid1
           carrier_id    = c_airline
-          Connection_id = c_connection
+          connection_id = c_connection
           flight_date   = c_flight_date
         )
       ).
     cds_test_environment->insert_test_data( booking_mock_data ).
 
-    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookingUUID = booking_uuid ).
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
 
-    class_under_test->validateConnection(
+    class_under_test->validateconnection(
         EXPORTING
           keys     = bookings_to_test
         CHANGING
@@ -536,20 +559,20 @@ CLASS ltc_booking IMPLEMENTATION.
       ).
   ENDMETHOD.
 
-  METHOD validateConnection_initial.
+  METHOD validateconnection_initial.
     CONSTANTS:
-      c_airline TYPE /dmo/carrier_id VALUE 'TS',
-      c_connection TYPE /dmo/connection_id VALUE '123',
+      c_airline     TYPE /dmo/carrier_id VALUE 'TS',
+      c_connection  TYPE /dmo/connection_id VALUE '123',
       c_flight_date TYPE /dmo/flight_date VALUE '20200202'.
 
     DATA:
-      flight_mock_data TYPE STANDARD TABLE OF /dmo/flight,
-      booking_mock_data    TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test     TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\Booking~validateConnection,
-      failed               TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
-      reported             TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      flight_mock_data  TYPE STANDARD TABLE OF /dmo/flight,
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateconnection,
+      failed            TYPE RESPONSE FOR FAILED LATE  /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
-    flight_mock_data = VALUE #( ( carrier_id = c_airline  Connection_id = c_connection  flight_date = c_flight_date ) ).
+    flight_mock_data = VALUE #( ( carrier_id = c_airline  connection_id = c_connection  flight_date = c_flight_date ) ).
     sql_test_environment->insert_test_data( flight_mock_data ).
 
     booking_mock_data = VALUE #(
@@ -560,9 +583,9 @@ CLASS ltc_booking IMPLEMENTATION.
       ).
     cds_test_environment->insert_test_data( booking_mock_data ).
 
-    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookingUUID = booking_uuid ).
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
 
-    class_under_test->validateConnection(
+    class_under_test->validateconnection(
         EXPORTING
           keys     = bookings_to_test
         CHANGING
@@ -583,21 +606,21 @@ CLASS ltc_booking IMPLEMENTATION.
       ).
   ENDMETHOD.
 
-  METHOD validateConnection_not_exist.
+  METHOD validateconnection_not_exist.
     CONSTANTS:
-      c_airline TYPE /dmo/carrier_id VALUE 'TS',
-      c_connection TYPE /dmo/connection_id VALUE '123',
+      c_airline              TYPE /dmo/carrier_id VALUE 'TS',
+      c_connection           TYPE /dmo/connection_id VALUE '123',
       c_connection_not_exist TYPE /dmo/connection_id VALUE '321',
-      c_flight_date TYPE /dmo/flight_date VALUE '20200202'.
+      c_flight_date          TYPE /dmo/flight_date VALUE '20200202'.
 
     DATA:
-      flight_mock_data TYPE STANDARD TABLE OF /dmo/flight,
-      booking_mock_data    TYPE STANDARD TABLE OF /dmo/a_booking_d,
-      bookings_to_test     TYPE TABLE FOR VALIDATION /DMO/R_Travel_D\\Booking~validateConnection,
-      failed               TYPE RESPONSE FOR FAILED LATE  /DMO/R_Travel_D,
-      reported             TYPE RESPONSE FOR REPORTED LATE  /DMO/R_Travel_D.
+      flight_mock_data  TYPE STANDARD TABLE OF /dmo/flight,
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateconnection,
+      failed            TYPE RESPONSE FOR FAILED LATE  /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE  /dmo/r_travel_d.
 
-    flight_mock_data = VALUE #( ( carrier_id = c_airline  Connection_id = c_connection  flight_date = c_flight_date ) ).
+    flight_mock_data = VALUE #( ( carrier_id = c_airline  connection_id = c_connection  flight_date = c_flight_date ) ).
     sql_test_environment->insert_test_data( flight_mock_data ).
 
     booking_mock_data = VALUE #(
@@ -605,15 +628,15 @@ CLASS ltc_booking IMPLEMENTATION.
           booking_uuid  = uuid1
           parent_uuid   = travel_uuid1
           carrier_id    = c_airline
-          Connection_id = c_connection_not_exist
+          connection_id = c_connection_not_exist
           flight_date   = c_flight_date
         )
       ).
     cds_test_environment->insert_test_data( booking_mock_data ).
 
-    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookingUUID = booking_uuid ).
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
 
-    class_under_test->validateConnection(
+    class_under_test->validateconnection(
         EXPORTING
           keys     = bookings_to_test
         CHANGING

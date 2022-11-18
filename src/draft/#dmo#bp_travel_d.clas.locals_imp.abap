@@ -192,7 +192,7 @@ CLASS lhc_travel IMPLEMENTATION.
              currency_code TYPE /dmo/currency_code,
            END OF ty_amount_per_currencycode.
 
-    DATA: amount_per_currencycode TYPE STANDARD TABLE OF ty_amount_per_currencycode.
+    DATA: amounts_per_currencycode TYPE STANDARD TABLE OF ty_amount_per_currencycode.
 
     " Read all relevant travel instances.
     READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
@@ -203,45 +203,52 @@ CLASS lhc_travel IMPLEMENTATION.
 
     DELETE travels WHERE CurrencyCode IS INITIAL.
 
+    " Read all associated bookings and add them to the total price.
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Travel BY \_Booking
+        FIELDS ( FlightPrice CurrencyCode )
+      WITH CORRESPONDING #( travels )
+      LINK DATA(booking_links)
+      RESULT DATA(bookings).
+
+    " Read all associated booking supplements and add them to the total price.
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Booking BY \_BookingSupplement
+        FIELDS ( BookSupplPrice CurrencyCode )
+      WITH CORRESPONDING #( bookings )
+      LINK DATA(bookingsupplement_links)
+      RESULT DATA(bookingsupplements).
+
     LOOP AT travels ASSIGNING FIELD-SYMBOL(<travel>).
       " Set the start for the calculation by adding the booking fee.
-      amount_per_currencycode = VALUE #( ( amount        = <travel>-BookingFee
-                                           currency_code = <travel>-CurrencyCode ) ).
+      amounts_per_currencycode = VALUE #( ( amount        = <travel>-bookingfee
+                                            currency_code = <travel>-currencycode ) ).
 
-      " Read all associated bookings and add them to the total price.
-      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
-        ENTITY Travel BY \_Booking
-          FIELDS ( FlightPrice CurrencyCode )
-        WITH VALUE #( ( %tky = <travel>-%tky ) )
-        RESULT DATA(bookings).
+      LOOP AT booking_links INTO DATA(booking_link) USING KEY id WHERE source-%tky = <travel>-%tky.
+        " Short dump occurs if link table does not match read table, which must never happen
+        DATA(booking) = bookings[ KEY id  %tky = booking_link-target-%tky ].
+        COLLECT VALUE ty_amount_per_currencycode( amount        = booking-flightprice
+                                                  currency_code = booking-currencycode ) INTO amounts_per_currencycode.
 
-      LOOP AT bookings INTO DATA(booking) WHERE CurrencyCode IS NOT INITIAL.
-        COLLECT VALUE ty_amount_per_currencycode( amount        = booking-FlightPrice
-                                                  currency_code = booking-CurrencyCode ) INTO amount_per_currencycode.
+        LOOP AT bookingsupplement_links INTO DATA(bookingsupplement_link) USING KEY id WHERE source-%tky = booking-%tky.
+          DATA(bookingsupplement) = bookingsupplements[ KEY id  %tky = bookingsupplement_link-target-%tky ].
+          COLLECT VALUE ty_amount_per_currencycode( amount        = bookingsupplement-booksupplprice
+                                                    currency_code = bookingsupplement-currencycode ) INTO amounts_per_currencycode.
+        ENDLOOP.
       ENDLOOP.
 
-      " Read all associated booking supplements and add them to the total price.
-      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
-        ENTITY Booking BY \_BookingSupplement
-          FIELDS ( BookSupplPrice CurrencyCode )
-        WITH VALUE #( FOR rba_booking IN bookings ( %tky = rba_booking-%tky ) )
-        RESULT DATA(bookingsupplements).
-
-      LOOP AT bookingsupplements INTO DATA(bookingsupplement) WHERE CurrencyCode IS NOT INITIAL.
-        COLLECT VALUE ty_amount_per_currencycode( amount        = bookingsupplement-BookSupplPrice
-                                                  currency_code = bookingsupplement-CurrencyCode ) INTO amount_per_currencycode.
-      ENDLOOP.
+      DELETE amounts_per_currencycode WHERE currency_code IS INITIAL.
 
       CLEAR <travel>-TotalPrice.
-      LOOP AT amount_per_currencycode INTO DATA(single_amount_per_currencycode).
+      LOOP AT amounts_per_currencycode INTO DATA(amount_per_currencycode).
         " If needed do a Currency Conversion
-        IF single_amount_per_currencycode-currency_code = <travel>-CurrencyCode.
-          <travel>-TotalPrice += single_amount_per_currencycode-amount.
+        IF amount_per_currencycode-currency_code = <travel>-CurrencyCode.
+          <travel>-TotalPrice += amount_per_currencycode-amount.
         ELSE.
           /dmo/cl_flight_amdp=>convert_currency(
              EXPORTING
-               iv_amount                   =  single_amount_per_currencycode-amount
-               iv_currency_code_source     =  single_amount_per_currencycode-currency_code
+               iv_amount                   =  amount_per_currencycode-amount
+               iv_currency_code_source     =  amount_per_currencycode-currency_code
                iv_currency_code_target     =  <travel>-CurrencyCode
                iv_exchange_rate_date       =  cl_abap_context_info=>get_system_date( )
              IMPORTING
