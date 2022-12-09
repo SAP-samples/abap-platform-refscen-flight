@@ -1,11 +1,10 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/abap-platform-refscen-flight)](https://api.reuse.software/info/github.com/SAP-samples/abap-platform-refscen-flight)
+# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model on ABAP Platform 
+The ABAP RESTful Application Programming Model (RAP) defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps on the Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
 
-# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model 
-The ABAP RESTful Application Programming Model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps on Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with RAP. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
-The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Application Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
-
-For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/def316685ad14033b051fc4b88db07c8.html).
+For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/def316685ad14033b051fc4b88db07c8.html?version=202009.latest).
 
 ## Prerequisites
 Make sure to fulfill the following requirements:
@@ -42,7 +41,7 @@ Use the <em>zabapgit_standalone</em> program to install the <em>ABAP Flight Refe
 1.	In your ABAP project, create the package `/DMO/FLIGHT` as target package for the demo content. Use `HOME` as software component. Assign it to a new transport request that you only use for the demo content import. 
 2.	In your ABAP project, run the program `zabapgit_standalone`.  
 3.	Choose `New Online` and enter the following URL of this repository  `https://github.com/SAP/abap-platform-refscen-flight.git`. 
-4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `On-Premise-2020`.
+4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `ABAP-platform-2020`.
 5.	Leave the other fields unchanged and choose `Create Online Repo`.
 6. Enter your credentials for abapgit. You will see the available artifacts to import into your ABAP system. 
 7.	Choose `Pull` and confirm every subpackage on your transport request. 
@@ -55,10 +54,10 @@ Use the <em>zabapgit_standalone</em> program to install the <em>ABAP Flight Refe
 As a result of the installation procedure above, the ABAP system creates all development objects of the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
 * `/DMO/FLIGHT_REUSE`
-* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/504035c0850f44f787f5b81e35791d10.html)).
-* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
-* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
-* `/DMO/FLIGHT_DRAFT` - represents the transactional app with <em>draft</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202009.000/en-US/71ba2bec1d0d4f22bc344bba6b569f2e.html)).
+* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see [Developing Read-Only List Reporting Apps](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/504035c0850f44f787f5b81e35791d10.html?version=202009.000)).
+* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see [Developing Managed Transactional Apps](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/b5bba99612cf4637a8b72a3fc82c22d9.html?version=202009.000)).
+* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see [Developing Unmanaged Transactional Apps](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/f6cb3e3402694f5585068e5e5161a7c1.html?version=202009.000)).
+* `/DMO/FLIGHT_DRAFT` - represents the transactional app with <em>draft</em> (see [Developing Transactional Apps with Draft Capabilities](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/71ba2bec1d0d4f22bc344bba6b569f2e.html?version=202009.000)).
 
 
 NOTE: The demo packages do not include  <em>service definitions</em> or <em>service bindings</em>. They must be created to complete the services (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
