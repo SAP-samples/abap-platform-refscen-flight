@@ -1,11 +1,14 @@
 [![REUSE status](https://api.reuse.software/badge/github.com/SAP-samples/abap-platform-refscen-flight)](https://api.reuse.software/info/github.com/SAP-samples/abap-platform-refscen-flight)
 
-# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model 
-The ABAP RESTful Application Programming Model defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps on Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
+# ABAP Flight Reference Scenario for the ABAP RESTful Application Programming Model on ABAP Platform 
+The ABAP RESTful Application Programming Model (RAP) defines the architecture for efficient end-to-end development of intrinsically SAP HANA-optimized Fiori apps on the Application Server ABAP. It supports the development of all types of Fiori applications as well as Web APIs. It is based on technologies and frameworks such as Core Data Services (CDS) for defining semantically rich data models and a service model infrastructure for creating OData services with bindings to an OData protocol and ABAP-based application services for custom logic and SAPUI5-based user interfaces.
 
-The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with the ABAP RESTful Application Programming Model. You can check out the end-to-end scenarios or build your own app based on the sample data.
+The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with RAP. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
-For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/def316685ad14033b051fc4b88db07c8.html).
+For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/def316685ad14033b051fc4b88db07c8.html?version=202110.latest).
+
+Note:
+The branches of this repository were renamed recently. If you have already linked an ABAP Package to a branch with an outdated name, unlink the repository first and then pull the link to the branch with the new name, as described in step 3 of the Download section.
 
 ## Prerequisites
 Make sure to fulfill the following requirements:
@@ -42,7 +45,7 @@ Use the <em>zabapgit_standalone</em> program to install the <em>ABAP Flight Refe
 1.	In your ABAP project, create the package `/DMO/FLIGHT` as target package for the demo content. Use `HOME` as software component. Assign it to a new transport request that you only use for the demo content import. 
 2.	In your ABAP project, run the program `zabapgit_standalone`.  
 3.	Choose `New Online` and enter the following URL of this repository  `https://github.com/SAP/abap-platform-refscen-flight.git`. 
-4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `On-Premise-2021`.
+4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `ABAP-platform-2021`.
 5.	Leave the other fields unchanged and choose `Create Online Repo`.
 6. Enter your credentials for abapgit. You will see the available artifacts to import into your ABAP system. 
 7.	Choose `Pull` and confirm every subpackage on your transport request. 
@@ -54,13 +57,11 @@ Use the <em>zabapgit_standalone</em> program to install the <em>ABAP Flight Refe
 
 As a result of the installation procedure above, the ABAP system creates all development objects of the demo content and adds the following sub packages to the target package: 
 * `/DMO/FLIGHT_LEGACY`
-* `/DMO/FLIGHT_REUSE`
-* `/DMO/FLIGHT_REUSE_CARRIER` - represents a transactional app with multi-inline-edit capabilities (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/f713ec52bcb8405ca9262918cffa5d25.html)).
-* `/DMO/FLIGHT_REUSE_SUPPLEMENT` - represents a transactional app for editing language-dependent fields by means of an augmentation implementation (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/fc374ac9b02e4dbcba356afc77432dc2.html)).
-* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/504035c0850f44f787f5b81e35791d10.html)).
-* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/b5bba99612cf4637a8b72a3fc82c22d9.html)).
-* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/f6cb3e3402694f5585068e5e5161a7c1.html)).
-* `/DMO/FLIGHT_DRAFT` - represents the transactional app with <em>draft</em> (see also: corresponding [end-to-end guide](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/71ba2bec1d0d4f22bc344bba6b569f2e.html)).
+* `/DMO/FLIGHT_REUSE` The reuse package contains a package for the supplement business object `/DMO/FLIGHT_REUSE_SUPPLEMENT`, which is reused in the other development scenarios.The reuse package also contains the package `/DMO/FLIGHT_REUSE_CARRIER`, which contains a mulit-inline-edit scenario for maintaining carrier data (see [Developing Transactional Apps with Multi-Inline-Edit Capabilities](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/f713ec52bcb8405ca9262918cffa5d25.html?version=202210.000)).
+* `/DMO/FLIGHT_READONLY` - represents a read-only list reporting app (see [Developing Read-Only List Reporting Apps](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/504035c0850f44f787f5b81e35791d10.html?version=202110.000)).
+* `/DMO/FLIGHT_MANAGED` - represents the transactional app with implementation type <em>managed</em> (see [Developing Managed Transactional Apps](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/b5bba99612cf4637a8b72a3fc82c22d9.html?version=202110.000)).
+* `/DMO/FLIGHT_UNMANAGED` - represents the transactional app with implementation type <em>unmanaged</em> (see [Developing Unmanaged Transactional Apps](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/f6cb3e3402694f5585068e5e5161a7c1.html?version=202110.000)).
+* `/DMO/FLIGHT_DRAFT` - represents the transactional app with <em>draft</em> (see [Developing Transactional Apps with Draft Capabilities](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/71ba2bec1d0d4f22bc344bba6b569f2e.html?version=202210.000)).
 
 
 NOTE: The demo packages do not include <em>service bindings</em>. They must be created to complete the services (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
@@ -73,27 +74,27 @@ To fill the demo database tables with sample business data:
 #### Read-Only Scenario
 To create the missing <em>service bindings</em> for the read-only list reporting app (package `/DMO/FLIGHT_READONLY`):
 
-1.	Right-click the service definition `/DMO/FLIGHT_R` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/777e027f61c3490dba0433443d9143a6.html) for additional information).  
+1.	Right-click the service definition `/DMO/FLIGHT_R` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/777e027f61c3490dba0433443d9143a6.html?version=202110.000) for additional information). 
 2.	Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 3.	Choose the  `Publish` button in the service binding editor.  
 
 #### Unmanaged Scenario
 To create the missing <em>service bindings</em> for the transactional app with implementation type <em>unmanaged</em> (package `/DMO/FLIGHT_UNMANAGED`):
 
-1. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/ade0637f7c554c229cbfd4dc02c7fcaa.html) for additional information).  
+1. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/ade0637f7c554c229cbfd4dc02c7fcaa.html?version=202110.000) for additional information).  
 2. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 3.	Choose the  `Publish` button in the service binding editor.  
 
 #### Managed Scenario
 To create the missing <em>service bindings</em> for the transactional app with implementation type <em>managed</em> (package `/DMO/FLIGHT_MANAGED`):
 
-1. Right-click the service definition `/DMO/UI_TRAVEL_PROCESSOR_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/3dd07cd970d7433584f1b86588176bf1.html) for additional information). 
+1. Right-click the service definition `/DMO/UI_TRAVEL_PROCESSOR_M` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d//3dd07cd970d7433584f1b86588176bf1.html?version=202110.000) for additional information). 
 2. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 3. Use `ODATA V2 UI` binding type.
 4.	Choose the  `Publish` button in the service binding editor.   
 
 
-5. Right-click the service definition `/DMO/UI_TRAVEL_APPROVER_M` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/3dd07cd970d7433584f1b86588176bf1.html) for additional information). 
+5. Right-click the service definition `/DMO/UI_TRAVEL_APPROVER_M` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/3dd07cd970d7433584f1b86588176bf1.html?version=202110.000) for additional information). 
 6. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 7. Use `ODATA V2 UI` binding type.
 8.	Choose the  `Publish` button in the service binding editor. 
@@ -101,13 +102,13 @@ To create the missing <em>service bindings</em> for the transactional app with i
 #### Draft Scenario
 To create the missing <em>service bindings</em> for the transactional app with <em>draft</em> (package `/DMO/FLIGHT_DRAFT`):
 
-1. Right-click the service definition `/DMO/UI_TRAVEL_A_D` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/ba62670e882e4b12aa7f7e545dfebe31.html) for additional information). 
+1. Right-click the service definition `/DMO/UI_TRAVEL_A_D` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/ba62670e882e4b12aa7f7e545dfebe31.html?version=202110.000) for additional information). 
 2. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 3. Use `ODATA V2 UI` binding type.
 4.	Choose the  `Publish` button in the service binding editor.   
 
 
-5. Right-click the service definition `/DMO/UI_TRAVEL_D_D` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/b10ea0d6cae24a20910bf337c1e5c1cb.html) for additional information). 
+5. Right-click the service definition `/DMO/UI_TRAVEL_D_D` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/b10ea0d6cae24a20910bf337c1e5c1cb.html?version=202110.000) for additional information). 
 6. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 7. Use `ODATA V2 UI` binding type.
 8.	Choose the  `Publish` button in the service binding editor. 
@@ -115,14 +116,14 @@ To create the missing <em>service bindings</em> for the transactional app with <
 #### Multi-inline-edit Scenario
 To create the missing <em>service bindings</em> for the multi-inline-edit sceanrio (package `/DMO/FLIGHT_REUSE_CARRIER`):
 
-1. Right-click the service definition `/DMO/UI_Carriers_S` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/ade0637f7c554c229cbfd4dc02c7fcaa.html) for additional information).  
+1. Right-click the service definition `/DMO/UI_Carriers_S` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/ade0637f7c554c229cbfd4dc02c7fcaa.html?version=202110.000) for additional information).  
 2. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 3.	Choose the  `Publish` button in the service binding editor. 
 
 #### Augmentation Scenario
 To create the missing <em>service bindings</em> for the augmentation sceanrio (package `/DMO/FLIGHT_REUSE_SUPPLEMENT`):
 
-1. Right-click the service definition `/DMO/UI_Supplement` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/202110.000/en-US/ade0637f7c554c229cbfd4dc02c7fcaa.html) for additional information).  
+1. Right-click the service definition `/DMO/UI_Supplement` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/ade0637f7c554c229cbfd4dc02c7fcaa.html?version=202110.000) for additional information).  
 2. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 3.	Choose the  `Publish` button in the service binding editor. 
  
