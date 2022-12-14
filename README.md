@@ -5,6 +5,9 @@ The ABAP RESTful Application Programming Model (RAP) defines the architecture fo
 
 The ABAP Flight Reference Scenario provides sample data and services as well as legacy business logic to get familiar with RAP. You can check out the end-to-end scenarios or build your own app based on the sample data.
 
+**Note:**  
+The branches of this repository were renamed recently. If you have already linked an ABAP Package to a branch with an outdated name, unlink the repository first and then pull the link to the branch with the new name, as described in step 3 of the <em>Download</em> section in the respective <em>READ-ME</em>. 
+
 ## ABAP Platform Cloud
 Choose this if you are working on SAP BTP or SAP S/4HANA Cloud, public edition. 
 To import the reference scenario into your ABAP Environment, follow the steps in the [READ-ME](../ABAP-platform-cloud/README.md) file of the branch <em>ABAP-platform-cloud</em> and download the sources from this branch. 
