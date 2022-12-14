@@ -7,6 +7,9 @@ The ABAP Flight Reference Scenario provides sample data and services as well as 
 
 For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/def316685ad14033b051fc4b88db07c8.html?version=202210.latest).
 
+Note:
+The branches of this repository were renamed recently. If you have already linked an ABAP Package to a branch with an outdated name, unlink the repository first and then pull the link to the branch with the new name, as described in step 3 of the Download section.
+
 ## Prerequisites
 Make sure to fulfill the following requirements:
 * You are working on Application Server ABAP 7.57 or higher. 
