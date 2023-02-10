@@ -64,6 +64,8 @@ As a result of the installation procedure above, the ABAP system creates an inac
 
 NOTE: The demo packages do not include <em>behavior definitions</em>, <em>service definitions</em> or <em>service bindings</em>. They must be created to complete the service (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
+NOTE: If you pull the repository again after a successfull import, make sure that you do not delete the local objects `G4BA`, `SUSH` and `NSPC`.
+
 ## Configuration
 To fill the demo database tables for the read-only and the unmanaged scenario with sample business data: 
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
