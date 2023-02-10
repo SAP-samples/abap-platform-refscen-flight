@@ -66,6 +66,8 @@ As a result of the installation procedure above, the ABAP system creates all dev
 
 NOTE: The demo packages do not include <em>service bindings</em>. They must be created to complete the services (see configuration section). Then you can run, for example, the UI services with the <em>Fiori Elements</em> preview in the <em>service binding</em>.
 
+NOTE: If you pull the repository again after a successfull import, make sure that you do not delete the local objects `G4BA`, `SUSH` and `NSPC`.
+
 ## Configuration
 To fill the demo database tables with sample business data: 
 1. Expand the package structure in the Project Explorer `/DMO/FLIGHT_LEGACY` > `Source Code Library` > `Classes`.
