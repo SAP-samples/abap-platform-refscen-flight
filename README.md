@@ -74,6 +74,8 @@ Lastly, the reuse package contains the package `/DMO/FLIGHT_REUSE_AGENCY` which 
 
 NOTE: The service bindings of the development scenarios are imported with the warning: `To enable activation of local service endpoint, generate service artifacts`. 
 
+NOTE: If you pull the repository again after a successfull import, make sure that you do not delete the local objects `G4BA`, `SUSH` and `NSPC`.
+
 ## Configuration
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish`.
