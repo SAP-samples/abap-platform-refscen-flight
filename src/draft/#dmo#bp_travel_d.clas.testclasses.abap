@@ -157,7 +157,16 @@ CLASS ltc_travel DEFINITION FINAL FOR TESTING
 
       "! Calls { @link ..lhc_travel.METH:resume }
       "! for a key which can be resumed.
-      resume_success               FOR TESTING.
+      resume_success               FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:validatecurrencycode }
+      "! and checks if a pair of status is valid.
+      validate_currency_success        FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:validatecurrencycode }
+      "! and checks if invalid permutations of sets of status
+      "! returns messages.
+      validate_currency_not_valid      FOR TESTING.
 
 
 
@@ -178,8 +187,9 @@ CLASS ltc_travel IMPLEMENTATION.
     cds_test_environment->enable_double_redirection(  ).
     sql_test_environment = cl_osql_test_environment=>create(
                                VALUE #(
+                                   ( 'I_CURRENCY'    )
                                    ( '/DMO/CUSTOMER' )
-                                   ( '/DMO/AGENCY' )
+                                   ( '/DMO/AGENCY'   )
                                  )
                                ).
   ENDMETHOD.
@@ -187,6 +197,13 @@ CLASS ltc_travel IMPLEMENTATION.
   METHOD setup.
     cds_test_environment->clear_doubles( ).
     sql_test_environment->clear_doubles( ).
+
+    DATA: currencies TYPE STANDARD TABLE OF i_currency.
+    currencies = VALUE #(
+        ( currency = 'EUR' )
+        ( currency = 'USD' )
+      ).
+    sql_test_environment->insert_test_data( currencies ).
   ENDMETHOD.
 
   METHOD teardown.
@@ -1603,6 +1620,110 @@ CLASS ltc_travel IMPLEMENTATION.
     cl_abap_unit_assert=>assert_initial( mapped   ).
     cl_abap_unit_assert=>assert_initial( reported ).
     cl_abap_unit_assert=>assert_initial( failed   ).
+  ENDMETHOD.
+
+  METHOD validate_currency_success.
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /dmo/a_travel_d,
+      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\travel~validatecurrencycode,
+      failed           TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported         TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    travel_mock_data = VALUE #(
+        ( travel_uuid = uuid1  currency_code = 'EUR' )
+        ( travel_uuid = uuid2  currency_code = 'USD' )
+      ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = CORRESPONDING #( travel_mock_data MAPPING traveluuid = travel_uuid ).
+
+    class_under_test->validatecurrencycode(
+        EXPORTING
+          keys     = travels_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( travels_to_test )
+        act = lines( reported-travel )
+      ).
+  ENDMETHOD.
+
+  METHOD validate_currency_not_valid.
+    TYPES: BEGIN OF t_check.
+             INCLUDE TYPE /dmo/a_travel_d.
+    TYPES:   exp_amount_reported_entries TYPE i,
+             exp_amount_failed_entries   TYPE i,
+           END OF t_check,
+           t_check_table TYPE STANDARD TABLE OF t_check WITH KEY travel_uuid.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /dmo/a_travel_d,
+      travels_to_check TYPE t_check_table,
+      travel_to_check  TYPE t_check,
+      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\travel~validatecurrencycode,
+      failed           TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported         TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    travels_to_check = VALUE #(
+        exp_amount_reported_entries = '2'
+        exp_amount_failed_entries   = '1'
+        ( travel_uuid = uuid1  currency_code = ''    )
+        ( travel_uuid = uuid2  currency_code = 'XXX' )
+      ).
+    travel_mock_data = CORRESPONDING #( travels_to_check ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = CORRESPONDING #( travel_mock_data MAPPING traveluuid = travel_uuid ).
+
+    class_under_test->validatecurrencycode(
+        EXPORTING
+          keys     = travels_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR travel IN travels_to_check
+                            NEXT sum += travel-exp_amount_failed_entries )
+           act  = lines( failed-travel )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT travels_to_check INTO travel_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = travel_to_check-exp_amount_failed_entries
+            act  = lines( FILTER #( failed-travel USING KEY entity WHERE traveluuid = travel_to_check-travel_uuid ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ travel_to_check-exp_amount_failed_entries } line(s) in failed expected for '{ travel_to_check-description }'|
+          ).
+      ENDLOOP.
+    ENDIF.
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR travel IN travels_to_check
+                            NEXT sum += travel-exp_amount_reported_entries )
+           act  = lines( reported-travel )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT travels_to_check INTO travel_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = travel_to_check-exp_amount_reported_entries
+            act  = lines( FILTER #( reported-travel USING KEY entity WHERE traveluuid = travel_to_check-travel_uuid ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ travel_to_check-exp_amount_reported_entries } line(s) in reported expected for '{ travel_to_check-description }'|
+          ).
+      ENDLOOP.
+    ENDIF.
   ENDMETHOD.
 
 ENDCLASS.

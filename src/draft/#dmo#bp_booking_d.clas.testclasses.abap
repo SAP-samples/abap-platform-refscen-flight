@@ -78,7 +78,16 @@ CLASS ltc_booking DEFINITION FINAL FOR TESTING
 
       "! Calls { @link ..lhc_Booking.METH:validateConnection }
       "! and checks for a message for a non-existing Connection.
-      validateconnection_not_exist    FOR TESTING.
+      validateconnection_not_exist    FOR TESTING,
+
+      "! Calls { @link ..lhc_booking.METH:validatecurrencycode }
+      "! and checks if a pair of status is valid.
+      validate_currency_success        FOR TESTING,
+
+      "! Calls { @link ..lhc_booking.METH:validatecurrencycode }
+      "! and checks if invalid permutations of sets of status
+      "! returns messages.
+      validate_currency_not_valid      FOR TESTING.
 
 
 ENDCLASS.
@@ -98,8 +107,9 @@ CLASS ltc_booking IMPLEMENTATION.
     cds_test_environment->enable_double_redirection(  ).
     sql_test_environment = cl_osql_test_environment=>create(
                                VALUE #(
+                                   ( 'I_CURRENCY'    )
                                    ( '/DMO/CUSTOMER' )
-                                   ( '/DMO/FLIGHT' )
+                                   ( '/DMO/FLIGHT'   )
                                  )
                                ).
   ENDMETHOD.
@@ -116,6 +126,13 @@ CLASS ltc_booking IMPLEMENTATION.
         ( travel_uuid = travel_uuid2  currency_code = c_currency )
       ).
     cds_test_environment->insert_test_data( travel_mock_data ).
+
+    DATA: currencies TYPE STANDARD TABLE OF i_currency.
+    currencies = VALUE #(
+        ( currency = 'EUR' )
+        ( currency = 'USD' )
+      ).
+    sql_test_environment->insert_test_data( currencies ).
   ENDMETHOD.
 
   METHOD teardown.
@@ -655,6 +672,110 @@ CLASS ltc_booking IMPLEMENTATION.
         exp = 2
         act = lines( reported-booking )
       ).
+  ENDMETHOD.
+
+  METHOD validate_currency_success.
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validatecurrencycode,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_mock_data = VALUE #(
+        ( booking_uuid = uuid1  currency_code = 'EUR' )
+        ( booking_uuid = uuid2  currency_code = 'USD' )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
+
+    class_under_test->validatecurrencycode(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( bookings_to_test )
+        act = lines( reported-booking )
+      ).
+  ENDMETHOD.
+
+  METHOD validate_currency_not_valid.
+    TYPES: BEGIN OF t_check.
+             INCLUDE TYPE /dmo/a_booking_d.
+    TYPES:   exp_amount_reported_entries TYPE i,
+             exp_amount_failed_entries   TYPE i,
+           END OF t_check,
+           t_check_table TYPE STANDARD TABLE OF t_check WITH KEY booking_uuid.
+
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_check TYPE t_check_table,
+      booking_to_check  TYPE t_check,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validatecurrencycode,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    bookings_to_check = VALUE #(
+        exp_amount_reported_entries = '2'
+        exp_amount_failed_entries   = '1'
+        ( booking_uuid = uuid1  currency_code = ''    )
+        ( booking_uuid = uuid2  currency_code = 'XXX' )
+      ).
+    booking_mock_data = CORRESPONDING #( bookings_to_check ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
+
+    class_under_test->validatecurrencycode(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR booking IN bookings_to_check
+                            NEXT sum += booking-exp_amount_failed_entries )
+           act  = lines( failed-booking )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT bookings_to_check INTO booking_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = booking_to_check-exp_amount_failed_entries
+            act  = lines( FILTER #( failed-booking USING KEY entity WHERE bookinguuid = booking_to_check-booking_uuid ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ booking_to_check-exp_amount_failed_entries } line(s) in failed expected for '{ booking_to_check-booking_uuid }'|
+          ).
+      ENDLOOP.
+    ENDIF.
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR booking IN bookings_to_check
+                            NEXT sum += booking-exp_amount_reported_entries )
+           act  = lines( reported-booking )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT bookings_to_check INTO booking_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = booking_to_check-exp_amount_reported_entries
+            act  = lines( FILTER #( reported-booking USING KEY entity WHERE bookinguuid = booking_to_check-booking_uuid ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ booking_to_check-exp_amount_reported_entries } line(s) in reported expected for '{ booking_to_check-booking_id }'|
+          ).
+      ENDLOOP.
+    ENDIF.
   ENDMETHOD.
 
 ENDCLASS.

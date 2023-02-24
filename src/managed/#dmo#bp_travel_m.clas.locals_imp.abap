@@ -16,6 +16,8 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR travel~validatedates.
     METHODS validate_travel_status FOR VALIDATE ON SAVE
       IMPORTING keys FOR travel~validatestatus.
+    METHODS validate_currencycode FOR VALIDATE ON SAVE
+      IMPORTING keys FOR travel~validatecurrencycode.
 
     METHODS copyTravel FOR MODIFY
       IMPORTING keys FOR ACTION travel~copyTravel.
@@ -567,7 +569,49 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD get_global_authorizations.
   ENDMETHOD.
 
+  METHOD validate_currencycode.
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY travel
+        FIELDS ( currency_code )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(travels).
 
+    DATA: currencies TYPE SORTED TABLE OF I_Currency WITH UNIQUE KEY currency.
+
+    currencies = CORRESPONDING #(  travels DISCARDING DUPLICATES MAPPING currency = currency_code EXCEPT * ).
+    DELETE currencies WHERE currency IS INITIAL.
+
+    IF currencies IS NOT INITIAL.
+      SELECT FROM I_Currency FIELDS currency
+        FOR ALL ENTRIES IN @currencies
+        WHERE currency = @currencies-currency
+        INTO TABLE @DATA(currency_db).
+    ENDIF.
+
+
+    LOOP AT travels INTO DATA(travel).
+      IF travel-currency_code IS INITIAL.
+        " Raise message for empty Currency
+        APPEND VALUE #( %tky                   = travel-%tky ) TO failed-travel.
+        APPEND VALUE #( %tky                   = travel-%tky
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid    = /dmo/cm_flight_messages=>currency_required
+                                                        severity  = if_abap_behv_message=>severity-error )
+                        %element-currency_code = if_abap_behv=>mk-on
+                      ) TO reported-travel.
+      ELSEIF NOT line_exists( currency_db[ currency = travel-currency_code ] ).
+        " Raise message for not existing Currency
+        APPEND VALUE #( %tky                   = travel-%tky ) TO failed-travel.
+        APPEND VALUE #( %tky                   = travel-%tky
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid        = /dmo/cm_flight_messages=>currency_not_existing
+                                                        severity      = if_abap_behv_message=>severity-error
+                                                        currency_code = travel-currency_code )
+                        %element-currency_code = if_abap_behv=>mk-on
+                      ) TO reported-travel.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
 ENDCLASS.
 

@@ -20,6 +20,8 @@ CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR Booking~validateCustomer.
     METHODS validateConnection FOR VALIDATE ON SAVE
       IMPORTING keys FOR Booking~validateConnection.
+    METHODS validateCurrencyCode FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Booking~validateCurrencyCode.
 
 ENDCLASS.
 
@@ -272,6 +274,62 @@ CLASS lhc_booking IMPLEMENTATION.
 
     ENDLOOP.
 
+  ENDMETHOD.
+
+  METHOD validateCurrencyCode.
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY booking
+        FIELDS ( currencycode )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(bookings).
+
+      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Booking BY \_Travel
+        FROM CORRESPONDING #( bookings )
+      LINK DATA(travel_booking_links).
+
+    DATA: currencies TYPE SORTED TABLE OF I_Currency WITH UNIQUE KEY currency.
+
+    currencies = CORRESPONDING #( bookings DISCARDING DUPLICATES MAPPING currency = currencycode EXCEPT * ).
+    DELETE currencies WHERE currency IS INITIAL.
+
+    IF currencies IS NOT INITIAL.
+      SELECT FROM I_Currency FIELDS currency
+        FOR ALL ENTRIES IN @currencies
+        WHERE currency = @currencies-currency
+        INTO TABLE @DATA(currency_db).
+    ENDIF.
+
+
+    LOOP AT bookings INTO DATA(booking).
+      APPEND VALUE #(  %tky               = booking-%tky
+                       %state_area        = 'VALIDATE_CURRENCYCODE'
+                    ) TO reported-booking.
+      IF booking-currencycode IS INITIAL.
+        " Raise message for empty Currency
+        APPEND VALUE #( %tky                   = booking-%tky ) TO failed-booking.
+        APPEND VALUE #( %tky                   = booking-%tky
+                        %state_area            = 'VALIDATE_CURRENCYCODE'
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid    = /dmo/cm_flight_messages=>currency_required
+                                                        severity  = if_abap_behv_message=>severity-error )
+                        %path                  = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
+                        %element-currencycode = if_abap_behv=>mk-on
+                      ) TO reported-booking.
+      ELSEIF NOT line_exists( currency_db[ currency = booking-currencycode ] ).
+        " Raise message for not existing Currency
+        APPEND VALUE #( %tky                   = booking-%tky ) TO failed-booking.
+        APPEND VALUE #( %tky                   = booking-%tky
+                        %state_area            = 'VALIDATE_CURRENCYCODE'
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid        = /dmo/cm_flight_messages=>currency_not_existing
+                                                        severity      = if_abap_behv_message=>severity-error
+                                                        currency_code = booking-currencycode )
+                        %path                  = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
+                        %element-currencycode = if_abap_behv=>mk-on
+                      ) TO reported-booking.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.

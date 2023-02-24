@@ -38,17 +38,17 @@ CLASS ltcl_booking DEFINITION FINAL FOR TESTING
 
 
     METHODS:
-      "! Calls { @link ..lhc_booking.METH:validate_travel_status }
+      "! Calls { @link ..lhc_booking.METH:validate_booking_status }
       "! and checks if a pair of status is valid.
       validatestatus_success        FOR TESTING RAISING cx_static_check,
 
-      "! Calls { @link ..lhc_booking.METH:validate_travel_status }
+      "! Calls { @link ..lhc_booking.METH:validate_booking_status }
       "! and checks if invalid permutations of sets of status
       "! returns messages.
       validatestatus_not_valid      FOR TESTING RAISING cx_static_check,
 
       "! Calls { @link ..lhc_booking.METH:get_instance_features }
-      "! using travels with an <em>accepted</em>, <em>rejected</em>,
+      "! using bookings with an <em>accepted</em>, <em>rejected</em>,
       "! <em>open</em> and unknown status.
       get_instance_features        FOR TESTING RAISING cx_static_check,
 
@@ -58,7 +58,16 @@ CLASS ltcl_booking DEFINITION FINAL FOR TESTING
 
       "! Checks if { @link ..lhc_booking.METH:calculatetotalprice }
       "! calculates the total_price correctly by triggering an action.
-      calculatetotalprice     FOR TESTING RAISING cx_static_check.
+      calculatetotalprice     FOR TESTING RAISING cx_static_check,
+
+      "! Calls { @link ..lhc_booking.METH:validate_currencycode }
+      "! and checks if a pair of status is valid.
+      validate_currency_success        FOR TESTING,
+
+      "! Calls { @link ..lhc_booking.METH:validate_currencycode }
+      "! and checks if invalid permutations of sets of status
+      "! returns messages.
+      validate_currency_not_valid      FOR TESTING.
 ENDCLASS.
 
 
@@ -77,7 +86,8 @@ CLASS ltcl_booking IMPLEMENTATION.
     sql_test_environment = cl_osql_test_environment=>create(
                                VALUE #(
                                    ( '/DMO/CUSTOMER' )
-                                   ( '/DMO/AGENCY' )
+                                   ( '/DMO/AGENCY'   )
+                                   ( 'I_CURRENCY'    )
                                  )
                                ).
   ENDMETHOD.
@@ -96,6 +106,13 @@ CLASS ltcl_booking IMPLEMENTATION.
         ( travel_id = travel_id4  currency_code = c_currency )
       ).
     cds_test_environment->insert_test_data( travel_mock_data ).
+
+    DATA: currencies TYPE STANDARD TABLE OF i_currency.
+    currencies = VALUE #(
+        ( currency = 'EUR' )
+        ( currency = 'USD' )
+      ).
+    sql_test_environment->insert_test_data( currencies ).
   ENDMETHOD.
 
   METHOD teardown.
@@ -423,6 +440,107 @@ CLASS ltcl_booking IMPLEMENTATION.
         exp = CONV /dmo/total_price( c_flight_price * lines( booking_mock_data ) )
         act = read_result[ 1 ]-total_price
       ).
+  ENDMETHOD.
+
+  METHOD validate_currency_success.
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validatecurrencycode,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        ( booking_id = booking_id1  currency_code = 'EUR' )
+        ( booking_id = booking_id2  currency_code = 'USD' )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_currencycode(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+  ENDMETHOD.
+
+  METHOD validate_currency_not_valid.
+    TYPES: BEGIN OF t_check.
+             INCLUDE TYPE /dmo/booking_m.
+    TYPES:   exp_amount_reported_entries TYPE i,
+             exp_amount_failed_entries   TYPE i,
+           END OF t_check,
+           t_check_table TYPE STANDARD TABLE OF t_check WITH KEY travel_id.
+
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_check TYPE t_check_table,
+      booking_to_check  TYPE t_check,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validatecurrencycode,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    bookings_to_check = VALUE #(
+        exp_amount_reported_entries = '1'
+        exp_amount_failed_entries   = '1'
+        travel_id                   = travel_id1
+        ( booking_id = booking_id1  currency_code = ''    )
+        ( booking_id = booking_id2  currency_code = 'XXX' )
+      ).
+    booking_mock_data = CORRESPONDING #( bookings_to_check ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_currencycode(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR booking IN bookings_to_check
+                            NEXT sum += booking-exp_amount_failed_entries )
+           act  = lines( failed-booking )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT bookings_to_check INTO booking_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = booking_to_check-exp_amount_failed_entries
+            act  = lines( FILTER #( failed-booking USING KEY entity WHERE travel_id = booking_to_check-travel_id AND booking_id = booking_to_check-booking_id ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ booking_to_check-exp_amount_failed_entries } line(s) in failed expected for '{ booking_to_check-booking_id }'|
+          ).
+      ENDLOOP.
+    ENDIF.
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR booking IN bookings_to_check
+                            NEXT sum += booking-exp_amount_reported_entries )
+           act  = lines( reported-booking )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT bookings_to_check INTO booking_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = booking_to_check-exp_amount_reported_entries
+            act  = lines( FILTER #( reported-booking USING KEY entity WHERE travel_id = booking_to_check-travel_id AND booking_id = booking_to_check-booking_id ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ booking_to_check-exp_amount_reported_entries } line(s) in reported expected for '{ booking_to_check-booking_id }'|
+          ).
+      ENDLOOP.
+    ENDIF.
   ENDMETHOD.
 
 ENDCLASS.

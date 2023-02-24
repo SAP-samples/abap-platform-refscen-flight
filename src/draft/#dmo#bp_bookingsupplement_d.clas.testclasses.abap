@@ -64,7 +64,16 @@ CLASS ltc_bookingsupplement DEFINITION FINAL FOR TESTING
 
       "! Calls { @link ..lhc_BookingSupplement.METH:validateSupplement }
       "! and checks for a message for a non-existing supplement.
-      validatesupplement_not_exist    FOR TESTING.
+      validatesupplement_not_exist    FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validatecurrencycode }
+      "! and checks if a pair of status is valid.
+      validate_currency_success        FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validatecurrencycode }
+      "! and checks if invalid permutations of sets of status
+      "! returns messages.
+      validate_currency_not_valid      FOR TESTING.
 
 
 ENDCLASS.
@@ -83,6 +92,7 @@ CLASS ltc_bookingsupplement IMPLEMENTATION.
     cds_test_environment->enable_double_redirection(  ).
     sql_test_environment = cl_osql_test_environment=>create(
                                VALUE #(
+                                   ( 'I_CURRENCY'      )
                                    ( '/DMO/SUPPLEMENT' )
                                  )
                                ).
@@ -107,6 +117,13 @@ CLASS ltc_bookingsupplement IMPLEMENTATION.
         ( booking_uuid = booking_uuid2  parent_uuid = travel_uuid1 )
       ).
     cds_test_environment->insert_test_data( booking_mock_data ).
+
+    DATA: currencies TYPE STANDARD TABLE OF i_currency.
+    currencies = VALUE #(
+        ( currency = 'EUR' )
+        ( currency = 'USD' )
+      ).
+    sql_test_environment->insert_test_data( currencies ).
   ENDMETHOD.
 
   METHOD teardown.
@@ -463,6 +480,110 @@ CLASS ltc_bookingsupplement IMPLEMENTATION.
         exp = 2
         act = lines( reported-bookingsupplement )
       ).
+  ENDMETHOD.
+
+  METHOD validate_currency_success.
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\bookingsupplement~validatecurrencycode,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_supplement_mock_data = VALUE #(
+        ( booksuppl_uuid = uuid1  currency_code = 'EUR' )
+        ( booksuppl_uuid = uuid2  currency_code = 'USD' )
+      ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING booksuppluuid = booksuppl_uuid ).
+
+    class_under_test->validatecurrencycode(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( booking_supplements_to_test )
+        act = lines( reported-bookingsupplement )
+      ).
+  ENDMETHOD.
+
+  METHOD validate_currency_not_valid.
+    TYPES: BEGIN OF t_check.
+             INCLUDE TYPE /dmo/a_bksuppl_d.
+    TYPES:   exp_amount_reported_entries TYPE i,
+             exp_amount_failed_entries   TYPE i,
+           END OF t_check,
+           t_check_table TYPE STANDARD TABLE OF t_check WITH KEY booksuppl_uuid.
+
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
+      booking_supplements_to_check TYPE t_check_table,
+      booking_supplement_to_check  TYPE t_check,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\bookingsupplement~validatecurrencycode,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_supplements_to_check = VALUE #(
+        exp_amount_reported_entries = '2'
+        exp_amount_failed_entries   = '1'
+        ( booksuppl_uuid = uuid1  currency_code = ''    )
+        ( booksuppl_uuid = uuid2  currency_code = 'XXX' )
+      ).
+    booking_supplement_mock_data = CORRESPONDING #( booking_supplements_to_check ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING booksuppluuid = booksuppl_uuid ).
+
+    class_under_test->validatecurrencycode(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR booking_supplement IN booking_supplements_to_check
+                            NEXT sum += booking_supplement-exp_amount_failed_entries )
+           act  = lines( failed-bookingsupplement )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT booking_supplements_to_check INTO booking_supplement_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = booking_supplement_to_check-exp_amount_failed_entries
+            act  = lines( FILTER #( failed-bookingsupplement USING KEY entity WHERE booksuppluuid = booking_supplement_to_check-booksuppl_uuid ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ booking_supplement_to_check-exp_amount_failed_entries } line(s) in failed expected for '{ booking_supplement_to_check-booksuppl_uuid }'|
+          ).
+      ENDLOOP.
+    ENDIF.
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    IF cl_abap_unit_assert=>assert_equals(
+           exp  = REDUCE i( INIT sum = 0
+                            FOR booking_supplement IN booking_supplements_to_check
+                            NEXT sum += booking_supplement-exp_amount_reported_entries )
+           act  = lines( reported-bookingsupplement )
+           quit = if_abap_unit_constant=>quit-no
+         ).
+      LOOP AT booking_supplements_to_check INTO booking_supplement_to_check.
+        cl_abap_unit_assert=>assert_equals(
+            exp  = booking_supplement_to_check-exp_amount_reported_entries
+            act  = lines( FILTER #( reported-bookingsupplement USING KEY entity WHERE booksuppluuid = booking_supplement_to_check-booksuppl_uuid ) )
+            quit = if_abap_unit_constant=>quit-no
+            msg  = |{ booking_supplement_to_check-exp_amount_reported_entries } line(s) in reported expected for '{ booking_supplement_to_check-booksuppl_uuid }'|
+          ).
+      ENDLOOP.
+    ENDIF.
   ENDMETHOD.
 
 

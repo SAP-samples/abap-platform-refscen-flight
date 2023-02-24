@@ -1,5 +1,5 @@
-class ltc_supplement DEFINITION DEFERRED FOR TESTING.
-CLASS lhc_Supplement DEFINITION
+CLASS ltc_supplement DEFINITION DEFERRED FOR TESTING.
+CLASS lhc_supplement DEFINITION
   INHERITING FROM cl_abap_behavior_handler
   FRIENDS ltc_supplement
   .
@@ -19,14 +19,28 @@ CLASS lhc_Supplement DEFINITION
 
 ENDCLASS.
 
-CLASS lhc_Supplement IMPLEMENTATION.
+CLASS lhc_supplement IMPLEMENTATION.
 
-  METHOD validatePrice.
+  METHOD validateprice.
     READ ENTITIES OF /dmo/i_supplement IN LOCAL MODE
-      ENTITY Supplement
-        FIELDS ( Price CurrencyCode )
+      ENTITY supplement
+        FIELDS ( price currencycode )
         WITH CORRESPONDING #( keys )
         RESULT DATA(supplements).
+
+
+    DATA: currencies TYPE SORTED TABLE OF i_currency WITH UNIQUE KEY currency.
+
+    currencies = CORRESPONDING #(  supplements DISCARDING DUPLICATES MAPPING currency = currencycode EXCEPT * ).
+    DELETE currencies WHERE currency IS INITIAL.
+
+    IF currencies IS NOT INITIAL.
+      SELECT FROM i_currency FIELDS currency
+        FOR ALL ENTRIES IN @currencies
+        WHERE currency = @currencies-currency
+        INTO TABLE @DATA(currency_db).
+    ENDIF.
+
 
     LOOP AT supplements INTO DATA(supplement).
 
@@ -41,11 +55,11 @@ CLASS lhc_Supplement IMPLEMENTATION.
                         %msg           = NEW /dmo/cx_supplement(
                                              textid    = /dmo/cx_supplement=>price_required
                                              severity  = if_abap_behv_message=>severity-error )
-                        %element-Price = if_abap_behv=>mk-on
+                        %element-price = if_abap_behv=>mk-on
                       ) TO reported-supplement.
       ENDIF.
 
-      IF supplement-CurrencyCode IS INITIAL.
+      IF supplement-currencycode IS INITIAL.
         " Raise message for empty Currency
         APPEND VALUE #( %tky                 = supplement-%tky ) TO failed-supplement.
         APPEND VALUE #( %tky                 = supplement-%tky
@@ -53,7 +67,17 @@ CLASS lhc_Supplement IMPLEMENTATION.
                         %msg                 = NEW /dmo/cx_supplement(
                                                       textid    = /dmo/cx_supplement=>currency_required
                                                       severity  = if_abap_behv_message=>severity-error )
-                        %element-CurrencyCode = if_abap_behv=>mk-on
+                        %element-currencycode = if_abap_behv=>mk-on
+                      ) TO reported-supplement.
+      ELSEIF NOT line_exists( currency_db[ currency = supplement-currencycode ] ).
+        " Raise message for not existing Currency
+        APPEND VALUE #( %tky                 = supplement-%tky ) TO failed-supplement.
+        APPEND VALUE #( %tky                 = supplement-%tky
+                        %state_area          = 'VALIDATE_PRICE'
+                        %msg                 = NEW /dmo/cx_supplement(
+                                                      textid    = /dmo/cx_supplement=>currency_not_existing
+                                                      severity  = if_abap_behv_message=>severity-error )
+                        %element-currencycode = if_abap_behv=>mk-on
                       ) TO reported-supplement.
       ENDIF.
     ENDLOOP.
@@ -65,27 +89,27 @@ CLASS lhc_Supplement IMPLEMENTATION.
           entity                       TYPE STRUCTURE FOR CREATE /dmo/i_supplement.
 
     " Ensure Supplement ID is not set yet
-    LOOP AT entities INTO entity WHERE SupplementID IS NOT INITIAL.
+    LOOP AT entities INTO entity WHERE supplementid IS NOT INITIAL.
       APPEND CORRESPONDING #( entity ) TO mapped-supplement.
     ENDLOOP.
 
     entities_wo_supplementid = entities.
-    DELETE entities_wo_supplementid WHERE SupplementID IS NOT INITIAL.
+    DELETE entities_wo_supplementid WHERE supplementid IS NOT INITIAL.
     IF entities_wo_supplementid IS INITIAL.
       EXIT.
     ENDIF.
 
 
-    LOOP AT entities_wo_supplementid INTO DATA(supplement) GROUP BY supplement-SupplementCategory INTO DATA(SupplementCategory).
+    LOOP AT entities_wo_supplementid INTO DATA(supplement) GROUP BY supplement-supplementcategory INTO DATA(supplementcategory).
       entities_wo_supplid_filtered = entities_wo_supplementid.
-      DELETE entities_wo_supplid_filtered WHERE SupplementCategory <> SupplementCategory.
+      DELETE entities_wo_supplid_filtered WHERE supplementcategory <> supplementcategory.
 
       " Get Numbers
       TRY.
           cl_numberrange_runtime=>number_get(
             EXPORTING
               nr_range_nr       = '01'
-              subobject         = CONV #( SupplementCategory )
+              subobject         = CONV #( supplementcategory )
               object            = '/DMO/SUPPL'
               quantity          = CONV #( lines( entities_wo_supplid_filtered ) )
             IMPORTING
@@ -114,7 +138,7 @@ CLASS lhc_Supplement IMPLEMENTATION.
           APPEND NEW /dmo/cx_supplement(
                               textid          = /dmo/cx_supplement=>numbers_left
                               severity        = if_abap_behv_message=>severity-warning
-                              supplement_category = SupplementCategory
+                              supplement_category = supplementcategory
                               numbers_left    = CONV i( '9999' - CONV i( number_range_key+2 ) )
              ) TO reported-%other.
 
@@ -129,7 +153,7 @@ CLASS lhc_Supplement IMPLEMENTATION.
                   %msg      = NEW /dmo/cx_supplement(
                                     textid              = /dmo/cx_supplement=>numbers_last
                                     severity            = if_abap_behv_message=>severity-error
-                                    supplement_category = SupplementCategory )
+                                    supplement_category = supplementcategory )
               ) TO reported-supplement.
             APPEND VALUE #(
                   %cid        = entity-%cid
@@ -152,9 +176,8 @@ CLASS lhc_Supplement IMPLEMENTATION.
 
         APPEND VALUE #(
            %cid          = entity-%cid
-           %key          = entity-%key
            %is_draft     = entity-%is_draft
-           SupplementID  = |{ SupplementCategory }-{ supplement_id_max  ALIGN = RIGHT  PAD = `0`  WIDTH = 4 }|
+           supplementid  = |{ supplementcategory }-{ supplement_id_max  ALIGN = RIGHT  PAD = `0`  WIDTH = 4 }|
            ) TO mapped-supplement.
       ENDLOOP.
     ENDLOOP.

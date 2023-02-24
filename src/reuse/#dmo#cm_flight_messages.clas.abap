@@ -192,13 +192,31 @@ CLASS /dmo/cm_flight_messages DEFINITION
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF not_authorized_for_agencyID.
+      END OF not_authorized_for_agencyID,
+
+      BEGIN OF currency_required,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT',
+        msgno TYPE symsgno VALUE '022',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF currency_required,
+
+      BEGIN OF currency_not_existing,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT',
+        msgno TYPE symsgno VALUE '023',
+        attr1 TYPE scx_attrname VALUE 'MV_CURRENCY_CODE',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF currency_not_existing.
 
 
     METHODS constructor
       IMPORTING
         textid                LIKE if_t100_message=>t100key OPTIONAL
-        attr1                 TYPE i OPTIONAL
+        attr1                 TYPE string OPTIONAL
         attr2                 TYPE string OPTIONAL
         attr3                 TYPE string OPTIONAL
         attr4                 TYPE string OPTIONAL

@@ -39,10 +39,11 @@ authorization master(global)
   factory action copyTravel [1];
 
   // validations
-  validation validateCustomer on save { create; field customer_id; }
-  validation validateAgency   on save { create; field agency_id; }
-  validation validateDates    on save { create; field begin_date, end_date; }
-  validation validateStatus   on save { create; field overall_status; }
+  validation validateCustomer     on save { create; field customer_id; }
+  validation validateAgency       on save { create; field agency_id; }
+  validation validateDates        on save { create; field begin_date, end_date; }
+  validation validateStatus       on save { create; field overall_status; }
+  validation validateCurrencyCode on save { create; field currency_code; }
 
 
   determination calculateTotalPrice on modify {create; field booking_fee, currency_code; }
@@ -73,6 +74,7 @@ authorization dependent by _Travel
 
   // Fields that are mandatory for create but should be read-only afterwards
   field ( mandatory : create, readonly : update) booking_date, customer_id;
+  field ( mandatory ) currency_code;
 
   // standard operations for booking entity
   update;
@@ -82,7 +84,8 @@ authorization dependent by _Travel
   association _BookSupplement { create (features:instance); }
 
  // validations
-  validation validateStatus on save { create; field booking_status; }
+  validation validateStatus       on save { create; field booking_status; }
+  validation validateCurrencyCode on save { create; field currency_code;  }
 
   // determination for calculation of total flight price
   determination calculateTotalPrice on modify { create;  field flight_price, currency_code; }
@@ -102,7 +105,7 @@ authorization dependent by _Travel
 
 {
   // static field control
-  field ( mandatory ) price,supplement_id;
+  field ( mandatory ) price,supplement_id, currency_code;
   field ( readonly ) travel_id, booking_id, booking_supplement_id;
 
   // mapping entity's field types with table field types
@@ -114,6 +117,9 @@ authorization dependent by _Travel
 
   // determination for calculation of total suppl. price
   determination calculateTotalPrice on modify {create;  field price, currency_code; }
+
+ // validations
+  validation validateCurrencyCode on save { create; field currency_code; }
 
   association _Travel { }
   association _Booking { }

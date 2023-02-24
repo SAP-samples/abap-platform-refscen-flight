@@ -8,6 +8,7 @@
  dataClass: #MIXED
 }
 @ObjectModel.resultSet.sizeCategory: #XS
+
 define view entity /DMO/I_SupplementCategory_VH
   as select from /dmo/supplcat
 

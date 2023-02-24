@@ -29,6 +29,15 @@ CLASS /dmo/cx_supplement DEFINITION
         attr4 TYPE scx_attrname VALUE '',
       END OF currency_required,
 
+      BEGIN OF currency_not_existing,
+        msgid TYPE symsgid VALUE '/DMO/CM_SUPPLEMENT',
+        msgno TYPE symsgno VALUE '006',
+        attr1 TYPE scx_attrname VALUE 'MV_CURRENCYCODE',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF currency_not_existing,
+
       BEGIN OF description_required,
         msgid TYPE symsgid VALUE '/DMO/CM_SUPPLEMENT',
         msgno TYPE symsgno VALUE '003',
@@ -59,6 +68,7 @@ CLASS /dmo/cx_supplement DEFINITION
 
     DATA:
       mv_supplement_category TYPE /dmo/supplement_category,
+      mv_currencycode        TYPE /dmo/currency_code,
       mv_numbers_left        TYPE i.
 
 
@@ -69,6 +79,7 @@ CLASS /dmo/cx_supplement DEFINITION
           previous            LIKE previous                         OPTIONAL
           severity            TYPE if_abap_behv_message=>t_severity DEFAULT  if_abap_behv_message=>severity-error
           supplement_category TYPE /dmo/supplement_category         OPTIONAL
+          currencycode        TYPE /dmo/currency_code               OPTIONAL
           numbers_left        TYPE i                                OPTIONAL
         .
 
@@ -87,6 +98,7 @@ CLASS /dmo/cx_supplement IMPLEMENTATION.
     me->if_abap_behv_message~m_severity = severity.
 
     me->mv_supplement_category = supplement_category.
+    me->mv_currencycode        = currencycode.
     me->mv_numbers_left        = numbers_left.
 
     CLEAR me->textid.
