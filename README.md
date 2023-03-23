@@ -101,8 +101,8 @@ To create the missing development objects (<em>behavior definition</em>, <em>ser
 7. Right-click the service definition `/DMO/TRAVEL_U` and choose `New Service Binding` (see [here](https://help.sap.com/viewer/fc4c71aa50014fd1b43721701471913d/201909.000/en-US/ade0637f7c554c229cbfd4dc02c7fcaa.html). 
 8. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 9.	Choose the  `Activate` button in the service binding editor.  
+NOTE: In case the activation via the button in the service binding is not possible, you can use Gateway tools `/IWFND/MAINT_SERVICE` to activate the service. 
 
- 
 NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downloaded demo content and the development objects that need to be created to complete the scenario, do not use the namespace /DMO/ and do not create any development objects in the downloaded packages. You can access the development objects in /DMO/ from your own namespace.
 
 
