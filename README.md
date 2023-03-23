@@ -128,7 +128,9 @@ To create the missing <em>service bindings</em> for the augmentation sceanrio (p
 1. Right-click the service definition `/DMO/UI_Supplement` and choose `New Service Binding` (see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/ade0637f7c554c229cbfd4dc02c7fcaa.html?version=202110.000) for additional information).  
 2. Specify your own package and your own namespace when following the steps in the creation wizard. A service binding cannot be created in the namespace <em>/DMO/</em>. 
 3.	Choose the  `Publish` button in the service binding editor. 
- 
+
+NOTE: In case the activation via the button in the service bindings is not possible, you can use Gateway tools `/IWFND/MAINT_SERVICE` to activate the service, see [here](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/b58a3c27df4e406f9335d4b346f6be04.html?version=202110.latest#%EE%81%B0-service-transport).  
+
 NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downloaded demo content and the development objects that need to be created to complete the scenario, do not use the namespace /DMO/ and do not create any development objects in the downloaded packages. You can access the development objects in /DMO/ from your own namespace.
 
 
