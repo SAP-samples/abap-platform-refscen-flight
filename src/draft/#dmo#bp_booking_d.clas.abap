@@ -1,5 +1,0 @@
-CLASS /dmo/bp_booking_d DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF /dmo/r_travel_d.
-ENDCLASS.
-
-CLASS /dmo/bp_booking_d IMPLEMENTATION.
-ENDCLASS.
