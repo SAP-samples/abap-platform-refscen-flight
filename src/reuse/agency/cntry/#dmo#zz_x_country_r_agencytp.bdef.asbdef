@@ -1,0 +1,20 @@
+extension using interface /dmo/i_agencytp
+implementation in class /dmo/zz_bp_x_cntry_r_agencytp unique;
+
+extend behavior for /DMO/Agency
+{
+
+  validation /DMO/validateDiallingCode on save { field PhoneNumber; }
+
+  determination /DMO/determineCountryCode on modify { field PhoneNumber; }
+
+  determination /DMO/determineDiallingCode on modify { field CountryCode; }
+
+  extend draft determine action Prepare
+  {
+    validation /DMO/validateDiallingCode;
+  }
+
+  factory action ( authorization : global ) /DMO/createFromTemplate [1];
+
+}

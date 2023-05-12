@@ -1,0 +1,12 @@
+@EndUserText.label: 'Service definition for managing travels'
+@ObjectModel.leadingEntity.name: '/DMO/C_Travel_Approver_M'
+define service /DMO/UI_TRAVEL_Approver_M {
+  expose /DMO/C_Travel_Approver_M as Travel;
+  expose /DMO/C_Booking_Approver_M as Booking;
+  expose /DMO/I_Customer_StdVH as Passenger;
+  expose /DMO/I_Agency_StdVH as TravelAgency;
+  expose I_CurrencyStdVH as Currency;
+  expose I_CountryVH as Country;
+  expose /DMO/I_Overall_Status_VH as OverallStatus;
+  expose /DMO/I_Booking_Status_VH as BookingStatus;
+}

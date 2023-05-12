@@ -1,0 +1,5 @@
+@EndUserText.label: 'Supplement Maintenance'
+@ObjectModel.leadingEntity.name: '/DMO/C_Supplement'
+define service /DMO/UI_Supplement {
+  expose /DMO/C_Supplement as Supplement;
+}

@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/CM_CARRIER_S</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Carrier Messages</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_CARRIER_S</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Please provide a name for airline &apos;&amp;1&apos;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_CARRIER_S</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Currency code &apos;&amp;1&apos; is not allowed</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_CARRIER_S</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Please provide a currency code for airline &apos;&amp;1&apos;</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_CARRIER_S</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Airline &apos;&amp;1&apos; is still used in connections</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

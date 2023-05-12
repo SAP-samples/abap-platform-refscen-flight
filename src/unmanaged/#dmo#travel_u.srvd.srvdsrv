@@ -1,0 +1,18 @@
+@EndUserText.label: 'Service Definition for Managing Travels'
+@ObjectModel.leadingEntity.name: '/DMO/C_Travel_U'
+define service /DMO/TRAVEL_U {
+  expose /DMO/C_Travel_U as Travel;
+  expose /DMO/C_Booking_U as Booking;
+  expose /DMO/C_BookingSupplement_U as BookingSupplement;
+  expose /DMO/I_Supplement_StdVH as Supplement;
+  expose /DMO/I_SupplementCategory_VH as SupplementCategory;
+  expose /DMO/I_Customer_StdVH as Passenger;
+  expose /DMO/I_Agency_StdVH as TravelAgency;
+  expose I_CurrencyStdVH as Currency;
+  expose I_CountryVH as Country;
+  expose /DMO/I_Carrier_StdVH as Airline;
+  expose /DMO/I_Connection_StdVH as FlightConnection;
+  expose /DMO/I_Flight_StdVH as Flight;
+  expose /DMO/I_Airport_StdVH as Airport;
+  expose /DMO/I_Travel_Status_VH as TravelStatus;
+}

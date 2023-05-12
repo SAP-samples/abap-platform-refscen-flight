@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/CM_AGENCY</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Agency Messages</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>A Name is required!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>An EMail Address must be set and in the format &quot;name@provider.toplevel&quot;!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Country Code &quot;&amp;1&quot; is invalid!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Entered combination of Attachment, MimeType and Filename is invalid!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Not enough keys for all instances.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Number range object almost depleted.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>No mimetype provided for attachment &quot;&amp;1&quot;!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>No or empty attachment provided for object with mimetype &quot;&amp;1&quot;!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>The mimetype &quot;&amp;1&quot; is not supported!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>The file extension does not match the mimetype &quot;&amp;1&quot;!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>No attachment and mimetype provided for filename &quot;&amp;1&quot;!</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

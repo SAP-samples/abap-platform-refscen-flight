@@ -1,0 +1,152 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Flight Reference Scenario: Messages for Managed and Draft</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>CustomerID  &amp;1 is unknown.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>Agency &amp;1 is unknown.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>Begin Date &amp;1 must not be after End Date &amp;2 .</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>004</MSGNR>
+     <TEXT>Begin Date &amp;1 must be on or after system date.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>005</MSGNR>
+     <TEXT>Status &amp;1 is not valid.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Invalid discount: Enter a number between 1 an 100.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>Enter a BeginDate.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>Enter an EndDate.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>Enter an Agency ID.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>Enter a Customer ID.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>Enter a ConnectionID.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>No Flight &amp;1 for FlightDate &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>013</MSGNR>
+     <TEXT>Product ID is unknown.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>014</MSGNR>
+     <TEXT>Enter a ProductID.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>015</MSGNR>
+     <TEXT>Booking status not valid for BookingID &amp;1.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>016</MSGNR>
+     <TEXT>Enter an AirlineID.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>017</MSGNR>
+     <TEXT>Enter a FlightDate.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>018</MSGNR>
+     <TEXT>Not enough keys for all instances.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>019</MSGNR>
+     <TEXT>Number range object almost depleted.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>020</MSGNR>
+     <TEXT>You are not authorized to perform this activity.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>021</MSGNR>
+     <TEXT>You are not authorized to perform this activity.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>022</MSGNR>
+     <TEXT>Please enter a currency code.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>023</MSGNR>
+     <TEXT>Currency code &amp;1 does not exist.  Please enter a valid currency code.</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

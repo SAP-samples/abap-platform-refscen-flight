@@ -1,0 +1,9 @@
+@EndUserText.label: 'Service Definition for Managing Flights'
+@ObjectModel.leadingEntity.name: '/DMO/I_Connection_R'
+define service /DMO/FLIGHT_R {
+  expose /DMO/I_Connection_R as Connection;
+  expose /DMO/I_Flight_R as Flight;
+  expose /DMO/I_Carrier_StdVH as Airline;
+  expose /DMO/I_Airport_StdVH as Airport;
+  expose I_CountryVH as Country;
+}

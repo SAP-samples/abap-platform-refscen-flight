@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SRVD" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SRVD>
+    <NAME>/DMO/ZZ_X_REVIEW_UI_AGENCY</NAME>
+    <TYPE>SRVD/SRV</TYPE>
+    <DESCRIPTION>Agency Review</DESCRIPTION>
+    <LANGUAGE>EN</LANGUAGE>
+    <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
+    <SOURCE_URI>./%2Fdmo%2Fzz_x_review_ui_agency/source/main</SOURCE_URI>
+    <SOURCE_TYPE>ABAP_SOURCE</SOURCE_TYPE>
+    <SOURCE_ORIGIN_DESCRIPTION>ABAP Development Tools</SOURCE_ORIGIN_DESCRIPTION>
+    <SRVD_SOURCE_TYPE>X</SRVD_SOURCE_TYPE>
+    <SRVD_SOURCE_TYPE_DESC>Extension</SRVD_SOURCE_TYPE_DESC>
+   </SRVD>
+  </asx:values>
+ </asx:abap>
+</abapGit>

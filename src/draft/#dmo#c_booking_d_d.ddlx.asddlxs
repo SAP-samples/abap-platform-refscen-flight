@@ -1,0 +1,68 @@
+@Metadata.layer: #CORE
+
+@UI: { headerInfo: { typeName: 'Booking',
+                     typeNamePlural: 'Bookings',
+                     title: { type: #STANDARD, value: 'BookingID' } } }
+
+
+annotate entity /DMO/C_Booking_D_D with
+{
+  @UI.facet: [ { id:            'Booking',
+                 purpose:       #STANDARD,
+                 type:          #IDENTIFICATION_REFERENCE,
+                 label:         'Booking',
+                 position:      10 },
+               { id:            'BookingSupplement',
+                 purpose:       #STANDARD,
+                 type:          #LINEITEM_REFERENCE,
+                 label:         'Booking Supplement',
+                 position:      20,
+                 targetElement: '_BookingSupplement'} ]
+  @UI.hidden: true
+  BookingUUID;
+
+  @UI.hidden: true
+  TravelUUID;
+
+  @UI: { lineItem:       [ { position: 20, importance: #HIGH } ],
+         identification: [ { position: 20 } ] }
+  BookingID;
+
+  @UI: { lineItem:       [ { position: 30, importance: #HIGH } ],
+         identification: [ { position: 30 } ] }
+  BookingDate;
+
+  @UI: { lineItem:       [ { position: 40, importance: #HIGH } ],
+         identification: [ { position: 40 } ] }
+  CustomerID;
+
+  @UI: { lineItem:       [ { position: 50, importance: #HIGH } ],
+         identification: [ { position: 50 } ] }
+  AirlineID;
+
+  @UI: { lineItem:       [ { position: 60, importance: #HIGH } ],
+         identification: [ { position: 60 } ] }
+  ConnectionID;
+
+  @UI: { lineItem:       [ { position: 70, importance: #HIGH } ],
+         identification: [ { position: 70 } ] }
+  FlightDate;
+
+  @UI: { lineItem:       [ { position: 80, importance: #HIGH } ],
+         identification: [ { position: 80 } ] }
+  FlightPrice;
+
+  //  CurrencyCode;
+
+  @UI: { lineItem:       [ { position: 90, importance: #HIGH } ],
+         identification: [ { position: 90 } ],
+         textArrangement: #TEXT_ONLY }
+  BookingStatus;
+
+  @UI.hidden: true
+  BookingStatusText;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+
+}

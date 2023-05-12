@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/ZZ_AGENCY_CNTRY</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message Class for Agency Country</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/ZZ_AGENCY_CNTRY</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>Phone number &quot;&amp;1&quot; is invalid.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/ZZ_AGENCY_CNTRY</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>The combination of phone number &quot;&amp;1&quot; and country code &quot;&amp;2&quot; is invalid.</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

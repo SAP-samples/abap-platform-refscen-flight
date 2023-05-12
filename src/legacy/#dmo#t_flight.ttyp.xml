@@ -1,0 +1,45 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_TTYP" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <DD40V>
+    <TYPENAME>/DMO/T_FLIGHT</TYPENAME>
+    <DDLANGUAGE>E</DDLANGUAGE>
+    <ROWTYPE>/DMO/FLIGHT</ROWTYPE>
+    <ROWKIND>S</ROWKIND>
+    <DATATYPE>STRU</DATATYPE>
+    <ACCESSMODE>T</ACCESSMODE>
+    <KEYDEF>K</KEYDEF>
+    <KEYKIND>N</KEYKIND>
+    <KEYFDCOUNT>0004</KEYFDCOUNT>
+    <DDTEXT>Table type of /DMO/FLIGHT</DDTEXT>
+   </DD40V>
+   <DD42V>
+    <DD42V>
+     <TYPENAME>/DMO/T_FLIGHT</TYPENAME>
+     <KEYFDPOS>0001</KEYFDPOS>
+     <ROWTYPEPOS>0001</ROWTYPEPOS>
+     <KEYFIELD>CLIENT</KEYFIELD>
+    </DD42V>
+    <DD42V>
+     <TYPENAME>/DMO/T_FLIGHT</TYPENAME>
+     <KEYFDPOS>0002</KEYFDPOS>
+     <ROWTYPEPOS>0002</ROWTYPEPOS>
+     <KEYFIELD>CARRIER_ID</KEYFIELD>
+    </DD42V>
+    <DD42V>
+     <TYPENAME>/DMO/T_FLIGHT</TYPENAME>
+     <KEYFDPOS>0003</KEYFDPOS>
+     <ROWTYPEPOS>0003</ROWTYPEPOS>
+     <KEYFIELD>CONNECTION_ID</KEYFIELD>
+    </DD42V>
+    <DD42V>
+     <TYPENAME>/DMO/T_FLIGHT</TYPENAME>
+     <KEYFDPOS>0004</KEYFDPOS>
+     <ROWTYPEPOS>0004</ROWTYPEPOS>
+     <KEYFIELD>FLIGHT_DATE</KEYFIELD>
+    </DD42V>
+   </DD42V>
+  </asx:values>
+ </asx:abap>
+</abapGit>

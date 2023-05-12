@@ -1,0 +1,13 @@
+projection;
+strict(2);
+
+define behavior for /DMO/C_Travel_Approver_M alias Approver
+use etag
+{
+  field ( readonly ) BeginDate, EndDate, TotalPrice, CustomerID;
+
+  use update;
+
+  use action acceptTravel;
+  use action rejectTravel;
+}

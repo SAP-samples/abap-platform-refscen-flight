@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_NROB" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <ATTRIBUTES>
+    <OBJECT>/DMO/TRV_M</OBJECT>
+    <DOMLEN>/DMO/TRAVEL_ID</DOMLEN>
+    <PERCENTAGE>10.0</PERCENTAGE>
+    <BUFFER>X</BUFFER>
+    <NOIVBUFFER>00000001</NOIVBUFFER>
+    <UNAME>REICHERTGE</UNAME>
+    <UDATE>2022-02-03</UDATE>
+    <UTIME>07:54:34</UTIME>
+   </ATTRIBUTES>
+   <TEXT>
+    <LANGU>E</LANGU>
+    <OBJECT>/DMO/TRV_M</OBJECT>
+    <TXT>Travel_ID number range object</TXT>
+    <TXTSHORT>Travel_ID number...</TXTSHORT>
+   </TEXT>
+  </asx:values>
+ </asx:abap>
+</abapGit>
