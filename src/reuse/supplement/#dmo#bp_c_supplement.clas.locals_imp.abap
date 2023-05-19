@@ -1,4 +1,4 @@
-CLASS lhc_Supplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS lhc_supplement DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
 
     METHODS augment FOR MODIFY
@@ -57,8 +57,10 @@ CLASS lhc_Supplement IMPLEMENTATION.
       "To prevent empty updates, we check if something has changed for the text node.
       LOOP AT entities_update INTO DATA(supplement_update) WHERE %control-SupplementDescription = if_abap_behv=>mk-on.
 
-        "To prevent an update on a text node for a non-existing supplement, we check against the failed-supplement table.
-        CHECK NOT line_exists( link_failed-supplement[ KEY draft  %tky = CORRESPONDING #( supplement_update-%tky ) ] ).
+        "To prevent an update on a text node for a non-existing supplement, we check against the failed-supplement table
+        "but we also need to ensure that this instance could have been created in this request as well.
+        CHECK NOT line_exists( link_failed-supplement[ KEY draft  %tky = CORRESPONDING #( supplement_update-%tky ) ] )
+          OR line_exists( suppltext_for_new_suppl[ KEY cid  %cid_ref = supplement_update-%cid_ref  %is_draft = supplement_update-%is_draft ] ).
 
         DATA(tabix) = sy-tabix.
 
@@ -78,7 +80,7 @@ CLASS lhc_Supplement IMPLEMENTATION.
                           %control         = VALUE #( description = supplement_update-%control-SupplementDescription )
                         ) TO supplementtext_update.
 
-          "If suppl_text was created in the current LUW, perform an update based on %cid
+          "If suppl_text was created in the current modify-statement, perform an update based on %cid
         ELSEIF line_exists(  suppltext_for_new_suppl[ KEY cid %is_draft = supplement_update-%is_draft
                                                               %cid_ref  = supplement_update-%cid_ref ] ).
           APPEND tabix TO relates_update.

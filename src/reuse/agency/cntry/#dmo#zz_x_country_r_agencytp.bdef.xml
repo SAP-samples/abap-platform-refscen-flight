@@ -33,11 +33,6 @@
       <TITLE>Source Content (HTML)</TITLE>
      </item>
      <item>
-      <HREF>./%2Fdmo%2Fzz_x_country_r_agencytp/objectstructure</HREF>
-      <REL>http://www.sap.com/adt/relations/objectstructure</REL>
-      <TITLE>Object Structure</TITLE>
-     </item>
-     <item>
       <HREF>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fr_agencytp/source/main</HREF>
       <REL>http://www.sap.com/adt/relations/navigation</REL>
       <TITLE>base_bdef</TITLE>

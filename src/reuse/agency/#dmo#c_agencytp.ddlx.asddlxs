@@ -57,6 +57,7 @@ annotate view /DMO/C_AgencyTP with
   AgencyID;
 
   @UI: { lineItem:       [ { position: 20, importance: #HIGH } ] ,
+         fieldGroup:     [ { position: 20, qualifier: 'General_FG' } ],
          selectionField: [ { position: 20 } ] }
   Name;
 

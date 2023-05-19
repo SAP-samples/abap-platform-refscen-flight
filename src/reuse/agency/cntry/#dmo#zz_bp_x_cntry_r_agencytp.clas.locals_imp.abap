@@ -1,7 +1,6 @@
 CLASS ltcl_agency_w_cds_tdf DEFINITION DEFERRED FOR TESTING.
-CLASS ltcl_agency_w_rap_tdf DEFINITION DEFERRED FOR TESTING.
 CLASS lhc_Agency DEFINITION INHERITING FROM cl_abap_behavior_handler
-  FRIENDS ltcl_Agency_w_cds_tdf ltcl_agency_w_rap_tdf.
+  FRIENDS ltcl_Agency_w_cds_tdf.
 
   PUBLIC SECTION.
 

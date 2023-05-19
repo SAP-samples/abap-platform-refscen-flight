@@ -1,7 +1,8 @@
 managed implementation in class /dmo/bp_r_agencytp unique;
-strict(2);
+strict ( 2 );
 with draft;
-extensible {
+extensible
+{
   with determinations on modify;
   with determinations on save;
   with validations on save;
@@ -31,33 +32,37 @@ extensible
 
   // Validations for mandatory fields
   validation /DMO/validateEMailAddress on save { create; field EMailAddress; }
-  validation /DMO/validateCountryCode  on save { create; field CountryCode; }
-  validation /DMO/validateName         on save { create; field Name; }
+  validation /DMO/validateCountryCode on save { create; field CountryCode; }
+  validation /DMO/validateName on save { create; field Name; }
+
+  validation /DMO/validateLargeObject on save { create; field Attachment; field MimeType; field Filename; }
 
   draft determine action Prepare extensible
   {
     validation /DMO/validateEMailAddress;
     validation /DMO/validateCountryCode;
     validation /DMO/validateName;
+    validation /DMO/validateLargeObject;
   }
 
-  mapping for /dmo/agency {
-    AgencyId           = agency_id;
-    Name               = name;
-    Street             = street;
-    PostalCode         = postal_code;
-    City               = city;
-    CountryCode        = country_code;
-    PhoneNumber        = phone_number;
-    EmailAddress       = email_address;
-    WebAddress         = web_address;
-    Attachment         = attachment;
-    MimeType           = mime_type;
-    Filename           = filename;
-    LocalCreatedBy     = local_created_by;
-    LocalCreatedAt     = local_created_at;
-    LocalLastChangedBy = local_last_changed_by;
-    LocalLastChangedAt = local_last_changed_at;
-    LastChangedAt      = last_changed_at;
-  }
+  mapping for /dmo/agency
+    {
+      AgencyId           = agency_id;
+      Name               = name;
+      Street             = street;
+      PostalCode         = postal_code;
+      City               = city;
+      CountryCode        = country_code;
+      PhoneNumber        = phone_number;
+      EmailAddress       = email_address;
+      WebAddress         = web_address;
+      Attachment         = attachment;
+      MimeType           = mime_type;
+      Filename           = filename;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
 }

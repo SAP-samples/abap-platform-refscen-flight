@@ -32,11 +32,6 @@
       <TYPE>text/html</TYPE>
       <TITLE>Source Content (HTML)</TITLE>
      </item>
-     <item>
-      <HREF>./%2Fdmo%2Fi_agencytp/objectstructure</HREF>
-      <REL>http://www.sap.com/adt/relations/objectstructure</REL>
-      <TITLE>Object Structure</TITLE>
-     </item>
     </LINKS>
     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     <ABAP_LANGU_VERSION>5</ABAP_LANGU_VERSION>

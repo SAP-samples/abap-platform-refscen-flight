@@ -35,15 +35,15 @@ etag master LocalLastChangedAt
   validation validateDates on save { create; field BeginDate, EndDate; }
   validation validateCurrencyCode on save { create; field CurrencyCode; }
 
-  determine action validationAgency { validation validateAgency; }
-  determine action validationCustomer { validation validateCustomer; }
-  determine action validationDates { validation validateDates; }
+  determine action validateAgencyID { validation validateAgency; }
+  determine action validateCustomerID { validation validateCustomer; }
+  determine action validateDateRange { validation validateDates; }
 
   side effects
   { field BookingFee affects field TotalPrice;
-    determine action validationAgency executed on field AgencyID affects messages;
-    determine action validationCustomer executed on field CustomerID affects messages;
-    determine action validationDates executed on field BeginDate, field EndDate affects messages; }
+    determine action validateAgencyID executed on field AgencyID affects messages;
+    determine action validateCustomerID executed on field CustomerID affects messages;
+    determine action validateDateRange executed on field BeginDate, field EndDate affects messages; }
 
 
   draft action Resume with additional implementation;
@@ -160,7 +160,7 @@ etag master LocalLastChangedAt
   validation validateCurrencyCode on save { create; field CurrencyCode; }
 
   side effects
-  { field BookSupplPrice affects entity _Travel; }
+  { field BookSupplPrice affects field _Travel.TotalPrice; }
 
   mapping for /dmo/a_bksuppl_d
     {

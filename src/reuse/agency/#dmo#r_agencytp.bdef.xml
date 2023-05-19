@@ -33,11 +33,6 @@
       <TITLE>Source Content (HTML)</TITLE>
      </item>
      <item>
-      <HREF>./%2Fdmo%2Fr_agencytp/objectstructure</HREF>
-      <REL>http://www.sap.com/adt/relations/objectstructure</REL>
-      <TITLE>Object Structure</TITLE>
-     </item>
-     <item>
       <HREF>./%2Fdmo%2Fr_agencytp/enhancement/elements</HREF>
       <REL>http://www.sap.com/adt/relations/enhancements</REL>
       <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>

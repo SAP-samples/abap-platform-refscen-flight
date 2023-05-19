@@ -1,4 +1,4 @@
-"! @testing BDEF:/DMO/I_CARRIER
+"! @testing BDEF:/DMO/I_CarriersLockSingleton_S
 CLASS lthc_carrier DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
@@ -13,10 +13,10 @@ CLASS lthc_carrier DEFINITION FINAL FOR TESTING
       class_teardown.
 
     DATA:
-      failed        TYPE RESPONSE FOR FAILED   EARLY /DMO/I_CarriersLockSingleton_S,
-      reported      TYPE RESPONSE FOR REPORTED EARLY /DMO/I_CarriersLockSingleton_S,
-      failed_late   TYPE RESPONSE FOR FAILED   LATE  /DMO/I_CarriersLockSingleton_S,
-      reported_late TYPE RESPONSE FOR REPORTED LATE  /DMO/I_CarriersLockSingleton_S.
+      failed        TYPE RESPONSE FOR FAILED   EARLY /dmo/i_carrierslocksingleton_s,
+      reported      TYPE RESPONSE FOR REPORTED EARLY /dmo/i_carrierslocksingleton_s,
+      failed_late   TYPE RESPONSE FOR FAILED   LATE  /dmo/i_carrierslocksingleton_s,
+      reported_late TYPE RESPONSE FOR REPORTED LATE  /dmo/i_carrierslocksingleton_s.
 
 
     METHODS:
@@ -26,24 +26,24 @@ CLASS lthc_carrier DEFINITION FINAL FOR TESTING
     METHODS:
       "! Checks if { @link ..lhc_carrier.METH:validateCurrencyCode } behaves correctly if an instance
       "! where Currency is set with an existing one.
-      validateCurrencyCode_success   FOR TESTING RAISING cx_static_check,
+      validatecurrencycode_success   FOR TESTING RAISING cx_static_check,
 
       "! Checks if { @link ..lhc_carrier.METH:validateCurrencyCode } behaves correctly if instances
       "! where Currency is not set.  This should result in filled reported and failed tables.
-      validateCurrencyCode_initial   FOR TESTING RAISING cx_static_check,
+      validatecurrencycode_initial   FOR TESTING RAISING cx_static_check,
 
       "! Checks if { @link ..lhc_carrier.METH:validateCurrencyCode } behaves correctly if instances
       "! where Currency does not exists.  This should result in filled reported and failed tables.
-      validateCurrencyCode_not_exist FOR TESTING RAISING cx_static_check,
+      validatecurrencycode_not_exist FOR TESTING RAISING cx_static_check,
 
 
       "! Checks if { @link ..lhc_carrier.METH:validateName } behaves correctly if an instance
       "! where the Name is set.
-      validateName_success   FOR TESTING RAISING cx_static_check,
+      validatename_success   FOR TESTING RAISING cx_static_check,
 
       "! Checks if { @link ..lhc_carrier.METH:validateName } behaves correctly if instances
       "! where the Name is not set.  This should result in filled reported and failed tables.
-      validateName_initial   FOR TESTING RAISING cx_static_check,
+      validatename_initial   FOR TESTING RAISING cx_static_check,
 
       "! Checks if { @link ..lhc_carrier.METH:get_instance_features } behaves correctly.
       "! The test will hand-over two instances.
@@ -84,22 +84,22 @@ CLASS lthc_carrier IMPLEMENTATION.
     cds_test_environment->destroy( ).
   ENDMETHOD.
 
-  METHOD validateCurrencyCode_success.
+  METHOD validatecurrencycode_success.
     DATA:
-      carrier  TYPE /DMO/I_Carrier,
-      carriers TYPE STANDARD TABLE OF /DMO/I_Carrier.
+      carrier  TYPE /dmo/i_carrier,
+      carriers TYPE STANDARD TABLE OF /dmo/i_carrier.
 
-    carrier = VALUE /DMO/I_Carrier(
-        AirlineID     = airlineid_for_test
-        CurrencyCode  = 'EUR'
+    carrier = VALUE /dmo/i_carrier(
+        airlineid     = airlineid_for_test
+        currencycode  = 'EUR'
       ).
 
     carriers = VALUE #( ( carrier ) ).
     cds_test_environment->insert_test_data( carriers ).
 
-    class_under_test->validateCurrencyCode(
+    class_under_test->validatecurrencycode(
         EXPORTING
-          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-AirlineID ) )
+          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-airlineid ) )
         CHANGING
           failed   = failed_late
           reported = reported_late
@@ -116,7 +116,7 @@ CLASS lthc_carrier IMPLEMENTATION.
 
     "Check that only %tky and %state_area is filled
     cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>mk-off      act = reported_carrier-%is_draft    ).
-    cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID         act = reported_carrier-AirlineID ).
+    cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid         act = reported_carrier-airlineid ).
     cl_abap_unit_assert=>assert_equals( exp = 'VALIDATE_CURRENCY_CODE'  act = reported_carrier-%state_area ).
     cl_abap_unit_assert=>assert_initial( reported_carrier-%op ).
     cl_abap_unit_assert=>assert_initial( reported_carrier-%msg ).
@@ -125,19 +125,19 @@ CLASS lthc_carrier IMPLEMENTATION.
 
   METHOD validatecurrencycode_initial.
     DATA:
-      carrier  TYPE /DMO/I_Carrier,
-      carriers TYPE STANDARD TABLE OF /DMO/I_Carrier.
+      carrier  TYPE /dmo/i_carrier,
+      carriers TYPE STANDARD TABLE OF /dmo/i_carrier.
 
-    carrier = VALUE /DMO/I_Carrier(
-        AirlineID     = airlineid_for_test
+    carrier = VALUE /dmo/i_carrier(
+        airlineid     = airlineid_for_test
       ).
 
     carriers = VALUE #( ( carrier ) ).
     cds_test_environment->insert_test_data( carriers ).
 
-    class_under_test->validateCurrencyCode(
+    class_under_test->validatecurrencycode(
         EXPORTING
-          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-AirlineID ) )
+          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-airlineid ) )
         CHANGING
           failed   = failed_late
           reported = reported_late
@@ -148,8 +148,8 @@ CLASS lthc_carrier IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = 1
                                         act = lines( failed_late-carrier ) ).
 
-    cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID
-                                        act = failed_late-carrier[ 1 ]-AirlineID ).
+    cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid
+                                        act = failed_late-carrier[ 1 ]-airlineid ).
 
 
     cl_abap_unit_assert=>assert_not_initial( reported_late ).
@@ -159,8 +159,8 @@ CLASS lthc_carrier IMPLEMENTATION.
                                         act = lines( reported_late-carrier ) ).
 
     LOOP AT reported_late-carrier INTO DATA(reported_line).
-      cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID
-                                          act = reported_line-AirlineID ).
+      cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid
+                                          act = reported_line-airlineid ).
 
       cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>mk-off      act = reported_line-%is_draft   ).
       cl_abap_unit_assert=>assert_equals( exp = 'VALIDATE_CURRENCY_CODE'  act = reported_line-%state_area ).
@@ -181,20 +181,20 @@ CLASS lthc_carrier IMPLEMENTATION.
 
   METHOD validatecurrencycode_not_exist.
     DATA:
-      carrier  TYPE /DMO/I_Carrier,
-      carriers TYPE STANDARD TABLE OF /DMO/I_Carrier.
+      carrier  TYPE /dmo/i_carrier,
+      carriers TYPE STANDARD TABLE OF /dmo/i_carrier.
 
-    carrier = VALUE /DMO/I_Carrier(
-        AirlineID     = airlineid_for_test
-        CurrencyCode  = 'ÄÖÜ'
+    carrier = VALUE /dmo/i_carrier(
+        airlineid     = airlineid_for_test
+        currencycode  = 'ÄÖÜ'
       ).
 
     carriers = VALUE #( ( carrier ) ).
     cds_test_environment->insert_test_data( carriers ).
 
-    class_under_test->validateCurrencyCode(
+    class_under_test->validatecurrencycode(
         EXPORTING
-          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-AirlineID ) )
+          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-airlineid ) )
         CHANGING
           failed   = failed_late
           reported = reported_late
@@ -205,8 +205,8 @@ CLASS lthc_carrier IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = 1
                                         act = lines( failed_late-carrier ) ).
 
-    cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID
-                                        act = failed_late-carrier[ 1 ]-AirlineID ).
+    cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid
+                                        act = failed_late-carrier[ 1 ]-airlineid ).
 
 
     cl_abap_unit_assert=>assert_not_initial( reported_late ).
@@ -216,8 +216,8 @@ CLASS lthc_carrier IMPLEMENTATION.
                                         act = lines( reported_late-carrier ) ).
 
     LOOP AT reported_late-carrier INTO DATA(reported_line).
-      cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID
-                                          act = reported_line-AirlineID ).
+      cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid
+                                          act = reported_line-airlineid ).
 
       cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>mk-off      act = reported_line-%is_draft   ).
       cl_abap_unit_assert=>assert_equals( exp = 'VALIDATE_CURRENCY_CODE'  act = reported_line-%state_area ).
@@ -236,22 +236,22 @@ CLASS lthc_carrier IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-  METHOD validateName_success.
+  METHOD validatename_success.
     DATA:
-      carrier  TYPE /DMO/I_Carrier,
-      carriers TYPE STANDARD TABLE OF /DMO/I_Carrier.
+      carrier  TYPE /dmo/i_carrier,
+      carriers TYPE STANDARD TABLE OF /dmo/i_carrier.
 
-    carrier = VALUE /DMO/I_Carrier(
-        AirlineID = airlineid_for_test
-        Name      = 'Testing'
+    carrier = VALUE /dmo/i_carrier(
+        airlineid = airlineid_for_test
+        name      = 'Testing'
       ).
 
     carriers = VALUE #( ( carrier ) ).
     cds_test_environment->insert_test_data( carriers ).
 
-    class_under_test->validateName(
+    class_under_test->validatename(
         EXPORTING
-          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-AirlineID ) )
+          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-airlineid ) )
         CHANGING
           failed   = failed_late
           reported = reported_late
@@ -268,28 +268,28 @@ CLASS lthc_carrier IMPLEMENTATION.
 
     "Check that only %tky and %state_area is filled
     cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>mk-off act = reported_carrier-%is_draft    ).
-    cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID    act = reported_carrier-AirlineID ).
+    cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid    act = reported_carrier-airlineid ).
     cl_abap_unit_assert=>assert_equals( exp = 'VALIDATE_NAME'      act = reported_carrier-%state_area ).
     cl_abap_unit_assert=>assert_initial( reported_carrier-%op ).
     cl_abap_unit_assert=>assert_initial( reported_carrier-%msg ).
     cl_abap_unit_assert=>assert_initial( reported_carrier-%element ).
   ENDMETHOD.
 
-  METHOD validateName_initial.
+  METHOD validatename_initial.
     DATA:
-      carrier  TYPE /DMO/I_Carrier,
-      carriers TYPE STANDARD TABLE OF /DMO/I_Carrier.
+      carrier  TYPE /dmo/i_carrier,
+      carriers TYPE STANDARD TABLE OF /dmo/i_carrier.
 
-    carrier = VALUE /DMO/I_Carrier(
-        AirlineID = airlineid_for_test
+    carrier = VALUE /dmo/i_carrier(
+        airlineid = airlineid_for_test
       ).
 
     carriers = VALUE #( ( carrier ) ).
     cds_test_environment->insert_test_data( carriers ).
 
-    class_under_test->validateName(
+    class_under_test->validatename(
         EXPORTING
-          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-AirlineID ) )
+          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier-airlineid ) )
         CHANGING
           failed   = failed_late
           reported = reported_late
@@ -300,8 +300,8 @@ CLASS lthc_carrier IMPLEMENTATION.
     cl_abap_unit_assert=>assert_equals( exp = 1
                                         act = lines( failed_late-carrier ) ).
 
-    cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID
-                                        act = failed_late-carrier[ 1 ]-AirlineID ).
+    cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid
+                                        act = failed_late-carrier[ 1 ]-airlineid ).
 
 
     cl_abap_unit_assert=>assert_not_initial( reported_late ).
@@ -311,15 +311,15 @@ CLASS lthc_carrier IMPLEMENTATION.
                                         act = lines( reported_late-carrier ) ).
 
     LOOP AT reported_late-carrier INTO DATA(reported_line).
-      cl_abap_unit_assert=>assert_equals( exp = carrier-AirlineID
-                                          act = reported_line-AirlineID ).
+      cl_abap_unit_assert=>assert_equals( exp = carrier-airlineid
+                                          act = reported_line-airlineid ).
 
       cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>mk-off act = reported_line-%is_draft   ).
       cl_abap_unit_assert=>assert_equals( exp = 'VALIDATE_NAME'      act = reported_line-%state_area ).
 
       IF reported_line-%msg IS BOUND.
         " actual message case
-        cl_abap_unit_assert=>assert_equals( act = reported_line-%element-Name
+        cl_abap_unit_assert=>assert_equals( act = reported_line-%element-name
                                             exp = if_abap_behv=>mk-on ).
 
       ELSE.
@@ -334,25 +334,25 @@ CLASS lthc_carrier IMPLEMENTATION.
   METHOD get_instance_features.
     DATA:
       result                     TYPE  TABLE FOR INSTANCE FEATURES RESULT /dmo/i_carrierslocksingleton_s\\carrier,
-      carrier_with_connection    TYPE /DMO/I_Carrier,
-      carrier_without_connection TYPE /DMO/I_Carrier,
-      carriers                   TYPE STANDARD TABLE OF /DMO/I_Carrier,
+      carrier_with_connection    TYPE /dmo/i_carrier,
+      carrier_without_connection TYPE /dmo/i_carrier,
+      carriers                   TYPE STANDARD TABLE OF /dmo/i_carrier,
       connection                 TYPE /dmo/connection,
       connections                TYPE STANDARD TABLE OF /dmo/connection.
 
-    carrier_with_connection = VALUE /DMO/I_Carrier(
-        AirlineID = 'AAA'
+    carrier_with_connection = VALUE /dmo/i_carrier(
+        airlineid = 'AAA'
       ).
 
-    carrier_without_connection = VALUE /DMO/I_Carrier(
-        AirlineID = 'BBB'
+    carrier_without_connection = VALUE /dmo/i_carrier(
+        airlineid = 'BBB'
       ).
 
     carriers = VALUE #( ( carrier_with_connection ) ( carrier_without_connection ) ).
     cds_test_environment->insert_test_data( carriers ).
 
     connection = VALUE /dmo/connection(
-        carrier_id      = carrier_with_connection-AirlineID
+        carrier_id      = carrier_with_connection-airlineid
         connection_id   = '1234'
       ).
     connections = VALUE #( ( connection ) ).
@@ -361,8 +361,8 @@ CLASS lthc_carrier IMPLEMENTATION.
     class_under_test->get_instance_features(
         EXPORTING
           keys               = VALUE #(
-                                   ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier_with_connection-AirlineID )
-                                   ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier_without_connection-AirlineID )
+                                   ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier_with_connection-airlineid )
+                                   ( %is_draft = if_abap_behv=>mk-off  airlineid = carrier_without_connection-airlineid )
                                  )
           requested_features = VALUE #( %delete = if_abap_behv=>mk-on )
         CHANGING
@@ -376,24 +376,25 @@ CLASS lthc_carrier IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals( exp = 1
                                         act = lines( reported-carrier ) ).
-    cl_abap_unit_assert=>assert_equals( exp = carrier_with_connection-AirlineID
-                                        act = reported-carrier[ 1 ]-AirlineID ).
+    cl_abap_unit_assert=>assert_equals( exp = carrier_with_connection-airlineid
+                                        act = reported-carrier[ 1 ]-airlineid ).
 
     cl_abap_unit_assert=>assert_equals( exp = 2
                                         act = lines( result ) ).
 
-    cl_abap_unit_assert=>assert_not_initial( VALUE #( result[ KEY entity  AirlineID = carrier_with_connection-AirlineID ] OPTIONAL ) ).
+    cl_abap_unit_assert=>assert_not_initial( VALUE #( result[ KEY entity  airlineid = carrier_with_connection-airlineid ] OPTIONAL ) ).
     cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>fc-o-disabled
-                                        act = result[ KEY entity  AirlineID = carrier_with_connection-AirlineID ]-%delete ).
+                                        act = result[ KEY entity  airlineid = carrier_with_connection-airlineid ]-%delete ).
 
-    cl_abap_unit_assert=>assert_not_initial( VALUE #( result[ KEY entity  AirlineID = carrier_without_connection-AirlineID ] OPTIONAL ) ).
+    cl_abap_unit_assert=>assert_not_initial( VALUE #( result[ KEY entity  airlineid = carrier_without_connection-airlineid ] OPTIONAL ) ).
     cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>fc-o-enabled
-                                        act = result[ KEY entity  AirlineID = carrier_without_connection-AirlineID ]-%delete ).
+                                        act = result[ KEY entity  airlineid = carrier_without_connection-airlineid ]-%delete ).
 
   ENDMETHOD.
 
 ENDCLASS.
 
+"! @testing BDEF:/DMO/I_CarriersLockSingleton_S
 CLASS lthc_carrierslocksingleton DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
@@ -410,17 +411,17 @@ CLASS lthc_carrierslocksingleton IMPLEMENTATION.
 
   METHOD get_global_authorizations.
     DATA:
-      class_under_test         TYPE REF TO lhc_CarriersLockSingleton,
-      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /DMO/I_CarriersLockSingleton_S\\CarriersLockSingleton,
-      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /DMO/I_CarriersLockSingleton_S\\CarriersLockSingleton,
-      reported                 TYPE RESPONSE  FOR REPORTED EARLY /DMO/I_CarriersLockSingleton_S.
+      class_under_test         TYPE REF TO lhc_carrierslocksingleton,
+      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_carrierslocksingleton_s\\carrierslocksingleton,
+      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_carrierslocksingleton_s\\carrierslocksingleton,
+      reported                 TYPE RESPONSE  FOR REPORTED EARLY /dmo/i_carrierslocksingleton_s.
 
 
     CREATE OBJECT class_under_test FOR TESTING.
 
     requested_authorizations = VALUE #(
         %update      = if_abap_behv=>mk-on
-        %action-Edit = if_abap_behv=>mk-on
+        %action-edit = if_abap_behv=>mk-on
       ).
 
     class_under_test->get_global_authorizations(
@@ -437,16 +438,17 @@ CLASS lthc_carrierslocksingleton IMPLEMENTATION.
 
 ENDCLASS.
 
-CLASS ltsc_I_CARRIERSLOCKSINGLETON_S DEFINITION FINAL FOR TESTING
+"! @testing BDEF:/DMO/I_CarriersLockSingleton_S
+CLASS ltsc_i_carrierslocksingleton_s DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
     DATA:
-      save_handler TYPE REF TO lsc_I_CARRIERSLOCKSINGLETON_S,
-      mapped       TYPE RESPONSE FOR MAPPED   LATE /DMO/I_CarriersLockSingleton_S,
-      failed       TYPE RESPONSE FOR FAILED   LATE /DMO/I_CarriersLockSingleton_S,
-      reported     TYPE RESPONSE FOR REPORTED LATE /DMO/I_CarriersLockSingleton_S.
+      save_handler TYPE REF TO lsc_i_carrierslocksingleton_s,
+      mapped       TYPE RESPONSE FOR MAPPED   LATE /dmo/i_carrierslocksingleton_s,
+      failed       TYPE RESPONSE FOR FAILED   LATE /dmo/i_carrierslocksingleton_s,
+      reported     TYPE RESPONSE FOR REPORTED LATE /dmo/i_carrierslocksingleton_s.
 
     METHODS:
       setup,
@@ -462,7 +464,7 @@ CLASS ltsc_I_CARRIERSLOCKSINGLETON_S DEFINITION FINAL FOR TESTING
 ENDCLASS.
 
 
-CLASS ltsc_I_CARRIERSLOCKSINGLETON_S IMPLEMENTATION.
+CLASS ltsc_i_carrierslocksingleton_s IMPLEMENTATION.
 
   METHOD setup.
     CLEAR:
@@ -476,15 +478,15 @@ CLASS ltsc_I_CARRIERSLOCKSINGLETON_S IMPLEMENTATION.
 
   METHOD save_modified.
     TRY.
-    save_handler->save_modified(
-        EXPORTING
-          create   = value #(  )
-          update   = value #(  )
-          delete   = value #(  )
-        CHANGING
-          reported = reported
-      ).
-    _check_all_initial( ).
+        save_handler->save_modified(
+            EXPORTING
+              create   = VALUE #(  )
+              update   = VALUE #(  )
+              delete   = VALUE #(  )
+            CHANGING
+              reported = reported
+          ).
+        _check_all_initial( ).
       CATCH cx_root INTO DATA(root).
         cl_abap_unit_assert=>fail( msg = root->get_text( ) ).
     ENDTRY.
