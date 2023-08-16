@@ -83,7 +83,8 @@ class ltcl_using_mockemlapi_variant implementation.
    create_travel_instances = value #( ( %cid = 'Travel_987' %is_draft = if_abap_behv=>mk-on AgencyID = '000111' CustomerID = '000006' description = 'Travel_987' %control-AgencyID = if_abap_behv=>mk-on
                                                                                                                      %control-CustomerID = if_abap_behv=>mk-on
                                                                                                                      %control-description = if_abap_behv=>mk-on )
-                                      ( %cid = 'Travel_988' %is_draft = if_abap_behv=>mk-on AgencyID = '000111' CustomerID = '000006' description = 'Travel_988' BeginDate = sy-datum + 10 EndDate = sy-datum ) ).
+                                      ( %cid = 'Travel_988' %is_draft = if_abap_behv=>mk-on AgencyID = '000111' CustomerID = '000006' description = 'Travel_988'
+                                        BeginDate = cl_abap_context_info=>get_system_date( ) + 10 EndDate = cl_abap_context_info=>get_system_date( ) ) ).
                                                                                                                                         "BeginDate > EndDate. Should fail due to FEATURE CONTROL
                                       "%control structure is ignored in MOCKEMLAPI variant, while matching the EML input with configured input.
 
@@ -156,11 +157,11 @@ class ltcl_using_mockemlapi_variant implementation.
   "Step 1: Setup test data instances for all operations on all entities in Modify EML (Here only create_ba ).
    data cba_booking_instances type table for create /DMO/R_TRAVEL_D\_Booking.
    cba_booking_instances = value #( ( TravelUUID = '987' %is_draft = if_abap_behv=>mk-on
-                                      %target = value #( ( %is_draft = if_abap_behv=>mk-on %cid = 'Travel_987_Booking_001' AirlineID = '000111' CustomerID = '000006' FlightDate = sy-datum + 10 )
-                                                         ( %is_draft = if_abap_behv=>mk-on %cid = 'Travel_987_Booking_002' AirlineID = '000112' CustomerID = '000007' FlightDate = sy-datum + 10 ) )  )
+                                      %target = value #( ( %is_draft = if_abap_behv=>mk-on %cid = 'Travel_987_Booking_001' AirlineID = '000111' CustomerID = '000006' FlightDate = cl_abap_context_info=>get_system_date( ) + 10 )
+                                                         ( %is_draft = if_abap_behv=>mk-on %cid = 'Travel_987_Booking_002' AirlineID = '000112' CustomerID = '000007' FlightDate = cl_abap_context_info=>get_system_date( ) + 10 ) )  )
                                                                                                       "Creation of bookings for TravelUUID 987 should pass
                                      ( TravelUUID = '988' %is_draft = if_abap_behv=>mk-on
-                                       %target = value #( ( %is_draft = if_abap_behv=>mk-on %cid = 'Travel_988_Booking_001' AirlineID = '000111' CustomerID = '000006' FlightDate = sy-datum + 10 ) )
+                                       %target = value #( ( %is_draft = if_abap_behv=>mk-on %cid = 'Travel_988_Booking_001' AirlineID = '000111' CustomerID = '000006' FlightDate = cl_abap_context_info=>get_system_date( ) + 10 ) )
                                      ) ). "Creation of booking for TravelUUID 988 should fail, assuming TravelUUID 988 did not exist
 
   "Step 2: Define and set up the response structures to be returned for Modify EML in CUT
@@ -250,12 +251,12 @@ class ltcl_using_mockemlapi_variant implementation.
                                       %target = value #( (  %cid = 'Travel_987_Booking_001' %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000006' %control-CustomerID = if_abap_behv=>mk-on
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on )
                                                          (  %cid = 'Travel_987_Booking_002' %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000007' %control-CustomerID = if_abap_behv=>mk-on
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on
                                                             ) )  )
                                                                                                       "Creation of bookings for TravelUUID 987 should pass
@@ -715,7 +716,7 @@ class ltcl_using_mockemlapi_variant implementation.
                                       %target = value #( (  %cid = 'Travel_987_Booking_001' %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000006' %control-CustomerID = if_abap_behv=>mk-on
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on )
                                                            )
                                                                                                       "Creation of bookings for TravelUUID 987 should pass
@@ -745,11 +746,11 @@ class ltcl_using_mockemlapi_variant implementation.
     cl_abap_unit_assert=>assert_equals( act = lines( mapped_cut-booking ) exp = 1 ).
     cl_abap_unit_assert=>assert_equals( act = lines( failed_cut-booking ) exp = 1 ).
 
-    cl_abap_unit_assert=>assert_equals( act = mapped_cut-travel[ 1 ]-TravelUUID exp = conv sysuuid_x16('987') ).
+    cl_abap_unit_assert=>assert_equals( act = mapped_cut-travel[ 1 ]-TravelUUID exp = conv sysuuid_x16( '987' ) ).
 
-    cl_abap_unit_assert=>assert_equals( act = mapped_cut-booking[ 1 ]-%key-BookingUUID exp = conv sysuuid_x16('001') ).
+    cl_abap_unit_assert=>assert_equals( act = mapped_cut-booking[ 1 ]-%key-BookingUUID exp = conv sysuuid_x16( '001' ) ).
 
-    cl_abap_unit_assert=>assert_equals( act = failed_cut-booking[ 1 ]-%tky-BookingUUID exp = conv sysuuid_x16('002') ).
+    cl_abap_unit_assert=>assert_equals( act = failed_cut-booking[ 1 ]-%tky-BookingUUID exp = conv sysuuid_x16( '002' ) ).
 
 
   endmethod.
@@ -900,13 +901,13 @@ class ltcl_using_mockemlapi_variant implementation.
 
   "For Creating Booking by Association on Travel entity
    data cba_booking_instances type table for create /DMO/R_TRAVEL_D\_Booking.
-   cba_booking_instances = value #( ( %cid_ref = 'CID_100' %tky-%is_draft = if_abap_behv=>mk-on
+   cba_booking_instances = value #( ( %cid_ref = 'CID_100' %is_draft = if_abap_behv=>mk-on
                                       %target = value #( (  %cid = 'CID_200' customerid = '9876' flightprice = 100
                                                             %is_draft = if_abap_behv=>mk-on  ) )  )  ).
 
   "For Creating booking_supplement by association on Booking entity
    data cba_booking_suppl_instances type table for create /DMO/R_TRAVEL_D\\booking\_BookingSupplement.
-   cba_booking_suppl_instances = value #( (  %cid_ref = 'CID_200' %tky-%is_draft = if_abap_behv=>mk-on
+   cba_booking_suppl_instances = value #( (  %cid_ref = 'CID_200' %is_draft = if_abap_behv=>mk-on
                                              %target  = value #( ( %cid = 'CID_300' %data-supplementid  = '007'  BookSupplPrice  = 100
                                                                    %is_draft = if_abap_behv=>mk-on ) ) ) ).
 
@@ -972,11 +973,11 @@ class ltcl_using_mockemlapi_variant implementation.
     cl_abap_unit_assert=>assert_equals( act = mapped_cut-booking[ 1 ]-%cid exp = 'CID_200' ).
     cl_abap_unit_assert=>assert_equals( act = mapped_cut-bookingsupplement[ 1 ]-%cid exp = 'CID_300' ).
 
-    cl_abap_unit_assert=>assert_equals( act = mapped_cut-travel[ 1 ]-%tky-%is_draft exp = if_abap_behv=>mk-on ).
+    cl_abap_unit_assert=>assert_equals( act = mapped_cut-travel[ 1 ]-%is_draft exp = if_abap_behv=>mk-on ).
 
-    cl_abap_unit_assert=>assert_equals( act = mapped_cut-travel[ 1 ]-%pky-%key-TravelUUID exp = conv sysuuid_x16( '987' ) ).
+    cl_abap_unit_assert=>assert_equals( act = mapped_cut-travel[ 1 ]-TravelUUID exp = conv sysuuid_x16( '987' ) ).
     cl_abap_unit_assert=>assert_equals( act = mapped_cut-booking[ 1 ]-BookingUUID exp = conv sysuuid_x16( '001' ) ).
-    cl_abap_unit_assert=>assert_equals( act = mapped_cut-bookingsupplement[ 1 ]-%pky-BookSupplUUID exp = conv sysuuid_x16( '01' ) ).
+    cl_abap_unit_assert=>assert_equals( act = mapped_cut-bookingsupplement[ 1 ]-BookSupplUUID exp = conv sysuuid_x16( '01' ) ).
 
   endmethod.
 
@@ -991,8 +992,8 @@ class ltcl_using_mockemlapi_variant implementation.
   "Step 1: Setup test data instances for all operations on all entities in Modify EML.
   "For delete on Travel entity
    data delete_travel_instances type table for delete /DMO/R_TRAVEL_D.
-   delete_travel_instances = value #( ( %pky-%key-TravelUUID = '987' %tky-%is_draft = if_abap_behv=>mk-on ) "Should pass
-                                      ( %pky-TravelUUID = '988' %is_draft = if_abap_behv=>mk-on ) ).
+   delete_travel_instances = value #( ( TravelUUID = '987' %is_draft = if_abap_behv=>mk-on ) "Should pass
+                                      ( TravelUUID = '988' %is_draft = if_abap_behv=>mk-on ) ).
                                                                                 "Should fail, assuming Travel 988 does not exist
 
   "Step 2: Define and set up the response structures to be returned for Modify EML in CUT
@@ -1064,8 +1065,8 @@ class ltcl_using_mockemlapi_variant implementation.
   "Step 1: Setup test data instances for read operation in READ EML.
   "For read on travel
    data read_travel_instances type table for read import /DMO/R_TRAVEL_D.
-   read_travel_instances = value #( ( %is_draft = if_abap_behv=>mk-on TravelUUID = '987') "travel returned
-                                    ( %is_draft = if_abap_behv=>mk-on TravelUUID = '988') ). "read should fail for 988 assuming the instance does not exist
+   read_travel_instances = value #( ( %is_draft = if_abap_behv=>mk-on TravelUUID = '987' ) "travel returned
+                                    ( %is_draft = if_abap_behv=>mk-on TravelUUID = '988' ) ). "read should fail for 988 assuming the instance does not exist
 
   "Step 2: Define and set up the response structures to be returned for Read EML in CUT
     data result type table for read result /DMO/R_TRAVEL_D.
@@ -1132,7 +1133,7 @@ class ltcl_using_mockemlapi_variant implementation.
   "For read booking by association on travel
    data rba_booking_instances type table for read import /DMO/R_TRAVEL_D\_Booking.
    rba_booking_instances = value #( ( %is_draft = if_abap_behv=>mk-on TravelUUID = '987' ) "Bookings returned
-                                    ( %is_draft = if_abap_behv=>mk-on TravelUUID = '988') ). "read_ba should fail for 988 assuming the instance does not exist
+                                    ( %is_draft = if_abap_behv=>mk-on TravelUUID = '988' ) ). "read_ba should fail for 988 assuming the instance does not exist
 
   "Step 2: Define and set up the response structures to be returned for Read EML in CUT
     data result type table for read result /DMO/R_TRAVEL_D\_Booking.
@@ -1785,12 +1786,12 @@ class ltcl_using_txbufdbl_variant implementation.
                                       %target = value #( (  %cid = 'Travel_1_Booking_1' %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000006' %control-CustomerID = if_abap_behv=>mk-on "For mandatory fields, control structure should be marked.
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on )
                                                          (  %cid = 'Travel_1_Booking_2' %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000007' %control-CustomerID = if_abap_behv=>mk-on
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on
                                                             ) )  )
                                                                                                       "Creation of bookings for traveluuid 1 should pass
@@ -1798,7 +1799,7 @@ class ltcl_using_txbufdbl_variant implementation.
                                        %target = value #( (  %cid = 'Travel_2_Booking_1' %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000006' %control-CustomerID = if_abap_behv=>mk-on
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on ) )
                                      ) ). "Creation of booking for traveluuid 1 should fail, assuming traveluuid 1 did not exist
 
@@ -1962,7 +1963,7 @@ class ltcl_using_txbufdbl_variant implementation.
                          value #( ( %cid        = 'Travel_1'    " Preliminary ID for new travel instance
                                     %is_draft = if_abap_behv=>mk-on
                                     CustomerID  = '000006'
-                                    description = 'Travel 1') )
+                                    description = 'Travel 1' ) )
              create by \_booking fields ( connectionid CustomerID bookingstatus FlightDate ) with
                          value #( ( %cid_ref  = 'Travel_1'      "refers to the root (travel instance)
                                     %is_draft = if_abap_behv=>mk-on
@@ -1970,13 +1971,13 @@ class ltcl_using_txbufdbl_variant implementation.
                                                            %is_draft = if_abap_behv=>mk-on
                                                            connectionid = '1234'
                                                            CustomerID = '000006'
-                                                           FlightDate = sy-datum + 10
+                                                           FlightDate = cl_abap_context_info=>get_system_date( ) + 10
                                                            bookingstatus = 'B' )
                                                          ( %cid = 'Travel_1_Booking_2' " Preliminary ID for new booking instance
                                                            %is_draft = if_abap_behv=>mk-on
                                                            connectionid = '2345'
                                                            CustomerID = '000006'
-                                                           FlightDate = sy-datum + 10
+                                                           FlightDate = cl_abap_context_info=>get_system_date( ) + 10
                                                            bookingstatus = 'B' ) ) ) )
        MAPPED   data(mapped_test_data)
        FAILED   data(failed_test_data)
@@ -2104,7 +2105,7 @@ class ltcl_using_txbufdbl_variant implementation.
                                       %target = value #( (  %cid = 'Travel_987_Booking_001'  %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000006' %control-CustomerID = if_abap_behv=>mk-on "For mandatory fields, control structure should be marked.
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on ) ) ) ).
 
 
@@ -2202,7 +2203,7 @@ class ltcl_using_txbufdbl_variant implementation.
                                       %target = value #( (  %cid = 'Travel_987_Booking_001' %is_draft = if_abap_behv=>mk-on
                                                             connectionid = 'C1' %control-connectionid = if_abap_behv=>mk-on
                                                             CustomerID = '000006' %control-CustomerID = if_abap_behv=>mk-on "For mandatory fields, control structure should be marked.
-                                                            FlightDate = sy-datum + 10 %control-FlightDate = if_abap_behv=>mk-on
+                                                            FlightDate = cl_abap_context_info=>get_system_date( ) + 10 %control-FlightDate = if_abap_behv=>mk-on
                                                             bookingstatus = 'B' %control-bookingstatus = if_abap_behv=>mk-on ) ) ) ).
 
 
@@ -2560,13 +2561,13 @@ class ltcl_using_txbufdbl_variant implementation.
                                                            %is_draft = if_abap_behv=>mk-on
                                                            connectionid = '1234'
                                                            CustomerID = '000006'
-                                                           FlightDate = sy-datum + 10
+                                                           FlightDate = cl_abap_context_info=>get_system_date( ) + 10
                                                            bookingstatus = 'B' )
                                                          ( %cid = 'Travel_1_Booking_2' " Preliminary ID for new booking instance
                                                            %is_draft = if_abap_behv=>mk-on
                                                            connectionid = '2345'
                                                            CustomerID = '000006'
-                                                           FlightDate = sy-datum + 10
+                                                           FlightDate = cl_abap_context_info=>get_system_date( ) + 10
                                                            bookingstatus = 'B' ) ) ) )
        MAPPED   data(mapped_test_data)
        FAILED   data(failed_test_data)

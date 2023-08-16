@@ -48,7 +48,7 @@ etag master LocalLastChangedAt
 
   draft action Resume with additional implementation;
   draft action Edit;
-  draft action Activate;
+  draft action Activate optimized;
   draft action Discard;
 
   draft determine action Prepare

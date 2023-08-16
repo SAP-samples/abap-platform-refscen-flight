@@ -1,0 +1,6 @@
+extension using interface /dmo/i_agencytp;
+
+extend behavior for /DMO/Agency
+{
+  managed event /DMO/AgencyReviewCreatedCntct on /DMO/AgencyReviewCreated parameter /DMO/ZZ_P_AgencyReview_Contact;
+}

@@ -1,5 +1,5 @@
 projection;
-strict;
+strict(2);
 
 define behavior for /DMO/C_Travel_U alias travel
 

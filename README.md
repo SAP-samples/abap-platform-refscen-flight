@@ -40,10 +40,10 @@ Lastly, the reuse package contains the package `/DMO/FLIGHT_REUSE_AGENCY` which 
 NOTE: The service bindings of the develop scenarios are imported with the warning: `To enable activation of local service endpoint, generate service artifacts`. 
 
 ## Configuration
-
 To activate all development objects from the `/DMO/FLIGHT` package: 
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
 2. In the dialog that appears, select all development objects in the transport request (that you created for the demo content installation) and choose `Activate`. (The activation may take a few minutes.) 
+3. Service definitions need a provider contract before they can be released for the release contract <em>Extend (C0)</em>. The service definition /DMO/UI_AGENCY from the package /DMO/FLIGHT_REUSE_AGENCY is shipped without this release contract for maintenance reasons and does not contain a provider contract. If you want to release the service definition /DMO/UI_AGENCY for the release contract <em>Extend (C0)</em>, you need to define a suitable provider contract first. You can also directly copy the source code from [service_definition_agency](service_definition_agency). Activate the service definition after.
 
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish` or choose `Publish local service endpoint` in the top right corner of the editor.
@@ -58,6 +58,6 @@ NOTE: The namespace /DMO/ is reserved for the demo content. Apart from the downl
 This project is provided "as-is": there is no guarantee that raised issues will be answered or addressed in future releases.
 
 ## License
-Copyright (c) 2018-2022 SAP SE or an SAP affiliate company. All rights reserved.
+Copyright (c) 2018-2023 SAP SE or an SAP affiliate company. All rights reserved.
 This project is licensed under the SAP Sample Code License except as noted otherwise in the [LICENSE](LICENSES/Apache-2.0.txt) file.
 

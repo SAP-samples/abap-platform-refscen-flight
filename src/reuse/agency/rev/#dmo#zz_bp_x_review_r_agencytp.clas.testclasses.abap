@@ -312,9 +312,12 @@ CLASS ltcl_sc_r_agency DEFINITION FINAL FOR TESTING
   RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
+    CONSTANTS agency_event  TYPE c length 30 VALUE '/DMO/AGENCYREVIEWCREATED'.
+    CONSTANTS agency_entity TYPE abp_entity_name VALUE '/DMO/I_AGENCYTP'.
     CLASS-DATA class_under_test       TYPE REF TO lsc_r_agency.
     CLASS-DATA sql_test_environment   TYPE REF TO if_osql_test_environment.
     CLASS-DATA cds_test_environment   TYPE REF TO if_cds_test_environment.
+    CLASS-DATA event_test_environment TYPE REF TO if_rap_event_test_environment.
 
     CLASS-METHODS class_setup.
     CLASS-METHODS class_teardown.
@@ -329,6 +332,18 @@ CLASS ltcl_sc_r_agency DEFINITION FINAL FOR TESTING
     "! new numbers for <em>ReviewID</em> with all possible permutations.
     METHODS adjust_numbers                FOR TESTING RAISING cx_static_check.
 
+    "! Checks that { @link ..lsc_R_AGENCY.METH:save_modified } raises no
+    "! RAP Business Events if no review is created.
+    METHODS save_md_no_review_created     FOR TESTING.
+
+    "! Checks that { @link ..lsc_R_AGENCY.METH:save_modified } raises one
+    "! RAP Business Event with the expected payload if one review is created.
+    METHODS save_md_one_review_created    FOR TESTING.
+
+    "! Checks that { @link ..lsc_R_AGENCY.METH:save_modified } raises one
+    "! RAP Business Event with the expected payload if multiple reviews are created.
+    METHODS save_md_multi_reviews_created FOR TESTING.
+
 ENDCLASS.
 
 
@@ -338,14 +353,16 @@ CLASS ltcl_sc_r_agency IMPLEMENTATION.
   METHOD class_setup.
     CREATE OBJECT class_under_test FOR TESTING.
     sql_test_environment = cl_osql_test_environment=>create( i_dependency_list = VALUE #( ( '/DMO/ZZ_AGN_REVA' ) ) ).
-    cds_test_environment = cl_cds_test_environment=>create( i_for_entity               = '/DMO/I_AGENCYTP'
+    cds_test_environment = cl_cds_test_environment=>create( i_for_entity               = agency_entity
                                                             i_select_base_dependencies = abap_true ).
+    event_test_environment = cl_rap_event_test_environment=>create( VALUE #( ( entity_name = agency_entity event_name = agency_event ) ) ).
   ENDMETHOD.
 
 
   METHOD setup.
     sql_test_environment->clear_doubles( ).
     cds_test_environment->clear_doubles( ).
+    event_test_environment->clear( ).
   ENDMETHOD.
 
 
@@ -357,6 +374,7 @@ CLASS ltcl_sc_r_agency IMPLEMENTATION.
   METHOD class_teardown.
     sql_test_environment->destroy( ).
     cds_test_environment->destroy( ).
+    event_test_environment->destroy( ).
   ENDMETHOD.
 
 
@@ -403,5 +421,118 @@ CLASS ltcl_sc_r_agency IMPLEMENTATION.
                                         act = act_mapped ).
   ENDMETHOD.
 
+  METHOD save_md_no_review_created.
+
+    " Prepare
+    DATA reported TYPE RESPONSE FOR REPORTED LATE /dmo/i_agencytp.
+
+    " Execute
+    class_under_test->save_modified( EXPORTING create   = VALUE #( )
+                                               update   = VALUE #( )
+                                               delete   = VALUE #( )
+                                     CHANGING  reported = reported ).
+
+    " Verify
+    event_test_environment->get_event( entity_name = agency_entity event_name = agency_event )->verify( )->is_raised_times( 0 ).
+
+  ENDMETHOD.
+
+
+  METHOD save_md_one_review_created.
+
+    " Prepare
+    DATA agency_mock_data TYPE STANDARD TABLE OF /dmo/agency.
+
+    agency_mock_data = VALUE #( ( agency_id = '1' email_address = 'test@test.example' ) ).
+    cds_test_environment->insert_test_data( agency_mock_data ).
+
+    DATA create TYPE REQUEST FOR CHANGE /dmo/i_agencytp.
+    create-/dmo/zz_review = VALUE #( ( agencyid        = '1'
+                                       reviewid        = '1'
+                                       rating          = '1'
+                                       freetextcomment = 'Bad' ) ).
+    DATA reported TYPE RESPONSE FOR REPORTED LATE /dmo/i_agencytp.
+
+
+    " Execute
+    class_under_test->save_modified( EXPORTING create   = create
+                                               update   = VALUE #( )
+                                               delete   = VALUE #( )
+                                     CHANGING  reported = reported ).
+
+    " Verify
+    event_test_environment->get_event( entity_name = agency_entity event_name = agency_event )->verify( )->is_raised_times( 1 ).
+
+    DATA event_payload_act TYPE TABLE FOR EVENT /dmo/i_agencytp~/dmo/agencyreviewcreated.
+    event_payload_act = event_test_environment->get_event( entity_name  = agency_entity event_name = agency_event )->get_payload( )->*.
+
+    DATA event_payload_exp TYPE TABLE FOR EVENT /dmo/i_agencytp~/dmo/agencyreviewcreated.
+    event_payload_exp = VALUE #( ( agencyid        = '1'
+                                   reviewid        = '1'
+                                   rating          = '1'
+                                   freetextcomment = 'Bad'
+                                   emailaddress    = 'test@test.example' ) ).
+
+    cl_abap_unit_assert=>assert_equals( act = event_payload_act exp = event_payload_exp ).
+
+  ENDMETHOD.
+
+  METHOD save_md_multi_reviews_created.
+
+    " Prepare
+    DATA agency_mock_data TYPE STANDARD TABLE OF /dmo/agency.
+
+    agency_mock_data = VALUE #( ( agency_id = '1' email_address = 'test@test.example' )
+                                ( agency_id = '2' email_address = 'test2@test.example' ) ).
+    cds_test_environment->insert_test_data( agency_mock_data ).
+
+    DATA create TYPE REQUEST FOR CHANGE /dmo/i_agencytp.
+    create-/dmo/zz_review = VALUE #( ( agencyid        = '1'
+                                       reviewid        = '1'
+                                       rating          = '1'
+                                       freetextcomment = 'Bad' )
+                                     ( agencyid        = '1'
+                                       reviewid        = '2'
+                                       rating          = '4'
+                                       freetextcomment = 'Good' )
+                                     ( agencyid        = '2'
+                                       reviewid        = '1'
+                                       rating          = '2'
+                                       freetextcomment = 'Medium' ) ).
+    DATA reported TYPE RESPONSE FOR REPORTED LATE /dmo/i_agencytp.
+
+
+    " Execute
+    class_under_test->save_modified( EXPORTING create   = create
+                                               update   = VALUE #( )
+                                               delete   = VALUE #( )
+                                     CHANGING  reported = reported ).
+
+    " Verify
+    event_test_environment->get_event( entity_name = agency_entity event_name = agency_event )->verify( )->is_raised_times( 1 ).
+
+    DATA event_payload_act TYPE TABLE FOR EVENT /dmo/i_agencytp~/dmo/agencyreviewcreated.
+    event_payload_act = event_test_environment->get_event( entity_name  = agency_entity event_name = agency_event )->get_payload( )->*.
+
+    DATA event_payload_exp TYPE TABLE FOR EVENT /dmo/i_agencytp~/dmo/agencyreviewcreated.
+    event_payload_exp = VALUE #( ( agencyid        = '1'
+                                   reviewid        = '1'
+                                   rating          = '1'
+                                   freetextcomment = 'Bad'
+                                   emailaddress    = 'test@test.example' )
+                                 ( agencyid        = '1'
+                                   reviewid        = '2'
+                                   rating          = '4'
+                                   freetextcomment = 'Good'
+                                   emailaddress    = 'test@test.example' )
+                                 ( agencyid        = '2'
+                                   reviewid        = '1'
+                                   rating          = '2'
+                                   freetextcomment = 'Medium'
+                                   emailaddress    = 'test2@test.example' ) ).
+
+    cl_abap_unit_assert=>assert_equals( act = event_payload_act exp = event_payload_exp ).
+
+  ENDMETHOD.
 
 ENDCLASS.

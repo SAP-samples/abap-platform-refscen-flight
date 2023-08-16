@@ -34,7 +34,7 @@ CLASS lc_test_data_config IMPLEMENTATION.
     gt_customer =  VALUE #( ( customer_id = '00010' ##NO_TEXT
                               first_name = 'John'
                               last_name = 'doe'
-                              title ='Mr.'
+                              title = 'Mr.'
                               street = 'wall street'
                               postal_code = '560056'
                               city = 'berlin'

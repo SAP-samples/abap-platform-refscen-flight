@@ -43,6 +43,12 @@
        <TYPE>application/vnd.sap.adt.businessservices.semanticversion.v1+xml</TYPE>
        <TITLE>SemanticVersion</TITLE>
       </item>
+      <item>
+       <HREF>./%2Fdmo%2Fui_travel_appr_m_o2</HREF>
+       <REL>http://www.sap.com/adt/relations/source</REL>
+       <TYPE>text/html</TYPE>
+       <TITLE>Landing Page (HTML)</TITLE>
+      </item>
      </LINKS>
      <RESPONSIBLE>BARZEWSKI</RESPONSIBLE>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
