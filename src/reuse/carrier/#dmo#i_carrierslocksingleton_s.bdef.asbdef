@@ -16,7 +16,7 @@ authorization master ( global )
   field ( readonly ) CarrierSingletonID;
 
   draft action Edit;
-  draft action Activate;
+  draft action Activate optimized;
   draft action Discard;
   draft action Resume;
   draft determine action Prepare

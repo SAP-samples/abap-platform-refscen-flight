@@ -4,8 +4,10 @@ CLASS ltc_supplement DEFINITION FINAL FOR TESTING
   RISK LEVEL HARMLESS.
   PRIVATE SECTION.
 
-    CLASS-DATA: class_under_test     TYPE REF TO lhc_supplement,
-                cds_test_environment TYPE REF TO if_cds_test_environment.
+    CLASS-DATA:
+      class_under_test     TYPE REF TO lhc_supplement,
+      cds_test_environment TYPE REF TO if_cds_test_environment,
+      sql_test_environment TYPE REF TO if_osql_test_environment.
 
     CLASS-METHODS:
       class_setup,
@@ -58,11 +60,21 @@ CLASS ltc_supplement IMPLEMENTATION.
 
   METHOD class_setup.
     CREATE OBJECT class_under_test FOR TESTING.
-    cds_test_environment = cl_cds_test_environment=>create( i_for_entity = '/DMO/I_SUPPLEMENT' ).
+
+    cds_test_environment = cl_cds_test_environment=>create(
+        i_for_entity = '/DMO/I_SUPPLEMENT'
+      ).
+
+    sql_test_environment = cl_osql_test_environment=>create(
+        VALUE #(
+            ( 'I_CURRENCY' )
+          )
+      ).
   ENDMETHOD.
 
   METHOD setup.
     cds_test_environment->clear_doubles( ).
+    sql_test_environment->clear_doubles( ).
 
     CLEAR:
       mapped,
@@ -70,6 +82,17 @@ CLASS ltc_supplement IMPLEMENTATION.
       reported,
       failed_late,
       reported_late.
+
+
+    DATA:
+      currencies     TYPE STANDARD TABLE OF i_currency.
+
+    currencies = VALUE #(
+        ( currency = 'EUR' )
+        ( currency = 'USD' )
+      ).
+
+    sql_test_environment->insert_test_data( currencies ).
   ENDMETHOD.
 
   METHOD teardown.
@@ -78,6 +101,7 @@ CLASS ltc_supplement IMPLEMENTATION.
 
   METHOD class_teardown.
     cds_test_environment->destroy( ).
+    sql_test_environment->destroy( ).
   ENDMETHOD.
 
   METHOD validate_price_success.
@@ -97,7 +121,7 @@ CLASS ltc_supplement IMPLEMENTATION.
 
     class_under_test->validateprice(
         EXPORTING
-          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  SupplementID = supplement-supplement_id ) )
+          keys     = VALUE #( ( %is_draft = if_abap_behv=>mk-off  supplementid = supplement-supplement_id ) )
         CHANGING
           failed   = failed_late
           reported = reported_late
@@ -114,7 +138,7 @@ CLASS ltc_supplement IMPLEMENTATION.
 
     "Check that only %tky and %state_area is filled
     cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>mk-off      act = reported_supplement-%is_draft    ).
-    cl_abap_unit_assert=>assert_equals( exp = supplement-supplement_id  act = reported_supplement-SupplementID ).
+    cl_abap_unit_assert=>assert_equals( exp = supplement-supplement_id  act = reported_supplement-supplementid ).
     cl_abap_unit_assert=>assert_equals( exp = 'VALIDATE_PRICE'          act = reported_supplement-%state_area ).
     cl_abap_unit_assert=>assert_initial( reported_supplement-%op ).
     cl_abap_unit_assert=>assert_initial( reported_supplement-%msg ).
@@ -126,8 +150,8 @@ CLASS ltc_supplement IMPLEMENTATION.
       BEGIN OF check_table,
         supplement_id    TYPE /dmo/supplement_id,
         clear_state_area TYPE abap_bool,
-        message_price    TYPE abap_bool,
-        message_currency TYPE abap_bool,
+        message_price    TYPE symsgno,
+        message_currency TYPE symsgno,
       END OF check_table.
 
     DATA:
@@ -139,22 +163,28 @@ CLASS ltc_supplement IMPLEMENTATION.
         ( supplement_id = 'XX1'  supplement_category = 'XX'  price = '42'  currency_code = ''    )
         ( supplement_id = 'XX2'  supplement_category = 'XX'  price = ''    currency_code = 'EUR' )
         ( supplement_id = 'XX3'  supplement_category = 'XX'  price = ''    currency_code = ''    )
+        ( supplement_id = 'XX4'  supplement_category = 'XX'  price = '42'  currency_code = 'XXX' )
+        ( supplement_id = 'XX5'  supplement_category = 'XX'  price = ''    currency_code = 'XXX' )
       ).
 
     exp_check_table = VALUE #(
         clear_state_area = abap_true
-        ( supplement_id = 'XX1'  message_price = abap_false  message_currency = abap_true  )
-        ( supplement_id = 'XX2'  message_price = abap_true   message_currency = abap_false )
-        ( supplement_id = 'XX3'  message_price = abap_true   message_currency = abap_true  )
+        ( supplement_id = 'XX1'  message_price = '000'  message_currency = '002'  )
+        ( supplement_id = 'XX2'  message_price = '001'  message_currency = '000'  )
+        ( supplement_id = 'XX3'  message_price = '001'  message_currency = '002'  )
+        ( supplement_id = 'XX4'  message_price = '000'  message_currency = '006'  )
+        ( supplement_id = 'XX5'  message_price = '001'  message_currency = '006'  )
       ).
 
     act_check_table = VALUE #(
         clear_state_area = abap_false
-        message_price    = abap_false
-        message_currency = abap_false
+        message_price    = ''
+        message_currency = ''
         ( supplement_id = 'XX1' )
         ( supplement_id = 'XX2' )
         ( supplement_id = 'XX3' )
+        ( supplement_id = 'XX4' )
+        ( supplement_id = 'XX5' )
       ).
 
     cds_test_environment->insert_test_data( supplements ).
@@ -163,7 +193,7 @@ CLASS ltc_supplement IMPLEMENTATION.
         EXPORTING
           keys     = VALUE #( FOR suppl IN supplements (
                                  %is_draft = if_abap_behv=>mk-off
-                                 SupplementID = suppl-supplement_id ) )
+                                 supplementid = suppl-supplement_id ) )
         CHANGING
           failed   = failed_late
           reported = reported_late
@@ -171,7 +201,12 @@ CLASS ltc_supplement IMPLEMENTATION.
 
     " check failed
     cl_abap_unit_assert=>assert_not_initial( failed_late ).
-    cl_abap_unit_assert=>assert_equals( exp = 4
+    cl_abap_unit_assert=>assert_equals( exp = REDUCE i(
+                                                  INIT count = 0
+                                                  FOR  exp IN exp_check_table
+                                                  NEXT count +=   COND #( WHEN exp-message_price    is not initial THEN 1 ELSE 0 )
+                                                                + COND #( WHEN exp-message_currency is not initial THEN 1 ELSE 0 )
+                                                )
                                         act = lines( failed_late-supplement ) ).
     LOOP AT failed-supplement INTO DATA(failed_line).
       cl_abap_unit_assert=>assert_not_initial( msg = 'Failed key was not provided'
@@ -184,26 +219,32 @@ CLASS ltc_supplement IMPLEMENTATION.
     cl_abap_unit_assert=>assert_not_initial( reported_late ).
     " One line for clearing the state area plus actual error message each.
     cl_abap_unit_assert=>assert_equals( msg = 'Reported has not the correct amount of messages'
-                                        exp = 3 + 4
+                                        exp = lines( exp_check_table )
+                                              + REDUCE i(
+                                                  INIT count = 0
+                                                  FOR exp IN exp_check_table
+                                                  NEXT count +=   COND #( WHEN exp-message_price    <> '000' THEN 1 ELSE 0 )
+                                                                + COND #( WHEN exp-message_currency <> '000' THEN 1 ELSE 0 )
+                                                )
                                         act = lines( reported_late-supplement ) ).
 
     LOOP AT reported_late-supplement INTO DATA(reported_line).
       cl_abap_unit_assert=>assert_not_initial( msg = 'Returned key was not in the provided data set!'
-                                               act = VALUE #( supplements[ Supplement_ID = reported_line-supplementid  ] OPTIONAL ) ).
+                                               act = VALUE #( supplements[ supplement_id = reported_line-supplementid  ] OPTIONAL ) ).
       IF reported_line-%msg IS BOUND.
         " actual message case
         IF reported_line-%element-price = if_abap_behv=>mk-on.
           "check if only once by looking up the check table
           cl_abap_unit_assert=>assert_equals( msg = 'This reported line already appeared'
-                                              exp = act_check_table[ supplement_id = reported_line-SupplementID ]-message_price
-                                              act = abap_false ).
-          act_check_table[ supplement_id = reported_line-SupplementID ]-message_price = abap_true.
+                                              exp = '000'
+                                              act = act_check_table[ supplement_id = reported_line-supplementid ]-message_price ).
+          act_check_table[ supplement_id = reported_line-supplementid ]-message_price = reported_line-%msg->if_t100_message~t100key-msgno.
         ELSEIF reported_line-%element-currencycode = if_abap_behv=>mk-on.
           "check if only once by looking up the check table
           cl_abap_unit_assert=>assert_equals( msg = 'This reported line already appeared'
-                                              exp = act_check_table[ supplement_id = reported_line-SupplementID ]-message_currency
-                                              act = abap_false ).
-          act_check_table[ supplement_id = reported_line-SupplementID ]-message_currency = abap_true.
+                                              exp = '000'
+                                              act = act_check_table[ supplement_id = reported_line-supplementid ]-message_currency ).
+          act_check_table[ supplement_id = reported_line-supplementid ]-message_currency = reported_line-%msg->if_t100_message~t100key-msgno.
         ELSE.
           cl_abap_unit_assert=>fail( 'Unexpected element!' ).
         ENDIF.
@@ -212,9 +253,9 @@ CLASS ltc_supplement IMPLEMENTATION.
         " clear state area case
         "check if only once by looking up the check table
         cl_abap_unit_assert=>assert_equals( msg = 'This reported line already appeared'
-                                            exp = act_check_table[ supplement_id = reported_line-SupplementID ]-clear_state_area
-                                            act = abap_false ).
-        act_check_table[ supplement_id = reported_line-SupplementID ]-clear_state_area = abap_true.
+                                            exp = abap_false
+                                            act = act_check_table[ supplement_id = reported_line-supplementid ]-clear_state_area ).
+        act_check_table[ supplement_id = reported_line-supplementid ]-clear_state_area = abap_true.
 
         "Check that only %tky and %state_area is filled
         cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>mk-off      act = reported_line-%is_draft    ).
@@ -236,7 +277,7 @@ CLASS ltc_supplement IMPLEMENTATION.
       act_mapped_line LIKE LINE OF mapped-supplement,
       exp_mapped_line LIKE LINE OF mapped-supplement.
 
-    entity = VALUE #( %is_draft = if_abap_behv=>mk-off  %cid = 'Test'  SupplementID = 'XX123' ).
+    entity = VALUE #( %is_draft = if_abap_behv=>mk-off  %cid = 'Test'  supplementid = 'XX123' ).
 
     class_under_test->earlynumbering_create(
         EXPORTING
@@ -283,7 +324,7 @@ CLASS ltc_supplement IMPLEMENTATION.
       act_mapped_line LIKE LINE OF mapped-supplement,
       exp_mapped_line LIKE LINE OF mapped-supplement.
 
-    entity = VALUE #( %is_draft = if_abap_behv=>mk-off  %cid = 'Test'  SupplementCategory = 'BV' ).
+    entity = VALUE #( %is_draft = if_abap_behv=>mk-off  %cid = 'Test'  supplementcategory = 'BV' ).
 
     class_under_test->earlynumbering_create(
         EXPORTING
@@ -302,10 +343,10 @@ CLASS ltc_supplement IMPLEMENTATION.
                                         act = lines( mapped-supplement ) ).
 
     act_mapped_line = mapped-supplement[ 1 ].
-    cl_abap_unit_assert=>assert_not_initial( act_mapped_line-SupplementID ).
+    cl_abap_unit_assert=>assert_not_initial( act_mapped_line-supplementid ).
 
     exp_mapped_line = CORRESPONDING #( entity ).
-    exp_mapped_line-SupplementID = act_mapped_line-SupplementID.
+    exp_mapped_line-supplementid = act_mapped_line-supplementid.
 
     cl_abap_unit_assert=>assert_equals( exp = exp_mapped_line  act = act_mapped_line ).
   ENDMETHOD.
@@ -330,7 +371,7 @@ CLASS ltc_supplement IMPLEMENTATION.
       act_mapped_line LIKE LINE OF mapped-supplement,
       exp_mapped_line LIKE LINE OF mapped-supplement.
 
-    entity = VALUE #( %is_draft = if_abap_behv=>mk-off  %cid = 'Test'  SupplementCategory = 'XX' ).
+    entity = VALUE #( %is_draft = if_abap_behv=>mk-off  %cid = 'Test'  supplementcategory = 'XX' ).
 
     class_under_test->earlynumbering_create(
         EXPORTING

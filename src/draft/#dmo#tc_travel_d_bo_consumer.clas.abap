@@ -271,7 +271,7 @@ CLASS /dmo/tc_travel_d_bo_consumer IMPLEMENTATION.
                                     customerid  = '9876'
                                     AgencyID    = '70006'
                                     begindate   = '20180101'
-                                    enddate     = '20180101') )
+                                    enddate     = '20180101' ) )
              " Create a new booking by association
              create by \_booking fields ( customerid FlightPrice ) with
                          value #( ( %cid_ref  = 'CID_100'      "refers to the root (travel instance)

@@ -221,8 +221,8 @@ CLASS /dmo/tc_travel_m_bo_consumer IMPLEMENTATION.
                                                   carrier_id = '111' %control-carrier_id = if_abap_behv=>mk-on
                                                   connection_id = '1234' %control-connection_id = if_abap_behv=>mk-on
                                                   customer_id = '000006' %control-Customer_ID = if_abap_behv=>mk-on
-                                                  flight_date = sy-datum + 10 %control-Flight_Date = if_abap_behv=>mk-on
-                                                  booking_date = sy-datum %control-booking_date = if_abap_behv=>mk-on
+                                                  flight_date = cl_abap_context_info=>get_system_date( ) + 10 %control-Flight_Date = if_abap_behv=>mk-on
+                                                  booking_date = cl_abap_context_info=>get_system_date( ) %control-booking_date = if_abap_behv=>mk-on
                                                   booking_status = 'B' %control-booking_status = if_abap_behv=>mk-on ) ) ) )
        reported reported
        failed failed
@@ -295,8 +295,8 @@ CLASS /dmo/tc_travel_m_bo_consumer IMPLEMENTATION.
                                                           carrier_id = '000111'
                                                           connection_id = 'C1'
                                                           Customer_ID = '000006'
-                                                          Flight_Date = sy-datum + 10
-                                                          booking_date = sy-datum
+                                                          Flight_Date = cl_abap_context_info=>get_system_date( ) + 10
+                                                          booking_date = cl_abap_context_info=>get_system_date( )
                                                           booking_status = 'B' ) ) ) )
        entity booking
              create by \_BookSupplement fields ( supplement_id price  ) with

@@ -19,7 +19,7 @@ define view entity /DMO/I_Flight
 
       @Search.defaultSearchElement: true
       @Search.fuzzinessThreshold: 0.8
-      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Connection_STDVH', element: 'ConnectionID'}, 
+      @Consumption.valueHelpDefinition: [{ entity: { name: '/DMO/I_Connection_StdVH', element: 'ConnectionID'}, 
                      additionalBinding: [{ element: 'AirlineID', localElement: 'AirlineID' }] }]
   key Flight.connection_id  as ConnectionID,
 

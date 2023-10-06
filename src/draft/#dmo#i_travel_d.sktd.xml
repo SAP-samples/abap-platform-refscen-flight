@@ -1,0 +1,699 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SKTD" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SKTD>
+    <METADATA>
+     <DESCRIPTION>Documentation for /DMO/I_TRAVEL_D</DESCRIPTION>
+     <LANGUAGE>EN</LANGUAGE>
+     <ABAP_LANGU_VERSION>0</ABAP_LANGU_VERSION>
+    </METADATA>
+    <REF_OBJECT>
+     <TYPE>BDEF/BDO</TYPE>
+     <NAME>/DMO/I_TRAVEL_D</NAME>
+    </REF_OBJECT>
+    <ELEMENTS>
+     <item>
+      <ID>/DMO/I_TRAVEL_D</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d</URI>
+       <TYPE>BDEF/BDO</TYPE>
+       <NAME>/DMO/I_TRAVEL_D</NAME>
+       <DESCRIPTION>Behavior for /DMO/I_TRAVEL_D</DESCRIPTION>
+      </REF>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d&amp;type=bdef/bdo</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>forbidden</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <INSTRUCTION_ID>bo</INSTRUCTION_ID>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.finalize</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.finalize</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>finalize</NAME>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d.finalize&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>finalize</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.check_before_save</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.check_before_save</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>check_before_save</NAME>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d.check_before_save&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>check before save</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.save</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.save</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>save</NAME>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d.save&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>save</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.cleanup</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.cleanup</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>cleanup</NAME>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d.cleanup&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>cleanup</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.cleanup_finalize</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_TRAVEL_D.cleanup_finalize</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>cleanup_finalize</NAME>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d.cleanup_finalize&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>cleanup finalize</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</URI>
+       <TYPE>BDEF/BAE</TYPE>
+       <NAME>/DMO/I_Travel_D</NAME>
+       <DESCRIPTION>Travel Interface Projection View</DESCRIPTION>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d&amp;type=bdef/bae</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>forbidden</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Booking_D</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Booking_D</URI>
+       <TYPE>BDEF/BAE</TYPE>
+       <NAME>/DMO/I_Booking_D</NAME>
+       <DESCRIPTION>Booking Interface Projection View</DESCRIPTION>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_booking_d&amp;type=bdef/bae</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>forbidden</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_BookingSupplement_D</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_BookingSupplement_D</URI>
+       <TYPE>BDEF/BAE</TYPE>
+       <NAME>/DMO/I_BookingSupplement_D</NAME>
+       <DESCRIPTION>BookSupplement Interface Projection View</DESCRIPTION>
+      </REF>
+      <PARENT>/DMO/I_TRAVEL_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_bookingsupplement_d&amp;type=bdef/bae</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>forbidden</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Travel_D.create</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Travel_D.create</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>create</NAME>
+       <DESCRIPTION>Creates a new travel</DESCRIPTION>
+      </REF>
+      <SHORTTEXT>Q3JlYXRlcyBhIG5ldyB0cmF2ZWw=</SHORTTEXT>
+      <TEXT>VGhlICpjcmVhdGUqIHdpbGwgY3JlYXRlIGEgbmV3IHRyYXZlbCBpbnN0YW5jZS4gIFRvIHN1Y2Nl
+c3NmdWxseSBjcmVhdGUgYSBuZXcgdHJhdmVsIGluc3RhbmNlIHRoZSBmaWVsZHMgQ3VzdG9tZXJJ
+RCwgQWdlbmN5SUQsIEJlZ2luRGF0ZSwgRW5kRGF0ZSBhYmQgQ3VycmVuY3lDb2RlIG5lZWQgdG8g
+YmUgYXBwbGllZC4NCg0KIyMgRXhhbXBsZQ0KQ3JlYXRpbmcgYSBuZXcgaW5zdGFuY2UgdXNpbmcg
+RU1MLg0KYGBgDQogICAgTU9ESUZZIEVOVElUSUVTIE9GIC9kbW8vaV90cmF2ZWxfZA0KICAgICAg
+RU5USVRZIHRyYXZlbA0KICAgICAgICBDUkVBVEUNCiAgICAgICAgICBGSUVMRFMgKCBjdXN0b21l
+cmlkIGFnZW5jeWlkIGJlZ2luZGF0ZSBlbmRkYXRlIGN1cnJlbmN5Y29kZSApDQogICAgICAgICAg
+V0lUSCBWQUxVRSAjKA0KICAgICAgICAgICAgKA0KICAgICAgICAgICAgICAlY2lkICAgICAgICAg
+PSBjaWQNCiAgICAgICAgICAgICAgY3VzdG9tZXJpZCAgID0gZXhpc3RpbmdfY3VzdG9tZXJpZA0K
+ICAgICAgICAgICAgICBhZ2VuY3lpZCAgICAgPSBleGlzdGluZ19hZ2VuY3lpZA0KICAgICAgICAg
+ICAgICBiZWdpbmRhdGUgICAgPSB2YWxpZF9kYXRlDQogICAgICAgICAgICAgIGVuZGRhdGUgICAg
+ICA9IHZhbGlkX2RhdGVfYWZ0ZXJfYmVpbmdfZGF0ZQ0KICAgICAgICAgICAgICBjdXJyZW5jeWNv
+ZGUgPSB2YWxpZF9jdXJyZW5jeV9jb2RlDQogICAgICAgICAgICApDQogICAgICAgICAgKQ0KICAg
+ICAgUkVQT1JURUQgcmVwb3J0ZWQNCiAgICAgIEZBSUxFRCAgIGZhaWxlZA0KICAgICAgTUFQUEVE
+ICAgbWFwcGVkLg0KYGBgDQojIyMjIExpbmtzOg0KW0V4YW1wbGUgbWV0aG9kXShDTEFTOi9ETU8v
+VENfVFJBVkVMX0RfS1REX0VYQU1QTEVTLk1FVEg6Q1JFQVRFX1ZJQV9FTUwpDQpbRXhlY3V0YWJs
+ZSB0ZXN0XShDTEFTOi9ETU8vVENfVFJBVkVMX0RfS1REX0VYQU1QTEVTLk1FVEg6VEVTVF9DUkVB
+VEVfVklBX0VNTCkNCg==</TEXT>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.create&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>create</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Travel_D.update</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Travel_D.update</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>update</NAME>
+       <DESCRIPTION>Updating a travel instance</DESCRIPTION>
+      </REF>
+      <SHORTTEXT>VXBkYXRpbmcgYSB0cmF2ZWwgaW5zdGFuY2U=</SHORTTEXT>
+      <TEXT>dXBkYXRlcyBhIHRyYXZlbC4NCg0KIyMgRXhhbXBsZXMNCiMjIyBVcGRhdGluZyBDdXN0b21lcg0K
+VXBkYXRpbmcgdGhlIGN1c3RvbWVyIGZvciBhbiBpbnN0YW5jZSB1c2luZyBFTUwuDQpgYGANCiAg
+ICBNT0RJRlkgRU5USVRJRVMgT0YgL2Rtby9pX3RyYXZlbF9kDQogICAgICBFTlRJVFkgdHJhdmVs
+DQogICAgICAgIFVQREFURQ0KICAgICAgICAgIEZJRUxEUyAoIGN1c3RvbWVyaWQgKQ0KICAgICAg
+ICAgIFdJVEggVkFMVUUgIygNCiAgICAgICAgICAgICgNCiAgICAgICAgICAgICAgdHJhdmVsdXVp
+ZCA9IGV4aXN0aW5nX3RyYXZlbA0KICAgICAgICAgICAgICBjdXN0b21lcmlkID0gYW5vdGhlcl9l
+eGlzdGluZ19jdXN0b21lcmlkDQogICAgICAgICAgICApDQogICAgICAgICAgKQ0KICAgICAgUkVQ
+T1JURUQgcmVwb3J0ZWQNCiAgICAgIEZBSUxFRCAgIGZhaWxlZA0KICAgICAgTUFQUEVEICAgbWFw
+cGVkLg0KYGBgDQojIyMjIExpbmtzOg0KW0V4YW1wbGUgbWV0aG9kXShDTEFTOi9ETU8vVENfVFJB
+VkVMX0RfS1REX0VYQU1QTEVTLk1FVEg6VVBEQVRJTkdfQ1VTVE9NRVJfVklBX0VNTCkNCltFeGVj
+dXRhYmxlIHRlc3RdKENMQVM6L0RNTy9UQ19UUkFWRUxfRF9LVERfRVhBTVBMRVMuTUVUSDpURVNU
+X1VQREFUSU5HX0NVU1RPTUVSX1ZJQV9FTUwpDQoNCiMjIyBVcGRhdGluZyBBZ2VuY3kNClVwZGF0
+aW5nIHRoZSBhZ2VuY3kgZm9yIGFuIGluc3RhbmNlIHVzaW5nIEVNTC4NCmBgYA0KICAgIE1PRElG
+WSBFTlRJVElFUyBPRiAvZG1vL2lfdHJhdmVsX2QNCiAgICAgIEVOVElUWSB0cmF2ZWwNCiAgICAg
+ICAgVVBEQVRFDQogICAgICAgICAgRklFTERTICggYWdlbmN5aWQgKQ0KICAgICAgICAgIFdJVEgg
+VkFMVUUgIygNCiAgICAgICAgICAgICgNCiAgICAgICAgICAgICAgdHJhdmVsdXVpZCA9IGV4aXN0
+aW5nX3RyYXZlbA0KICAgICAgICAgICAgICBhZ2VuY3lpZCA9IGFub3RoZXJfZXhpc3RpbmdfYWdl
+bmN5aWQNCiAgICAgICAgICAgICkNCiAgICAgICAgICApDQogICAgICBSRVBPUlRFRCByZXBvcnRl
+ZA0KICAgICAgRkFJTEVEICAgZmFpbGVkDQogICAgICBNQVBQRUQgICBtYXBwZWQuDQpgYGANCiMj
+IyMgTGlua3M6DQpbRXhhbXBsZSBtZXRob2RdKENMQVM6L0RNTy9UQ19UUkFWRUxfRF9LVERfRVhB
+TVBMRVMuTUVUSDpVUERBVElOR19BR0VOQ1lfVklBX0VNTCkNCltFeGVjdXRhYmxlIHRlc3RdKENM
+QVM6L0RNTy9UQ19UUkFWRUxfRF9LVERfRVhBTVBMRVMuTUVUSDpURVNUX1VQREFUSU5HX0FHRU5D
+WV9WSUFfRU1MKQ==</TEXT>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.update&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>update</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Booking_D.update</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Booking_D.update</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>update</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Booking_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_booking_d.update&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>update</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_BookingSupplement_D.update</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_BookingSupplement_D.update</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>update</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_BookingSupplement_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_bookingsupplement_d.update&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>update</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Travel_D.delete</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Travel_D.delete</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>delete</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.delete&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>delete</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Booking_D.delete</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_Booking_D.delete</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>delete</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Booking_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_booking_d.delete&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>delete</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_BookingSupplement_D.delete</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSO;name=/DMO/I_BookingSupplement_D.delete</URI>
+       <TYPE>BDEF/BSO</TYPE>
+       <NAME>delete</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_BookingSupplement_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_bookingsupplement_d.delete&amp;type=bdef/bso</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>delete</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.acceptTravel</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.acceptTravel</URI>
+       <TYPE>BDEF/BAC</TYPE>
+       <NAME>acceptTravel</NAME>
+       <DESCRIPTION>Sets the OverallStatus to Accepted</DESCRIPTION>
+      </REF>
+      <SHORTTEXT>U2V0cyB0aGUgT3ZlcmFsbFN0YXR1cyB0byBBY2NlcHRlZA==</SHORTTEXT>
+      <TEXT>V2l0aCB0aGUgYWN0aW9uIGBhY2NlcHRUcmF2ZWxgIHlvdSB3aWxsIHNldCBhbnkgKk92ZXJhbGxT
+dGF0dXMqIHRvIHRoZSBzdGF0dXMgKmFjY2VwdGVkKi4NCg0KIyMgRXhhbXBsZSANCkV4ZWN1dGlu
+ZyB0aGUgYWN0aW9uICpBY2NlcHQgVHJhdmVsKiBvbiBhbiBpbnN0YW5jZSB3aXRoIHN0YXR1cyAq
+TmV3KiB1c2luZyBFTUwuDQpgYGANCiAgICBNT0RJRlkgRU5USVRJRVMgT0YgL2Rtby9pX3RyYXZl
+bF9kDQogICAgICBFTlRJVFkgdHJhdmVsDQogICAgICAgIEVYRUNVVEUgYWNjZXB0dHJhdmVsIEZS
+T00gVkFMVUUgIygNCiAgICAgICAgICAgICgNCiAgICAgICAgICAgICAgdHJhdmVsdXVpZCA9IGV4
+aXN0aW5nX3RyYXZlbA0KICAgICAgICAgICAgKQ0KICAgICAgICAgICkNCiAgICAgICAgUkVTVUxU
+IERBVEEoYWNjZXB0X3RyYXZlbF9yZXN1bHQpDQogICAgICBSRVBPUlRFRCByZXBvcnRlZA0KICAg
+ICAgRkFJTEVEICAgZmFpbGVkDQogICAgICBNQVBQRUQgICBtYXBwZWQuDQpgYGANCiMjIyMgTGlu
+a3M6DQpbRXhhbXBsZSBtZXRob2RdKENMQVM6L0RNTy9UQ19UUkFWRUxfRF9LVERfRVhBTVBMRVMu
+TUVUSDpBQ1RJT05fQUNDRVBUX1RSQVZFTF9WSUFfRU1MKQ0KW0V4ZWN1dGFibGUgdGVzdF0oQ0xB
+UzovRE1PL1RDX1RSQVZFTF9EX0tURF9FWEFNUExFUy5NRVRIOlRfQUNUSU9OX0FDQ0VQVF9UUkFW
+RUxfVklBX0VNTCkNCg==</TEXT>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.accepttravel&amp;type=bdef/bac</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>mandatory</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>acceptTravel</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.rejectTravel</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.rejectTravel</URI>
+       <TYPE>BDEF/BAC</TYPE>
+       <NAME>rejectTravel</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.rejecttravel&amp;type=bdef/bac</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>mandatory</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>rejectTravel</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.deductDiscount</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.deductDiscount</URI>
+       <TYPE>BDEF/BAC</TYPE>
+       <NAME>deductDiscount</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.deductdiscount&amp;type=bdef/bac</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>mandatory</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>deductDiscount</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.validateAgencyID</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.validateAgencyID</URI>
+       <TYPE>BDEF/BAC</TYPE>
+       <NAME>validateAgencyID</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.validateagencyid&amp;type=bdef/bac</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>mandatory</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>validateAgencyID</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.validateCustomerID</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.validateCustomerID</URI>
+       <TYPE>BDEF/BAC</TYPE>
+       <NAME>validateCustomerID</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.validatecustomerid&amp;type=bdef/bac</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>mandatory</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>validateCustomerID</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.validateDateRange</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAC;name=/DMO/I_Travel_D.validateDateRange</URI>
+       <TYPE>BDEF/BAC</TYPE>
+       <NAME>validateDateRange</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d.validatedaterange&amp;type=bdef/bac</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>mandatory</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>validateDateRange</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Travel_D._Booking</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Travel_D._Booking</URI>
+       <TYPE>BDEF/BAS</TYPE>
+       <NAME>_Booking</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Travel_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d._booking&amp;type=bdef/bas</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>_Booking</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Booking_D._BookingSupplement</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Booking_D._BookingSupplement</URI>
+       <TYPE>BDEF/BAS</TYPE>
+       <NAME>_BookingSupplement</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Booking_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_booking_d._bookingsupplement&amp;type=bdef/bas</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>_BookingSupplement</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Booking_D._Travel</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Booking_D._Travel</URI>
+       <TYPE>BDEF/BAS</TYPE>
+       <NAME>_Travel</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_Booking_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_booking_d._travel&amp;type=bdef/bas</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>_Travel</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_BookingSupplement_D._Travel</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_BookingSupplement_D._Travel</URI>
+       <TYPE>BDEF/BAS</TYPE>
+       <NAME>_Travel</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_BookingSupplement_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_bookingsupplement_d._travel&amp;type=bdef/bas</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>_Travel</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_BookingSupplement_D._Booking</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_BookingSupplement_D._Booking</URI>
+       <TYPE>BDEF/BAS</TYPE>
+       <NAME>_Booking</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAE;name=/DMO/I_BookingSupplement_D</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_bookingsupplement_d._booking&amp;type=bdef/bas</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>_Booking</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSA;name=/DMO/I_Travel_D._Booking.create</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSA;name=/DMO/I_Travel_D._Booking.create</URI>
+       <TYPE>BDEF/BSA</TYPE>
+       <NAME>create</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Travel_D._Booking</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_travel_d._booking.create&amp;type=bdef/bsa</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>create</DISPLAY_NAME>
+     </item>
+     <item>
+      <ID>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSA;name=/DMO/I_Booking_D._BookingSupplement.create</ID>
+      <REF>
+       <URI>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BSA;name=/DMO/I_Booking_D._BookingSupplement.create</URI>
+       <TYPE>BDEF/BSA</TYPE>
+       <NAME>create</NAME>
+      </REF>
+      <PARENT>/sap/bc/adt/bo/behaviordefinitions/%2fdmo%2fi_travel_d/source/main#type=BDEF/BAS;name=/DMO/I_Booking_D._BookingSupplement</PARENT>
+      <CAN_HAVE_DOCUMENTATION>X</CAN_HAVE_DOCUMENTATION>
+      <LINKS>
+       <item>
+        <HREF>/sap/bc/adt/repository/informationsystem/elementinfo?path=/dmo/i_travel_d./dmo/i_booking_d._bookingsupplement.create&amp;type=bdef/bsa</HREF>
+        <REL>http://www.sap.com/adt/relations/elementinfo</REL>
+        <TYPE>application/vnd.sap.adt.elementinfo+xml</TYPE>
+        <TITLE>Show Element Information</TITLE>
+       </item>
+      </LINKS>
+      <SHORTTEXT_OBLIGATION>optional</SHORTTEXT_OBLIGATION>
+      <LONGTEXT_OBLIGATION>optional</LONGTEXT_OBLIGATION>
+      <DISPLAY_NAME>create</DISPLAY_NAME>
+     </item>
+    </ELEMENTS>
+    <INSTRUCTIONS>
+     <item>
+      <ID>bo</ID>
+      <TEXT>Describe important aspects of the business object such as processes, authorization concept and status concept.</TEXT>
+     </item>
+     <item>
+      <ID>shorttext</ID>
+      <TEXT>Provide a meaningful short text with 60 characters max.</TEXT>
+     </item>
+    </INSTRUCTIONS>
+   </SKTD>
+  </asx:values>
+ </asx:abap>
+</abapGit>

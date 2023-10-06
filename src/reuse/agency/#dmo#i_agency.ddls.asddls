@@ -29,7 +29,7 @@ define view entity /DMO/I_Agency
       @Semantics.address.city: true
       Agency.city                  as City,
 
-      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'Country' } }]
+      @Consumption.valueHelpDefinition: [{entity: { name: 'I_CountryVH', element: 'Country' } }]
       @Semantics.address.country: true
       Agency.country_code          as CountryCode,
 

@@ -43,6 +43,12 @@
        <TYPE>application/vnd.sap.adt.businessservices.semanticversion.v1+xml</TYPE>
        <TITLE>SemanticVersion</TITLE>
       </item>
+      <item>
+       <HREF>./%2Fdmo%2Fui_agency_o4</HREF>
+       <REL>http://www.sap.com/adt/relations/source</REL>
+       <TYPE>text/html</TYPE>
+       <TITLE>Landing Page (HTML)</TITLE>
+      </item>
      </LINKS>
      <RESPONSIBLE>REICHERTGE</RESPONSIBLE>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
@@ -75,6 +81,8 @@
       </item>
      </SERVICES>
     </CONTENT>
+    <CONTRACT>C1</CONTRACT>
+    <RELEASE_SUPPORTED>true</RELEASE_SUPPORTED>
     <PUBLISHED>true</PUBLISHED>
     <BINDING_CREATED>true</BINDING_CREATED>
    </SRVB>

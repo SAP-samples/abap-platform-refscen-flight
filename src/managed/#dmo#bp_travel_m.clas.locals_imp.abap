@@ -16,6 +16,8 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR travel~validatedates.
     METHODS validate_travel_status FOR VALIDATE ON SAVE
       IMPORTING keys FOR travel~validatestatus.
+    METHODS validate_currencycode FOR VALIDATE ON SAVE
+      IMPORTING keys FOR travel~validatecurrencycode.
 
     METHODS copyTravel FOR MODIFY
       IMPORTING keys FOR ACTION travel~copyTravel.
@@ -349,7 +351,7 @@ CLASS lhc_travel IMPLEMENTATION.
              currency_code TYPE /dmo/currency_code,
            END OF ty_amount_per_currencycode.
 
-    DATA: amount_per_currencycode TYPE STANDARD TABLE OF ty_amount_per_currencycode.
+    DATA: amounts_per_currencycode TYPE STANDARD TABLE OF ty_amount_per_currencycode.
 
     " Read all relevant travel instances.
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
@@ -360,47 +362,53 @@ CLASS lhc_travel IMPLEMENTATION.
 
     DELETE travels WHERE currency_code IS INITIAL.
 
+    " Read all associated bookings and add them to the total price.
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY travel BY \_booking
+        FIELDS ( flight_price currency_code )
+      WITH CORRESPONDING #( travels )
+      RESULT DATA(bookings).
+
+    " Read all associated booking supplements and add them to the total price.
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY booking BY \_booksupplement
+        FIELDS (  price currency_code )
+      WITH CORRESPONDING #( bookings )
+      RESULT DATA(bookingsupplements).
+
     LOOP AT travels ASSIGNING FIELD-SYMBOL(<travel>).
       " Set the start for the calculation by adding the booking fee.
-      amount_per_currencycode = VALUE #( ( amount        = <travel>-booking_fee
+      amounts_per_currencycode = VALUE #( ( amount        = <travel>-booking_fee
                                            currency_code = <travel>-currency_code ) ).
 
-      " Read all associated bookings and add them to the total price.
-      READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
-        ENTITY travel BY \_booking
-          FIELDS ( flight_price currency_code )
-        WITH VALUE #( ( %tky = <travel>-%tky ) )
-        RESULT DATA(bookings).
 
-      LOOP AT bookings INTO DATA(booking) WHERE currency_code IS NOT INITIAL.
+      LOOP AT bookings INTO DATA(booking) USING KEY id WHERE   travel_id = <travel>-travel_id
+                                                       AND     currency_code IS NOT INITIAL.
         COLLECT VALUE ty_amount_per_currencycode( amount        = booking-flight_price
                                                   currency_code = booking-currency_code
-                                                ) INTO amount_per_currencycode.
+                                                ) INTO amounts_per_currencycode.
       ENDLOOP.
 
-      " Read all associated booking supplements and add them to the total price.
-      READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
-        ENTITY booking BY \_booksupplement
-          FIELDS (  price currency_code )
-        WITH VALUE #( FOR rba_booking IN bookings ( %tky = rba_booking-%tky ) )
-        RESULT DATA(bookingsupplements).
 
-      LOOP AT bookingsupplements INTO DATA(bookingsupplement) WHERE currency_code IS NOT INITIAL.
+      LOOP AT bookingsupplements INTO DATA(bookingsupplement) USING KEY id WHERE   travel_id = <travel>-travel_id
+                                                                           AND     currency_code IS NOT INITIAL.
         COLLECT VALUE ty_amount_per_currencycode( amount        = bookingsupplement-price
                                                   currency_code = bookingsupplement-currency_code
-                                                ) INTO amount_per_currencycode.
+                                                ) INTO amounts_per_currencycode.
       ENDLOOP.
 
+      DELETE amounts_per_currencycode WHERE currency_code IS INITIAL.
+
       CLEAR <travel>-total_price.
-      LOOP AT amount_per_currencycode INTO DATA(single_amount_per_currencycode).
+      LOOP AT amounts_per_currencycode INTO DATA(amount_per_currencycode).
         " If needed do a Currency Conversion
-        IF single_amount_per_currencycode-currency_code = <travel>-currency_code.
-          <travel>-total_price += single_amount_per_currencycode-amount.
+        IF amount_per_currencycode-currency_code = <travel>-currency_code.
+          <travel>-total_price += amount_per_currencycode-amount.
         ELSE.
           /dmo/cl_flight_amdp=>convert_currency(
              EXPORTING
-               iv_amount                   =  single_amount_per_currencycode-amount
-               iv_currency_code_source     =  single_amount_per_currencycode-currency_code
+               iv_amount                   =  amount_per_currencycode-amount
+               iv_currency_code_source     =  amount_per_currencycode-currency_code
                iv_currency_code_target     =  <travel>-currency_code
                iv_exchange_rate_date       =  cl_abap_context_info=>get_system_date( )
              IMPORTING
@@ -561,7 +569,49 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD get_global_authorizations.
   ENDMETHOD.
 
+  METHOD validate_currencycode.
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY travel
+        FIELDS ( currency_code )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(travels).
 
+    DATA: currencies TYPE SORTED TABLE OF I_Currency WITH UNIQUE KEY currency.
+
+    currencies = CORRESPONDING #(  travels DISCARDING DUPLICATES MAPPING currency = currency_code EXCEPT * ).
+    DELETE currencies WHERE currency IS INITIAL.
+
+    IF currencies IS NOT INITIAL.
+      SELECT FROM I_Currency FIELDS currency
+        FOR ALL ENTRIES IN @currencies
+        WHERE currency = @currencies-currency
+        INTO TABLE @DATA(currency_db).
+    ENDIF.
+
+
+    LOOP AT travels INTO DATA(travel).
+      IF travel-currency_code IS INITIAL.
+        " Raise message for empty Currency
+        APPEND VALUE #( %tky                   = travel-%tky ) TO failed-travel.
+        APPEND VALUE #( %tky                   = travel-%tky
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid    = /dmo/cm_flight_messages=>currency_required
+                                                        severity  = if_abap_behv_message=>severity-error )
+                        %element-currency_code = if_abap_behv=>mk-on
+                      ) TO reported-travel.
+      ELSEIF NOT line_exists( currency_db[ currency = travel-currency_code ] ).
+        " Raise message for not existing Currency
+        APPEND VALUE #( %tky                   = travel-%tky ) TO failed-travel.
+        APPEND VALUE #( %tky                   = travel-%tky
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid        = /dmo/cm_flight_messages=>currency_not_existing
+                                                        severity      = if_abap_behv_message=>severity-error
+                                                        currency_code = travel-currency_code )
+                        %element-currency_code = if_abap_behv=>mk-on
+                      ) TO reported-travel.
+      ENDIF.
+    ENDLOOP.
+  ENDMETHOD.
 
 ENDCLASS.
 

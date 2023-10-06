@@ -44,6 +44,36 @@
      <MSGNR>006</MSGNR>
      <TEXT>Number range object almost depleted.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>007</MSGNR>
+     <TEXT>No mimetype provided for attachment &quot;&amp;1&quot;!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>008</MSGNR>
+     <TEXT>No or empty attachment provided for object with mimetype &quot;&amp;1&quot;!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>009</MSGNR>
+     <TEXT>The mimetype &quot;&amp;1&quot; is not supported!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>010</MSGNR>
+     <TEXT>The file extension does not match the mimetype &quot;&amp;1&quot;!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_AGENCY</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>No attachment and mimetype provided for filename &quot;&amp;1&quot;!</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

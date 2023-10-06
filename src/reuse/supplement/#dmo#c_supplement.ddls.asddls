@@ -15,7 +15,9 @@ define root view entity /DMO/C_Supplement
       @Consumption.valueHelpDefinition: [{entity: {
                                             name: '/DMO/I_SupplementCategory_VH',
                                             element: 'SupplementCategory'
-                                          }}]
+                                          },
+                                          useForValidation: true
+                                          }]
       @ObjectModel.text.element: ['SupplementCategoryText']
       SupplementCategory as SupplementCategory,
 

@@ -20,14 +20,18 @@ CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR Booking~validateCustomer.
     METHODS validateConnection FOR VALIDATE ON SAVE
       IMPORTING keys FOR Booking~validateConnection.
+    METHODS validateCurrencyCode FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Booking~validateCurrencyCode.
 
 ENDCLASS.
 
 CLASS lhc_booking IMPLEMENTATION.
 
   METHOD setBookingNumber.
-    DATA max_bookingid TYPE /dmo/booking_id.
-    DATA bookings_update TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\Booking.
+    DATA:
+      max_bookingid   TYPE /dmo/booking_id,
+      bookings_update TYPE TABLE FOR UPDATE /DMO/R_Travel_D\\Booking,
+      booking         TYPE STRUCTURE FOR READ RESULT /DMO/R_Booking_D.
 
     "Read all travels for the requested bookings
     " If multiple bookings of the same travel are requested, the travel is returned only once.
@@ -37,29 +41,37 @@ CLASS lhc_booking IMPLEMENTATION.
         WITH CORRESPONDING #( keys )
       RESULT DATA(travels).
 
-    " Process all affected travels. Read respective bookings for one travel
+    " Read all bookings for all affected travels
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Travel BY \_Booking
+        FIELDS ( BookingID )
+        WITH CORRESPONDING #( travels )
+        LINK DATA(booking_links)
+      RESULT DATA(bookings).
+
+    " Process all affected travels.
     LOOP AT travels INTO DATA(travel).
-      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
-        ENTITY Travel BY \_Booking
-          FIELDS ( BookingID )
-          WITH VALUE #( ( %tky = travel-%tky ) )
-        RESULT DATA(bookings).
 
       " find max used bookingID in all bookings of this travel
       max_bookingid = '0000'.
-      LOOP AT bookings INTO DATA(booking).
+      LOOP AT booking_links INTO DATA(booking_link) USING KEY id WHERE source-%tky = travel-%tky.
+        " Short dump occurs if link table does not match read table, which must never happen
+        booking = bookings[ KEY id  %tky = booking_link-target-%tky ].
         IF booking-BookingID > max_bookingid.
           max_bookingid = booking-BookingID.
         ENDIF.
       ENDLOOP.
 
       "Provide a booking ID for all bookings of this travel that have none.
-      LOOP AT bookings INTO booking WHERE BookingID IS INITIAL.
-        max_bookingid += 1.
-        APPEND VALUE #( %tky      = booking-%tky
-                        BookingID = max_bookingid
-                      ) TO bookings_update.
-
+      LOOP AT booking_links INTO booking_link USING KEY id WHERE source-%tky = travel-%tky.
+        " Short dump occurs if link table does not match read table, which must never happen
+        booking = bookings[ KEY id  %tky = booking_link-target-%tky ].
+        IF booking-BookingID IS INITIAL.
+          max_bookingid += 1.
+          APPEND VALUE #( %tky      = booking-%tky
+                          BookingID = max_bookingid
+                        ) TO bookings_update.
+        ENDIF.
       ENDLOOP.
     ENDLOOP.
 
@@ -262,6 +274,62 @@ CLASS lhc_booking IMPLEMENTATION.
 
     ENDLOOP.
 
+  ENDMETHOD.
+
+  METHOD validateCurrencyCode.
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY booking
+        FIELDS ( currencycode )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(bookings).
+
+      READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Booking BY \_Travel
+        FROM CORRESPONDING #( bookings )
+      LINK DATA(travel_booking_links).
+
+    DATA: currencies TYPE SORTED TABLE OF I_Currency WITH UNIQUE KEY currency.
+
+    currencies = CORRESPONDING #( bookings DISCARDING DUPLICATES MAPPING currency = currencycode EXCEPT * ).
+    DELETE currencies WHERE currency IS INITIAL.
+
+    IF currencies IS NOT INITIAL.
+      SELECT FROM I_Currency FIELDS currency
+        FOR ALL ENTRIES IN @currencies
+        WHERE currency = @currencies-currency
+        INTO TABLE @DATA(currency_db).
+    ENDIF.
+
+
+    LOOP AT bookings INTO DATA(booking).
+      APPEND VALUE #(  %tky               = booking-%tky
+                       %state_area        = 'VALIDATE_CURRENCYCODE'
+                    ) TO reported-booking.
+      IF booking-currencycode IS INITIAL.
+        " Raise message for empty Currency
+        APPEND VALUE #( %tky                   = booking-%tky ) TO failed-booking.
+        APPEND VALUE #( %tky                   = booking-%tky
+                        %state_area            = 'VALIDATE_CURRENCYCODE'
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid    = /dmo/cm_flight_messages=>currency_required
+                                                        severity  = if_abap_behv_message=>severity-error )
+                        %path                  = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
+                        %element-currencycode = if_abap_behv=>mk-on
+                      ) TO reported-booking.
+      ELSEIF NOT line_exists( currency_db[ currency = booking-currencycode ] ).
+        " Raise message for not existing Currency
+        APPEND VALUE #( %tky                   = booking-%tky ) TO failed-booking.
+        APPEND VALUE #( %tky                   = booking-%tky
+                        %state_area            = 'VALIDATE_CURRENCYCODE'
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid        = /dmo/cm_flight_messages=>currency_not_existing
+                                                        severity      = if_abap_behv_message=>severity-error
+                                                        currency_code = booking-currencycode )
+                        %path                  = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
+                        %element-currencycode = if_abap_behv=>mk-on
+                      ) TO reported-booking.
+      ENDIF.
+    ENDLOOP.
   ENDMETHOD.
 
 ENDCLASS.

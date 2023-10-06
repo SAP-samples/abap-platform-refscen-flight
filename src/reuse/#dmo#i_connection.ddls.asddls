@@ -46,5 +46,4 @@ define view entity /DMO/I_Connection
       _Airline,
       _DepartureAirport,
       _DestinationAirport
-      
 }

@@ -38,7 +38,7 @@ define view entity /DMO/I_Customer
       @Semantics.address.city: true
       Customer.city          as City,
 
-      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'Country' }, useForValidation: true }]
+      @Consumption.valueHelpDefinition: [{entity: { name: 'I_CountryVH', element: 'Country' }, useForValidation: true }]
       @Semantics.address.country: true
       Customer.country_code  as CountryCode,
 

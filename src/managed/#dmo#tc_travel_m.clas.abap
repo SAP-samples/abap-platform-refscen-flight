@@ -125,6 +125,8 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     REPORTED DATA(reported_commit).
 
     " Commit failed as begin_date is invalid ( must be after system date )
+    cl_abap_unit_assert=>assert_subrc( exp = 4 ).
+
     cl_abap_unit_assert=>assert_equals( act = lines( failed_commit-travel ) exp = 1 ).
     cl_abap_unit_assert=>assert_not_initial( act = failed_commit-travel[ 1 ]-travel_id ).
 
@@ -177,6 +179,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     REPORTED DATA(reported_commit).
 
     " Commit was successful
+    cl_abap_unit_assert=>assert_subrc( exp = 0 ).
     cl_abap_unit_assert=>assert_initial( act = failed_commit ).
     cl_abap_unit_assert=>assert_initial( act = reported_commit ).
 
@@ -225,11 +228,13 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
      FAILED DATA(failed_cba)
      REPORTED DATA(reported_cba).
 
+    cl_abap_unit_assert=>assert_equals( exp = 1 act = lines( mapped_cba-travel ) ).
+
     " Read determination result
     READ ENTITIES OF /dmo/i_travel_m
      ENTITY travel
        FIELDS ( total_price )
-       WITH VALUE #( ( travel_id = mapped_cba-travel[ 1 ]-%tky ) )
+       WITH VALUE #( ( %tky = mapped_cba-travel[ 1 ]-%tky ) )
        RESULT DATA(result)
        FAILED DATA(failed_read).
 
@@ -274,7 +279,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     " Execute action
     MODIFY ENTITIES OF /dmo/i_travel_m
      ENTITY travel
-       EXECUTE acceptTravel FROM VALUE #( ( travel_id = mapped_create-travel[ 1 ]-%tky ) )
+       EXECUTE acceptTravel FROM VALUE #( ( %tky = key_of_new_travel-%tky ) )
     FAILED DATA(failed_action)
     REPORTED DATA(reported_action).
 
@@ -322,7 +327,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     " Execute action
     MODIFY ENTITIES OF /dmo/i_travel_m
      ENTITY travel
-       EXECUTE acceptTravel FROM VALUE #( ( travel_id = mapped_create-travel[ 1 ]-%tky ) )
+       EXECUTE acceptTravel FROM VALUE #( ( %tky = key_of_new_travel-%tky ) )
     FAILED DATA(failed_action)
     REPORTED DATA(reported_action).
 
@@ -330,7 +335,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     READ ENTITIES OF /dmo/i_travel_m
      ENTITY travel
        FIELDS ( overall_status )
-       WITH VALUE #( ( travel_id = mapped_create-travel[ 1 ]-%tky ) )
+       WITH VALUE #( ( %tky = key_of_new_travel-%tky ) )
       RESULT DATA(result)
       FAILED DATA(failed_read).
 
@@ -379,7 +384,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     MODIFY ENTITIES OF /dmo/i_travel_m
     ENTITY travel
       CREATE BY \_booking FIELDS ( booking_date customer_id carrier_id connection_id flight_date flight_price currency_code booking_status ) WITH
-      VALUE #( (         travel_id = mapped_create-travel[ 1 ]-%tky
+      VALUE #( (         %tky = key_of_new_travel-%tky
                          %target = VALUE #( ( %cid = cid_node
                                               booking_date   = begin_date
                                               customer_id    = customer_mock_data[ 1 ]-customer_id
@@ -441,7 +446,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     MODIFY ENTITIES OF /dmo/i_travel_m
     ENTITY travel
       CREATE BY \_booking FIELDS ( booking_date customer_id carrier_id connection_id flight_date flight_price currency_code booking_status ) WITH
-      VALUE #( (         travel_id = mapped_create-travel[ 1 ]-%tky
+      VALUE #( (         %tky = key_of_new_travel-%tky
                          %target = VALUE #( ( %cid = cid_node
                                               booking_date   = begin_date
                                               customer_id    = customer_mock_data[ 1 ]-customer_id
@@ -506,6 +511,7 @@ CLASS /dmo/tc_travel_m IMPLEMENTATION.
     FAILED DATA(failed_commit)
     REPORTED DATA(reported_commit).
 
+    cl_abap_unit_assert=>assert_subrc( exp = 0 ).
     cl_abap_unit_assert=>assert_initial( act = failed_commit ).
     cl_abap_unit_assert=>assert_initial( act = reported_commit ).
 

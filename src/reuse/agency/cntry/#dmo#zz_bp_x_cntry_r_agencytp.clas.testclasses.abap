@@ -1,13 +1,12 @@
-CLASS ltcl_agency DEFINITION FINAL FOR TESTING
+"! @testing BDEF:/DMO/ZZ_X_COUNTRY_R_AGENCYTP
+CLASS ltcl_agency_w_cds_tdf DEFINITION FINAL FOR TESTING
   DURATION SHORT
   RISK LEVEL HARMLESS.
 
   PRIVATE SECTION.
 
     CLASS-DATA:
-      class_under_test     TYPE REF TO lhc_agency,
-      cds_test_environment TYPE REF TO if_cds_test_environment,
-      sql_test_environment TYPE REF TO if_osql_test_environment.
+      cds_test_environment TYPE REF TO if_cds_test_environment.
 
     CLASS-METHODS:
       "! Instantiate class under test and set up test double framework
@@ -16,6 +15,8 @@ CLASS ltcl_agency DEFINITION FINAL FOR TESTING
       "! Destroy test environment and test double
       class_teardown.
 
+    DATA:
+      class_under_test TYPE REF TO lhc_agency.
 
     METHODS:
       "! Reset test double
@@ -55,11 +56,10 @@ CLASS ltcl_agency DEFINITION FINAL FOR TESTING
 ENDCLASS.
 
 
-CLASS ltcl_agency IMPLEMENTATION.
+CLASS ltcl_agency_w_cds_tdf IMPLEMENTATION.
 
 
   METHOD class_setup.
-    CREATE OBJECT class_under_test FOR TESTING.
     cds_test_environment = cl_cds_test_environment=>create(
                              i_for_entity                = '/dmo/i_agencytp'
                              i_select_base_dependencies = abap_true
@@ -71,6 +71,7 @@ CLASS ltcl_agency IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD setup.
+    CREATE OBJECT class_under_test FOR TESTING.
     cds_test_environment->clear_doubles( ).
   ENDMETHOD.
 
@@ -203,9 +204,7 @@ CLASS ltcl_agency IMPLEMENTATION.
     DATA:
       agency_test_data          TYPE tt_agency_test_data,
       agency_mock_data          TYPE STANDARD TABLE OF /dmo/agency,
-      reported                  TYPE RESPONSE FOR REPORTED LATE  /dmo/i_agencytp,
-      reported_with_message     TYPE STRUCTURE FOR REPORTED LATE /dmo/i_agencytp,
-      reported_clear_state_area TYPE STRUCTURE FOR REPORTED LATE /dmo/i_agencytp.
+      reported                  TYPE RESPONSE FOR REPORTED LATE  /dmo/i_agencytp.
 
     agency_test_data = VALUE #(
         ( agency_id = '1' phone_number = '+49 1234'    country_code = 'EN'  exp_country_code = 'EN' )
@@ -257,9 +256,7 @@ CLASS ltcl_agency IMPLEMENTATION.
     DATA:
       agency_test_data          TYPE tt_agency_test_data,
       agency_mock_data          TYPE STANDARD TABLE OF /dmo/agency,
-      reported                  TYPE RESPONSE FOR REPORTED LATE  /dmo/i_agencytp,
-      reported_with_message     TYPE STRUCTURE FOR REPORTED LATE /dmo/i_agencytp,
-      reported_clear_state_area TYPE STRUCTURE FOR REPORTED LATE /dmo/i_agencytp.
+      reported                  TYPE RESPONSE FOR REPORTED LATE  /dmo/i_agencytp.
 
     agency_test_data = VALUE #(
         ( agency_id = '1' country_code = 'EN'  phone_number = '+49'   exp_phone_number = '+49'  )

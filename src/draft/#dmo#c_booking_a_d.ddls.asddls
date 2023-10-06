@@ -55,7 +55,7 @@ define view entity /DMO/C_Booking_A_D
       FlightDate,
 
       @Consumption.valueHelpDefinition: [ 
-          { entity: {name: '/DMO/I_Flight_StdVH', element: 'FlightPrice'},
+          { entity: {name: '/DMO/I_Flight_StdVH', element: 'Price'},
             additionalBinding: [ { localElement: 'FlightDate',   element: 'FlightDate',   usage: #FILTER_AND_RESULT},
                                  { localElement: 'AirlineID',    element: 'AirlineID',    usage: #FILTER_AND_RESULT},
                                  { localElement: 'ConnectionID', element: 'ConnectionID', usage: #FILTER_AND_RESULT},

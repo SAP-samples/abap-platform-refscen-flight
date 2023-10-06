@@ -38,6 +38,12 @@
      <MSGNR>005</MSGNR>
      <TEXT>Not enough IDs left for Supplement Category &amp;1!</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_SUPPLEMENT</ARBGB>
+     <MSGNR>006</MSGNR>
+     <TEXT>Currency &amp;1 does not exist!  Please enter a valid currency!</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

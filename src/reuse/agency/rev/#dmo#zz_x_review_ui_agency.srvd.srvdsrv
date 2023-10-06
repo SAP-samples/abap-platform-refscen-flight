@@ -1,0 +1,3 @@
+extend service /DMO/UI_AGENCY with {
+  expose /DMO/ZZ_C_Agency_ReviewTP as /DMO/ZZ_Review;
+}

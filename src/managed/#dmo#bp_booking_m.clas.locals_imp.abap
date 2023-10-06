@@ -1,4 +1,4 @@
-class ltcl_booking DEFINITION DEFERRED FOR TESTING.
+CLASS ltcl_booking DEFINITION DEFERRED FOR TESTING.
 CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler
   FRIENDS ltcl_booking.
   PRIVATE SECTION.
@@ -9,6 +9,8 @@ CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler
        IMPORTING keys FOR booking~validatestatus.
     METHODS get_features FOR INSTANCE FEATURES
        IMPORTING keys REQUEST requested_features FOR booking RESULT result.
+    METHODS validate_currencycode FOR VALIDATE ON SAVE
+      IMPORTING keys FOR booking~validatecurrencycode.
     METHODS earlynumbering_cba_booksupplem FOR NUMBERING
        IMPORTING entities FOR CREATE booking\_booksupplement.
 
@@ -56,7 +58,7 @@ CLASS lhc_booking IMPLEMENTATION.
                                      status = booking-booking_status
                                      severity = if_abap_behv_message=>severity-error )
                           %element-booking_status = if_abap_behv=>mk-on
-                          %path = VALUE #( travel-travel_id    = booking-travel_id )
+                          %path = VALUE #(  travel-travel_id    = booking-travel_id )
                         ) TO reported-booking.
       ENDCASE.
 
@@ -130,6 +132,52 @@ CLASS lhc_booking IMPLEMENTATION.
 
       ENDLOOP.
 
+    ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validate_currencycode.
+    READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
+      ENTITY booking
+        FIELDS ( currency_code )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(bookings).
+
+    DATA: currencies TYPE SORTED TABLE OF I_Currency WITH UNIQUE KEY currency.
+
+    currencies = CORRESPONDING #( bookings DISCARDING DUPLICATES MAPPING currency = currency_code EXCEPT * ).
+    DELETE currencies WHERE currency IS INITIAL.
+
+    IF currencies IS NOT INITIAL.
+      SELECT FROM I_Currency FIELDS currency
+        FOR ALL ENTRIES IN @currencies
+        WHERE currency = @currencies-currency
+        INTO TABLE @DATA(currency_db).
+    ENDIF.
+
+
+    LOOP AT bookings INTO DATA(booking).
+      IF booking-currency_code IS INITIAL.
+        " Raise message for empty Currency
+        APPEND VALUE #( %tky                   = booking-%tky ) TO failed-booking.
+        APPEND VALUE #( %tky                   = booking-%tky
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid    = /dmo/cm_flight_messages=>currency_required
+                                                        severity  = if_abap_behv_message=>severity-error )
+                        %element-currency_code = if_abap_behv=>mk-on
+                        %path                  = VALUE #(  travel-travel_id    = booking-travel_id )
+                      ) TO reported-booking.
+      ELSEIF NOT line_exists( currency_db[ currency = booking-currency_code ] ).
+        " Raise message for not existing Currency
+        APPEND VALUE #( %tky                   = booking-%tky ) TO failed-booking.
+        APPEND VALUE #( %tky                   = booking-%tky
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid    = /dmo/cm_flight_messages=>currency_not_existing
+                                                        severity  = if_abap_behv_message=>severity-error
+                                                        currency_code = booking-currency_code )
+                        %path                  = VALUE #(  travel-travel_id    = booking-travel_id )
+                        %element-currency_code = if_abap_behv=>mk-on
+                      ) TO reported-booking.
+      ENDIF.
     ENDLOOP.
   ENDMETHOD.
 

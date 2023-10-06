@@ -9,7 +9,7 @@
   dataSources: ['_Extension'],
   quota: {
     maximumFields: 500,
-    maximumBytes: 5000
+    maximumBytes: 50000
   },
   allowNewCompositions: true
 }

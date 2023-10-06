@@ -23,7 +23,7 @@ define view entity /DMO/I_Airport_StdVH
       @UI.lineItem: [{ position: 30, importance: #MEDIUM }]
       City,
 
-      @Consumption.valueHelpDefinition: [{entity: { name: 'I_Country', element: 'Country' }, useForValidation: true }]
+      @Consumption.valueHelpDefinition: [{entity: { name: 'I_CountryVH', element: 'Country' }, useForValidation: true }]
       @ObjectModel.text.element: ['CountryCodeText']
       @UI.textArrangement: #TEXT_ONLY
       @UI.lineItem: [{ position: 40, importance: #MEDIUM }]

@@ -10,6 +10,12 @@
     <LANGUAGE>EN</LANGUAGE>
     <LINKS>
      <item>
+      <HREF>/sap/bc/adt/documentation/ktd/documents/%2fdmo%2fi_travel_d</HREF>
+      <REL>http://www.sap.com/adt/relations/dita/documentation</REL>
+      <TYPE>application/vnd.sap.adt.sktdv2+xml</TYPE>
+      <TITLE>DITA Documentation</TITLE>
+     </item>
+     <item>
       <HREF>./%2Fdmo%2Fi_travel_d/source/main/versions</HREF>
       <REL>http://www.sap.com/adt/relations/versions</REL>
       <TITLE>Historic versions</TITLE>
@@ -31,17 +37,6 @@
       <REL>http://www.sap.com/adt/relations/source</REL>
       <TYPE>text/html</TYPE>
       <TITLE>Source Content (HTML)</TITLE>
-     </item>
-     <item>
-      <HREF>./%2Fdmo%2Fi_travel_d/objectstructure</HREF>
-      <REL>http://www.sap.com/adt/relations/objectstructure</REL>
-      <TITLE>Object Structure</TITLE>
-     </item>
-     <item>
-      <HREF>/sap/bc/adt/vit/wb/object_type/bdefbdo/object_name/%2fDMO%2fI_TRAVEL_D</HREF>
-      <REL>self</REL>
-      <TYPE>application/vnd.sap.sapgui</TYPE>
-      <TITLE>Representation in SAP GUI</TITLE>
      </item>
     </LINKS>
     <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>

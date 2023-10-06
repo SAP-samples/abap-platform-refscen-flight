@@ -1,6 +1,7 @@
 projection;
 strict(2);
 use draft;
+use side effects;
 
 define behavior for /DMO/C_Travel_D_D alias Travel
 use etag
@@ -12,6 +13,10 @@ use etag
   use action acceptTravel;
   use action rejectTravel;
   use action deductDiscount;
+
+  use action validateAgencyID;
+  use action validateCustomerID;
+  use action validateDateRange;
 
   use action Edit;
   use action Activate;
