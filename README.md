@@ -44,7 +44,7 @@ Use the <em>zabapgit_standalone</em> program to install the <em>ABAP Flight Refe
 1.	In your ABAP project, create the package `/DMO/FLIGHT` as target package for the demo content. Use `HOME` as software component. Assign it to a new transport request that you only use for the demo content import. 
 2.	In your ABAP project, run the program `zabapgit_standalone`.  
 3.	Choose `New Online` and enter the following URL of this repository  `https://github.com/SAP/abap-platform-refscen-flight.git`. 
-4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `ABAP-platform-2022`.
+4.	In the package field, enter the newly created package `/DMO/FLIGHT`. In the branch field, select the branch `ABAP-platform-2023`.
 5.	Leave the other fields unchanged and choose `Create Online Repo`.
 6. Enter your credentials for abapgit. You will see the available artifacts to import into your ABAP system. 
 7.	Choose `Pull` and confirm every subpackage on your transport request. 
@@ -68,6 +68,8 @@ NOTE: The service bindings of the development scenarios are imported with the wa
 NOTE: If you pull the repository again after a successfull import, make sure that you do not delete the local objects `G4BA`, `SUSH` and `NSPC`.
 
 ## Configuration
+Service definitions need a provider contract before they can be released for the release contract Extend (C0). The service definition /DMO/UI_AGENCY from the package /DMO/FLIGHT_REUSE_AGENCY is shipped without this release contract for maintenance reasons and does not contain a provider contract. If you want to release the service definition /DMO/UI_AGENCY for the release contract Extend (C0), you need to define a suitable provider contract first. You can also directly copy the source code from service_definition_agency. Activate the service definition after.
+
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish`.
 
