@@ -39,15 +39,6 @@ To be able to import /DMO/ objects into your system, set the system change optio
 
 For more information, see [Setting the System Change Option](https://help.sap.com/docs/SAP_NETWEAVER_750/4a368c163b08418890a406d413933ba7/5738de9b4eb711d182bf0000e829fbfe.html). 
 
-## Enable Import of BDEF Extension Via ZABAPGIT
-The current reference scenario contains behavior definition extensions. To be able to import them via ZABAPGIT into your ABAP system with application server 7.57, you need to import the correction measure described in [SAP Note 3268158](https://launchpad.support.sap.com/#/notes/3268158). 
-1. Go to <em>Note Assistant</em> (transaction `SNOTE`).
-2. Click on <em>Download SAP Note</em> and enter Note Number `3268158`. 
-3. Implement the correction by clicking on <em> Menu > SAP Note</em> and choose <em>Implement SAP Note</em>
-4. Select a transport request in the pop-up window or create a new one. 
-5. Confirm the changes that are needed to implement the SAP Note.
-
-
 ## Download
 Use the <em>zabapgit_standalone</em> program to install the <em>ABAP Flight Reference Scenario</em> by executing the following steps:
 1.	In your ABAP project, create the package `/DMO/FLIGHT` as target package for the demo content. Use `HOME` as software component. Assign it to a new transport request that you only use for the demo content import. 
