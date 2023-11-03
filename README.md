@@ -68,7 +68,7 @@ NOTE: The service bindings of the development scenarios are imported with the wa
 NOTE: If you pull the repository again after a successfull import, make sure that you do not delete the local objects `G4BA`, `SUSH` and `NSPC`.
 
 ## Configuration
-Service definitions need a provider contract before they can be released for the release contract Extend (C0). The service definition /DMO/UI_AGENCY from the package /DMO/FLIGHT_REUSE_AGENCY is shipped without this release contract for maintenance reasons and does not contain a provider contract. If you want to release the service definition /DMO/UI_AGENCY for the release contract Extend (C0), you need to define a suitable provider contract first. You can also directly copy the source code from service_definition_agency. Activate the service definition after.
+Service definitions need a provider contract before they can be released for the release contract Extend (C0). The service definition /DMO/UI_AGENCY from the package /DMO/FLIGHT_REUSE_AGENCY is shipped without this release contract for maintenance reasons and does not contain a provider contract. If you want to release the service definition /DMO/UI_AGENCY for the release contract Extend (C0), you need to define a suitable provider contract first. You can also directly copy the source code from [service_definition_agency](service_definition_agency). Activate the service definition after.
 
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish`.
