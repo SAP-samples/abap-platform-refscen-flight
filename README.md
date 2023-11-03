@@ -12,7 +12,7 @@ The branches of this repository were renamed recently. If you have already linke
 
 ## Prerequisites
 Make sure to fulfill the following requirements:
-* You are working on Application Server ABAP 7.57 or higher. 
+* You are working on Application Server ABAP 7.58 or higher. 
 * You have downloaded and installed ABAP Development Tools (ADT). Make sure to use the most recent version as indicated on the [installation page](https://tools.hana.ondemand.com/#abap). 
 * You have created an ABAP Project in ADT that allows you to access your Application Server as mentioned above. Your log-on language is English.
 * You have downloaded and installed the `zabapgit_standalone` report. Make sure to use the most recent version as indicated on the [installation page](https://docs.abapgit.org/). 
