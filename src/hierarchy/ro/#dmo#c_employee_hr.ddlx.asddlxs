@@ -1,0 +1,60 @@
+@Metadata.layer: #CORE
+
+@UI: { headerInfo: {
+                     typeName: 'Employee',
+                     typeNamePlural: 'Employees',
+                     title: { type: #STANDARD, value: 'Employee' }
+                   },
+       presentationVariant: [{
+           sortOrder: [{ by: 'Employee', direction: #ASC }],
+           visualizations: [{type: #AS_LINEITEM}]
+         }]
+     }
+annotate view /DMO/C_Employee_HR
+  with 
+{
+ @UI: {
+      facet:          [
+                       { id:            'Employee',
+                         purpose:       #STANDARD,
+                         type:          #IDENTIFICATION_REFERENCE,
+                         label:         'Employee',
+                         position:      10
+                       }
+                      ]
+    }
+
+  @UI: {
+      lineItem:       [{ position: 20 }],
+      identification: [{ position: 20 }]
+    }
+  Employee;
+
+  @UI: {
+      selectionField: [{ position: 30 }],
+      lineItem:       [{ position: 30 }],
+      identification: [{ position: 30 }]
+    }
+  FirstName;
+
+  @UI: {
+      selectionField: [{ position: 30 }],
+      lineItem:       [{ position: 40 }],
+      identification: [{ position: 40 }]
+    }
+  LastName;
+
+  @UI: {
+      lineItem:       [{ position: 50 }],
+      identification: [{ position: 50 }]
+    }
+  Salary;
+
+  @UI: {
+      lineItem:       [{ position: 70 }],
+      identification: [{ position: 70 }]
+    }
+  Manager;
+
+  
+}

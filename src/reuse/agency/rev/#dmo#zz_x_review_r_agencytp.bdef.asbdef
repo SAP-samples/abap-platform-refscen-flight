@@ -10,6 +10,7 @@ extend behavior for /DMO/Agency
     validation /DMO/ZZ_Review~/DMO/ratingInRange;
   }
   association /DMO/ZZ_ReviewZAG { create; with draft; }
+
 }
 
 define behavior for /DMO/ZZ_R_Agency_ReviewTP alias /DMO/ZZ_Review using /DMO/ZZ_I_AGENCY_REVIEWTP

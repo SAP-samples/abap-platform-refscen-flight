@@ -1,0 +1,2 @@
+@EndUserText.label: 'Discount Percentage'
+define type /DMO/BT_DiscountPercentage: abap.int1 

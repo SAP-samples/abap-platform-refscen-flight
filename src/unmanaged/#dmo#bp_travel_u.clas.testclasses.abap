@@ -1279,7 +1279,7 @@ CLASS ltcl_saver IMPLEMENTATION.
       ).
     LOOP AT travel_mapping INTO DATA(travel_map).
       cl_abap_unit_assert=>assert_equals(
-          act = mapped-travel[ KEY entity  %key = travel_map-final ]-%tmp
+          act = mapped-travel[ KEY entity  %key = CORRESPONDING #( travel_map-final MAPPING TravelID = travel_id ) ]-%tmp
           exp = travel_map-preliminary
         ).
     ENDLOOP.
@@ -1291,7 +1291,7 @@ CLASS ltcl_saver IMPLEMENTATION.
       ).
     LOOP AT booking_mapping INTO DATA(booking_map).
       cl_abap_unit_assert=>assert_equals(
-          act = mapped-booking[ KEY entity  %key = booking_map-final ]-%tmp
+          act = mapped-booking[ KEY entity  %key = CORRESPONDING #( booking_map-final MAPPING TravelID = travel_id  BookingID = booking_id ) ]-%tmp
           exp = booking_map-preliminary
         ).
     ENDLOOP.
@@ -1303,7 +1303,7 @@ CLASS ltcl_saver IMPLEMENTATION.
       ).
     LOOP AT bookingsuppl_mapping INTO DATA(bookingsuppl_map).
       cl_abap_unit_assert=>assert_equals(
-          act = mapped-bookingsupplement[ KEY entity  %key = bookingsuppl_map-final ]-%tmp
+          act = mapped-bookingsupplement[ KEY entity  %key = CORRESPONDING #( bookingsuppl_map-final MAPPING TravelID = travel_id  BookingID = booking_id  BookingSupplementID = booking_supplement_id ) ]-%tmp
           exp = bookingsuppl_map-preliminary
         ).
     ENDLOOP.

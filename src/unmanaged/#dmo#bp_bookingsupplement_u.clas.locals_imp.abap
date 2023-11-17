@@ -323,7 +323,6 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
                                                v2       = message-msgv2
                                                v3       = message-msgv3
                                                v4       = message-msgv4 )
-                      %key-TravelID       = travel_id
                       %cid                = cid
                       TravelID            = travel_id
                       BookingID           = booking_id

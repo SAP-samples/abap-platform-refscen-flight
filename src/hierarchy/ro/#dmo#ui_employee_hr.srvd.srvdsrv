@@ -1,0 +1,5 @@
+@EndUserText.label: 'Hierarchy: Read Only: Employee'
+@ObjectModel.leadingEntity.name: '/DMO/C_Employee_HR'
+define service /DMO/UI_Employee_HR {
+  expose /DMO/C_Employee_HR as Employee;
+}

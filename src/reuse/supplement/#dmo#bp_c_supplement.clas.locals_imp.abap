@@ -18,7 +18,7 @@ CLASS lhc_Supplement IMPLEMENTATION.
           relates_update TYPE abp_behv_relating_tab,
           relates_cba    TYPE abp_behv_relating_tab.
     DATA: suppl_text_tky_link TYPE STRUCTURE FOR READ LINK /DMO/I_Supplement\\Supplement\_SupplementText,
-          suppl_text_tky      LIKE suppl_text_tky_link-target.
+          suppl_text_tky      LIKE suppl_text_tky_link-target-%tky.
 
     "Handle create requests including SupplementDescription
     LOOP AT entities_create INTO DATA(supplement_create).

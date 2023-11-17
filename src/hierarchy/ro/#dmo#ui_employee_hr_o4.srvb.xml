@@ -4,29 +4,29 @@
   <asx:values>
    <SRVB>
     <METADATA>
-     <NAME>/DMO/UI_TRAVEL_U_V2</NAME>
+     <NAME>/DMO/UI_EMPLOYEE_HR_O4</NAME>
      <TYPE>SRVB/SVB</TYPE>
-     <DESCRIPTION>UI service for managing travels (V2)</DESCRIPTION>
-     <RESPONSIBLE>BARZEWSKI</RESPONSIBLE>
+     <DESCRIPTION>Hierarchy: Read Only: Employee</DESCRIPTION>
+     <RESPONSIBLE>COLLETS</RESPONSIBLE>
      <MASTER_LANGUAGE>EN</MASTER_LANGUAGE>
     </METADATA>
     <CONTENT>
      <BIND_TYPE_IMPL>
-      <NAME>/DMO/UI_TRAVEL_U_V2</NAME>
+      <NAME>/DMO/UI_EMPLOYEE_HR_O4</NAME>
      </BIND_TYPE_IMPL>
      <BIND_TYPE>ODATA</BIND_TYPE>
-     <BIND_TYPE_VERSION>V2</BIND_TYPE_VERSION>
+     <BIND_TYPE_VERSION>V4</BIND_TYPE_VERSION>
      <SERVICES>
       <item>
-       <SERVICE_NAME>/DMO/UI_TRAVEL_U_V2</SERVICE_NAME>
+       <SERVICE_NAME>/DMO/UI_EMPLOYEE_HR</SERVICE_NAME>
        <SERVICE_CONTENT>
         <item>
          <SERVICE_VERSION>0001</SERVICE_VERSION>
          <RELEASE_STATE>NOT_RELEASED</RELEASE_STATE>
          <SRVD_REF>
-          <URI>/sap/bc/adt/ddic/srvd/sources/%2fdmo%2ftravel_u</URI>
+          <URI>/sap/bc/adt/ddic/srvd/sources/%2fdmo%2fui_employee_hr</URI>
           <TYPE>SRVD/SRV</TYPE>
-          <NAME>/DMO/TRAVEL_U</NAME>
+          <NAME>/DMO/UI_EMPLOYEE_HR</NAME>
          </SRVD_REF>
          <BIND_TYPE_DATA>
           <CONTENT>

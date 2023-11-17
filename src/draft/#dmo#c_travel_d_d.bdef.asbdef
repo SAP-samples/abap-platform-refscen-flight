@@ -13,6 +13,7 @@ use etag
   use action acceptTravel;
   use action rejectTravel;
   use action deductDiscount;
+  use function GetDefaultsFordeductDiscount;
 
   use action validateAgencyID;
   use action validateCustomerID;

@@ -3,13 +3,12 @@
  <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
   <asx:values>
    <DD01V>
-    <DOMNAME>/DMO/AGENCY_ID</DOMNAME>
+    <DOMNAME>/DMO/EMPLOYEE_ID</DOMNAME>
     <DDLANGUAGE>E</DDLANGUAGE>
     <DATATYPE>NUMC</DATATYPE>
-    <LENG>000006</LENG>
-    <OUTPUTLEN>000006</OUTPUTLEN>
-    <ENTITYTAB>/DMO/AGENCY</ENTITYTAB>
-    <DDTEXT>Flight Reference Scenario: Agency ID</DDTEXT>
+    <LENG>000008</LENG>
+    <OUTPUTLEN>000008</OUTPUTLEN>
+    <DDTEXT>Employee ID</DDTEXT>
     <DOMMASTER>E</DOMMASTER>
    </DD01V>
   </asx:values>

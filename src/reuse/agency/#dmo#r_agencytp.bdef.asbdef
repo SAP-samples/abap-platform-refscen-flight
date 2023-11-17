@@ -45,7 +45,7 @@ extensible
     validation /DMO/validateLargeObject;
   }
 
-  mapping for /dmo/agency
+  mapping for /dmo/agency corresponding extensible
     {
       AgencyId           = agency_id;
       Name               = name;

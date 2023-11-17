@@ -17,6 +17,8 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR ACTION Travel~rejectTravel RESULT result.
     METHODS deductDiscount FOR MODIFY
       IMPORTING keys FOR ACTION Travel~deductDiscount RESULT result.
+    METHODS GetDefaultsFordeductDiscount FOR READ
+      IMPORTING keys FOR FUNCTION Travel~GetDefaultsFordeductDiscount RESULT result.
     METHODS reCalcTotalPrice FOR MODIFY
       IMPORTING keys FOR ACTION Travel~reCalcTotalPrice.
 
@@ -53,6 +55,7 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
 
     METHODS resume FOR MODIFY
       IMPORTING keys FOR ACTION Travel~Resume.
+
 
 
     METHODS is_create_granted
@@ -948,6 +951,31 @@ CLASS lhc_travel IMPLEMENTATION.
                       ) TO reported-travel.
       ENDIF.
     ENDLOOP.
+  ENDMETHOD.
+
+
+
+
+
+  METHOD GetDefaultsFordeductDiscount.
+
+    READ ENTITIES OF /DMO/R_TRAVEL_D
+      IN LOCAL MODE
+      ENTITY Travel
+        FIELDS ( TotalPrice )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(travels).
+
+    LOOP AT travels INTO DATA(travel).
+      IF travel-TotalPrice >= 5000.
+        APPEND VALUE #( %tky                     = travel-%tky
+                        %param-discount_percent  = 20 ) TO result.
+      ELSE.
+        APPEND VALUE #( %tky                     = travel-%tky
+                        %param-discount_percent  = 10 ) TO result.
+      ENDIF.
+    ENDLOOP.
+
   ENDMETHOD.
 
 ENDCLASS.

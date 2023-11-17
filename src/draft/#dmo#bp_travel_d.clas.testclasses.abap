@@ -13,7 +13,8 @@ CLASS ltc_travel DEFINITION FINAL FOR TESTING
       uuid1 TYPE sysuuid_x16 VALUE '66657221A8E4645C17002DF03754A1',
       uuid2 TYPE sysuuid_x16 VALUE '66657221A8E4645C17002DF03754A2',
       uuid3 TYPE sysuuid_x16 VALUE '66657221A8E4645C17002DF03754A3',
-      uuid4 TYPE sysuuid_x16 VALUE '66657221A8E4645C17002DF03754A4'.
+      uuid4 TYPE sysuuid_x16 VALUE '66657221A8E4645C17002DF03754A4',
+      uuid5 TYPE sysuuid_x16 VALUE '66657221A8E4645C17002DF03754A5'.
 
     CLASS-METHODS:
       "! Instantiate class under test and set up test double framework
@@ -166,7 +167,12 @@ CLASS ltc_travel DEFINITION FINAL FOR TESTING
       "! Calls { @link ..lhc_travel.METH:validatecurrencycode }
       "! and checks if invalid permutations of sets of status
       "! returns messages.
-      validate_currency_not_valid      FOR TESTING.
+      validate_currency_not_valid      FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:GetDefaultsFordeductDiscount }
+      "! and checks the defaulting for total prizes
+      getdefaultsfordiscount FOR TESTING.
+
 
 
 
@@ -1724,6 +1730,68 @@ CLASS ltc_travel IMPLEMENTATION.
           ).
       ENDLOOP.
     ENDIF.
+  ENDMETHOD.
+
+
+
+  METHOD getdefaultsfordiscount.
+
+    DATA:
+      travel_mock_data   TYPE STANDARD TABLE OF /dmo/a_travel_d,
+      travels_to_test    TYPE TABLE FOR FUNCTION IMPORT /dmo/r_travel_d\\travel~GetDefaultsFordeductDiscount,
+      exp_travels_action TYPE TABLE FOR FUNCTION RESULT /dmo/r_travel_d\\travel~GetDefaultsFordeductDiscount,
+      result             TYPE TABLE FOR FUNCTION RESULT /dmo/r_travel_d\\travel~GetDefaultsFordeductDiscount,
+      failed             TYPE RESPONSE FOR FAILED   EARLY /dmo/r_travel_d,
+      reported           TYPE RESPONSE FOR REPORTED EARLY /dmo/r_travel_d.
+
+      travel_mock_data = VALUE #( ( travel_uuid = uuid1 total_price = '' )
+                                  ( travel_uuid = uuid2 total_price = '0' )
+                                  ( travel_uuid = uuid3 total_price = '1' )
+                                  ( travel_uuid = uuid4 total_price = '5000' )
+                                  ( travel_uuid = uuid5 total_price = '5001' ) ).
+
+      cds_test_environment->insert_test_data( travel_mock_data ).
+
+      exp_travels_action = VALUE #(
+        (
+          %is_draft     = if_abap_behv=>mk-off
+          traveluuid    = uuid1
+          %param        = VALUE #(
+              discount_percent = '10' ) )
+        ( %is_draft     = if_abap_behv=>mk-off
+          traveluuid    = uuid2
+          %param        = VALUE #(
+              discount_percent = '10' ) )
+        ( %is_draft   = if_abap_behv=>mk-off
+          traveluuid = uuid3
+          %param = VALUE #(
+              discount_percent = '10' ) )
+        ( %is_draft   = if_abap_behv=>mk-off
+          traveluuid = uuid4
+          %param = VALUE #(
+              discount_percent = '20' ) )
+        ( %is_draft   = if_abap_behv=>mk-off
+          traveluuid = uuid5
+          %param = VALUE #(
+              discount_percent = '20' ) )
+         ).
+
+      travels_to_test = CORRESPONDING #( travel_mock_data MAPPING TravelUUID = travel_uuid EXCEPT * ).
+
+      class_under_test->getdefaultsfordeductdiscount(
+        EXPORTING
+          keys     = travels_to_test
+        CHANGING
+          result   = result
+          failed   = failed
+          reported = reported
+      ).
+
+      cl_abap_unit_assert=>assert_initial( failed ).
+      cl_abap_unit_assert=>assert_initial( reported ).
+
+      cl_abap_unit_assert=>assert_equals( exp = exp_travels_action act = result ).
+
   ENDMETHOD.
 
 ENDCLASS.
