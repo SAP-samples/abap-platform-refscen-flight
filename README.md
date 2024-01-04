@@ -27,6 +27,7 @@ Use the abapGit plug-in to import the <em>ABAP Flight Reference Scenario</em> by
 6. Create a new transport request that you only use for this demo content installation (recommendation) and choose <em>Finish</em> to link the Git repository to your ABAP cloud project. The repository appears in the abapGit Repositories View with status <em>Linked</em>.
 7. Right-click on the new ABAP repository and choose `pull` to start the cloning of the repository contents. Note that this procedure may take a few minutes. 
 8. Once the cloning has finished, the status is set to `Pulled Successfully`. (Refresh the `abapGit Repositories` view to see the progress of the import). Refresh the project tree.
+In case the status is set to ‘Pulled with errors’ and the authorization object /DMO/CNTRY reports the error ‘No authorization to change authorization field &/DMO/CNTRY&’ please raise a ticket on component BC-SEC-AUT-PFC.
 9. In SAP S/4HANA Public Cloud systems, create the simple type artifact <em>/DMO/BT_DISCOUNTPERCENTAGE</em> in the /DMO/FLIGHT_DRAFT package and insert the code as provided in [/dmo/bt_discountpercentage](src/draft/(dmo)bt_discountpercentage.drty.acds).
 
 As a result of the installation procedure above, the ABAP system creates an inactive version of all artifacts from the demo content and adds the following sub packages to the target package: 
@@ -46,6 +47,11 @@ To activate all development objects from the `/DMO/FLIGHT` package:
 1. Click the mass-activation icon (<em>Activate Inactive ABAP Development Objects</em>) in the toolbar.  
 2. In the dialog that appears, select all development objects in the transport request (that you created for the demo content installation) and choose `Activate`. (The activation may take a few minutes.) 
 3. Service definitions need a provider contract before they can be released for the release contract <em>Extend (C0)</em>. The service definition /DMO/UI_AGENCY from the package /DMO/FLIGHT_REUSE_AGENCY is shipped without this release contract for maintenance reasons and does not contain a provider contract. If you want to release the service definition /DMO/UI_AGENCY for the release contract <em>Extend (C0)</em>, you need to define a suitable provider contract first. You can also directly copy the source code from [service_definition_agency](service_definition_agency). Activate the service definition after.
+
+In case the mass-activation or the Service Bindings report the error ‘Failed to read the runtime table SRVD_RT_EXTENDS for service …’ and/or the error ‘An active version of the Service Definition … does not exist’, the respective Service Definition has not been imported properly. In this case, please proceed as follows:
+1. Delete the Service Bindings that are based on this Service Definition,
+2. Reactivate the Service Definition (make sure to edit / touch it before)
+3. Recreate the Service Bindings deleted in step 1.
 
 To generate service artifacts for the service bindings:
 1. In each service binding, choose the button `Publish` or choose `Publish local service endpoint` in the top right corner of the editor.
