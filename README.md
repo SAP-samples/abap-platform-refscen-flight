@@ -49,8 +49,8 @@ To activate all development objects from the `/DMO/FLIGHT` package:
 3. Service definitions need a provider contract before they can be released for the release contract <em>Extend (C0)</em>. The service definition /DMO/UI_AGENCY from the package /DMO/FLIGHT_REUSE_AGENCY is shipped without this release contract for maintenance reasons and does not contain a provider contract. If you want to release the service definition /DMO/UI_AGENCY for the release contract <em>Extend (C0)</em>, you need to define a suitable provider contract first. You can also directly copy the source code from [service_definition_agency](service_definition_agency). Activate the service definition after.
 
 In case the mass-activation or the Service Bindings report the error ‘Failed to read the runtime table SRVD_RT_EXTENDS for service …’ and/or the error ‘An active version of the Service Definition … does not exist’, the respective Service Definition has not been imported properly. In this case, please proceed as follows:
-1. Delete the Service Bindings that are based on this Service Definition,
-2. Reactivate the Service Definition (make sure to edit / touch it before)
+1. Delete the Service Bindings that are based on this Service Definition.
+2. Reactivate the Service Definition (make sure to edit / touch it before).
 3. Recreate the Service Bindings deleted in step 1.
 
 To generate service artifacts for the service bindings:
