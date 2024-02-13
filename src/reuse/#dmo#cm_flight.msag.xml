@@ -146,6 +146,24 @@
      <MSGNR>023</MSGNR>
      <TEXT>Currency code &amp;1 does not exist.  Please enter a valid currency code.</TEXT>
     </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>024</MSGNR>
+     <TEXT>Booking Fee is not valid.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>025</MSGNR>
+     <TEXT>Flight Price is not valid.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_FLIGHT</ARBGB>
+     <MSGNR>026</MSGNR>
+     <TEXT>Supplement Price is not valid.</TEXT>
+    </T100>
    </T100>
   </asx:values>
  </asx:abap>

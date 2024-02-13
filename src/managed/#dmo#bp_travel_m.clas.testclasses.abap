@@ -528,6 +528,8 @@ CLASS ltc_managed IMPLEMENTATION.
 
 
 
+
+
   METHOD set_status_accepted.
 
     " Fill in test data
@@ -822,6 +824,15 @@ CLASS ltc_travl_not_in_documentation DEFINITION FINAL FOR TESTING
       "! and checks if invalid permutations of sets of dates
       "! returns messages.
       validatedates_not_valid      FOR TESTING,
+
+      "! Check instance with valid Booking Fee
+      validate_booking_fee_valid   FOR TESTING,
+
+      "! Check instance with invalid Booking Fee
+      validate_booking_fee_invalid FOR TESTING,
+
+      "! Check instance with initial (valid) Booking Fee
+      validate_booking_fee_initial FOR TESTING,
 
       "! Calls { @link ..lhc_travel.METH:get_instance_features }
       "! using travels with an <em>accepted</em>, <em>rejected</em>,
@@ -1581,6 +1592,102 @@ CLASS ltc_travl_not_in_documentation IMPLEMENTATION.
     ENDIF.
   ENDMETHOD.
 
+  METHOD validate_booking_fee_valid.
+
+    " Fill in test data for entity travel
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' booking_fee = '1024' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call the method to be tested
+    class_under_test->validate_bookingfee(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+      CHANGING
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check for content in failed and reported
+    cl_abap_unit_assert=>assert_initial( msg = 'failed' act = failed ).
+    cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
+
+  ENDMETHOD.
+
+  METHOD validate_booking_fee_invalid.
+
+    " Fill in test data for entity travel
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' booking_fee = '-1024' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call the method to be tested
+    class_under_test->validate_bookingfee(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+      CHANGING
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check number of returned instances in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'lines in failed-travel' act = lines( failed-travel ) exp = 1 ).
+
+    " Check travel id in failed-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'travel id in failed-travel' act = failed-travel[ 1 ]-travel_id exp = '43' ).
+
+
+    " Check number of returned instances in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'lines in reported-travel' act = lines( reported-travel ) exp = 1 ).
+
+    " Check travel id in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'travel id in reported-travel' act = reported-travel[ 1 ]-travel_id  exp = '43' ).
+
+    " Check marked field in reported-travel
+    cl_abap_unit_assert=>assert_equals( msg = 'field booking fee in reported-travel' act = reported-travel[ 1 ]-%element-booking_fee  exp = if_abap_behv=>mk-on ).
+
+    " Check message reference in reported-travel
+    cl_abap_unit_assert=>assert_bound(  msg = 'message reference in reported-travel' act = reported-travel[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals( msg = 'message id for invalid booking fee'     act = reported-travel[ 1 ]-%msg->if_t100_message~t100key-msgid  exp = '/DMO/CM_FLIGHT' ).
+    cl_abap_unit_assert=>assert_equals( msg = 'message number for invalid booking fee' act = reported-travel[ 1 ]-%msg->if_t100_message~t100key-msgno  exp = '024' ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_booking_fee_initial.
+
+    " Fill in test data for entity travel
+    DATA travel_mock_data TYPE STANDARD TABLE OF /dmo/travel_m.
+    travel_mock_data = VALUE #( ( travel_id = '43' booking_fee = '' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    " Declare required structures
+    DATA failed TYPE RESPONSE FOR FAILED LATE /dmo/i_travel_m.
+    DATA reported TYPE RESPONSE FOR REPORTED LATE  /dmo/i_travel_m.
+
+    " Call the method to be tested
+    class_under_test->validate_bookingfee(
+      EXPORTING
+        keys               = CORRESPONDING #(  travel_mock_data )
+      CHANGING
+        failed             = failed
+        reported           = reported
+    ).
+
+    " Check for content in failed and reported
+    cl_abap_unit_assert=>assert_initial( msg = 'failed'   act = failed ).
+    cl_abap_unit_assert=>assert_initial( msg = 'reported' act = reported ).
+
+  ENDMETHOD.
+
   METHOD get_instance_features.
     TYPES: t_instance_feature TYPE STRUCTURE FOR INSTANCE FEATURES RESULT /dmo/i_travel_m\\travel,
            BEGIN OF t_check.
@@ -2268,6 +2375,8 @@ CLASS ltc_save_not_in_documentation DEFINITION FINAL FOR TESTING
       "! process all buffered tables of Booking Supplement
       "! for create, update and delete and persists them.
       unmanaged_save_booksupplement FOR TESTING.
+
+
 ENDCLASS.
 
 
@@ -2476,5 +2585,6 @@ CLASS ltc_save_not_in_documentation IMPLEMENTATION.
 
     cl_abap_unit_assert=>assert_equals( exp = exp_booking_supplements act = act_booking_supplements ).
   ENDMETHOD.
+
 
 ENDCLASS.

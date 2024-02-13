@@ -1,3 +1,4 @@
+@Metadata.ignorePropagatedAnnotations: true
 @EndUserText.label: 'Travel Interface Projection View'
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 define root view entity /DMO/I_Travel_D
@@ -10,11 +11,14 @@ define root view entity /DMO/I_Travel_D
       CustomerID,
       BeginDate,
       EndDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
       BookingFee,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
       TotalPrice,
       CurrencyCode,
       Description,
       OverallStatus,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
       LocalLastChangedAt,
       /* Associations */
       _Agency,

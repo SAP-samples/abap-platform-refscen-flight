@@ -26,7 +26,7 @@ define root view entity /DMO/I_Supplement
       supplement.local_created_by      as LocalCreatedBy,
       @Semantics.systemDateTime.createdAt: true
       supplement.local_created_at      as LocalCreatedAt,
-      @Semantics.user.lastChangedBy: true
+      @Semantics.user.localInstanceLastChangedBy: true
       supplement.local_last_changed_by as LocalLastChangedBy,
       //local etag field --> odata etag
       @Semantics.systemDateTime.localInstanceLastChangedAt: true

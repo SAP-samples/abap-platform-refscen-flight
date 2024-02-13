@@ -1,3 +1,4 @@
+@Metadata.ignorePropagatedAnnotations: true
 @EndUserText.label: 'BookSupplement Interface Projection View'
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 define view entity /DMO/I_BookingSupplement_D
@@ -8,8 +9,10 @@ define view entity /DMO/I_BookingSupplement_D
       BookingUUID,
       BookingSupplementID,
       SupplementID,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
       BookSupplPrice,
       CurrencyCode,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
       LocalLastChangedAt,
       /* Associations */
       _Booking : redirected to parent /DMO/I_Booking_D,

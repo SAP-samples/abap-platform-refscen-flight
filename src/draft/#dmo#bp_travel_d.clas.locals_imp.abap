@@ -55,6 +55,8 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
 
     METHODS resume FOR MODIFY
       IMPORTING keys FOR ACTION Travel~Resume.
+    METHODS validateBookingFee FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Travel~validateBookingFee.
 
 
 
@@ -973,6 +975,33 @@ CLASS lhc_travel IMPLEMENTATION.
       ELSE.
         APPEND VALUE #( %tky                     = travel-%tky
                         %param-discount_percent  = 10 ) TO result.
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD validateBookingFee.
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY travel
+        FIELDS ( BookingFee )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(travels).
+
+    LOOP AT travels INTO DATA(travel).
+      APPEND VALUE #(  %tky               = travel-%tky
+                       %state_area        = 'VALIDATE_BOOKINGFEE'
+                    ) TO reported-travel.
+      " Raise message for booking fee < 0
+      IF travel-BookingFee < 0.
+        APPEND VALUE #( %tky                = travel-%tky ) TO failed-travel.
+        APPEND VALUE #( %tky                = travel-%tky
+                        %state_area         = 'VALIDATE_BOOKINGFEE'
+                        %msg                = NEW /dmo/cm_flight_messages(
+                                                      textid      = /dmo/cm_flight_messages=>booking_fee_invalid
+                                                      severity    = if_abap_behv_message=>severity-error )
+                        %element-BookingFee = if_abap_behv=>mk-on
+                      ) TO reported-travel.
       ENDIF.
     ENDLOOP.
 

@@ -54,7 +54,31 @@ CLASS ltcl_bookingsupplement DEFINITION FINAL FOR TESTING
       "! Calls { @link ..lhc_bookingsupplement.METH:validate_currencycode }
       "! and checks if invalid permutations of sets of status
       "! returns messages.
-      validate_currency_not_valid      FOR TESTING.
+      validate_currency_not_valid      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validateSupplement }
+      "! and checks if an existing supplement is set.
+      validate_supplement_success      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validateSupplement }
+      "! and checks for a message for an initial supplement.
+      validate_supplement_initial      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validateSupplement }
+      "! and checks for a message for a non-existing supplement.
+      validate_supplement_not_exist    FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validatePrice }
+      "! and checks if supplement price is valid.
+      validate_price_success      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validatePrice }
+      "! and checks supplement price is initial.
+      validate_price_initial      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validateSupplement }
+      "! and checks for a message for an invalid supplement price.
+      validate_price_invalid    FOR TESTING.
 ENDCLASS.
 
 
@@ -72,7 +96,8 @@ CLASS ltcl_bookingsupplement IMPLEMENTATION.
     cds_test_environment->enable_double_redirection(  ).
     sql_test_environment = cl_osql_test_environment=>create(
                                VALUE #(
-                                   ( 'I_CURRENCY'    )
+                                   ( 'I_CURRENCY'      )
+                                   ( '/DMO/SUPPLEMENT' )
                                  )
                                ).
   ENDMETHOD.
@@ -268,6 +293,263 @@ CLASS ltcl_bookingsupplement IMPLEMENTATION.
           ).
       ENDLOOP.
     ENDIF.
+  ENDMETHOD.
+
+  METHOD validate_supplement_success.
+
+    CONSTANTS:
+      c_supplement_id TYPE /dmo/supplement_id VALUE '123'.
+
+    DATA:
+      supplement_mock_data        TYPE STANDARD TABLE OF /dmo/supplement,
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/booksuppl_m,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booksuppl~validateSupplement,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    supplement_mock_data = VALUE #( ( supplement_id = c_supplement_id ) ).
+    sql_test_environment->insert_test_data( supplement_mock_data ).
+
+    booking_supplement_mock_data = VALUE #(
+        travel_id  = travel_id1
+        booking_id = booking_id1
+        ( booking_supplement_id = booking_supplement_id1  supplement_id = c_supplement_id )
+      ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_supplement(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_supplement_initial.
+
+    CONSTANTS:
+      c_supplement_id            TYPE /dmo/supplement_id VALUE '123',
+      c_supplement_id_of_booking TYPE /dmo/supplement_id VALUE IS INITIAL.
+
+    DATA:
+      supplement_mock_data        TYPE STANDARD TABLE OF /dmo/supplement,
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/booksuppl_m,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booksuppl~validateSupplement,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    supplement_mock_data = VALUE #( ( supplement_id = c_supplement_id ) ).
+    sql_test_environment->insert_test_data( supplement_mock_data ).
+
+    booking_supplement_mock_data = VALUE #(
+        travel_id  = travel_id1
+        booking_id = booking_id1
+        ( booking_supplement_id = booking_supplement_id1  supplement_id = c_supplement_id_of_booking )
+      ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_supplement(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booksuppl )
+      ).
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( reported-booksuppl )
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booksuppl[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booksuppl[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '014'
+        act = reported-booksuppl[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+
+
+  ENDMETHOD.
+
+  METHOD validate_supplement_not_exist.
+
+    CONSTANTS:
+      c_supplement_id            TYPE /dmo/supplement_id VALUE '123',
+      c_supplement_id_of_booking TYPE /dmo/supplement_id VALUE '111'.
+
+    DATA:
+      supplement_mock_data        TYPE STANDARD TABLE OF /dmo/supplement,
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/booksuppl_m,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booksuppl~validateSupplement,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    supplement_mock_data = VALUE #( ( supplement_id = c_supplement_id ) ).
+    sql_test_environment->insert_test_data( supplement_mock_data ).
+
+    booking_supplement_mock_data = VALUE #(
+        travel_id  = travel_id1
+        booking_id = booking_id1
+        ( booking_supplement_id = booking_supplement_id1  supplement_id = c_supplement_id_of_booking )
+      ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_supplement(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booksuppl )
+      ).
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( reported-booksuppl )
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booksuppl[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booksuppl[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '013'
+        act = reported-booksuppl[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+
+  ENDMETHOD.
+
+  METHOD validate_price_success.
+
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/booksuppl_m,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booksuppl~validatePrice,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    booking_supplement_mock_data = VALUE #(
+        travel_id  = travel_id1
+        booking_id = booking_id1
+        ( booking_supplement_id = booking_supplement_id1  price = '123' )
+      ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_price(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+
+  ENDMETHOD.
+
+  METHOD validate_price_initial.
+
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/booksuppl_m,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booksuppl~validatePrice,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    booking_supplement_mock_data = VALUE #(
+        travel_id  = travel_id1
+        booking_id = booking_id1
+        ( booking_supplement_id = booking_supplement_id1  price = '' )
+      ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_price(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+
+  ENDMETHOD.
+
+  METHOD validate_price_invalid.
+
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/booksuppl_m,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booksuppl~validatePrice,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    booking_supplement_mock_data = VALUE #(
+        travel_id  = travel_id1
+        booking_id = booking_id1
+        ( booking_supplement_id = booking_supplement_id1  price = '-123' )
+      ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_price(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booksuppl )
+      ).
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( reported-booksuppl )
+      ).
+
+    cl_abap_unit_assert=>assert_bound( reported-booksuppl[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booksuppl[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '026'
+        act = reported-booksuppl[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+
   ENDMETHOD.
 
 ENDCLASS.

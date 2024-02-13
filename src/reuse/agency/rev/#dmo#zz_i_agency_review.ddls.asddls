@@ -1,12 +1,6 @@
-@AbapCatalog.viewEnhancementCategory: [#NONE]
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 @EndUserText.label: 'Agency Review'
-@Metadata.ignorePropagatedAnnotations: true
-@ObjectModel.usageType:{
-  serviceQuality: #X,
-  sizeCategory: #S,
-  dataClass: #MIXED
-}
+
 define view entity /DMO/ZZ_I_Agency_Review
   as select from /dmo/zz_agn_reva as Review
 {

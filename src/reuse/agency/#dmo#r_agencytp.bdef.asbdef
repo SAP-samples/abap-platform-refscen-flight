@@ -6,7 +6,8 @@ extensible
   with determinations on modify;
   with determinations on save;
   with validations on save;
-  with additional save; }
+  with additional save;
+}
 
 define behavior for /DMO/R_AgencyTP alias /DMO/Agency
 persistent table /dmo/agency
@@ -22,7 +23,7 @@ extensible
   update;
   delete;
 
-  field ( readonly ) AgencyID;
+  field ( readonly ) AgencyID, LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
   field ( mandatory ) CountryCode, EMailAddress, Name;
 
   draft action Resume;

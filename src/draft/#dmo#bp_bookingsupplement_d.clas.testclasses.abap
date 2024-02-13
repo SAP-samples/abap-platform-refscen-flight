@@ -73,7 +73,19 @@ CLASS ltc_bookingsupplement DEFINITION FINAL FOR TESTING
       "! Calls { @link ..lhc_BookingSupplement.METH:validatecurrencycode }
       "! and checks if invalid permutations of sets of status
       "! returns messages.
-      validate_currency_not_valid      FOR TESTING.
+      validate_currency_not_valid      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validatePrice }
+      "! and checks if supplement price is valid.
+      validate_price_success      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validatePrice }
+      "! and checks supplement price is initial.
+      validate_price_initial      FOR TESTING,
+
+      "! Calls { @link ..lhc_BookingSupplement.METH:validateSupplement }
+      "! and checks for a message for an invalid supplement price.
+      validate_price_invalid    FOR TESTING.
 
 
 ENDCLASS.
@@ -587,5 +599,107 @@ CLASS ltc_bookingsupplement IMPLEMENTATION.
   ENDMETHOD.
 
 
+
+   METHOD validate_price_success.
+
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\bookingsupplement~validatePrice,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+
+    booking_supplement_mock_data = VALUE #( ( booksuppl_uuid = uuid1  price = '123' ) ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING booksuppluuid = booksuppl_uuid ).
+
+    class_under_test->validatePrice(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( booking_supplements_to_test )
+        act = lines( reported-bookingsupplement )
+      ).
+
+  ENDMETHOD.
+
+  METHOD validate_price_initial.
+
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\bookingsupplement~validatePrice,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+
+    booking_supplement_mock_data = VALUE #( ( booksuppl_uuid = uuid1  price = '' ) ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING booksuppluuid = booksuppl_uuid ).
+
+    class_under_test->validatePrice(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( booking_supplements_to_test )
+        act = lines( reported-bookingsupplement )
+      ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_price_invalid.
+
+    DATA:
+      booking_supplement_mock_data TYPE STANDARD TABLE OF /dmo/a_bksuppl_d,
+      booking_supplements_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\bookingsupplement~validatePrice,
+      failed                       TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported                     TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+
+    booking_supplement_mock_data = VALUE #( ( booksuppl_uuid = uuid1  price = '-123' ) ).
+    cds_test_environment->insert_test_data( booking_supplement_mock_data ).
+
+    booking_supplements_to_test = CORRESPONDING #( booking_supplement_mock_data MAPPING booksuppluuid = booksuppl_uuid ).
+
+    class_under_test->validatePrice(
+        EXPORTING
+          keys     = booking_supplements_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-bookingsupplement )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 2
+        act = lines( reported-bookingsupplement )
+      ).
+
+  ENDMETHOD.
 
 ENDCLASS.

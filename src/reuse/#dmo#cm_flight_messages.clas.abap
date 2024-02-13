@@ -210,7 +210,34 @@ CLASS /dmo/cm_flight_messages DEFINITION
         attr2 TYPE scx_attrname VALUE '',
         attr3 TYPE scx_attrname VALUE '',
         attr4 TYPE scx_attrname VALUE '',
-      END OF currency_not_existing.
+      END OF currency_not_existing,
+
+      BEGIN OF booking_fee_invalid,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT',
+        msgno TYPE symsgno VALUE '024',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF booking_fee_invalid,
+
+      BEGIN OF flight_price_invalid,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT',
+        msgno TYPE symsgno VALUE '025',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF flight_price_invalid,
+
+      BEGIN OF suppl_price_invalid,
+        msgid TYPE symsgid VALUE '/DMO/CM_FLIGHT',
+        msgno TYPE symsgno VALUE '026',
+        attr1 TYPE scx_attrname VALUE '',
+        attr2 TYPE scx_attrname VALUE '',
+        attr3 TYPE scx_attrname VALUE '',
+        attr4 TYPE scx_attrname VALUE '',
+      END OF suppl_price_invalid.
 
 
     METHODS constructor
@@ -267,7 +294,7 @@ ENDCLASS.
 
 
 
-CLASS /dmo/cm_flight_messages IMPLEMENTATION.
+CLASS /DMO/CM_FLIGHT_MESSAGES IMPLEMENTATION.
 
 
   METHOD constructor ##ADT_SUPPRESS_GENERATION.

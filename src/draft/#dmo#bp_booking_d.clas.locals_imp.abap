@@ -22,6 +22,15 @@ CLASS lhc_booking DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR Booking~validateConnection.
     METHODS validateCurrencyCode FOR VALIDATE ON SAVE
       IMPORTING keys FOR Booking~validateCurrencyCode.
+    METHODS validateFlightPrice FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Booking~validateFlightPrice.
+    METHODS validateStatus FOR VALIDATE ON SAVE
+      IMPORTING keys FOR Booking~validateStatus.
+
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR Booking RESULT result.
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR Booking RESULT result.
 
 ENDCLASS.
 
@@ -330,6 +339,83 @@ CLASS lhc_booking IMPLEMENTATION.
                       ) TO reported-booking.
       ENDIF.
     ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validateFlightPrice.
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY booking
+        FIELDS ( FlightPrice )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(bookings).
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Booking BY \_Travel
+        FROM CORRESPONDING #( bookings )
+      LINK DATA(travel_booking_links).
+
+    LOOP AT bookings INTO DATA(booking).
+      APPEND VALUE #(  %tky               = booking-%tky
+                       %state_area        = 'VALIDATE_FLIGHTPRICE'
+                    ) TO reported-booking.
+      " Raise message for flight price < 0
+      IF booking-FlightPrice < 0.
+        APPEND VALUE #( %tky                  = booking-%tky ) TO failed-booking.
+        APPEND VALUE #( %tky                  = booking-%tky
+                        %state_area           = 'VALIDATE_FLIGHTPRICE'
+                        %msg                  = NEW /dmo/cm_flight_messages(
+                                                       textid      = /dmo/cm_flight_messages=>flight_price_invalid
+                                                       severity    = if_abap_behv_message=>severity-error )
+                        %element-FlightPrice  = if_abap_behv=>mk-on
+                        %path                 = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
+                      ) TO reported-booking.
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+    METHOD validateStatus.
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY booking
+        FIELDS ( BookingStatus )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(bookings).
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY Booking BY \_Travel
+        FROM CORRESPONDING #( bookings )
+      LINK DATA(travel_booking_links).
+
+    LOOP AT bookings INTO DATA(booking).
+      APPEND VALUE #(  %tky               = booking-%tky
+                       %state_area        = 'VALIDATE_STATUS'
+                    ) TO reported-booking.
+      CASE booking-BookingStatus.
+        WHEN 'N'.  " New
+        WHEN 'X'.  " Canceled
+        WHEN 'B'.  " Booked
+
+        WHEN OTHERS.
+          APPEND VALUE #( %tky = booking-%tky ) TO failed-booking.
+          APPEND VALUE #( %tky = booking-%tky
+                          %state_area            = 'VALIDATE_STATUS'
+                          %msg                   = NEW /dmo/cm_flight_messages(
+                                                          textid   = /dmo/cm_flight_messages=>status_invalid
+                                                          status   = booking-BookingStatus
+                                                          severity = if_abap_behv_message=>severity-error )
+                          %element-BookingStatus = if_abap_behv=>mk-on
+                          %path                  = VALUE #( travel-%tky = travel_booking_links[ KEY id  source-%tky = booking-%tky ]-target-%tky )
+                        ) TO reported-booking.
+      ENDCASE.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+
+  METHOD get_global_authorizations.
   ENDMETHOD.
 
 ENDCLASS.

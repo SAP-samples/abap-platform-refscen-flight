@@ -29,7 +29,7 @@ define root view entity /DMO/I_Travel_M
       created_by,
       @Semantics.systemDateTime.createdAt: true
       created_at,
-      @Semantics.user.lastChangedBy: true
+      @Semantics.user.localInstanceLastChangedBy: true
       last_changed_by,
       //local ETag field --> OData ETag
       @Semantics.systemDateTime.localInstanceLastChangedAt: true

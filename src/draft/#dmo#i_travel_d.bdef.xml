@@ -10,12 +10,6 @@
     <LANGUAGE>EN</LANGUAGE>
     <LINKS>
      <item>
-      <HREF>/sap/bc/adt/documentation/ktd/documents/%2fdmo%2fi_travel_d</HREF>
-      <REL>http://www.sap.com/adt/relations/dita/documentation</REL>
-      <TYPE>application/vnd.sap.adt.sktdv2+xml</TYPE>
-      <TITLE>DITA Documentation</TITLE>
-     </item>
-     <item>
       <HREF>./%2Fdmo%2Fi_travel_d/source/main/versions</HREF>
       <REL>http://www.sap.com/adt/relations/versions</REL>
       <TITLE>Historic versions</TITLE>

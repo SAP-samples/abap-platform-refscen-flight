@@ -17,6 +17,7 @@ use etag
   use action validateAgencyID;
   use action validateCustomerID;
   use action validateDateRange;
+  use action validateBookingCharge;
 
   use action Edit;
   use action Activate;
@@ -33,6 +34,8 @@ use etag
   use update;
   use delete;
 
+  use action validateFlightCosts;
+
   use association _BookingSupplement { create; with draft; }
   use association _Travel { with draft; }
 }
@@ -42,6 +45,8 @@ use etag
 {
   use update;
   use delete;
+
+  use action validateSupplementPrice;
 
   use association _Travel { with draft; }
   use association _Booking { with draft; }

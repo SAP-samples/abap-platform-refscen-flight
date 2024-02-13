@@ -13,6 +13,13 @@ CLASS lhc_BookingSupplement DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR BookingSupplement~validateSupplement.
     METHODS validateCurrencyCode FOR VALIDATE ON SAVE
       IMPORTING keys FOR BookingSupplement~validateCurrencyCode.
+    METHODS validatePrice FOR VALIDATE ON SAVE
+      IMPORTING keys FOR BookingSupplement~validatePrice.
+    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
+      IMPORTING keys REQUEST requested_authorizations FOR BookingSupplement RESULT result.
+
+    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+      IMPORTING REQUEST requested_authorizations FOR BookingSupplement RESULT result.
 
 ENDCLASS.
 
@@ -221,6 +228,51 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
                       ) TO reported-bookingsupplement.
       ENDIF.
     ENDLOOP.
+  ENDMETHOD.
+
+  METHOD validatePrice.
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY BookingSupplement
+        FIELDS ( BookSupplPrice )
+        WITH CORRESPONDING #( keys )
+      RESULT DATA(booking_supplements).
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY BookingSupplement BY \_Booking
+        FROM CORRESPONDING #( booking_supplements )
+      LINK DATA(booksuppl_booking_links).
+
+    READ ENTITIES OF /DMO/R_Travel_D IN LOCAL MODE
+      ENTITY BookingSupplement BY \_Travel
+        FROM CORRESPONDING #( booking_supplements )
+      LINK DATA(booksuppl_travel_links).
+
+    LOOP AT booking_supplements INTO DATA(booking_supplement).
+      APPEND VALUE #(  %tky               = booking_supplement-%tky
+                       %state_area        = 'VALIDATE_PRICE'
+                    ) TO reported-bookingsupplement.
+      " Raise message for Supplement Price < 0
+      IF booking_supplement-BookSupplPrice < 0.
+        APPEND VALUE #( %tky                   = booking_supplement-%tky ) TO failed-bookingsupplement.
+        APPEND VALUE #( %tky                   = booking_supplement-%tky
+                        %state_area            = 'VALIDATE_PRICE'
+                        %msg                   = NEW /dmo/cm_flight_messages(
+                                                        textid    = /dmo/cm_flight_messages=>suppl_price_invalid
+                                                        severity  = if_abap_behv_message=>severity-error )
+                        %path                 = VALUE #( booking-%tky = booksuppl_booking_links[ KEY id  source-%tky = booking_supplement-%tky ]-target-%tky
+                                                         travel-%tky  = booksuppl_travel_links[  KEY id  source-%tky = booking_supplement-%tky ]-target-%tky )
+                        %element-BookSupplPrice = if_abap_behv=>mk-on
+                      ) TO reported-bookingsupplement.
+      ENDIF.
+    ENDLOOP.
+
+  ENDMETHOD.
+
+  METHOD get_instance_authorizations.
+  ENDMETHOD.
+
+  METHOD get_global_authorizations.
   ENDMETHOD.
 
 ENDCLASS.

@@ -1,5 +1,5 @@
 managed implementation in class /dmo/bp_i_supplement unique;
-strict(2);
+strict ( 2 );
 with draft;
 
 define behavior for /DMO/I_Supplement alias Supplement
@@ -15,8 +15,8 @@ authorization master ( global )
   update;
   delete;
 
-  field ( readonly ) SupplementID;
-  field ( mandatory: create, readonly : update ) SupplementCategory;
+  field ( readonly ) SupplementID, LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
+  field ( mandatory : create, readonly : update ) SupplementCategory;
   field ( mandatory ) Price, CurrencyCode;
 
   draft action Resume;
@@ -32,17 +32,18 @@ authorization master ( global )
 
   association _SupplementText { create; with draft; }
 
-  mapping for /DMO/SUPPLEMENT {
-    SupplementID       = supplement_id;
-    SupplementCategory = supplement_category;
-    Price              = price;
-    CurrencyCode       = currency_code;
-    LocalCreatedBy     = local_created_by;
-    LocalCreatedAt     = local_created_at;
-    LocalLastChangedBy = local_last_changed_by;
-    LocalLastChangedAt = local_last_changed_at;
-    LastChangedAt      = last_changed_at;
-  }
+  mapping for /dmo/supplement
+    {
+      SupplementID       = supplement_id;
+      SupplementCategory = supplement_category;
+      Price              = price;
+      CurrencyCode       = currency_code;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
 }
 
 define behavior for /DMO/I_SupplementText alias SupplementText
@@ -52,19 +53,19 @@ lock dependent by _Supplement
 etag master LocalLastChangedAt
 authorization dependent by _Supplement
 {
-
   association _Supplement { with draft; }
 
   update;
   delete;
 
-  field ( readonly ) SupplementID;
+  field ( readonly ) SupplementID, LocalLastChangedAt;
   field ( mandatory : create, readonly : update ) LanguageCode;
 
-  mapping for /DMO/SUPPL_TEXT {
-    SupplementID       = supplement_id;
-    LanguageCode       = language_code;
-    Description        = description;
-    LocalLastChangedAt = local_last_changed_at;
-  }
+  mapping for /dmo/suppl_text
+    {
+      SupplementID       = supplement_id;
+      LanguageCode       = language_code;
+      Description        = description;
+      LocalLastChangedAt = local_last_changed_at;
+    }
 }

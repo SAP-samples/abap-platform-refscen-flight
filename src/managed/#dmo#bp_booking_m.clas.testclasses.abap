@@ -68,7 +68,43 @@ CLASS ltcl_booking DEFINITION FINAL FOR TESTING
       "! Calls { @link ..lhc_booking.METH:validate_currencycode }
       "! and checks if invalid permutations of sets of status
       "! returns messages.
-      validate_currency_not_valid      FOR TESTING.
+      validate_currency_not_valid      FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateCustomer }
+      "! and checks if an existing customer is set.
+      validate_customer_success      FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateCustomer }
+      "! and checks for a message for an initial customer.
+      validate_customer_initial      FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateCustomer }
+      "! and checks for a message for a non-existing customer.
+      validate_customer_not_exist    FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateConnection }
+      "! and checks if an existing Connection is set.
+      validate_connection_success      FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateConnection }
+      "! and checks for a message for an initial Connection.
+      validate_connection_initial      FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateConnection }
+      "! and checks for a message for a non-existing Connection.
+      validate_connection_not_exist    FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateFlightPrice }
+      "! and checks if flight price is valid.
+      validate_flight_price_success    FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateFlightPrice }
+      "! and checks if flight price is initial.
+      validate_flight_price_initial    FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateFlightPrice }
+      "! and checks for a message for an invalid flight price.
+      validate_flight_price_invalid    FOR TESTING.
 ENDCLASS.
 
 
@@ -88,6 +124,7 @@ CLASS ltcl_booking IMPLEMENTATION.
                                VALUE #(
                                    ( '/DMO/CUSTOMER' )
                                    ( '/DMO/AGENCY'   )
+                                   ( '/DMO/FLIGHT'   )
                                    ( 'I_CURRENCY'    )
                                  )
                                ).
@@ -542,6 +579,442 @@ CLASS ltcl_booking IMPLEMENTATION.
           ).
       ENDLOOP.
     ENDIF.
+  ENDMETHOD.
+
+  METHOD validate_customer_success.
+
+    CONSTANTS:
+      c_customer_id TYPE /dmo/customer_id VALUE '123'.
+
+    DATA:
+      customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateCustomer,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
+    sql_test_environment->insert_test_data( customer_mock_data ).
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        ( booking_id = booking_id1  customer_id = c_customer_id )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_customer(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed   ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+
+  ENDMETHOD.
+
+  METHOD validate_customer_initial.
+
+    CONSTANTS:
+      c_customer_id            TYPE /dmo/customer_id VALUE '123',
+      c_customer_id_of_booking TYPE /dmo/customer_id VALUE IS INITIAL.
+
+    DATA:
+      customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateCustomer,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
+    sql_test_environment->insert_test_data( customer_mock_data ).
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        ( booking_id = booking_id1  customer_id = c_customer_id_of_booking )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_customer(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booking )
+      ).
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( reported-booking )
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booking[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '010'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+
+  ENDMETHOD.
+
+  METHOD validate_customer_not_exist.
+
+    CONSTANTS:
+      c_customer_id            TYPE /dmo/customer_id VALUE '123',
+      c_customer_id_of_booking TYPE /dmo/customer_id VALUE '111'.
+
+    DATA:
+      customer_mock_data TYPE STANDARD TABLE OF /dmo/customer,
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateCustomer,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    customer_mock_data = VALUE #( ( customer_id = c_customer_id ) ).
+    sql_test_environment->insert_test_data( customer_mock_data ).
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        ( booking_id = booking_id1  customer_id = c_customer_id_of_booking )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_customer(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booking )
+      ).
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( reported-booking )
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booking[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '001'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+  ENDMETHOD.
+
+  METHOD validate_connection_success.
+
+    CONSTANTS:
+      c_airline     TYPE /dmo/carrier_id VALUE 'TS',
+      c_connection  TYPE /dmo/connection_id VALUE '123',
+      c_flight_date TYPE /dmo/flight_date VALUE '20200202'.
+
+    DATA:
+      flight_mock_data  TYPE STANDARD TABLE OF /dmo/flight,
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateConnection,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+     flight_mock_data = VALUE #( ( carrier_id = c_airline  connection_id = c_connection  flight_date = c_flight_date ) ).
+     sql_test_environment->insert_test_data( flight_mock_data ).
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        (
+          booking_id = booking_id1
+          carrier_id    = c_airline
+          connection_id = c_connection
+          flight_date   = c_flight_date
+        )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_connection(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed   ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_connection_initial.
+
+    CONSTANTS:
+      c_airline     TYPE /dmo/carrier_id VALUE 'TS',
+      c_connection  TYPE /dmo/connection_id VALUE '123',
+      c_flight_date TYPE /dmo/flight_date VALUE '20200202'.
+
+    DATA:
+      flight_mock_data  TYPE STANDARD TABLE OF /dmo/flight,
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateConnection,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+     flight_mock_data = VALUE #( ( carrier_id = c_airline  connection_id = c_connection  flight_date = c_flight_date ) ).
+     sql_test_environment->insert_test_data( flight_mock_data ).
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        ( booking_id = booking_id1 )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_connection(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 3 " AirlineID + ConnectionID + FlightDate
+        act = lines( failed-booking )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 3 " AirlineID + ConnectionID + FlightDate
+        act = lines( reported-booking )
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booking[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '016'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booking[ 2 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booking[ 2 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '011'
+        act = reported-booking[ 2 ]-%msg->if_t100_message~t100key-msgno
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booking[ 3 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booking[ 3 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '017'
+        act = reported-booking[ 3 ]-%msg->if_t100_message~t100key-msgno
+      ).
+  ENDMETHOD.
+
+
+  METHOD validate_connection_not_exist.
+
+    CONSTANTS:
+      c_airline              TYPE /dmo/carrier_id    VALUE 'TS',
+      c_connection           TYPE /dmo/connection_id VALUE '123',
+      c_connection_not_exist TYPE /dmo/connection_id VALUE '321',
+      c_flight_date          TYPE /dmo/flight_date   VALUE '20200202'.
+
+    DATA:
+      flight_mock_data  TYPE STANDARD TABLE OF /dmo/flight,
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateConnection,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+     flight_mock_data = VALUE #( ( carrier_id = c_airline  connection_id = c_connection  flight_date = c_flight_date ) ).
+     sql_test_environment->insert_test_data( flight_mock_data ).
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        (
+          booking_id = booking_id1
+          carrier_id    = c_airline
+          connection_id = c_connection_not_exist
+          flight_date   = c_flight_date
+        )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_connection(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booking )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( reported-booking )
+      ).
+    cl_abap_unit_assert=>assert_bound( reported-booking[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '012'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+  ENDMETHOD.
+
+  METHOD validate_flight_price_success.
+
+    DATA:
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateFlightPrice,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        (
+          booking_id   = booking_id1
+          flight_price = '123'
+        )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_flight_price(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed   ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+
+  ENDMETHOD.
+
+  METHOD validate_flight_price_initial.
+
+    DATA:
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateFlightPrice,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        (
+          booking_id   = booking_id1
+          flight_price = ''
+        )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_flight_price(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed   ).
+    cl_abap_unit_assert=>assert_initial( reported ).
+
+  ENDMETHOD.
+
+  METHOD validate_flight_price_invalid.
+
+    DATA:
+      booking_mock_data  TYPE STANDARD TABLE OF /dmo/booking_m,
+      bookings_to_test   TYPE TABLE FOR VALIDATION /dmo/i_travel_m\\booking~validateFlightPrice,
+      failed             TYPE RESPONSE FOR FAILED   LATE /dmo/i_travel_m,
+      reported           TYPE RESPONSE FOR REPORTED LATE /dmo/i_travel_m.
+
+    booking_mock_data = VALUE #(
+        travel_id = travel_id1
+        (
+          booking_id   = booking_id1
+          flight_price = '-123'
+        )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING travel_id = travel_id  booking_id = booking_id ).
+
+    class_under_test->validate_flight_price(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booking )
+      ).
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( reported-booking )
+      ).
+
+    cl_abap_unit_assert=>assert_bound( reported-booking[ 1 ]-%msg ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '/DMO/CM_FLIGHT'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgid
+      ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = '025'
+        act = reported-booking[ 1 ]-%msg->if_t100_message~t100key-msgno
+      ).
+
   ENDMETHOD.
 
 ENDCLASS.

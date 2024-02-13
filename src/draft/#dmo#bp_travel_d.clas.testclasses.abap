@@ -106,6 +106,18 @@ CLASS ltc_travel DEFINITION FINAL FOR TESTING
       "! returns messages.
       validatedates_not_valid      FOR TESTING,
 
+      "! Calls { @link ..lhc_travel.METH:validateBookingFee }
+      "! and checks if booking fee is valid.
+      validate_booking_fee_valid   FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:validateBookingFee }
+      "! and checks if invalid booking fee returns messages.
+      validate_booking_fee_invalid FOR TESTING,
+
+      "! Calls { @link ..lhc_travel.METH:validateBookingFee }
+      "! and checks if initial booking fee is valid.
+      validate_booking_fee_initial FOR TESTING,
+
       "! Calls { @link ..lhc_travel.METH:get_instance_features }
       "! using travels with an <em>accepted</em>, <em>rejected</em>,
       "! <em>open</em> and unknown status.
@@ -1791,6 +1803,103 @@ CLASS ltc_travel IMPLEMENTATION.
       cl_abap_unit_assert=>assert_initial( reported ).
 
       cl_abap_unit_assert=>assert_equals( exp = exp_travels_action act = result ).
+
+  ENDMETHOD.
+
+  METHOD validate_booking_fee_valid.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /dmo/a_travel_d,
+      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\travel~validateBookingFee,
+      failed           TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported         TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    travel_mock_data = VALUE #( ( travel_uuid = uuid1  booking_fee = '1024' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = CORRESPONDING #( travel_mock_data MAPPING traveluuid = travel_uuid ).
+
+    class_under_test->validatebookingfee(
+        EXPORTING
+          keys     = travels_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( travels_to_test )
+        act = lines( reported-travel )
+      ).
+
+  ENDMETHOD.
+
+  METHOD validate_booking_fee_invalid.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /dmo/a_travel_d,
+      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\travel~validateBookingFee,
+      failed           TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported         TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    travel_mock_data = VALUE #( ( travel_uuid = uuid1  booking_fee = '-1024' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = CORRESPONDING #( travel_mock_data MAPPING traveluuid = travel_uuid ).
+
+    class_under_test->validatebookingfee(
+        EXPORTING
+          keys     = travels_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-travel )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 2
+        act = lines( reported-travel )
+      ).
+
+  ENDMETHOD.
+
+  METHOD validate_booking_fee_initial.
+
+    DATA:
+      travel_mock_data TYPE STANDARD TABLE OF /dmo/a_travel_d,
+      travels_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\travel~validateBookingFee,
+      failed           TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported         TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    travel_mock_data = VALUE #( ( travel_uuid = uuid1  booking_fee = '' ) ).
+    cds_test_environment->insert_test_data( travel_mock_data ).
+
+    travels_to_test = CORRESPONDING #( travel_mock_data MAPPING traveluuid = travel_uuid ).
+
+    class_under_test->validatebookingfee(
+        EXPORTING
+          keys     = travels_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( travels_to_test )
+        act = lines( reported-travel )
+      ).
 
   ENDMETHOD.
 

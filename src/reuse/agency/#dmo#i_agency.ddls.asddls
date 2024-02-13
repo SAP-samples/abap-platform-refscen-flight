@@ -63,7 +63,7 @@ define view entity /DMO/I_Agency
       @Semantics.systemDateTime.createdAt: true
       Agency.local_created_at      as LocalCreatedAt,
 
-      @Semantics.user.lastChangedBy: true
+      @Semantics.user.localInstanceLastChangedBy: true
       Agency.local_last_changed_by as LocalLastChangedBy,
 
       @Semantics.systemDateTime.localInstanceLastChangedAt: true

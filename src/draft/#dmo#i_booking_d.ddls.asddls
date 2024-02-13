@@ -1,3 +1,4 @@
+@Metadata.ignorePropagatedAnnotations: true
 @EndUserText.label: 'Booking Interface Projection View '
 @AccessControl.authorizationCheck: #NOT_REQUIRED
 define view entity /DMO/I_Booking_D
@@ -11,9 +12,11 @@ define view entity /DMO/I_Booking_D
       AirlineID,
       ConnectionID,
       FlightDate,
+      @Semantics.amount.currencyCode: 'CurrencyCode'
       FlightPrice,
       CurrencyCode,
       BookingStatus,
+      @Semantics.systemDateTime.localInstanceLastChangedAt: true
       LocalLastChangedAt,
       /* Associations */
       _BookingStatus,

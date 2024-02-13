@@ -25,7 +25,7 @@ late numbering
   update ( features : instance );
   delete ( features : instance );
 
-  field ( readonly ) ReviewID, AgencyID, HelpfulCount, HelpfulTotal, Reviewer;
+  field ( readonly ) ReviewID, AgencyID, HelpfulCount, HelpfulTotal, Reviewer, LocalCreatedAt, LocalLastChangedAt;
 
   action ( authorization : global ) /DMO/reviewWasHelpful    result [1] $self;
   action ( authorization : global ) /DMO/reviewWasNotHelpful result [1] $self;

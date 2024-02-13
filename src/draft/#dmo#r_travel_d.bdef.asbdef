@@ -17,7 +17,7 @@ etag master LocalLastChangedAt
   association _Booking { create ( features : instance, authorization : update ); with draft; }
 
   field ( numbering : managed, readonly ) TravelUUID;
-  field ( readonly ) TravelID, OverallStatus, TotalPrice, LocalCreatedAt, LocalCreatedBy, LocalLastChangedAt, LocalLastChangedBy;
+  field ( readonly ) TravelID, OverallStatus, TotalPrice, LocalCreatedAt, LocalCreatedBy, LocalLastChangedAt, LocalLastChangedBy, LastChangedAt;
   field ( mandatory ) CustomerID, AgencyID, BeginDate, EndDate, CurrencyCode;
   field ( features : instance ) BookingFee;
 
@@ -34,16 +34,19 @@ etag master LocalLastChangedAt
   validation validateAgency on save { create; field AgencyID; }
   validation validateDates on save { create; field BeginDate, EndDate; }
   validation validateCurrencyCode on save { create; field CurrencyCode; }
+  validation validateBookingFee   on save { create; field BookingFee; }
 
   determine action validateAgencyID { validation validateAgency; }
   determine action validateCustomerID { validation validateCustomer; }
   determine action validateDateRange { validation validateDates; }
+  determine action validateBookingCharge { validation validateBookingFee; }
 
   side effects
   { field BookingFee affects field TotalPrice;
     determine action validateAgencyID executed on field AgencyID affects messages;
     determine action validateCustomerID executed on field CustomerID affects messages;
-    determine action validateDateRange executed on field BeginDate, field EndDate affects messages; }
+    determine action validateDateRange executed on field BeginDate, field EndDate affects messages;
+    determine action validateBookingCharge executed on field BookingFee affects messages; }
 
 
   draft action Resume with additional implementation;
@@ -57,11 +60,15 @@ etag master LocalLastChangedAt
     validation validateCustomer;
     validation validateDates;
     validation validateCurrencyCode;
+    validation validateBookingFee;
     validation Booking~validateCustomer;
     validation Booking~validateConnection;
     validation Booking~validateCurrencyCode;
+    validation Booking~validateFlightPrice;
+    validation Booking~validateStatus;
     validation Bookingsupplement~validateSupplement;
     validation Bookingsupplement~validateCurrencyCode;
+    validation Bookingsupplement~validatePrice;
   }
   mapping for /dmo/a_travel_d
     {
@@ -111,9 +118,15 @@ etag master LocalLastChangedAt
   validation validateCustomer on save { create; field CustomerID; }
   validation validateConnection on save { create; field AirlineID, ConnectionID, FlightDate; }
   validation validateCurrencyCode on save { create; field CurrencyCode; }
+  validation validateFlightPrice  on save { create; field FlightPrice; }
+  validation validateStatus       on save { create; field BookingStatus; }
+
+  determine action validateFlightCosts { validation validateFlightPrice; }
+
 
   side effects
-  { field FlightPrice affects field _Travel.TotalPrice; }
+  { field FlightPrice affects field _Travel.TotalPrice;
+    determine action validateFlightCosts executed on field FlightPrice affects messages; }
 
   mapping for /dmo/a_booking_d
     {
@@ -158,9 +171,13 @@ etag master LocalLastChangedAt
 
   validation validateSupplement on save { create; field SupplementID; }
   validation validateCurrencyCode on save { create; field CurrencyCode; }
+  validation validatePrice        on save { create; field BookSupplPrice; }
+
+  determine action validateSupplementPrice { validation validatePrice; }
 
   side effects
-  { field BookSupplPrice affects field _Travel.TotalPrice; }
+  { field BookSupplPrice affects field _Travel.TotalPrice;
+    determine action validateSupplementPrice executed on field BookSupplPrice affects messages; }
 
   mapping for /dmo/a_bksuppl_d
     {

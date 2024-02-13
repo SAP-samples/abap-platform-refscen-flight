@@ -87,7 +87,27 @@ CLASS ltc_booking DEFINITION FINAL FOR TESTING
       "! Calls { @link ..lhc_booking.METH:validatecurrencycode }
       "! and checks if invalid permutations of sets of status
       "! returns messages.
-      validate_currency_not_valid      FOR TESTING.
+      validate_currency_not_valid      FOR TESTING,
+
+      "! Calls { @link ..lhc_booking.METH:validateStatus }
+      "! and checks if status is valid.
+      validate_status_success        FOR TESTING,
+
+      "! Calls { @link ..lhc_booking.METH:validateStatus }
+      "! and checks if invalid status returns messages.
+      validate_status_not_valid      FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateFlightPrice }
+      "! and checks if flight price is valid.
+      validate_flight_price_success    FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateFlightPrice }
+      "! and checks if flight price is initial.
+      validate_flight_price_initial    FOR TESTING,
+
+      "! Calls { @link ..lhc_Booking.METH:validateFlightPrice }
+      "! and checks for a message for an invalid flight price.
+      validate_flight_price_invalid    FOR TESTING.
 
 
 ENDCLASS.
@@ -777,5 +797,180 @@ CLASS ltc_booking IMPLEMENTATION.
       ENDLOOP.
     ENDIF.
   ENDMETHOD.
+
+  METHOD validate_flight_price_success.
+
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateFlightPrice,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_mock_data = VALUE #( ( booking_uuid = uuid1  flight_price = '123' ) ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
+
+    class_under_test->validateFlightPrice(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( bookings_to_test )
+        act = lines( reported-booking )
+      ).
+
+  ENDMETHOD.
+
+  METHOD validate_flight_price_initial.
+
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateFlightPrice,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_mock_data = VALUE #( ( booking_uuid = uuid1  flight_price = '' ) ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
+
+    class_under_test->validateFlightPrice(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( bookings_to_test )
+        act = lines( reported-booking )
+      ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_flight_price_invalid.
+
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateFlightPrice,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_mock_data = VALUE #( ( booking_uuid = uuid1  flight_price = '-123' ) ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
+
+    class_under_test->validateFlightPrice(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booking )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 2
+        act = lines( reported-booking )
+      ).
+
+  ENDMETHOD.
+
+  METHOD validate_status_success.
+
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateStatus,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_mock_data = VALUE #(
+        ( booking_uuid = uuid1  booking_status = 'N' )
+        ( booking_uuid = uuid2  booking_status = 'X' )
+        ( booking_uuid = uuid3  booking_status = 'B' )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
+
+    class_under_test->validateStatus(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_initial( failed ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = lines( bookings_to_test )
+        act = lines( reported-booking )
+      ).
+
+  ENDMETHOD.
+
+
+  METHOD validate_status_not_valid.
+
+    DATA:
+      booking_mock_data TYPE STANDARD TABLE OF /dmo/a_booking_d,
+      bookings_to_test  TYPE TABLE FOR VALIDATION /dmo/r_travel_d\\booking~validateStatus,
+      failed            TYPE RESPONSE FOR FAILED   LATE /dmo/r_travel_d,
+      reported          TYPE RESPONSE FOR REPORTED LATE /dmo/r_travel_d.
+
+    booking_mock_data = VALUE #(
+        ( booking_uuid = uuid1  booking_status = 'K' )
+      ).
+    cds_test_environment->insert_test_data( booking_mock_data ).
+
+    bookings_to_test = CORRESPONDING #( booking_mock_data MAPPING bookinguuid = booking_uuid ).
+
+    class_under_test->validateStatus(
+        EXPORTING
+          keys     = bookings_to_test
+        CHANGING
+          failed   = failed
+          reported = reported
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( failed ).
+
+    cl_abap_unit_assert=>assert_equals(
+        exp = 1
+        act = lines( failed-booking )
+      ).
+
+    cl_abap_unit_assert=>assert_not_initial( reported ).
+    cl_abap_unit_assert=>assert_equals(
+        exp = 2
+        act = lines( reported-booking )
+      ).
+
+  ENDMETHOD.
+
+
 
 ENDCLASS.

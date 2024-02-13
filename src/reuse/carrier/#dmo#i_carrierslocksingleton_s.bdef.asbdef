@@ -13,7 +13,7 @@ authorization master ( global )
 {
   association _Airline { create; with draft; }
 
-  field ( readonly ) CarrierSingletonID;
+  field ( readonly ) CarrierSingletonID, LastChangedAtMax;
 
   draft action Edit;
   draft action Activate optimized;
@@ -36,7 +36,7 @@ etag master LocalLastChangedAt
   update;
   delete ( features : instance );
 
-  field ( readonly ) CarrierSingletonID;
+  field ( readonly ) CarrierSingletonID, LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
   field ( mandatory : create, readonly : update ) AirlineID;
   field ( mandatory ) Name, CurrencyCode;
 
@@ -46,7 +46,8 @@ etag master LocalLastChangedAt
   validation validateCurrencyCode on save { create; field CurrencyCode; }
 
   mapping for /dmo/carrier
-  { AirlineID = carrier_id;
+    {
+      AirlineID          = carrier_id;
     CurrencyCode = currency_code;
     Name = name;
     LocalCreatedBy = local_created_by;
