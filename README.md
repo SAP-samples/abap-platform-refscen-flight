@@ -12,7 +12,7 @@ The branches of this repository were renamed recently. If you have already linke
 Choose this if you are working on SAP BTP or SAP S/4HANA Cloud, public edition. 
 To import the reference scenario into your ABAP Environment, follow the steps in the [README](../ABAP-platform-cloud/README.md) file of the branch <em>ABAP-platform-cloud</em> and download the sources from this branch. 
 
-For more information, see Downloading the ABAP Flight Reference Scenario ([SAP BTP](https://help.sap.com/docs/BTP/923180ddb98240829d935862025004d6/def316685ad14033b051fc4b88db07c8.html) / [SAP S/4HANA Cloud](https://help.sap.com/docs/SAP_S4HANA_CLOUD/e5522a8a7b174979913c99268bc03f1a/def316685ad14033b051fc4b88db07c8.html)).
+For more information, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/docs/abap-cloud/abap-rap/downloading-abap-flight-reference-scenario?locale=en-US).
 
 ## ABAP Platform
 Choose this if you are working on SAP S/4HANA, on-premise edition or SAP S/4HANA Cloud, private edition. 
