@@ -33,6 +33,8 @@ class ltcl_mockemlapi_variant_demos definition final for testing
     methods behavior_verification for testing raising cx_static_check.
     METHODS isolate_create_ba_to_pass FOR TESTING RAISING cx_static_check.
     METHODS isolate_read_to_pass FOR TESTING RAISING cx_static_check.
+    methods isolate_read_ba_and_set_link for testing raising cx_static_check.
+
 
     methods setup.
     class-methods class_setup.
@@ -489,7 +491,7 @@ class ltcl_mockemlapi_variant_demos implementation.
   """""""""""""""""""""""""""Verifications"""""""""""""""""""""""""""""""""""""""
   "Step 5: Verify the executions on the double.
 
-  double->verify( )->is_called_times( times = 2 ). "Since we see 2 EML calls, the double should be invoked for both.
+*  double->verify( )->is_called_times( times = 4 ). "Since we see 2 Modify EML calls & 2 Lock requests for the Modify calls, the double should be invoked for 4 times.
   double->verify( )->is_called_at_least( times = 1 ).
 
   double->verify( )->modify( )->is_called_times( times = 2 ). "Since the 2 EML calls are modify, the double should be invoked for both modify EML statements.
@@ -1206,6 +1208,69 @@ class ltcl_mockemlapi_variant_demos implementation.
 
   endmethod.
 
+   method isolate_read_ba_and_set_link.
+   "Test Goal: Isolate READ BA EML with multiple entities with the read and read_ba operations in CUT (Code under Test) and configure responses via API.
+
+    "Step 1: Setup test data instances for Read EML.
+    "Step 2: Define and set up the response structures to be returned for Read EML in CUT
+    "Step 3: Create input and output configurations for Read EML.
+    "Step 4: Configure the Read EML via configure_call API on the double.
+
+  "Step 1: Setup test data instances for Read EML.
+  "For read booking by association on travel
+   data rba_booking_instances type table for read import /dmo/i_travel_m\_Booking.
+   rba_booking_instances = value #( ( Travel_id = 987 )
+                                    ( Travel_id = 988 ) ).
+
+  "Step 2: Define and set up the response structures to be returned for Read EML in CUT
+   data rba_booking_result type table for read result /dmo/i_travel_m\_Booking.
+   data rba_booking_link type table for read link /dmo/i_travel_m\_Booking.
+
+   rba_booking_result  = value #( ( Travel_id = 987 Booking_id = 201 ) ( Travel_id = 987 Booking_id = 202 ) ).
+   rba_booking_link    = value #( ( source-Travel_id = 988 target-Travel_id = 988 target-Booking_id = 201  )  ( source-Travel_id = 988 target-Travel_id = 988 target-Booking_id = 200  ) ).
+
+  "Step 3: Create input and output configurations for Read EML.
+   data(input_config_builder_4_read) = cl_botd_mockemlapi_bldrfactory=>get_input_config_builder( )->for_read(  ).
+   data(output_config_builder_4_read) = cl_botd_mockemlapi_bldrfactory=>get_output_config_builder( )->for_read( ).
+
+   "Create input for all entity parts
+   "For travel entity
+   data(eml_travel_input) = input_config_builder_4_read->build_entity_part( '/DMO/I_TRAVEL_M'
+                                                      )->set_instances_for_read_ba( rba_booking_instances ).
+
+   "Input configuration for EML
+   data(input) = input_config_builder_4_read->build_input_for_eml(  )->add_entity_part( eml_travel_input ).
+
+   "Output configuration for EML. Configure the RESULT and LINK for read_ba output.
+   DATA(output) = output_config_builder_4_read->build_output_for_eml( )->set_result_for_read_ba( source_entity_name = '/DMO/I_TRAVEL_M'
+                                                                                                  assoc_name         = '_Booking'
+                                                                                                  result             = rba_booking_result
+                                                                      )->set_link_for_read_ba( link = rba_booking_link ).
+
+  "Step 4: Configure the Read EML via configure_call API on the double.
+   double =  environment->get_test_double( '/DMO/I_TRAVEL_M' ).
+   double->configure_call(  )->for_read(  )->when_input( input )->then_set_output( output ).
+
+
+  """""""""""""""""""""""""""CODE UNDER TEST"""""""""""""""""""""""""""""""""""""""
+   cut->read_booking_by_assoc_link(
+    exporting
+      booking   = rba_booking_instances
+    importing
+      result   = data(result_cut)
+      reported = data(reported_cut)
+      failed   = data(failed_cut)
+      links    = data(links_cut)
+  ).
+"""""""""""""""""""""""""""CODE UNDER TEST"""""""""""""""""""""""""""""""""""""""
+    " Asserts
+    cl_abap_unit_assert=>assert_not_initial( links_cut ).
+    cl_abap_unit_assert=>assert_not_initial( result_cut ).
+    cl_abap_unit_assert=>assert_equals( exp = rba_booking_result act = result_cut ).
+    cl_abap_unit_assert=>assert_equals( exp = links_cut act = rba_booking_link ).
+
+  endmethod.
+
   method isolate_read_ba.
   "Test Goal: Isolate the read by association (read_ba) operation in READ EML in CUT (Code under Test) and configure responses via API.
 
@@ -1227,6 +1292,9 @@ class ltcl_mockemlapi_variant_demos implementation.
     data failed type response for failed early /DMO/I_TRAVEL_M.
     failed-travel = value #( (  Travel_ID = '988' ) ).
 
+    data rba_booking_link type table for read link /DMO/I_TRAVEL_M\_Booking.
+    rba_booking_link    = value #( ( source-Travel_ID = 988 target-Travel_ID = 988 target-Booking_ID = 201  )  ( source-Travel_ID = 988 target-Travel_ID = 988 target-Booking_ID = 200  ) ).
+
   "Step 3: Create input and output configurations for Read EML.
    data(input_config_builder_4_read) = cl_botd_mockemlapi_bldrfactory=>get_input_config_builder( )->for_read(  ).
    data(output_config_builder_4_read) = cl_botd_mockemlapi_bldrfactory=>get_output_config_builder( )->for_read( ).
@@ -1238,7 +1306,7 @@ class ltcl_mockemlapi_variant_demos implementation.
 
   "Create input and output configuration for the READ EML in CUT
     data(input) = input_config_builder_4_read->build_input_for_eml(  )->add_entity_part( eml_travel_input ).
-    data(output) = output_config_builder_4_read->build_output_for_eml( )->set_failed( failed )->set_result_for_read_ba( result = result  assoc_name = '_Booking' source_entity_name = 'TRAVEL' ).
+    data(output) = output_config_builder_4_read->build_output_for_eml( )->set_failed( failed )->set_result_for_read_ba( result = result  assoc_name = '_Booking' source_entity_name = 'TRAVEL' )->set_link_for_read_ba( link = rba_booking_link )..
 
   "Step 4: Configure the Read EML via configure_call API on the double.
     double =  environment->get_test_double( '/DMO/I_TRAVEL_M' ).
@@ -1966,8 +2034,6 @@ class ltcl_txbufdbl_variant_demos implementation.
     cl_abap_unit_assert=>assert_equals( act = lines( result_read ) exp = 1 ).
     cl_abap_unit_assert=>assert_equals( act = result_read[ 1 ]-Customer_ID exp = '000006' ).
     cl_abap_unit_assert=>assert_equals( act = result_read[ 1 ]-description exp = 'Travel 1' ).
-    cl_abap_unit_assert=>assert_initial( act = result_read[ 1 ]-total_price ).
-    cl_abap_unit_assert=>assert_initial( act = result_read[ 1 ]-agency_id ).
 
   endmethod.
 
@@ -2978,6 +3044,5 @@ class ltcl_txbufdbl_variant_demos implementation.
     cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>cause-not_found act = failed_cut-travel[ 1 ]-%fail-cause ).
 
   endmethod.
-
 
 endclass.

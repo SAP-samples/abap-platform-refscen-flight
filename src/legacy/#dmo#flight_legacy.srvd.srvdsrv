@@ -1,0 +1,4 @@
+@EndUserText.label: '/DMO/FLIGHT_LEGACY'
+define service /DMO/FLIGHT_LEGACY {
+  expose /DMO/FLIGHT_LEGACY;
+}

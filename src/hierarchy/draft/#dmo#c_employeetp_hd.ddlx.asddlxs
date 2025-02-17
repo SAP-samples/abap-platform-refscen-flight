@@ -1,0 +1,140 @@
+@Metadata.layer: #CORE
+
+@UI:
+  {
+    headerInfo:
+      {
+        typeName: 'Employee',
+        typeNamePlural: 'Employees',
+        description: { type: #STANDARD, value: 'Employee' },
+        title: { type: #AS_CONNECTED_FIELDS, valueQualifier: 'FullName' }
+      },
+    presentationVariant:
+      [
+        {
+           sortOrder: [{ by: 'Employee', direction: #ASC }],
+           visualizations: [{type: #AS_LINEITEM}]
+        }
+      ]
+  }
+
+annotate view /DMO/C_EmployeeTP_HD with
+{
+
+
+  @UI:
+    {
+      facet:
+        [
+           {
+             id:            'Employee',
+             purpose:       #STANDARD,
+             type:          #COLLECTION,
+             label:         'Employee',
+             position:      10
+           },
+           {
+             id:              'General',
+             targetQualifier: 'General_FG',
+             parentId:        'Employee',
+             purpose:         #STANDARD,
+             type:            #FIELDGROUP_REFERENCE,
+             label:           'General',
+             position:        10
+           },
+           {
+             id:              'Name',
+             targetQualifier: 'Name_FG',
+             parentId:        'Employee',
+             purpose:         #STANDARD,
+             type:            #FIELDGROUP_REFERENCE,
+             label:           'Name',
+             position:        20
+           },
+           {
+             id:              'Salary',
+             targetQualifier: 'Salary_FG',
+             parentId:        'Employee',
+             purpose:         #STANDARD,
+             type:            #FIELDGROUP_REFERENCE,
+             label:           'Salary Data',
+             position:        30
+           }
+         ],
+      hidden: true
+    }
+  Agency;
+
+  @UI: {
+      lineItem:   [{ position: 20 }],
+      fieldGroup: [{ position: 20, qualifier: 'General_FG' }]
+    }
+  Employee;
+
+  @UI: {
+      selectionField: [{ position: 30 }],
+      lineItem:   [{ position: 30 }],
+      identification: [{ position: 30 }],
+      fieldGroup: [{ position: 30, qualifier: 'Name_FG' }],
+      connectedFields: [{
+          qualifier: 'FullName',
+          groupLabel: 'Full Name',
+          name: 'First',
+          template: '{First} {Last}'
+        }]
+    }
+  FirstName;
+
+  @UI: {
+      lineItem:   [{ position: 40 }],
+      fieldGroup: [{ position: 40, qualifier: 'Name_FG' }],
+      connectedFields: [{
+          qualifier: 'FullName',
+          name: 'Last'
+        }]
+    }
+  LastName;
+
+  @UI: {
+      lineItem:   [{ position: 50 }],
+      fieldGroup: [{ position: 50, qualifier: 'Salary_FG' }]
+    }
+  Salary;
+
+  @UI: {
+      lineItem:   [{ position: 70 }],
+      fieldGroup: [{ position: 70, qualifier: 'General_FG', type: #AS_CONNECTED_FIELDS, valueQualifier: 'ManagerFullName' }],
+      connectedFields: [{
+          qualifier: 'ManagerFullName',
+          groupLabel: 'Manager',
+          name: 'ID',
+          template: '{ID} {First} {Last}'
+        }]
+    }
+  Manager;
+
+  @UI: {
+      connectedFields: [{
+          qualifier: 'ManagerFullName',
+          name: 'First'
+        }]
+    }
+  ManagerFirstName;
+
+  @UI: {
+      connectedFields: [{
+          qualifier: 'ManagerFullName',
+          name: 'Last'
+        }]
+    }
+  ManagerLastName;
+
+  @UI: {
+      lineItem:   [{ position: 80 }],
+      fieldGroup: [{ position: 80, qualifier: 'General_FG' }]
+    }
+  SiblingOrderNumber;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

@@ -2,6 +2,7 @@ managed;
 strict ( 2 );
 with draft;
 
+
 define behavior for /DMO/R_Travel_D alias Travel
 implementation in class /dmo/bp_travel_d unique
 persistent table /dmo/a_travel_d

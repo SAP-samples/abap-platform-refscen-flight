@@ -238,13 +238,13 @@ CLASS lhc_booking IMPLEMENTATION.
         LINK DATA(booking_supplements).
 
     " Loop over all unique tky (TravelID + BookingID)
-    LOOP AT entities ASSIGNING FIELD-SYMBOL(<booking_group>) GROUP BY <booking_group>-%tky.
+    LOOP AT entities ASSIGNING FIELD-SYMBOL(<booking>) GROUP BY <booking>-%tky.
 
       " Get highest bookingsupplement_id from bookings belonging to booking
       max_booking_suppl_id = REDUCE #( INIT max = CONV /dmo/booking_supplement_id( '0' )
                                        FOR  booksuppl IN booking_supplements USING KEY entity
-                                                                             WHERE (     source-travel_id  = <booking_group>-travel_id
-                                                                                     AND source-booking_id = <booking_group>-booking_id )
+                                                                             WHERE (     source-travel_id  = <booking>-travel_id
+                                                                                     AND source-booking_id = <booking>-booking_id )
                                        NEXT max = COND /dmo/booking_supplement_id( WHEN   booksuppl-target-booking_supplement_id > max
                                                                           THEN booksuppl-target-booking_supplement_id
                                                                           ELSE max )
@@ -252,18 +252,14 @@ CLASS lhc_booking IMPLEMENTATION.
       " Get highest assigned bookingsupplement_id from incoming entities
       max_booking_suppl_id = REDUCE #( INIT max = max_booking_suppl_id
                                        FOR  entity IN entities USING KEY entity
-                                                               WHERE (     travel_id  = <booking_group>-travel_id
-                                                                       AND booking_id = <booking_group>-booking_id )
+                                                               WHERE (     travel_id  = <booking>-travel_id
+                                                                       AND booking_id = <booking>-booking_id )
                                        FOR  target IN entity-%target
                                        NEXT max = COND /dmo/booking_supplement_id( WHEN   target-booking_supplement_id > max
                                                                                      THEN target-booking_supplement_id
                                                                                      ELSE max )
                                      ).
 
-
-      " Loop over all entries in entities with the same TravelID and BookingID
-      LOOP AT entities ASSIGNING FIELD-SYMBOL(<booking>) USING KEY entity WHERE travel_id  = <booking_group>-travel_id
-                                                                            AND booking_id = <booking_group>-booking_id.
 
         " Assign new booking_supplement-ids
         LOOP AT <booking>-%target ASSIGNING FIELD-SYMBOL(<booksuppl_wo_numbers>).
@@ -274,7 +270,7 @@ CLASS lhc_booking IMPLEMENTATION.
           ENDIF.
         ENDLOOP.
 
-      ENDLOOP.
+
 
     ENDLOOP.
   ENDMETHOD.

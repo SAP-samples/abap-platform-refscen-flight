@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Hierarchy</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>100</MSGNR>
+     <TEXT>Reorder Action received invalid values/combinations.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>110</MSGNR>
+     <TEXT>Source key &quot;&amp;1&quot; does not exist.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>111</MSGNR>
+     <TEXT>Source key &quot;&amp;1&quot; is used multiple times.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>120</MSGNR>
+     <TEXT>Target key &quot;&amp;1&quot; does not exist.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>121</MSGNR>
+     <TEXT>Target key &quot;&amp;1&quot; is used multiple times.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>122</MSGNR>
+     <TEXT>Either target or last position shall be flagged.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>130</MSGNR>
+     <TEXT>Cannot move multiple Employees to last postion under same Manager.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>131</MSGNR>
+     <TEXT>Key &quot;&amp;1&quot; is used as source and target.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>132</MSGNR>
+     <TEXT>Cannot reorder Employee &quot;&amp;1&quot; while assinging different manager.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>200</MSGNR>
+     <TEXT>At least one name needs to be given.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_HIERARCHY</ARBGB>
+     <MSGNR>201</MSGNR>
+     <TEXT>Invalid Salary: Enter a positive numerical value.</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -12,6 +12,7 @@
     <KEYDEF>D</KEYDEF>
     <KEYKIND>N</KEYKIND>
     <DDTEXT>Table of messages</DDTEXT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DD40V>
   </asx:values>
  </asx:abap>

@@ -1,0 +1,128 @@
+managed;
+strict ( 2 );
+with draft;
+
+define behavior for /DMO/R_AgencyTP_HD alias Agency
+implementation in class /dmo/bp_r_agencytp_hd unique
+early numbering
+persistent table /dmo/agency_a_hd
+draft table /dmo/agency_d_hd
+lock master
+total etag LastChangedAt
+authorization master ( global )
+etag master LocalLastChangedAt
+{
+  create;
+  update;
+  delete;
+
+  field ( readonly ) Agency, LocalCreatedBy, LocalCreatedAt, LocalLastChangedBy, LocalLastChangedAt, LastChangedAt;
+  field ( mandatory ) CountryCode, EMailAddress, Name;
+
+  association _Employee { create; with draft; }
+
+  draft action Resume;
+  draft action Edit;
+  draft action Activate optimized;
+  draft action Discard;
+
+  validation validateEMailAddress on save { create; field EMailAddress; }
+  validation validateCountryCode on save { create; field CountryCode; }
+  validation validateName on save { create; field Name; }
+
+  draft determine action Prepare
+  {
+    validation validateEMailAddress;
+    validation validateCountryCode;
+    validation validateName;
+    validation Employee~validationSalaryPositive;
+    validation Employee~validationCurrencyExists;
+    validation Employee~validationNameGiven;
+  }
+
+  mapping for /dmo/agency_a_hd
+    {
+      Agency             = agency;
+      Name               = name;
+      Street             = street;
+      PostalCode         = postal_code;
+      City               = city;
+      CountryCode        = country_code;
+      PhoneNumber        = phone_number;
+      EMailAddress       = email_address;
+      WebAddress         = web_address;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LastChangedAt      = last_changed_at;
+    }
+
+}
+
+
+define behavior for /DMO/R_EmployeeTP_HD alias Employee
+implementation in class /dmo/bp_r_employeetp_hd unique
+early numbering
+persistent table /dmo/employ_a_hd
+draft table /dmo/employ_d_hd
+lock dependent by _Agency
+authorization dependent by _Agency
+etag master LocalLastChangedAt
+{
+  update;
+  delete;
+
+  field ( readonly ) Agency, Employee, SiblingOrderNumber;
+  field ( readonly ) Manager;
+
+  association _Agency { with draft; }
+  association _Manager
+  {
+    with draft;
+    link action linkManager;
+    unlink action unlinkManager;
+  }
+
+  association _Employee { with draft; }
+
+  instance hierarchy /DMO/I_EmployeeHN_HD
+  {
+    managed reorder action changeNextSibling;
+    field ( hierarchy-index ) SiblingOrderNumber;
+    ascending association _Manager;
+    descending association _Employee { with cascading delete; }
+  }
+
+  validation validationSalaryPositive on save { create; field Salary; }
+  validation validationCurrencyExists on save { create; field SalaryCurrency; }
+  validation validationNameGiven on save { create; field FirstName, LastName; }
+
+  determine action validateSalaryPositive { validation validationSalaryPositive; }
+  determine action validateCurrencyExists { validation validationCurrencyExists; }
+  determine action validateNameGiven { validation validationNameGiven; }
+
+  side effects
+  {
+    determine action validateSalaryPositive executed on field Salary affects messages;
+    determine action validateCurrencyExists executed on field SalaryCurrency affects messages;
+    determine action validateNameGiven executed on field FirstName, field LastName affects messages;
+  }
+
+  mapping for /dmo/employ_a_hd
+    {
+      Agency             = agency;
+      Employee           = employee;
+      FirstName          = first_name;
+      LastName           = last_name;
+      Salary             = salary;
+      SalaryCurrency     = salary_currency;
+      Manager            = manager;
+      SiblingOrderNumber = sibling_order_number;
+      LocalCreatedBy     = local_created_by;
+      LocalCreatedAt     = local_created_at;
+      LocalLastChangedBy = local_last_changed_by;
+      LocalLastChangedAt = local_last_changed_at;
+    }
+
+}

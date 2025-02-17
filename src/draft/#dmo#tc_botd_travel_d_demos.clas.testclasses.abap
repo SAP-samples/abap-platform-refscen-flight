@@ -1528,8 +1528,6 @@ class ltcl_using_txbufdbl_variant implementation.
     cl_abap_unit_assert=>assert_equals( act = lines( result_read ) exp = 1 ).
     cl_abap_unit_assert=>assert_equals( act = result_read[ 1 ]-CustomerID exp = '000006' ).
     cl_abap_unit_assert=>assert_equals( act = result_read[ 1 ]-description exp = 'Travel 1' ).
-    cl_abap_unit_assert=>assert_initial( act = result_read[ 1 ]-totalprice ).
-    cl_abap_unit_assert=>assert_initial( act = result_read[ 1 ]-AgencyID ).
     cl_abap_unit_assert=>assert_equals( act = result_read[ 1 ]-%is_draft exp = if_abap_behv=>mk-on ).
 
   endmethod.

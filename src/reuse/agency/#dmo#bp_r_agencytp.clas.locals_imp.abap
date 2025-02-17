@@ -103,7 +103,7 @@ CLASS lhc_agency IMPLEMENTATION.
              TO reported-/dmo/agency.
 
       " Conversion to string to truncate trailing spaces, so + doesn't match space.
-      IF CONV string( agency-emailaddress ) NP '+*@+*.+*'.
+      IF CONV string( agency-emailaddress ) NP '+*@+*.+*' ##OPERATOR[STRING].
 
         APPEND VALUE #( %tky = agency-%tky ) TO failed-/dmo/agency.
 

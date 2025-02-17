@@ -9,9 +9,7 @@
     <LENG>000256</LENG>
     <LOWERCASE>X</LOWERCASE>
     <DDTEXT>Flight Reference Scenario: EMail Address</DDTEXT>
-    <ACTFLAG>I</ACTFLAG>
     <DOMMASTER>E</DOMMASTER>
-    <RESERVEDOM>JB</RESERVEDOM>
    </DD01V>
   </asx:values>
  </asx:abap>

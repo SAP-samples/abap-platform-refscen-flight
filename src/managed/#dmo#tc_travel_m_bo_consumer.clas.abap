@@ -114,6 +114,14 @@ CLASS /dmo/tc_travel_m_bo_consumer DEFINITION
       !FAILED type FAILED_TRAVEL_TYPE
       !RESULT type READ_BOOKING_BY_ASSOC_RES_TYP
       !LINKS  type READ_BOOKING_BY_ASSOC_LINK_TYP.
+  methods READ_BOOKING_BY_ASSOC_LINK
+    importing
+      !BOOKING type READ_BOOKING_BY_ASSOC_IN_TYP
+    exporting
+      !REPORTED type REPORTED_TRAVEL_TYPE
+      !FAILED type FAILED_TRAVEL_TYPE
+      !RESULT type READ_BOOKING_BY_ASSOC_RES_TYP
+      !LINKS  type READ_BOOKING_BY_ASSOC_LINK_TYP.
 
   methods ACCEPT_TRAVEL_ACTION
     importing
@@ -133,6 +141,7 @@ CLASS /dmo/tc_travel_m_bo_consumer DEFINITION
       !MAPPED type MAPPED_TRAVEL_TYPE
       !REPORTED type REPORTED_TRAVEL_TYPE
       !FAILED type FAILED_TRAVEL_TYPE .
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -328,6 +337,23 @@ CLASS /dmo/tc_travel_m_bo_consumer IMPLEMENTATION.
        result result
        reported reported
        failed failed.
+
+    "This is a demo code under test and only includes the EML operation to be isolated.
+    "In actual scenario there will be additional business logic that forms the code to be tested.
+  endmethod.
+
+   method read_booking_by_assoc_link.
+    "This is a demo code under test and only includes the EML operation to be isolated.
+    "In actual scenario there will be additional business logic that forms the code to be tested.
+
+       """""""""""""""""""""""""""CODE UNDER TEST"""""""""""""""""""""""""""""""""""""""
+    read entities of /dmo/i_travel_m
+     entity travel
+       by \_Booking from booking
+         result result
+         link links
+     reported reported
+     failed failed.
 
     "This is a demo code under test and only includes the EML operation to be isolated.
     "In actual scenario there will be additional business logic that forms the code to be tested.

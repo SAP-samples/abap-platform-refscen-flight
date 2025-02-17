@@ -1,0 +1,38 @@
+projection;
+strict ( 2 );
+use draft;
+use side effects;
+
+define behavior for /DMO/C_AgencyTP_HD alias Agency
+use etag
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Resume;
+  use action Edit;
+  use action Activate;
+  use action Discard;
+  use action Prepare;
+
+  use association _Employee { create; with draft; }
+}
+
+define behavior for /DMO/C_EmployeeTP_HD alias Employee
+use etag
+{
+  use update;
+  use delete;
+
+  use action changeNextSibling;
+
+  use association _Agency { with draft; }
+  use association _Manager
+  {
+    with draft;
+    link action linkManager;
+    unlink action unlinkManager;
+  }
+  use association _Employee { with draft; }
+}

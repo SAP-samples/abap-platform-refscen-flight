@@ -533,36 +533,31 @@ CLASS lhc_travel IMPLEMENTATION.
         LINK DATA(bookings).
 
     " Loop over all unique TravelIDs
-    LOOP AT entities ASSIGNING FIELD-SYMBOL(<travel_group>) GROUP BY <travel_group>-travel_id.
+    LOOP AT entities ASSIGNING FIELD-SYMBOL(<travel>) GROUP BY <travel>-travel_id.
 
-      " Get highest booking_id from bookings belonging to travel
+      " Get highest booking_id from existing bookings belonging to travel
       max_booking_id = REDUCE #( INIT max = CONV /dmo/booking_id( '0' )
-                                 FOR  booking IN bookings USING KEY entity WHERE ( source-travel_id  = <travel_group>-travel_id )
+                                 FOR  booking IN bookings USING KEY entity WHERE ( source-travel_id  = <travel>-travel_id )
                                  NEXT max = COND /dmo/booking_id( WHEN booking-target-booking_id > max
                                                                     THEN booking-target-booking_id
                                                                     ELSE max )
                                ).
-      " Get highest assigned booking_id from incoming entities
+      " Get highest assigned booking_id from incoming entities, eg from internal operations
       max_booking_id = REDUCE #( INIT max = max_booking_id
-                                 FOR  entity IN entities USING KEY entity WHERE ( travel_id  = <travel_group>-travel_id )
+                                 FOR  entity IN entities USING KEY entity WHERE ( travel_id  = <travel>-travel_id )
                                  FOR  target IN entity-%target
                                  NEXT max = COND /dmo/booking_id( WHEN   target-booking_id > max
                                                                     THEN target-booking_id
                                                                     ELSE max )
                                ).
 
-      " Loop over all entries in entities with the same TravelID
-      LOOP AT entities ASSIGNING FIELD-SYMBOL(<travel>) USING KEY entity WHERE travel_id = <travel_group>-travel_id.
-
-        " Assign new booking-ids if not already assigned
-        LOOP AT <travel>-%target ASSIGNING FIELD-SYMBOL(<booking_wo_numbers>).
-          APPEND CORRESPONDING #( <booking_wo_numbers> ) TO mapped-booking ASSIGNING FIELD-SYMBOL(<mapped_booking>).
-          IF <booking_wo_numbers>-booking_id IS INITIAL.
-            max_booking_id += 10 .
-            <mapped_booking>-booking_id = max_booking_id .
-          ENDIF.
-        ENDLOOP.
-
+      " Assign new booking-ids if not already assigned
+      LOOP AT <travel>-%target ASSIGNING FIELD-SYMBOL(<booking_wo_numbers>).
+        APPEND CORRESPONDING #( <booking_wo_numbers> ) TO mapped-booking ASSIGNING FIELD-SYMBOL(<mapped_booking>).
+        IF <booking_wo_numbers>-booking_id IS INITIAL.
+          max_booking_id += 10 .
+          <mapped_booking>-booking_id = max_booking_id .
+        ENDIF.
       ENDLOOP.
 
     ENDLOOP.

@@ -13,6 +13,7 @@
     <KEYKIND>U</KEYKIND>
     <KEYFDCOUNT>0003</KEYFDCOUNT>
     <DDTEXT>Table type containing only the keys of Booking Supplements</DDTEXT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DD40V>
    <DD42V>
     <DD42V>

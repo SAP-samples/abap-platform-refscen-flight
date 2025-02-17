@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>/DMO/CM_CUSTOMER</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Customer</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_CUSTOMER</ARBGB>
+     <MSGNR>011</MSGNR>
+     <TEXT>First Name must not be initial!</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>/DMO/CM_CUSTOMER</ARBGB>
+     <MSGNR>012</MSGNR>
+     <TEXT>Last Name must not be initial!</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

@@ -1,0 +1,21 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_ENHO" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <TOOL>BADI_IMPL</TOOL>
+   <SHORTTEXT>Hierarchy: Draft: Data Generator</SHORTTEXT>
+   <SPOT_NAME>/DMO/DATA_GENERATION_ENH_SPOT</SPOT_NAME>
+   <IMPL>
+    <ENH_BADI_IMPL_DATA>
+     <SPOT_NAME>/DMO/DATA_GENERATION_ENH_SPOT</SPOT_NAME>
+     <BADI_NAME>/DMO/DATA_GENERATION_BADI</BADI_NAME>
+     <IMPL_NAME>/DMO/DATA_GEN_EMPLOYEE_HD</IMPL_NAME>
+     <IMPL_CLASS>/DMO/CL_DATA_GEN_HIERARCHYDRFT</IMPL_CLASS>
+     <ACTIVE>X</ACTIVE>
+     <IMPL_SHORTTEXT>Hierarchy: Draft: Data Generator</IMPL_SHORTTEXT>
+     <LOCKED_IN_CUSTOMIZING>X</LOCKED_IN_CUSTOMIZING>
+    </ENH_BADI_IMPL_DATA>
+   </IMPL>
+  </asx:values>
+ </asx:abap>
+</abapGit>

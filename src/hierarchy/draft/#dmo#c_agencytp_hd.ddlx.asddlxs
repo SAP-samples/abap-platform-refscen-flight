@@ -1,0 +1,108 @@
+@Metadata.layer: #CORE
+
+@UI: { headerInfo: {
+                     typeName: 'Agency',
+                     typeNamePlural: 'Agencies',
+                     title: { type: #STANDARD, value: 'Name' },
+                     description: { type: #STANDARD, value: 'Agency' }
+                    },
+       presentationVariant: [{
+           sortOrder: [{ by: 'Agency', direction: #ASC }],
+           visualizations: [{type: #AS_LINEITEM}]
+         }]
+     } 
+     
+     
+
+annotate view /DMO/C_AgencyTP_HD with
+{
+  @UI.facet: [
+       {
+         id:              'Agency',
+         purpose:         #STANDARD,
+         type:            #COLLECTION,
+         label:           'Agency',
+         position:        10
+       },
+       {
+         id:              'General',
+         targetQualifier: 'General_FG',
+         parentId:        'Agency',
+         purpose:         #STANDARD,
+         type:            #FIELDGROUP_REFERENCE,
+         label:           'General',
+         position:        10
+       },
+       {
+         id:              'Address',
+         targetQualifier: 'Address_FG',
+         parentId:        'Agency',
+         purpose:         #STANDARD,
+         type:            #FIELDGROUP_REFERENCE,
+         label:           'Address',
+         position:        20
+       },
+       {
+         id:              'Contact',
+         targetQualifier: 'Contact_FG',
+         parentId:        'Agency',
+         purpose:         #STANDARD,
+         type:            #FIELDGROUP_REFERENCE,
+         label:           'Contact Data',
+         position:        30
+       },
+       {
+         id:            'Employee',
+         purpose:       #STANDARD,
+         type:          #LINEITEM_REFERENCE,
+         label:         'Employee',
+         position:      20,
+         targetElement: '_Employee'
+       }
+     ]
+  @UI: { lineItem:       [ { position: 10, importance: #HIGH } ] ,
+         selectionField: [ { position: 10 } ] }
+  @UI.textArrangement: #TEXT_SEPARATE
+  Agency;
+
+  @UI: { lineItem:       [ { position: 20, importance: #HIGH } ] ,
+         fieldGroup:     [ { position: 20, qualifier: 'General_FG' } ],
+         selectionField: [ { position: 20 } ] }
+  Name;
+
+  @UI: { fieldGroup:     [ { position: 30, qualifier: 'Address_FG' } ],
+         identification: [ { position: 30 } ] }
+  Street;
+
+  @UI: { fieldGroup:     [ { position: 40, qualifier: 'Address_FG' } ],
+         identification: [ { position: 40 } ] }
+  PostalCode;
+
+  @UI: { lineItem:       [ { position: 50, importance: #MEDIUM, type: #AS_FIELDGROUP, valueQualifier: 'Address_FG', label: 'Address' } ] ,
+         identification: [ { position: 50 } ],
+         fieldGroup:     [ { position: 50, qualifier: 'Address_FG' } ],
+         selectionField: [ { position: 50 } ] }
+  City;
+
+  @UI: { identification: [ { position: 60 } ],
+         fieldGroup:     [ { position: 60, qualifier: 'Address_FG' } ],
+         selectionField: [ { position: 60 } ] }
+  @UI.textArrangement: #TEXT_FIRST
+  CountryCode;
+
+  @UI: { lineItem:       [ { position: 70, importance: #LOW, type: #AS_FIELDGROUP, valueQualifier: 'Contact_FG', label: 'Contact Data' } ] ,
+         fieldGroup:     [ { position: 70, qualifier: 'Contact_FG' } ],
+         identification: [ { position: 70 } ] }
+  PhoneNumber;
+
+  @UI: { fieldGroup:     [ { position: 80, qualifier: 'Contact_FG' } ],
+         identification: [ { position: 80 } ] }
+  EMailAddress;
+
+  @UI: { fieldGroup:     [ { position: 90, qualifier: 'Contact_FG' } ],
+         identification: [ { position: 90 } ] }
+  WebAddress;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

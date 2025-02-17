@@ -1,0 +1,7 @@
+@EndUserText.label: 'Agency'
+@ObjectModel.leadingEntity.name: '/DMO/C_AgencyTP_HD'
+define service /DMO/UI_Agency_HD {
+  expose /DMO/C_AgencyTP_HD   as Agency;
+  expose /DMO/C_EmployeeTP_HD as Employee;
+  expose I_CurrencyStdVH      as Currency;
+}

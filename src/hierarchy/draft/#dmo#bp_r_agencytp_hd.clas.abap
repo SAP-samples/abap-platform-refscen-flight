@@ -1,0 +1,5 @@
+CLASS /dmo/bp_r_agencytp_hd DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF /dmo/r_agencytp_hd.
+ENDCLASS.
+
+CLASS /dmo/bp_r_agencytp_hd IMPLEMENTATION.
+ENDCLASS.

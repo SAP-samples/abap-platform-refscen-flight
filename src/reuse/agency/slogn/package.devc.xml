@@ -4,8 +4,6 @@
   <asx:values>
    <DEVC>
     <CTEXT>Agency Extension: Slogan (Field Extensibility)</CTEXT>
-    <COMP_POSID>BC-SRV-NWD-XBR</COMP_POSID>
-    <COMPONENT>BYI3000542</COMPONENT>
    </DEVC>
   </asx:values>
  </asx:abap>
