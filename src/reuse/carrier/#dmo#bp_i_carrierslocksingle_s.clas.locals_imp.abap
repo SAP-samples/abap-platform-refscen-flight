@@ -148,24 +148,24 @@ CLASS lhc_carrier IMPLEMENTATION.
 
 ENDCLASS.
 
-CLASS lthc_CarriersLockSingleton DEFINITION DEFERRED FOR TESTING.
-CLASS lhc_CarriersLockSingleton DEFINITION
-  INHERITING FROM cl_abap_behavior_handler
-  FRIENDS lthc_carrierslocksingleton
-  .
-  PRIVATE SECTION.
-
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR CarriersLockSingleton RESULT result.
-
-ENDCLASS.
-
-CLASS lhc_CarriersLockSingleton IMPLEMENTATION.
-
-  METHOD get_global_authorizations.
-  ENDMETHOD.
-
-ENDCLASS.
+*CLASS lthc_CarriersLockSingleton DEFINITION DEFERRED FOR TESTING.
+*CLASS lhc_CarriersLockSingleton DEFINITION
+*  INHERITING FROM cl_abap_behavior_handler
+*  FRIENDS lthc_carrierslocksingleton
+*  .
+*  PRIVATE SECTION.
+*
+**    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+**      IMPORTING REQUEST requested_authorizations FOR CarriersLockSingleton RESULT result.
+*
+*ENDCLASS.
+*
+*CLASS lhc_CarriersLockSingleton IMPLEMENTATION.
+*
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
+*
+*ENDCLASS.
 
 
 CLASS ltsc_I_CARRIERSLOCKSINGLETON_S DEFINITION DEFERRED FOR TESTING.

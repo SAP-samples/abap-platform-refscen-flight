@@ -10,6 +10,7 @@
     <OUTPUTLEN>000011</OUTPUTLEN>
     <DDTEXT>Flight Reference Scenario: Distance</DDTEXT>
     <DOMMASTER>E</DOMMASTER>
+    <RESERVEDOM>JB</RESERVEDOM>
    </DD01V>
   </asx:values>
  </asx:abap>

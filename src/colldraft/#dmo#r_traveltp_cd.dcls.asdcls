@@ -1,0 +1,11 @@
+@EndUserText.label: 'Access Control for Travel CollDraft'
+@MappingRole: true
+define role /DMO/R_TravelTP_CD {
+  grant
+    select
+      on
+        /DMO/R_TravelTP_CD
+          where
+            true;
+            
+}

@@ -1,0 +1,55 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Travel',
+                  typeNamePlural: 'Travels',
+                  title: { type: #STANDARD, value: 'TravelId' } }
+
+@UI.presentationVariant: [ { sortOrder: [ { by: 'TravelId', direction: #DESC } ],
+                             visualizations: [ { type: #AS_LINEITEM } ] } ]
+
+annotate entity /DMO/C_TravelTP_CD
+  with
+
+{
+  @UI.facet: [ { id: 'Travel',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 label: 'Travel',
+                 position: 10 },
+               { id: 'Booking',
+                 purpose: #STANDARD,
+                 type: #LINEITEM_REFERENCE,
+                 label: 'Booking',
+                 position: 20,
+                 targetElement: '_Booking' } ]
+  @UI.hidden: true
+  TravelUuid;
+
+  @UI.identification: [ { position: 10, label: 'Travel ID' } ]
+  @UI.lineItem: [ { position: 10, importance: #HIGH } ]
+  @UI.selectionField: [ { position: 10 } ]
+  TravelId;
+
+  @UI.identification: [ { position: 20 } ]
+  @UI.lineItem: [ { position: 20, importance: #MEDIUM } ]
+  BeginDate;
+
+  @UI.identification: [ { position: 30 } ]
+  @UI.lineItem: [ { position: 30, importance: #MEDIUM } ]
+  EndDate;
+
+  @UI.identification: [ { position: 40 } ]
+  @UI.lineItem: [ { position: 40, importance: #MEDIUM } ]
+  BookingFee;
+
+//  @UI.identification: [ { position: 50 } ]
+//  @UI.lineItem: [ { position: 50, importance: #MEDIUM } ]
+//  CurrencyCode;
+
+  @UI.identification: [ { position: 60 } ]
+  @UI.lineItem: [ { position: 60, importance: #MEDIUM } ]
+  Description;
+
+  @UI.hidden: true
+  LocalLastChangedAt;
+}

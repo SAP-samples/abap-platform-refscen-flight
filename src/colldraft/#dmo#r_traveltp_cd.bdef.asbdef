@@ -1,0 +1,92 @@
+managed implementation in class /DMO/BP_R_TravelTP_CD unique;
+strict ( 2 );
+with collaborative draft;
+extensible;
+
+define behavior for /DMO/R_TravelTP_CD alias Travel
+persistent table /dmo/a_travel_cd
+extensible
+draft table /dmo/d_travel_cd query /DMO/R_TravelTPDraft_CD
+etag master LocalLastChangedAt
+lock master total etag LastChangedAt
+authorization master ( global, instance )
+{
+  field ( readonly )
+  TravelUuid,
+  LocalCreatedBy,
+  LocalCreatedAt,
+  LocalLastChangedBy,
+  LocalLastChangedAt,
+  LastChangedAt;
+
+  field ( numbering : managed )
+  TravelUuid;
+
+  field ( readonly : update, mandatory : create )
+  TravelId;
+
+  create ( authorization : global );
+  update;
+  delete;
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare;
+  draft action Share;
+
+  association _Booking { create; with draft; }
+
+  mapping for /dmo/a_travel_cd corresponding extensible
+    {
+      BeginDate          = begin_date;
+      BookingFee         = booking_fee;
+      CurrencyCode       = currency_code;
+      Description        = description;
+      EndDate            = end_date;
+      LastChangedAt      = last_changed_at;
+      LocalCreatedAt     = local_created_at;
+      LocalCreatedBy     = local_created_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LocalLastChangedBy = local_last_changed_by;
+      TravelId           = travel_id;
+      TravelUUID         = travel_uuid;
+    }
+
+}
+
+define behavior for /DMO/R_BookingTP_CD alias Booking
+persistent table /dmo/a_book_cd
+extensible
+draft table /dmo/d_book_cd
+etag dependent by _Travel
+lock dependent by _Travel
+authorization dependent by _Travel
+{
+  field ( readonly )
+  BookingUuid,
+  TravelUuid;
+
+  field ( numbering : managed )
+  BookingUuid;
+
+  field ( readonly : update, mandatory : create )
+  BookingId;
+
+  update;
+  delete;
+
+  association _Travel { with draft; }
+
+  mapping for /dmo/a_book_cd corresponding extensible
+    {
+      BookingDate  = booking_date;
+      BookingId    = booking_id;
+      BookingUUID  = booking_uuid;
+      CurrencyCode = currency_code;
+      FlightDate   = flight_date;
+      FlightPrice  = flight_price;
+      TravelUUID   = parent_uuid;
+    }
+}

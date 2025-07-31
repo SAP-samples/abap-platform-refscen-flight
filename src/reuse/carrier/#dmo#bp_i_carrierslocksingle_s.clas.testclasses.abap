@@ -394,49 +394,49 @@ CLASS lthc_carrier IMPLEMENTATION.
 
 ENDCLASS.
 
-"! @testing BDEF:/DMO/I_CarriersLockSingleton_S
-CLASS lthc_carrierslocksingleton DEFINITION FINAL FOR TESTING
-  DURATION SHORT
-  RISK LEVEL HARMLESS.
-
-  PRIVATE SECTION.
-    METHODS:
-      "! Checks that { @link ..lhc_CarriersLockSingleton.METH:get_global_authorizations } returns initial values
-      "! for <em>result</em> and <em>reported</em>.
-      get_global_authorizations FOR TESTING RAISING cx_static_check.
-ENDCLASS.
-
-
-CLASS lthc_carrierslocksingleton IMPLEMENTATION.
-
-  METHOD get_global_authorizations.
-    DATA:
-      class_under_test         TYPE REF TO lhc_carrierslocksingleton,
-      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_carrierslocksingleton_s\\carrierslocksingleton,
-      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_carrierslocksingleton_s\\carrierslocksingleton,
-      reported                 TYPE RESPONSE  FOR REPORTED EARLY /dmo/i_carrierslocksingleton_s.
-
-
-    CREATE OBJECT class_under_test FOR TESTING.
-
-    requested_authorizations = VALUE #(
-        %update      = if_abap_behv=>mk-on
-        %action-edit = if_abap_behv=>mk-on
-      ).
-
-    class_under_test->get_global_authorizations(
-      EXPORTING
-        requested_authorizations = requested_authorizations
-      CHANGING
-        result                   = result
-        reported                 = reported
-    ).
-
-    cl_abap_unit_assert=>assert_initial( result   ).
-    cl_abap_unit_assert=>assert_initial( reported ).
-  ENDMETHOD.
-
-ENDCLASS.
+*"! @testing BDEF:/DMO/I_CarriersLockSingleton_S
+*CLASS lthc_carrierslocksingleton DEFINITION FINAL FOR TESTING
+*  DURATION SHORT
+*  RISK LEVEL HARMLESS.
+*
+*  PRIVATE SECTION.
+*    METHODS:
+*      "! Checks that { @link ..lhc_CarriersLockSingleton.METH:get_global_authorizations } returns initial values
+*      "! for <em>result</em> and <em>reported</em>.
+*      get_global_authorizations FOR TESTING RAISING cx_static_check.
+*ENDCLASS.
+*
+*
+*CLASS lthc_carrierslocksingleton IMPLEMENTATION.
+*
+*  METHOD get_global_authorizations.
+*    DATA:
+*      class_under_test         TYPE REF TO lhc_carrierslocksingleton,
+*      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_carrierslocksingleton_s\\carrierslocksingleton,
+*      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_carrierslocksingleton_s\\carrierslocksingleton,
+*      reported                 TYPE RESPONSE  FOR REPORTED EARLY /dmo/i_carrierslocksingleton_s.
+*
+*
+*    CREATE OBJECT class_under_test FOR TESTING.
+*
+*    requested_authorizations = VALUE #(
+*        %update      = if_abap_behv=>mk-on
+*        %action-edit = if_abap_behv=>mk-on
+*      ).
+*
+*    class_under_test->get_global_authorizations(
+*      EXPORTING
+*        requested_authorizations = requested_authorizations
+*      CHANGING
+*        result                   = result
+*        reported                 = reported
+*    ).
+*
+*    cl_abap_unit_assert=>assert_initial( result   ).
+*    cl_abap_unit_assert=>assert_initial( reported ).
+*  ENDMETHOD.
+*
+*ENDCLASS.
 
 "! @testing BDEF:/DMO/I_CarriersLockSingleton_S
 CLASS ltsc_i_carrierslocksingleton_s DEFINITION FINAL FOR TESTING

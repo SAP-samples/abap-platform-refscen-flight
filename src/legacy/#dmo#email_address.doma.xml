@@ -10,6 +10,7 @@
     <LOWERCASE>X</LOWERCASE>
     <DDTEXT>Flight Reference Scenario: EMail Address</DDTEXT>
     <DOMMASTER>E</DOMMASTER>
+    <RESERVEDOM>JB</RESERVEDOM>
    </DD01V>
   </asx:values>
  </asx:abap>

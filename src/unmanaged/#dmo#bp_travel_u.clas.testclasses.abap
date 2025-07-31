@@ -82,8 +82,8 @@ CLASS ltcl_handler DEFINITION FINAL FOR TESTING
       "! Checks with a check table if { @link ..lhc_travel.METH:get_instance_features } works as expected.
       get_instance_feature      FOR TESTING RAISING cx_static_check,
 
-      "! Checks if { @link ..lhc_travel.METH:get_global_authorizations } does not fail.
-      get_global_authorizations FOR TESTING RAISING cx_static_check,
+*      "! Checks if { @link ..lhc_travel.METH:get_global_authorizations } does not fail.
+*      get_global_authorizations FOR TESTING RAISING cx_static_check,
 
       "! Checks if { @link ..lhc_travel.METH:lock } does not fail.
       lock_success              FOR TESTING RAISING cx_static_check.
@@ -1089,29 +1089,29 @@ CLASS ltcl_handler IMPLEMENTATION.
     cl_abap_lock_object_factory=>dequeue_all( ).
   ENDMETHOD.
 
-  METHOD get_global_authorizations.
-    DATA:
-      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_travel_u\\travel,
-      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_u\\travel.
-
-    requested_authorizations = VALUE #(
-        %create                   = if_abap_behv=>mk-on
-        %update                   = if_abap_behv=>mk-on
-        %delete                   = if_abap_behv=>mk-on
-        %action-set_status_booked = if_abap_behv=>mk-on
-      ).
-
-    behavior_handler->get_global_authorizations(
-      EXPORTING
-        requested_authorizations = requested_authorizations
-      CHANGING
-        result                   = result
-        reported                 = reported
-    ).
-
-    cl_abap_unit_assert=>assert_initial( result ).
-    cl_abap_unit_assert=>assert_initial( reported ).
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*    DATA:
+*      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_travel_u\\travel,
+*      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_u\\travel.
+*
+*    requested_authorizations = VALUE #(
+*        %create                   = if_abap_behv=>mk-on
+*        %update                   = if_abap_behv=>mk-on
+*        %delete                   = if_abap_behv=>mk-on
+*        %action-set_status_booked = if_abap_behv=>mk-on
+*      ).
+*
+*    behavior_handler->get_global_authorizations(
+*      EXPORTING
+*        requested_authorizations = requested_authorizations
+*      CHANGING
+*        result                   = result
+*        reported                 = reported
+*    ).
+*
+*    cl_abap_unit_assert=>assert_initial( result ).
+*    cl_abap_unit_assert=>assert_initial( reported ).
+*  ENDMETHOD.
 
 ENDCLASS.
 

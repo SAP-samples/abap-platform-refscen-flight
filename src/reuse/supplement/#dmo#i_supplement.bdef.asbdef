@@ -9,7 +9,7 @@ draft table /dmo/suppl_d
 lock master
 total etag LastChangedAt
 etag master LocalLastChangedAt
-authorization master ( global )
+authorization master ( none )
 {
   create;
   update;

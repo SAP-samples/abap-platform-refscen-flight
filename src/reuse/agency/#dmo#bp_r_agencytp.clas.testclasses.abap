@@ -53,9 +53,9 @@ CLASS ltc_agency_handler DEFINITION FINAL FOR TESTING
     "! where attachment, mimetype and filename are set incorrectly.
     METHODS validate_lob_failed          FOR TESTING RAISING cx_static_check.
 
-    "! Checks that { @link ..lhc_agency.METH:get_global_authorizations } returns initial values
-    "! for <em>result</em> and <em>reported</em>.
-    METHODS get_global_authorizations    FOR TESTING RAISING cx_static_check.
+*    "! Checks that { @link ..lhc_agency.METH:get_global_authorizations } returns initial values
+*    "! for <em>result</em> and <em>reported</em>.
+*    METHODS get_global_authorizations    FOR TESTING RAISING cx_static_check.
 
 ENDCLASS.
 
@@ -635,20 +635,20 @@ CLASS ltc_agency_handler IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_global_authorizations.
-    DATA requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/r_agencytp\\/dmo/agency.
-    DATA result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/r_agencytp\\/dmo/agency.
-    DATA reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/r_agencytp.
-
-    requested_authorizations-%create = if_abap_behv=>mk-on.
-
-    class_under_test->get_global_authorizations( EXPORTING requested_authorizations = requested_authorizations
-                                                 CHANGING  result                   = result
-                                                           reported                 = reported ).
-
-    cl_abap_unit_assert=>assert_initial( result   ).
-    cl_abap_unit_assert=>assert_initial( reported ).
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*    DATA requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/r_agencytp\\/dmo/agency.
+*    DATA result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/r_agencytp\\/dmo/agency.
+*    DATA reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/r_agencytp.
+*
+*    requested_authorizations-%create = if_abap_behv=>mk-on.
+*
+*    class_under_test->get_global_authorizations( EXPORTING requested_authorizations = requested_authorizations
+*                                                 CHANGING  result                   = result
+*                                                           reported                 = reported ).
+*
+*    cl_abap_unit_assert=>assert_initial( result   ).
+*    cl_abap_unit_assert=>assert_initial( reported ).
+*  ENDMETHOD.
 
 ENDCLASS.
 

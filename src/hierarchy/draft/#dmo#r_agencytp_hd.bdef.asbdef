@@ -9,7 +9,7 @@ persistent table /dmo/agency_a_hd
 draft table /dmo/agency_d_hd
 lock master
 total etag LastChangedAt
-authorization master ( global )
+authorization master ( none )
 etag master LocalLastChangedAt
 {
   create;

@@ -1,0 +1,33 @@
+projection implementation in class /DMO/BP_C_TravelTP_CD unique;
+strict ( 2 );
+extensible;
+use collaborative draft;
+use side effects;
+
+define behavior for /DMO/C_TravelTP_CD alias Travel
+extensible
+use etag
+{
+  use create;
+  use update;
+  use delete;
+
+  use action Activate;
+  use action Discard;
+  use action Edit;
+  use action Resume;
+  use action Prepare;
+  use action Share;
+
+  use association _Booking { create; with draft; }
+}
+
+define behavior for /DMO/C_BookingTP_CD alias Booking
+extensible
+use etag
+{
+  use update;
+  use delete;
+
+  use association _Travel { with draft; }
+}

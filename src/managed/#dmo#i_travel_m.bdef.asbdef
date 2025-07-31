@@ -8,7 +8,7 @@ with additional save
 etag master last_changed_at
 lock master
 early numbering
-authorization master ( global )
+authorization master ( none )
 
 {
   // administrative fields: read only

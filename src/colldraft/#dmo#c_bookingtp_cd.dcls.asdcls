@@ -1,0 +1,11 @@
+@EndUserText.label: 'Access Control for Booking Projection'
+@MappingRole: true
+define role /DMO/C_BookingTP_CD {
+  grant
+    select
+      on
+        /DMO/C_BookingTP_CD
+          where
+            inheriting conditions from entity /DMO/R_BookingTP_CD default true;
+            
+}

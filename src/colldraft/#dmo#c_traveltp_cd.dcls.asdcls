@@ -1,0 +1,11 @@
+@EndUserText.label: 'Access Control for Travel Projection'
+@MappingRole: true
+define role /DMO/C_TravelTP_CD {
+  grant
+    select
+      on
+        /DMO/C_TravelTP_CD
+          where
+            inheriting conditions from entity /DMO/R_TravelTP_CD default true;
+            
+}

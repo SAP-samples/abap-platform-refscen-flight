@@ -1,0 +1,5 @@
+CLASS /dmo/bp_r_traveltp_cd DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF /dmo/r_traveltp_cd.
+ENDCLASS.
+
+CLASS /dmo/bp_r_traveltp_cd IMPLEMENTATION.
+ENDCLASS.

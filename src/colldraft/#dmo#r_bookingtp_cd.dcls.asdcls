@@ -1,0 +1,11 @@
+@EndUserText.label: 'Access Control for Booking CollDraft'
+@MappingRole: true
+define role /DMO/R_BookingTP_CD {
+  grant
+    select
+      on
+        /DMO/R_BookingTP_CD
+          where
+            true;
+            
+}

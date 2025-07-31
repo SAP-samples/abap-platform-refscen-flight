@@ -7,8 +7,8 @@ CLASS lhc_/dmo/zz_review DEFINITION INHERITING FROM cl_abap_behavior_handler
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR /dmo/zz_review RESULT result.
 
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR /dmo/zz_review RESULT result.
+*    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+*      IMPORTING REQUEST requested_authorizations FOR /dmo/zz_review RESULT result.
 
     METHODS reviewwashelpful FOR MODIFY
       IMPORTING keys FOR ACTION /dmo/zz_review~/dmo/reviewwashelpful RESULT result.
@@ -44,8 +44,8 @@ CLASS lhc_/dmo/zz_review IMPLEMENTATION.
       ).
   ENDMETHOD.
 
-  METHOD get_global_authorizations.
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
 
   METHOD reviewwashelpful.
     READ ENTITIES OF /dmo/i_agencytp IN LOCAL MODE

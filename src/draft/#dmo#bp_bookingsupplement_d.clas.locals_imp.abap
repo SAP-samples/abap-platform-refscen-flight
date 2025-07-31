@@ -15,11 +15,6 @@ CLASS lhc_BookingSupplement DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR BookingSupplement~validateCurrencyCode.
     METHODS validatePrice FOR VALIDATE ON SAVE
       IMPORTING keys FOR BookingSupplement~validatePrice.
-    METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
-      IMPORTING keys REQUEST requested_authorizations FOR BookingSupplement RESULT result.
-
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR BookingSupplement RESULT result.
 
 ENDCLASS.
 
@@ -267,12 +262,6 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
 
-  ENDMETHOD.
-
-  METHOD get_instance_authorizations.
-  ENDMETHOD.
-
-  METHOD get_global_authorizations.
   ENDMETHOD.
 
 ENDCLASS.

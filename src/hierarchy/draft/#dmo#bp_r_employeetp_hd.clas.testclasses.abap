@@ -126,9 +126,9 @@ CLASS ltc_general DEFINITION FINAL FOR TESTING
       setup.
 
     METHODS:
-      "! Checks that { @link ..lhc_employee.METH:get_global_authorizations } returns initial values
-      "! for <em>result</em> and <em>reported</em>.
-      get_global_authorizations      FOR TESTING RAISING cx_static_check,
+*      "! Checks that { @link ..lhc_employee.METH:get_global_authorizations } returns initial values
+*      "! for <em>result</em> and <em>reported</em>.
+*      get_global_authorizations      FOR TESTING RAISING cx_static_check,
 
       "! Calls { @link ..lhc_booking.METH:validationcurrencyexists }
       "! and checks if valid currencies are accepted.
@@ -179,25 +179,25 @@ CLASS ltc_general IMPLEMENTATION.
     cds_test_environment->insert_test_data( employees ).
   ENDMETHOD.
 
-  METHOD get_global_authorizations.
-    DATA:
-      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/r_agencytp_hd\\employee,
-      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/r_agencytp_hd\\employee,
-      reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/r_agencytp_hd.
-
-    requested_authorizations-%action-changenextsibling = if_abap_behv=>mk-on.
-
-    class_under_test->get_global_authorizations(
-        EXPORTING
-          requested_authorizations = requested_authorizations
-        CHANGING
-          result                   = result
-          reported                 = reported
-      ).
-
-    cl_abap_unit_assert=>assert_initial( result   ).
-    cl_abap_unit_assert=>assert_initial( reported ).
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*    DATA:
+*      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/r_agencytp_hd\\employee,
+*      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/r_agencytp_hd\\employee,
+*      reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/r_agencytp_hd.
+*
+*    requested_authorizations-%action-changenextsibling = if_abap_behv=>mk-on.
+*
+*    class_under_test->get_global_authorizations(
+*        EXPORTING
+*          requested_authorizations = requested_authorizations
+*        CHANGING
+*          result                   = result
+*          reported                 = reported
+*      ).
+*
+*    cl_abap_unit_assert=>assert_initial( result   ).
+*    cl_abap_unit_assert=>assert_initial( reported ).
+*  ENDMETHOD.
 
   METHOD validate_currency_success.
     DATA:

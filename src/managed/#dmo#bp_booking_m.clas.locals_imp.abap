@@ -249,7 +249,7 @@ CLASS lhc_booking IMPLEMENTATION.
                                                                           THEN booksuppl-target-booking_supplement_id
                                                                           ELSE max )
                                      ).
-      " Get highest assigned bookingsupplement_id from incoming entities
+      " Get highest assigned bookingsupplement_id from incoming entities, eg internal operations
       max_booking_suppl_id = REDUCE #( INIT max = max_booking_suppl_id
                                        FOR  entity IN entities USING KEY entity
                                                                WHERE (     travel_id  = <booking>-travel_id

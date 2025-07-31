@@ -1,0 +1,91 @@
+@Metadata.layer: #CORE
+
+@UI: { headerInfo: { typeName: 'Connection',
+                     typeNamePlural: 'Connections',
+                     title: { type: #STANDARD, value: 'ConnectionTitle' }},
+       presentationVariant: [{ visualizations: [{type: #AS_LINEITEM}] }]}
+
+annotate entity /DMO/C_Connection_R with
+{
+  @UI.facet: [
+      { 
+        id:              'Connection',
+        purpose:         #STANDARD,
+        type:            #COLLECTION,
+        label:           'Connection',
+        position:        10 
+      },  
+      {   
+        id:              'General',
+        targetQualifier: 'General_FG',
+        parentId:        'Connection',
+        purpose:         #STANDARD,
+        type:            #FIELDGROUP_REFERENCE,
+        label:           'General',
+        position:        10 
+      },  
+      {   
+        id:              'Departure',
+        targetQualifier: 'Departure_FG',
+        parentId:        'Connection',
+        purpose:         #STANDARD,
+        type:            #FIELDGROUP_REFERENCE,
+        label:           'Departure',
+        position:        20 
+      },  
+      {   
+        id:              'Destination',
+        targetQualifier: 'Destination_FG',
+        parentId:        'Connection',
+        purpose:         #STANDARD,
+        type:            #FIELDGROUP_REFERENCE,
+        label:           'Destination',
+        position:        30 
+      },  
+      { id:            'Flight',
+        type:          #LINEITEM_REFERENCE,
+        label:         'Flight',
+        position:      20,
+        targetElement: '_Flight'
+      }
+    ]
+
+  @UI: { lineItem: [{ position: 10 }],
+         selectionField: [{ position: 10 }],
+         fieldGroup:[{ position: 10, qualifier: 'General_FG' }]}
+  @EndUserText.quickInfo: 'Airline that operates the flight'
+  AirlineID;
+
+  @UI: { lineItem: [{ position: 20 }],
+         selectionField: [{ position: 20 }],
+         fieldGroup:[{ position: 20, qualifier: 'General_FG' }]}
+  ConnectionID;
+
+  @UI.fieldGroup: [{ position: 30, qualifier: 'General_FG' }]
+  Distance;
+
+  @UI.fieldGroup: [{ position: 40, qualifier: 'General_FG', label: 'Distance Unit' }]
+  DistanceUnit;
+
+
+  @UI: { lineItem: [{ position: 30 }],
+         selectionField: [{ position: 30 }],
+         fieldGroup:[{ position: 10, qualifier: 'Departure_FG' }]}
+  @EndUserText.label: 'Departure Airport'
+  DepartureAirport;
+
+  @UI.lineItem: [{ position: 50 }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'Departure_FG' }]
+  DepartureTime;
+
+
+  @UI: { lineItem: [{ position: 40 }],
+         selectionField: [{ position: 40 }],
+         fieldGroup: [{ position: 10, qualifier: 'Destination_FG' }]}
+  @EndUserText.label: 'Destination Airport'
+  DestinationAirport;
+
+  @UI.lineItem: [{ position: 60 }]
+  @UI.fieldGroup: [{ position: 20, qualifier: 'Destination_FG' }]
+  ArrivalTime;
+}

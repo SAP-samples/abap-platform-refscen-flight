@@ -36,8 +36,8 @@ CLASS lhc_travel DEFINITION INHERITING FROM cl_abap_behavior_handler
     METHODS calculatetotalprice FOR DETERMINE ON MODIFY
       IMPORTING keys FOR travel~calculatetotalprice.
 
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
+*    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+*      IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
 
     METHODS earlynumbering_cba_booking FOR NUMBERING
       IMPORTING entities FOR CREATE travel\_booking.
@@ -76,12 +76,12 @@ CLASS lhc_travel IMPLEMENTATION.
          OR NOT line_exists( customers_db[ customer_id = travel-customer_id ] ).
 
         APPEND VALUE #(  %tky = travel-%tky ) TO failed-travel.
-        APPEND VALUE #(  %tky = travel-%tky
-                         %msg      = NEW /dmo/cm_flight_messages(
-                                         customer_id = travel-customer_id
-                                         textid      = /dmo/cm_flight_messages=>customer_unkown
-                                         severity    = if_abap_behv_message=>severity-error )
-                         %element-customer_id = if_abap_behv=>mk-on
+        APPEND VALUE #( %tky                 = travel-%tky
+                        %msg                 = NEW /dmo/cm_flight_messages(
+                        customer_id = travel-customer_id
+                        textid      = /dmo/cm_flight_messages=>customer_unkown
+                        severity    = if_abap_behv_message=>severity-error )
+                        %element-customer_id = if_abap_behv=>mk-on
                       ) TO reported-travel.
       ENDIF.
     ENDLOOP.
@@ -118,12 +118,12 @@ CLASS lhc_travel IMPLEMENTATION.
          OR NOT line_exists( agencies_db[ agency_id = travel-agency_id ] ).
 
         APPEND VALUE #(  %tky = travel-%tky ) TO failed-travel.
-        APPEND VALUE #(  %tky = travel-%tky
-                         %msg      = NEW /dmo/cm_flight_messages(
-                                          textid    = /dmo/cm_flight_messages=>agency_unkown
-                                          agency_id = travel-agency_id
-                                          severity  = if_abap_behv_message=>severity-error )
-                         %element-agency_id = if_abap_behv=>mk-on
+        APPEND VALUE #( %tky               = travel-%tky
+                        %msg               = NEW /dmo/cm_flight_messages(
+                        textid    = /dmo/cm_flight_messages=>agency_unkown
+                        agency_id = travel-agency_id
+                        severity  = if_abap_behv_message=>severity-error )
+                        %element-agency_id = if_abap_behv=>mk-on
                       ) TO reported-travel.
       ENDIF.
     ENDLOOP.
@@ -145,27 +145,27 @@ CLASS lhc_travel IMPLEMENTATION.
 
         APPEND VALUE #( %tky = travel-%tky ) TO failed-travel.
 
-        APPEND VALUE #( %tky = travel-%tky
-                        %msg = NEW /dmo/cm_flight_messages(
-                                   textid     = /dmo/cm_flight_messages=>begin_date_bef_end_date
-                                   severity   = if_abap_behv_message=>severity-error
-                                   begin_date = travel-begin_date
-                                   end_date   = travel-end_date
-                                   travel_id  = travel-travel_id )
-                        %element-begin_date   = if_abap_behv=>mk-on
-                        %element-end_date     = if_abap_behv=>mk-on
-                     ) TO reported-travel.
+        APPEND VALUE #( %tky                = travel-%tky
+                        %msg                = NEW /dmo/cm_flight_messages(
+                        textid     = /dmo/cm_flight_messages=>begin_date_bef_end_date
+                        severity   = if_abap_behv_message=>severity-error
+                        begin_date = travel-begin_date
+                        end_date   = travel-end_date
+                        travel_id  = travel-travel_id )
+                        %element-begin_date = if_abap_behv=>mk-on
+                        %element-end_date   = if_abap_behv=>mk-on
+        ) TO reported-travel.
 
       ELSEIF travel-begin_date < cl_abap_context_info=>get_system_date( ).  "begin_date must be in the future
 
         APPEND VALUE #( %tky        = travel-%tky ) TO failed-travel.
 
-        APPEND VALUE #( %tky = travel-%tky
-                        %msg = NEW /dmo/cm_flight_messages(
-                                    textid   = /dmo/cm_flight_messages=>begin_date_on_or_bef_sysdate
-                                    severity = if_abap_behv_message=>severity-error )
-                        %element-begin_date  = if_abap_behv=>mk-on
-                        %element-end_date    = if_abap_behv=>mk-on
+        APPEND VALUE #( %tky                = travel-%tky
+                        %msg                = NEW /dmo/cm_flight_messages(
+                        textid   = /dmo/cm_flight_messages=>begin_date_on_or_bef_sysdate
+                        severity = if_abap_behv_message=>severity-error )
+                        %element-begin_date = if_abap_behv=>mk-on
+                        %element-end_date   = if_abap_behv=>mk-on
                       ) TO reported-travel.
       ENDIF.
 
@@ -190,11 +190,11 @@ CLASS lhc_travel IMPLEMENTATION.
         WHEN OTHERS.
           APPEND VALUE #( %tky = travel-%tky ) TO failed-travel.
 
-          APPEND VALUE #( %tky = travel-%tky
-                          %msg = NEW /dmo/cm_flight_messages(
-                                     textid = /dmo/cm_flight_messages=>status_invalid
-                                     severity = if_abap_behv_message=>severity-error
-                                     status = travel-overall_status )
+          APPEND VALUE #( %tky                    = travel-%tky
+                          %msg                    = NEW /dmo/cm_flight_messages(
+                          textid   = /dmo/cm_flight_messages=>status_invalid
+                          severity = if_abap_behv_message=>severity-error
+                          status   = travel-overall_status )
                           %element-overall_status = if_abap_behv=>mk-on
                         ) TO reported-travel.
       ENDCASE.
@@ -216,8 +216,7 @@ CLASS lhc_travel IMPLEMENTATION.
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel
        ALL FIELDS WITH CORRESPONDING #( keys )
-    RESULT DATA(travel_read_result)
-    FAILED failed.
+    RESULT DATA(travel_read_result).
 
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
       ENTITY travel BY \_booking
@@ -229,40 +228,46 @@ CLASS lhc_travel IMPLEMENTATION.
        ALL FIELDS WITH CORRESPONDING #( book_read_result )
     RESULT DATA(booksuppl_read_result).
 
-    LOOP AT travel_read_result ASSIGNING FIELD-SYMBOL(<travel>).
-      "Fill travel container for creating new travel instance
-      APPEND VALUE #( %cid     = keys[ KEY entity %tky = <travel>-%tky ]-%cid
-                      %data    = CORRESPONDING #( <travel> EXCEPT travel_id ) )
-        TO travels ASSIGNING FIELD-SYMBOL(<new_travel>).
 
-      "Fill %cid_ref of travel as instance identifier for cba booking
-      APPEND VALUE #( %cid_ref = keys[ KEY entity %tky = <travel>-%tky ]-%cid )
-        TO bookings_cba ASSIGNING FIELD-SYMBOL(<bookings_cba>).
+    LOOP AT keys INTO DATA(key).
+      READ TABLE travel_read_result ASSIGNING FIELD-SYMBOL(<travel>) WITH KEY id COMPONENTS %tky = key-%tky.
+      IF sy-subrc EQ 0.
+        "Fill travel container for creating new travel instance
+        APPEND VALUE #( %cid  = key-%cid
+                        %data = CORRESPONDING #( <travel> EXCEPT travel_id ) )
+          TO travels ASSIGNING FIELD-SYMBOL(<new_travel>).
 
-      <new_travel>-begin_date     = cl_abap_context_info=>get_system_date( ).
-      <new_travel>-end_date       = cl_abap_context_info=>get_system_date( ) + 30.
-      <new_travel>-overall_status = 'O'.  "Set to open to allow an editable instance
+        "Fill %cid_ref of travel as instance identifier for cba booking
+        APPEND VALUE #( %cid_ref = key-%cid )
+          TO bookings_cba ASSIGNING FIELD-SYMBOL(<bookings_cba>).
 
-      LOOP AT book_read_result ASSIGNING FIELD-SYMBOL(<booking>) USING KEY entity WHERE travel_id EQ <travel>-travel_id.
-        "Fill booking container for creating booking with cba
-        APPEND VALUE #( %cid     = keys[ KEY entity %tky = <travel>-%tky ]-%cid && <booking>-booking_id
-                        %data    = CORRESPONDING #(  book_read_result[ KEY entity %tky = <booking>-%tky ] EXCEPT travel_id ) )
-          TO <bookings_cba>-%target ASSIGNING FIELD-SYMBOL(<new_booking>).
+        <new_travel>-begin_date     = cl_abap_context_info=>get_system_date( ).
+        <new_travel>-end_date       = cl_abap_context_info=>get_system_date( ) + 30.
+        <new_travel>-overall_status = 'O'.  "Set to open to allow an editable instance
 
-        "Fill %cid_ref of booking as instance identifier for cba booksuppl
-        APPEND VALUE #( %cid_ref = keys[ KEY entity %tky = <travel>-%tky ]-%cid && <booking>-booking_id )
-          TO booksuppl_cba ASSIGNING FIELD-SYMBOL(<booksuppl_cba>).
+        LOOP AT book_read_result ASSIGNING FIELD-SYMBOL(<booking>) USING KEY entity WHERE travel_id EQ <travel>-travel_id.
+          "Fill booking container for creating booking with cba
+          APPEND VALUE #( %cid  = key-%cid && <booking>-booking_id
+                          %data = CORRESPONDING #( book_read_result[ KEY entity %tky = <booking>-%tky ] EXCEPT travel_id ) )
+            TO <bookings_cba>-%target ASSIGNING FIELD-SYMBOL(<new_booking>).
 
-        <new_booking>-booking_status = 'N'.
+          "Fill %cid_ref of booking as instance identifier for cba booksuppl
+          APPEND VALUE #( %cid_ref = key-%cid && <booking>-booking_id )
+            TO booksuppl_cba ASSIGNING FIELD-SYMBOL(<booksuppl_cba>).
 
-        LOOP AT booksuppl_read_result ASSIGNING FIELD-SYMBOL(<booksuppl>) USING KEY entity WHERE travel_id  EQ <travel>-travel_id
-                                                                                           AND   booking_id EQ <booking>-booking_id.
-          "Fill booksuppl container for creating supplement with cba
-          APPEND VALUE #( %cid  = keys[ KEY entity %tky = <travel>-%tky ]-%cid  && <booking>-booking_id && <booksuppl>-booking_supplement_id
-                          %data = CORRESPONDING #( <booksuppl> EXCEPT travel_id booking_id ) )
-            TO <booksuppl_cba>-%target.
+          <new_booking>-booking_status = 'N'.
+
+          LOOP AT booksuppl_read_result ASSIGNING FIELD-SYMBOL(<booksuppl>) USING KEY entity WHERE travel_id  EQ <travel>-travel_id
+                                                                                             AND   booking_id EQ <booking>-booking_id.
+            "Fill booksuppl container for creating supplement with cba
+            APPEND VALUE #( %cid  = key-%cid && <booking>-booking_id && <booksuppl>-booking_supplement_id
+                            %data = CORRESPONDING #( <booksuppl> EXCEPT travel_id booking_id ) )
+              TO <booksuppl_cba>-%target.
+          ENDLOOP.
         ENDLOOP.
-      ENDLOOP.
+      ELSE.
+        APPEND CORRESPONDING #( key MAPPING %fail = DEFAULT VALUE #( cause = if_abap_behv=>cause-not_found ) ) TO failed-travel.
+      ENDIF.
     ENDLOOP.
 
     "create new BO instance
@@ -288,7 +293,7 @@ CLASS lhc_travel IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
            ENTITY travel
               UPDATE FIELDS ( overall_status )
-                 WITH VALUE #( FOR key IN keys ( %tky      = key-%tky
+                 WITH VALUE #( FOR key IN keys ( %tky           = key-%tky
                                                  overall_status = 'A' ) ). " Accepted
 
     " Read changed data for action result
@@ -298,8 +303,8 @@ CLASS lhc_travel IMPLEMENTATION.
          CORRESPONDING #( keys )
        RESULT DATA(travels).
 
-    result = VALUE #( FOR travel IN travels ( %tky      = travel-%tky
-                                              %param    = travel ) ).
+    result = VALUE #( FOR travel IN travels ( %tky   = travel-%tky
+                                              %param = travel ) ).
 
   ENDMETHOD.
 
@@ -308,7 +313,7 @@ CLASS lhc_travel IMPLEMENTATION.
     MODIFY ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
            ENTITY travel
               UPDATE FIELDS ( overall_status )
-                 WITH VALUE #( FOR key IN keys ( %tky      = key-%tky
+                 WITH VALUE #( FOR key IN keys ( %tky           = key-%tky
                                                  overall_status = 'X' ) ). " Rejected
 
 
@@ -319,8 +324,8 @@ CLASS lhc_travel IMPLEMENTATION.
          CORRESPONDING #( keys )
        RESULT DATA(travels).
 
-    result = VALUE #( FOR travel IN travels ( %tky      = travel-%tky
-                                              %param    = travel ) ).
+    result = VALUE #( FOR travel IN travels ( %tky   = travel-%tky
+                                              %param = travel ) ).
 
   ENDMETHOD.
 
@@ -381,7 +386,7 @@ CLASS lhc_travel IMPLEMENTATION.
     LOOP AT travels ASSIGNING FIELD-SYMBOL(<travel>).
       " Set the start for the calculation by adding the booking fee.
       amounts_per_currencycode = VALUE #( ( amount        = <travel>-booking_fee
-                                           currency_code = <travel>-currency_code ) ).
+                                            currency_code = <travel>-currency_code ) ).
 
 
       LOOP AT bookings INTO DATA(booking) USING KEY id WHERE   travel_id = <travel>-travel_id
@@ -466,12 +471,12 @@ CLASS lhc_travel IMPLEMENTATION.
         ).
       CATCH cx_number_ranges INTO DATA(lx_number_ranges).
         LOOP AT entities_wo_travelid INTO entity.
-          APPEND VALUE #(  %cid = entity-%cid
-                           %key = entity-%key
-                           %msg = lx_number_ranges
+          APPEND VALUE #( %cid = entity-%cid
+                          %key = entity-%key
+                          %msg = lx_number_ranges
                         ) TO reported-travel.
-          APPEND VALUE #(  %cid = entity-%cid
-                           %key = entity-%key
+          APPEND VALUE #( %cid = entity-%cid
+                          %key = entity-%key
                         ) TO failed-travel.
         ENDLOOP.
         EXIT.
@@ -484,8 +489,8 @@ CLASS lhc_travel IMPLEMENTATION.
           APPEND VALUE #( %cid = entity-%cid
                           %key = entity-%key
                           %msg = NEW /dmo/cm_flight_messages(
-                                      textid = /dmo/cm_flight_messages=>number_range_depleted
-                                      severity = if_abap_behv_message=>severity-warning )
+                          textid   = /dmo/cm_flight_messages=>number_range_depleted
+                          severity = if_abap_behv_message=>severity-warning )
                         ) TO reported-travel.
         ENDLOOP.
 
@@ -496,8 +501,8 @@ CLASS lhc_travel IMPLEMENTATION.
           APPEND VALUE #( %cid = entity-%cid
                           %key = entity-%key
                           %msg = NEW /dmo/cm_flight_messages(
-                                      textid = /dmo/cm_flight_messages=>not_sufficient_numbers
-                                      severity = if_abap_behv_message=>severity-warning )
+                          textid   = /dmo/cm_flight_messages=>not_sufficient_numbers
+                          severity = if_abap_behv_message=>severity-warning )
                         ) TO reported-travel.
           APPEND VALUE #( %cid        = entity-%cid
                           %key        = entity-%key
@@ -517,8 +522,8 @@ CLASS lhc_travel IMPLEMENTATION.
       travel_id_max += 1.
       entity-travel_id = travel_id_max .
 
-      APPEND VALUE #( %cid  = entity-%cid
-                      %key  = entity-%key
+      APPEND VALUE #( %cid = entity-%cid
+                      %key = entity-%key
                     ) TO mapped-travel.
     ENDLOOP.
 
@@ -563,8 +568,8 @@ CLASS lhc_travel IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-  METHOD get_global_authorizations.
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
 
   METHOD validate_currencycode.
     READ ENTITIES OF /DMO/I_Travel_M IN LOCAL MODE
@@ -592,8 +597,8 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky                   = travel-%tky ) TO failed-travel.
         APPEND VALUE #( %tky                   = travel-%tky
                         %msg                   = NEW /dmo/cm_flight_messages(
-                                                        textid    = /dmo/cm_flight_messages=>currency_required
-                                                        severity  = if_abap_behv_message=>severity-error )
+                        textid   = /dmo/cm_flight_messages=>currency_required
+                        severity = if_abap_behv_message=>severity-error )
                         %element-currency_code = if_abap_behv=>mk-on
                       ) TO reported-travel.
       ELSEIF NOT line_exists( currency_db[ currency = travel-currency_code ] ).
@@ -601,9 +606,9 @@ CLASS lhc_travel IMPLEMENTATION.
         APPEND VALUE #( %tky                   = travel-%tky ) TO failed-travel.
         APPEND VALUE #( %tky                   = travel-%tky
                         %msg                   = NEW /dmo/cm_flight_messages(
-                                                        textid        = /dmo/cm_flight_messages=>currency_not_existing
-                                                        severity      = if_abap_behv_message=>severity-error
-                                                        currency_code = travel-currency_code )
+                        textid        = /dmo/cm_flight_messages=>currency_not_existing
+                        severity      = if_abap_behv_message=>severity-error
+                        currency_code = travel-currency_code )
                         %element-currency_code = if_abap_behv=>mk-on
                       ) TO reported-travel.
       ENDIF.
@@ -623,8 +628,8 @@ CLASS lhc_travel IMPLEMENTATION.
       APPEND VALUE #( %tky                 = travel-%tky ) TO failed-travel.
       APPEND VALUE #( %tky                 = travel-%tky
                       %msg                 = NEW /dmo/cm_flight_messages(
-                                                     textid      = /dmo/cm_flight_messages=>booking_fee_invalid
-                                                     severity    = if_abap_behv_message=>severity-error )
+                      textid   = /dmo/cm_flight_messages=>booking_fee_invalid
+                      severity = if_abap_behv_message=>severity-error )
                       %element-booking_fee = if_abap_behv=>mk-on
                     ) TO reported-travel.
     ENDLOOP.

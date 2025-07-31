@@ -6,7 +6,7 @@ define behavior for /DMO/I_Travel_U alias Travel
 implementation in class /DMO/BP_TRAVEL_U unique
 etag master LastChangedAt
 lock master
-authorization master ( global )
+authorization master ( none )
 late numbering
 {
   field ( readonly ) TravelID, LastChangedAt;

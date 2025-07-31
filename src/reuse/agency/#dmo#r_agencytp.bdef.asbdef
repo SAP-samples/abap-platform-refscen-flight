@@ -14,7 +14,7 @@ persistent table /dmo/agency
 draft table /dmo/agency_d query /DMO/R_AgencyDraft
 lock master
 total etag LastChangedAt
-authorization master ( global )
+authorization master ( none )
 etag master LocalLastChangedAt
 late numbering
 extensible

@@ -8,7 +8,7 @@ with unmanaged save
 draft table /dmo/d_carr_lock
 lock master
 total etag LastChangedAtMax
-authorization master ( global )
+authorization master ( none )
 ##DRAFT_OP_NOT_REQUIRED
 {
   association _Airline { create; with draft; }

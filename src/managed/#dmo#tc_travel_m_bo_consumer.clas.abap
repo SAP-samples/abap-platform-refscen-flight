@@ -40,8 +40,23 @@ CLASS /dmo/tc_travel_m_bo_consumer DEFINITION
     read_booking_by_assoc_res_typ type table for read result /DMO/I_TRAVEL_M\_Booking .
   types:
     read_booking_by_assoc_link_typ type table for read link /DMO/I_TRAVEL_M\_Booking .
+  types:
+    get_perm_input_instances_type type table for permissions key /DMO/I_TRAVEL_M .
+  types:
+    get_perm_input_request_type type structure for permissions request /DMO/I_TRAVEL_M .
+  types:
+    get_permissions_response_type type structure for permissions result /DMO/I_TRAVEL_M .
+  types:
+    set_locks_input_type type table for lock /DMO/I_TRAVEL_M .
 
   methods CREATE_TRAVEL
+    importing
+      !TRAVEL type CREATE_TRAVEL_INPUT_TYPE
+    exporting
+      !MAPPED type MAPPED_TRAVEL_TYPE
+      !REPORTED type REPORTED_TRAVEL_TYPE
+      !FAILED type FAILED_TRAVEL_TYPE .
+   methods CREATE_TRAVEL_AUTO_FILL_CID
     importing
       !TRAVEL type CREATE_TRAVEL_INPUT_TYPE
     exporting
@@ -142,6 +157,22 @@ CLASS /dmo/tc_travel_m_bo_consumer DEFINITION
       !REPORTED type REPORTED_TRAVEL_TYPE
       !FAILED type FAILED_TRAVEL_TYPE .
 
+  methods GET_PERMISSIONS
+    importing
+      !GET_PERMISSIONS_INSTANCES_INP type GET_PERM_INPUT_INSTANCES_TYPE
+      !GET_PERMISSIONS_REQUEST_INP type GET_PERM_INPUT_REQUEST_TYPE
+    exporting
+      !RESULT type GET_PERMISSIONS_RESPONSE_TYPE
+      !REPORTED type REPORTED_TRAVEL_TYPE
+      !FAILED type FAILED_TRAVEL_TYPE.
+
+  methods SET_LOCKS
+    importing
+      !SET_LOCKS_INPUT type SET_LOCKS_INPUT_TYPE
+    exporting
+      !REPORTED type REPORTED_TRAVEL_TYPE
+      !FAILED type FAILED_TRAVEL_TYPE .
+
   PROTECTED SECTION.
   PRIVATE SECTION.
 ENDCLASS.
@@ -158,6 +189,23 @@ CLASS /dmo/tc_travel_m_bo_consumer IMPLEMENTATION.
     modify entities of /dmo/i_travel_m
      entity travel
        create from travel
+     reported reported
+     failed failed
+     mapped mapped.
+
+  "This is a demo code under test and only includes the EML operation to be isolated.
+  "In actual scenario there will be additional business logic that forms the code to be tested.
+  endmethod.
+
+   method create_travel_auto_fill_cid.
+
+  "This is a demo code under test and only includes the EML operation to be isolated.
+  "In actual scenario there will be additional business logic that forms the code to be tested.
+
+    modify entities of /dmo/i_travel_m
+     entity travel
+       create auto fill cid with value #( ( Travel_id = '000001' Agency_ID = '000111' Customer_ID = '000006' description = 'Travel_987' )
+                                          ( Travel_id = '000002' Agency_ID = '000111' Customer_ID = '000006' description = 'Travel_988' ) )
      reported reported
      failed failed
      mapped mapped.
@@ -417,6 +465,40 @@ CLASS /dmo/tc_travel_m_bo_consumer IMPLEMENTATION.
         mapped mapped
         failed failed
         reported reported.
+
+    "This is a demo code under test and only includes the EML operation to be isolated.
+    "In actual scenario there will be additional business logic that forms the code to be tested.
+
+  ENDMETHOD.
+
+  METHOD get_permissions.
+    "This is a demo code under test and only includes the EML operation to be isolated.
+    "In actual scenario there will be additional business logic that forms the code to be tested.
+
+      get permissions only instance of /dmo/i_travel_m
+      entity travel
+      from get_permissions_instances_inp
+      request get_permissions_request_inp
+      result result
+      failed failed
+      reported reported.
+
+    "This is a demo code under test and only includes the EML operation to be isolated.
+    "In actual scenario there will be additional business logic that forms the code to be tested.
+
+  ENDMETHOD.
+
+  METHOD set_locks.
+    "This is a demo code under test and only includes the EML operation to be isolated.
+    "In actual scenario there will be additional business logic that forms the code to be tested.
+
+      set locks of /dmo/i_travel_m
+      entity travel
+      from value #( ( travel_id = 1 ) )
+      entity Booking
+      from value #( ( travel_id = 2  booking_id = 201 ) )
+      failed   failed
+      reported reported.
 
     "This is a demo code under test and only includes the EML operation to be isolated.
     "In actual scenario there will be additional business logic that forms the code to be tested.

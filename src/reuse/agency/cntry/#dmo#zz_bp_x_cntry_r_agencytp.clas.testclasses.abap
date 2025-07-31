@@ -48,11 +48,11 @@ CLASS ltcl_agency_w_cds_tdf DEFINITION FINAL FOR TESTING
 
       "! Checks if { @link ..lhc_agency.METH:createFromTemplate }
       "! returns failed for a non-existing instance
-      createfromtemplate_invalid FOR TESTING RAISING cx_static_check,
+      createfromtemplate_invalid FOR TESTING RAISING cx_static_check.
 
-      "! Checks that { @link ..lhc_agency.METH:get_global_authorizations } returns initial values
-      "! for <em>result</em> and <em>reported</em>.
-      get_global_authorizations     FOR TESTING RAISING cx_static_check.
+*      "! Checks that { @link ..lhc_agency.METH:get_global_authorizations } returns initial values
+*      "! for <em>result</em> and <em>reported</em>.
+*      get_global_authorizations     FOR TESTING RAISING cx_static_check.
 ENDCLASS.
 
 
@@ -294,25 +294,25 @@ CLASS ltcl_agency_w_cds_tdf IMPLEMENTATION.
     ENDLOOP.
   ENDMETHOD.
 
-  METHOD get_global_authorizations.
-    DATA:
-      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_agencytp\\/dmo/agency,
-      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_agencytp\\/dmo/agency,
-      reported                 TYPE RESPONSE  FOR REPORTED EARLY /dmo/i_agencytp.
-
-    requested_authorizations-%action-/dmo/createfromtemplate = if_abap_behv=>mk-on.
-
-    class_under_test->get_global_authorizations(
-      EXPORTING
-        requested_authorizations = requested_authorizations
-      CHANGING
-        result                   = result
-        reported                 = reported
-    ).
-
-    cl_abap_unit_assert=>assert_initial( result   ).
-    cl_abap_unit_assert=>assert_initial( reported ).
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*    DATA:
+*      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_agencytp\\/dmo/agency,
+*      result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_agencytp\\/dmo/agency,
+*      reported                 TYPE RESPONSE  FOR REPORTED EARLY /dmo/i_agencytp.
+*
+*    requested_authorizations-%action-/dmo/createfromtemplate = if_abap_behv=>mk-on.
+*
+*    class_under_test->get_global_authorizations(
+*      EXPORTING
+*        requested_authorizations = requested_authorizations
+*      CHANGING
+*        result                   = result
+*        reported                 = reported
+*    ).
+*
+*    cl_abap_unit_assert=>assert_initial( result   ).
+*    cl_abap_unit_assert=>assert_initial( reported ).
+*  ENDMETHOD.
 
   METHOD createfromtemplate_valid.
     CONSTANTS:

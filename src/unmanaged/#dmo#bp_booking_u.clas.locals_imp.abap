@@ -427,7 +427,9 @@ CLASS lhc_booking IMPLEMENTATION.
   METHOD map_messages.
     failed_added = abap_false.
     LOOP AT messages INTO DATA(message).
-      IF message-msgty = 'E' OR message-msgty = 'A'.
+      IF ( message-msgty = 'E' OR message-msgty = 'A' ) AND
+         ( NOT line_exists( failed[ KEY entity COMPONENTS %cid = cid  TravelID  = travel_id
+                                                                      BookingID = booking_id ] ) ).
         APPEND VALUE #( %cid        = cid
                         travelid    = travel_id
                         bookingid   = booking_id
@@ -458,7 +460,8 @@ CLASS lhc_booking IMPLEMENTATION.
     ASSERT cid IS NOT INITIAL.  "In a create case, the %cid has to be present
     failed_added = abap_false.
     LOOP AT messages INTO DATA(message).
-      IF message-msgty = 'E' OR message-msgty = 'A'.
+      IF ( message-msgty = 'E' OR message-msgty = 'A' ) AND
+         ( NOT line_exists( failed[ KEY cid COMPONENTS %cid = cid ] ) ).
         APPEND VALUE #( %cid        = cid
                         %fail-cause = /dmo/cl_travel_auxiliary=>get_cause_from_message(
                                         msgid        = message-msgid

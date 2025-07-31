@@ -23,8 +23,8 @@ CLASS lhc_Agency DEFINITION INHERITING FROM cl_abap_behavior_handler
       IMPORTING keys FOR /DMO/Agency~/DMO/determineCountryCode.
     METHODS determineDiallingCode FOR DETERMINE ON MODIFY
       IMPORTING keys FOR /DMO/Agency~/DMO/determineDiallingCode.
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR /DMO/Agency RESULT result.
+*    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+*      IMPORTING REQUEST requested_authorizations FOR /DMO/Agency RESULT result.
     METHODS createFromTemplate FOR MODIFY
       IMPORTING keys FOR ACTION /DMO/Agency~/DMO/createFromTemplate.
 
@@ -55,19 +55,19 @@ CLASS lhc_Agency IMPLEMENTATION.
 
       IF agency-PhoneNumber(1) <> '+'.
 
-        APPEND VALUE #( %tky        = agency-%tky
-                        %state_area = validate_dialling_code
-                        %msg        = NEW /dmo/zz_cx_agency_country( textid      = /dmo/zz_cx_agency_country=>number_invalid
-                                                             phonenumber = agency-PhoneNumber )
+        APPEND VALUE #( %tky                 = agency-%tky
+                        %state_area          = validate_dialling_code
+                        %msg                 = NEW /dmo/zz_cx_agency_country( textid      = /dmo/zz_cx_agency_country=>number_invalid
+                                                                              phonenumber = agency-PhoneNumber )
                         %element-PhoneNumber = if_abap_behv=>mk-on )
                         TO reported-/DMO/Agency.
 
       ELSEIF NOT line_exists( countries[ number = agency-phonenumber(2) code = agency-CountryCode ] )
       AND NOT line_exists( countries[ number = agency-phonenumber(3) code = agency-CountryCode ] )
       AND NOT line_exists( countries[ number = agency-phonenumber(4) code = agency-CountryCode ] ).
-        APPEND VALUE #( %tky        = agency-%tky
-                        %state_area = validate_dialling_code
-                        %msg        = NEW /dmo/zz_cx_agency_country( textid      = /dmo/zz_cx_agency_country=>combination_invalid )
+        APPEND VALUE #( %tky                 = agency-%tky
+                        %state_area          = validate_dialling_code
+                        %msg                 = NEW /dmo/zz_cx_agency_country( textid = /dmo/zz_cx_agency_country=>combination_invalid )
                         %element-PhoneNumber = if_abap_behv=>mk-on )
                         TO reported-/DMO/Agency.
 
@@ -119,7 +119,7 @@ CLASS lhc_Agency IMPLEMENTATION.
     LOOP AT agencies INTO DATA(agency).
       DATA(PhoneNumber) = VALUE #( countries[ code = agency-countrycode ]-number OPTIONAL ) .
       IF PhoneNumber IS NOT INITIAL.
-        APPEND VALUE #( %tky = agency-%tky
+        APPEND VALUE #( %tky        = agency-%tky
                         phonenumber = PhoneNumber ) TO agencies_to_update.
       ENDIF.
     ENDLOOP.
@@ -147,8 +147,8 @@ CLASS lhc_Agency IMPLEMENTATION.
 
   ENDMETHOD.
 
-  METHOD get_global_authorizations.
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
 
 
   METHOD createFromTemplate.
@@ -156,14 +156,18 @@ CLASS lhc_Agency IMPLEMENTATION.
     READ ENTITIES OF /DMO/I_AgencyTP IN LOCAL MODE
       ENTITY /DMO/Agency
         FIELDS ( CountryCode PostalCode City Street ) WITH CORRESPONDING #( keys )
-      RESULT DATA(agencies)
-      FAILED failed.
+      RESULT DATA(agencies).
 
     DATA: agencies_to_create TYPE TABLE FOR CREATE /DMO/I_AgencyTP.
-    LOOP AT agencies INTO DATA(agency).
-      APPEND CORRESPONDING #( agency EXCEPT agencyid ) TO agencies_to_create ASSIGNING FIELD-SYMBOL(<agency_to_create>).
-      <agency_to_create>-%cid = keys[ KEY id  %tky = agency-%tky ]-%cid.
-      <agency_to_create>-%is_draft = if_abap_behv=>mk-on.
+    LOOP AT keys INTO DATA(key).
+      READ TABLE agencies INTO DATA(agency) WITH KEY id COMPONENTS %tky = key-%tky.
+      IF sy-subrc EQ 0.
+        APPEND CORRESPONDING #( agency EXCEPT agencyid ) TO agencies_to_create ASSIGNING FIELD-SYMBOL(<agency_to_create>).
+        <agency_to_create>-%cid = key-%cid.
+        <agency_to_create>-%is_draft = if_abap_behv=>mk-on.  "The action always creates draft instances
+      ELSE.
+        APPEND CORRESPONDING #( key MAPPING %fail = DEFAULT VALUE #( cause = if_abap_behv=>cause-not_found ) ) TO failed-/dmo/agency.
+      ENDIF.
     ENDLOOP.
 
     MODIFY ENTITIES OF /DMO/I_AgencyTP IN LOCAL MODE

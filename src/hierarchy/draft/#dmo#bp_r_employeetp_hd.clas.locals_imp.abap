@@ -11,9 +11,6 @@ CLASS lhc_general DEFINITION INHERITING FROM cl_abap_behavior_handler FRIENDS lt
         validation_salary_positive TYPE string VALUE 'VALIDATIONSALARYPOSITIVE' ##NO_TEXT,
       END OF state_areas.
 
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR employee RESULT result.
-
     METHODS validationcurrencyexists FOR VALIDATE ON SAVE
       IMPORTING keys FOR employee~validationcurrencyexists.
 
@@ -26,9 +23,6 @@ CLASS lhc_general DEFINITION INHERITING FROM cl_abap_behavior_handler FRIENDS lt
 ENDCLASS.
 
 CLASS lhc_general IMPLEMENTATION.
-
-  METHOD get_global_authorizations.
-  ENDMETHOD.
 
   METHOD validationcurrencyexists.
     READ ENTITIES OF /dmo/r_agencytp_hd IN LOCAL MODE
@@ -169,5 +163,4 @@ CLASS lhc_general IMPLEMENTATION.
       ENDIF.
     ENDLOOP.
   ENDMETHOD.
-
 ENDCLASS.

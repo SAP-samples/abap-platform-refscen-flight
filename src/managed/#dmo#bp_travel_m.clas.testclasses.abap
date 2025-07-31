@@ -839,12 +839,12 @@ CLASS ltc_travl_not_in_documentation DEFINITION FINAL FOR TESTING
       "! <em>open</em> and unknown status.
       get_instance_features        FOR TESTING,
 
-      "! Calls { @link ..lhc_travel.METH:get_global_authorizations }
-      "! and requests the permissions of standard operations
-      "! <em>create</em>, <em>update</em>, <em>delete</em> and <em>edit</em>.
-      "! As by default we overwrite the authorization checks, so all
-      "! operations are always permitted.
-      get_global_authorizations     FOR TESTING,
+*      "! Calls { @link ..lhc_travel.METH:get_global_authorizations }
+*      "! and requests the permissions of standard operations
+*      "! <em>create</em>, <em>update</em>, <em>delete</em> and <em>edit</em>.
+*      "! As by default we overwrite the authorization checks, so all
+*      "! operations are always permitted.
+*      get_global_authorizations     FOR TESTING,
 
       "! Checks if { @link ..lhc_Travel.METH:earlynumbering_create } fulfills idempotency
       "! by passing an instance where the number is already drawn.
@@ -1775,40 +1775,40 @@ CLASS ltc_travl_not_in_documentation IMPLEMENTATION.
       ).
   ENDMETHOD.
 
-  METHOD get_global_authorizations.
-    DATA:
-      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_travel_m\\travel,
-      exp_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_m\\travel,
-      act_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_m\\travel,
-      reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/i_travel_m.
-
-    requested_authorizations = VALUE #(
-         %create      = if_abap_behv=>mk-on
-         %update      = if_abap_behv=>mk-on
-         %delete      = if_abap_behv=>mk-on
-      ).
-
-    exp_result = VALUE #(
-         %create      = if_abap_behv=>auth-allowed
-         %update      = if_abap_behv=>auth-allowed
-         %delete      = if_abap_behv=>auth-allowed
-      ).
-
-    class_under_test->get_global_authorizations(
-        EXPORTING
-          requested_authorizations = requested_authorizations
-        CHANGING
-          result                   = act_result
-          reported                 = reported
-      ).
-
-    cl_abap_unit_assert=>assert_initial( reported ).
-
-    cl_abap_unit_assert=>assert_equals(
-        exp = exp_result
-        act = act_result
-      ).
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*    DATA:
+*      requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_travel_m\\travel,
+*      exp_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_m\\travel,
+*      act_result               TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_travel_m\\travel,
+*      reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/i_travel_m.
+*
+*    requested_authorizations = VALUE #(
+*         %create      = if_abap_behv=>mk-on
+*         %update      = if_abap_behv=>mk-on
+*         %delete      = if_abap_behv=>mk-on
+*      ).
+*
+*    exp_result = VALUE #(
+*         %create      = if_abap_behv=>auth-allowed
+*         %update      = if_abap_behv=>auth-allowed
+*         %delete      = if_abap_behv=>auth-allowed
+*      ).
+*
+*    class_under_test->get_global_authorizations(
+*        EXPORTING
+*          requested_authorizations = requested_authorizations
+*        CHANGING
+*          result                   = act_result
+*          reported                 = reported
+*      ).
+*
+*    cl_abap_unit_assert=>assert_initial( reported ).
+*
+*    cl_abap_unit_assert=>assert_equals(
+*        exp = exp_result
+*        act = act_result
+*      ).
+*  ENDMETHOD.
 
   METHOD earlynumbering_idempotency.
     DATA:

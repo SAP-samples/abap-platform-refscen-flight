@@ -966,7 +966,8 @@ CLASS lhc_travel IMPLEMENTATION.
       ENTITY Travel
         FIELDS ( TotalPrice )
         WITH CORRESPONDING #( keys )
-      RESULT DATA(travels).
+      RESULT DATA(travels)
+      FAILED failed.
 
     LOOP AT travels INTO DATA(travel).
       IF travel-TotalPrice >= 5000.

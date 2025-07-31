@@ -7,6 +7,7 @@
 ],
 "ASSOCIATED":
 [
+"/DMO/I_AIRPORT",
 "/DMO/I_CARRIER",
 "/DMO/I_FLIGHT_R"
 ],

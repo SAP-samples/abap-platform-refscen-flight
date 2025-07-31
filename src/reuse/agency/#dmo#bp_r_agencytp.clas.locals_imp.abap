@@ -20,7 +20,7 @@ CLASS lhc_agency DEFINITION
     CLASS-METHODS class_constructor.
 
   PRIVATE SECTION.
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION IMPORTING REQUEST requested_authorizations FOR /dmo/agency RESULT result.
+*    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION IMPORTING REQUEST requested_authorizations FOR /dmo/agency RESULT result.
 
     METHODS validatecountrycode FOR VALIDATE ON SAVE IMPORTING keys FOR /dmo/agency~/dmo/validatecountrycode.
 
@@ -45,8 +45,8 @@ CLASS lhc_agency IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_global_authorizations.
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
 
 
   METHOD validatecountrycode.

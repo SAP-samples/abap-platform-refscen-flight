@@ -23,9 +23,9 @@ CLASS ltcl_review DEFINITION FINAL FOR TESTING
     "! with all possible in- and outcomes.
     METHODS get_instance_features     FOR TESTING.
 
-    "! Checks that { @link ..lhc_/DMO/ZZ_Review.METH:get_global_authorizations } returns initial values
-    "! for <em>result</em> and <em>reported</em>.
-    METHODS get_global_authorizations FOR TESTING RAISING cx_static_check.
+*    "! Checks that { @link ..lhc_/DMO/ZZ_Review.METH:get_global_authorizations } returns initial values
+*    "! for <em>result</em> and <em>reported</em>.
+*    METHODS get_global_authorizations FOR TESTING RAISING cx_static_check.
 
     "! Checks if { @link ..lhc_agency.METH:ratingInRange } behaves correctly
     "! for all valid combinations.
@@ -132,21 +132,21 @@ CLASS ltcl_review IMPLEMENTATION.
   ENDMETHOD.
 
 
-  METHOD get_global_authorizations.
-    DATA requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_agencytp\\/dmo/zz_review.
-    DATA result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_agencytp\\/dmo/zz_review.
-    DATA reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/i_agencytp.
-
-    requested_authorizations-%action-/dmo/reviewwashelpful    = if_abap_behv=>mk-on.
-    requested_authorizations-%action-/dmo/reviewwasnothelpful = if_abap_behv=>mk-on.
-
-    class_under_test->get_global_authorizations( EXPORTING requested_authorizations = requested_authorizations
-                                                 CHANGING  result                   = result
-                                                           reported                 = reported ).
-
-    cl_abap_unit_assert=>assert_initial( result   ).
-    cl_abap_unit_assert=>assert_initial( reported ).
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*    DATA requested_authorizations TYPE STRUCTURE FOR GLOBAL AUTHORIZATION REQUEST /dmo/i_agencytp\\/dmo/zz_review.
+*    DATA result                   TYPE STRUCTURE FOR GLOBAL AUTHORIZATION RESULT /dmo/i_agencytp\\/dmo/zz_review.
+*    DATA reported                 TYPE RESPONSE FOR REPORTED EARLY /dmo/i_agencytp.
+*
+*    requested_authorizations-%action-/dmo/reviewwashelpful    = if_abap_behv=>mk-on.
+*    requested_authorizations-%action-/dmo/reviewwasnothelpful = if_abap_behv=>mk-on.
+*
+*    class_under_test->get_global_authorizations( EXPORTING requested_authorizations = requested_authorizations
+*                                                 CHANGING  result                   = result
+*                                                           reported                 = reported ).
+*
+*    cl_abap_unit_assert=>assert_initial( result   ).
+*    cl_abap_unit_assert=>assert_initial( reported ).
+*  ENDMETHOD.
 
 
   METHOD ratinginrange_valid.

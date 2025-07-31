@@ -14,8 +14,8 @@ CLASS lhc_travel DEFINITION
     METHODS get_instance_features FOR INSTANCE FEATURES
       IMPORTING keys REQUEST requested_features FOR travel RESULT result.
 
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
+*    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+*      IMPORTING REQUEST requested_authorizations FOR travel RESULT result.
 
     METHODS create FOR MODIFY
       IMPORTING entities FOR CREATE travel.
@@ -90,13 +90,13 @@ CLASS lhc_travel IMPLEMENTATION.
   ENDMETHOD.
 
 
-********************************************************************************
-*
-* Implements global authorization check
-*
-********************************************************************************
-  METHOD get_global_authorizations.
-  ENDMETHOD.
+*********************************************************************************
+**
+** Implements global authorization check
+**
+*********************************************************************************
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
 
 
 **********************************************************************
@@ -511,7 +511,8 @@ CLASS lhc_travel IMPLEMENTATION.
   METHOD map_messages.
     failed_added = abap_false.
     LOOP AT messages INTO DATA(message).
-      IF message-msgty = 'E' OR message-msgty = 'A'.
+      IF ( message-msgty = 'E' OR message-msgty = 'A' ) AND
+         ( NOT line_exists( failed[ KEY entity COMPONENTS %cid = cid  TravelID = travel_id ] ) ).
         APPEND VALUE #( %cid        = cid
                         travelid    = travel_id
                         %fail-cause = /dmo/cl_travel_auxiliary=>get_cause_from_message(
@@ -540,7 +541,8 @@ CLASS lhc_travel IMPLEMENTATION.
     ASSERT cid is not initial.  "In a create case, the %cid has to be present
     failed_added = abap_false.
     LOOP AT messages INTO DATA(message).
-      IF message-msgty = 'E' OR message-msgty = 'A'.
+      IF ( message-msgty = 'E' OR message-msgty = 'A' ) AND
+         ( NOT line_exists( failed[ KEY cid COMPONENTS %cid = cid ] ) ).
         APPEND VALUE #( %cid        = cid
                         %fail-cause = /dmo/cl_travel_auxiliary=>get_cause_from_message(
                                         msgid = message-msgid

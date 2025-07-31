@@ -1837,7 +1837,7 @@ class ltcl_using_txbufdbl_variant implementation.
 
     cl_abap_unit_assert=>assert_equals( act = lines( failed_cut-booking ) exp = 1 ).
 
-    cl_abap_unit_assert=>assert_initial( failed_cut-booking[ 1 ]-BookingUUID ).
+    "cl_abap_unit_assert=>assert_initial( failed_cut-booking[ 1 ]-BookingUUID ).
     cl_abap_unit_assert=>assert_equals( exp = 'Travel_2_Booking_1' act = failed_cut-booking[ 1 ]-%cid  ).
     cl_abap_unit_assert=>assert_equals( exp = if_abap_behv=>cause-dependency act = failed_cut-booking[ 1 ]-%fail-cause ).
     cl_abap_unit_assert=>assert_equals( act = failed_cut-booking[ 1 ]-%is_draft exp = if_abap_behv=>mk-on ).

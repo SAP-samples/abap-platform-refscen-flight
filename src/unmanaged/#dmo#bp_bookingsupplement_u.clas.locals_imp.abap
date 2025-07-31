@@ -302,7 +302,10 @@ CLASS lhc_bookingsupplement IMPLEMENTATION.
   METHOD map_messages.
     failed_added = abap_false.
     LOOP AT messages INTO DATA(message).
-      IF message-msgty = 'E' OR message-msgty = 'A'.
+      IF ( message-msgty = 'E' OR message-msgty = 'A' ) AND
+         ( NOT line_exists( failed[ KEY entity COMPONENTS %cid = cid  TravelID            = travel_id
+                                                                      BookingID           = booking_id
+                                                                      BookingSupplementID = booking_supplement_id ] ) ).
         APPEND VALUE #( %cid                  = cid
                         travelid              = travel_id
                         bookingid             = booking_id

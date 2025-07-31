@@ -27,8 +27,8 @@ late numbering
 
   field ( readonly ) ReviewID, AgencyID, HelpfulCount, HelpfulTotal, Reviewer, LocalCreatedAt, LocalLastChangedAt;
 
-  action ( authorization : global ) /DMO/reviewWasHelpful    result [1] $self;
-  action ( authorization : global ) /DMO/reviewWasNotHelpful result [1] $self;
+  action ( authorization : update ) /DMO/reviewWasHelpful    result [1] $self;
+  action ( authorization : update ) /DMO/reviewWasNotHelpful result [1] $self;
 
   validation /DMO/ratingInRange on save { create; field Rating; }
 

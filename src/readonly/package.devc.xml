@@ -4,6 +4,10 @@
   <asx:values>
    <DEVC>
     <CTEXT>Flight Reference Scenario: Read-Only E2E Guide</CTEXT>
+    <LANGUAGE>E</LANGUAGE>
+    <MASTERLANG>E</MASTERLANG>
+    <COMP_POSID>BC-SRV-NWD-XBR</COMP_POSID>
+    <COMPONENT>BYI3000542</COMPONENT>
    </DEVC>
   </asx:values>
  </asx:abap>

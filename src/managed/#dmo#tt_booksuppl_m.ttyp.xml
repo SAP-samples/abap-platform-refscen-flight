@@ -12,7 +12,6 @@
     <KEYDEF>D</KEYDEF>
     <KEYKIND>N</KEYKIND>
     <DDTEXT>Flight Reference Scenario: Book Suppl Table Type</DDTEXT>
-    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DD40V>
   </asx:values>
  </asx:abap>

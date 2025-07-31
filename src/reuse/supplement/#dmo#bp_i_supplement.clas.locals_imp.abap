@@ -12,8 +12,8 @@ CLASS lhc_supplement DEFINITION
     METHODS earlynumbering_create FOR NUMBERING
       IMPORTING entities FOR CREATE supplement.
 
-    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
-      IMPORTING REQUEST requested_authorizations FOR supplement RESULT result.
+*    METHODS get_global_authorizations FOR GLOBAL AUTHORIZATION
+*      IMPORTING REQUEST requested_authorizations FOR supplement RESULT result.
 
 
 
@@ -186,7 +186,7 @@ CLASS lhc_supplement IMPLEMENTATION.
 
 
 
-  METHOD get_global_authorizations.
-  ENDMETHOD.
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
 
 ENDCLASS.

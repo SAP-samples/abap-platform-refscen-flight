@@ -1,6 +1,9 @@
 interface;
 use draft;
 use side effects;
+
+with privileged mode;
+
 define behavior for /DMO/I_Travel_D alias Travel
 use etag
 

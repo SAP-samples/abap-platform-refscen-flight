@@ -2,6 +2,9 @@ managed;
 strict ( 2 );
 with draft;
 
+with privileged mode disabling NoCheckWhenPrivileged;
+define authorization context NoCheckWhenPrivileged { '/DMO/TRVL'; }
+define own authorization context by privileged mode;
 
 define behavior for /DMO/R_Travel_D alias Travel
 implementation in class /dmo/bp_travel_d unique
@@ -37,10 +40,10 @@ etag master LocalLastChangedAt
   validation validateCurrencyCode on save { create; field CurrencyCode; }
   validation validateBookingFee   on save { create; field BookingFee; }
 
-  determine action validateAgencyID { validation validateAgency; }
-  determine action validateCustomerID { validation validateCustomer; }
-  determine action validateDateRange { validation validateDates; }
-  determine action validateBookingCharge { validation validateBookingFee; }
+  determine action ( authorization : update ) validateAgencyID { validation validateAgency; }
+  determine action ( authorization : update ) validateCustomerID { validation validateCustomer; }
+  determine action ( authorization : update ) validateDateRange { validation validateDates; }
+  determine action ( authorization : update ) validateBookingCharge { validation validateBookingFee; }
 
   side effects
   { field BookingFee affects field TotalPrice;
@@ -122,7 +125,7 @@ etag master LocalLastChangedAt
   validation validateFlightPrice  on save { create; field FlightPrice; }
   validation validateStatus       on save { create; field BookingStatus; }
 
-  determine action validateFlightCosts { validation validateFlightPrice; }
+  determine action ( authorization : update ) validateFlightCosts { validation validateFlightPrice; }
 
 
   side effects
@@ -174,7 +177,7 @@ etag master LocalLastChangedAt
   validation validateCurrencyCode on save { create; field CurrencyCode; }
   validation validatePrice        on save { create; field BookSupplPrice; }
 
-  determine action validateSupplementPrice { validation validatePrice; }
+  determine action ( authorization : update ) validateSupplementPrice { validation validatePrice; }
 
   side effects
   { field BookSupplPrice affects field _Travel.TotalPrice;
