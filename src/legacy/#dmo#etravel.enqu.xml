@@ -8,6 +8,7 @@
     <AGGTYPE>E</AGGTYPE>
     <ROOTTAB>/DMO/TRAVEL</ROOTTAB>
     <DDTEXT>Flight Reference Scenario: Lock Travel</DDTEXT>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
    </DD25V>
    <DD26E_TABLE>
     <DD26E>

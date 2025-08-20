@@ -2,7 +2,8 @@
   "formatVersion": "1",
   "header": {
     "description": "SAP Object Node Type /DMO/TRAVEL_CD",
-    "originalLanguage": "en"
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
   },
   "name": "/DMO/TRAVEL_CD",
   "sapObjectType": "/DMO/TRAVEL_CD",

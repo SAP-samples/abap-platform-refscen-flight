@@ -8,14 +8,8 @@
     <DESCRIPT>Flight Reference Scenario: Constants and types</DESCRIPT>
     <EXPOSURE>2</EXPOSURE>
     <STATE>1</STATE>
-    <UNICODE>5</UNICODE>
+    <UNICODE>X</UNICODE>
    </VSEOINTERF>
-   <DESCRIPTIONS_INTERFACE>
-    <SEOCLASSTX>
-     <LANGU>D</LANGU>
-     <DESCRIPT>Flight Reference Scenario: Constants and types</DESCRIPT>
-    </SEOCLASSTX>
-   </DESCRIPTIONS_INTERFACE>
   </asx:values>
  </asx:abap>
 </abapGit>
