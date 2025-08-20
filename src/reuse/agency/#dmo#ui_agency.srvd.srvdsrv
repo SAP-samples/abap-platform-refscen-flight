@@ -2,6 +2,6 @@
 @AbapCatalog.extensibility.extensible: true
 @ObjectModel.leadingEntity.name: '/DMO/C_AgencyTP'
 define service /DMO/UI_AGENCY
-  provider contracts odata_v2_ui, odata_v4_ui {
+  {
   expose /DMO/C_AgencyTP as Agency;
 }

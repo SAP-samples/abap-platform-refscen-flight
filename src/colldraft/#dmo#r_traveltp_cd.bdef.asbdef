@@ -1,4 +1,4 @@
-managed implementation in class /DMO/BP_R_TravelTP_CD unique;
+managed implementation in class /dmo/bp_r_traveltp_cd unique;
 strict ( 2 );
 with collaborative draft;
 extensible;

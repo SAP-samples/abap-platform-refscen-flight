@@ -5,7 +5,7 @@
    <VSEOCLASS>
     <CLSNAME>/DMO/BP_TRAVEL_D</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Behavior Implementation for /DMO/I_TRAVEL_D</DESCRIPT>
+    <DESCRIPT>Behavior Implementation for /DMO/R_TRAVEL_D</DESCRIPT>
     <CATEGORY>06</CATEGORY>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>

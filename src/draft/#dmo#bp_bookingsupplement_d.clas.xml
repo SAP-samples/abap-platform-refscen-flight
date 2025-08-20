@@ -5,7 +5,7 @@
    <VSEOCLASS>
     <CLSNAME>/DMO/BP_BOOKINGSUPPLEMENT_D</CLSNAME>
     <LANGU>E</LANGU>
-    <DESCRIPT>Behavior Implementation for /DMO/I_TRAVEL_D - BookingSuppl</DESCRIPT>
+    <DESCRIPT>Behavior Implementation for /DMO/R_TRAVEL_D - BookingSuppl</DESCRIPT>
     <CATEGORY>06</CATEGORY>
     <STATE>1</STATE>
     <CLSCCINCL>X</CLSCCINCL>

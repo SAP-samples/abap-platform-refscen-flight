@@ -5,7 +5,7 @@
    <DCLS>
     <DCLNAME>/DMO/C_TRAVELTP_CD</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
-    <DDTEXT>Access Control for Travel Projection CollDraft</DDTEXT>
+    <DDTEXT>Access Control for /DMO/C_TRAVELTP_CD</DDTEXT>
    </DCLS>
   </asx:values>
  </asx:abap>

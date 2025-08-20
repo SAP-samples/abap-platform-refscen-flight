@@ -1,4 +1,4 @@
-@EndUserText.label: 'Access Control for Travel Projection'
+@EndUserText.label: 'Mapping role for /DMO/C_TravelTP_CD'
 @MappingRole: true
 define role /DMO/C_TravelTP_CD {
   grant

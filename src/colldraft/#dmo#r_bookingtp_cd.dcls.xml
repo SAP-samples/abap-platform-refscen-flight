@@ -5,7 +5,7 @@
    <DCLS>
     <DCLNAME>/DMO/R_BOOKINGTP_CD</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
-    <DDTEXT>Access Control for Booking Entity CollDraft</DDTEXT>
+    <DDTEXT>Access Control for /DMO/R_BOOKINGTP_CD</DDTEXT>
    </DCLS>
   </asx:values>
  </asx:abap>

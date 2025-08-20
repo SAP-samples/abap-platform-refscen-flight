@@ -34,8 +34,6 @@ annotate entity /DMO/C_BookingSupplement_D_D
          identification: [ { position: 30 } ] }
   BookSupplPrice;
 
-//  CurrencyCode;
-  
   @UI.hidden: true
   LocalLastChangedAt;
 }

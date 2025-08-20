@@ -1,7 +1,6 @@
 @EndUserText.label: 'Travel Entity'
 @ObjectModel.leadingEntity.name: '/DMO/C_TravelTP_CD'
-define service /DMO/UI_Travel_O4_CD
-  provider contracts odata_v4_ui {
+define service /DMO/UI_Travel_O4_CD {
   expose /DMO/C_TravelTP_CD  as Travel;
   expose /DMO/C_BookingTP_CD as Booking;
 }

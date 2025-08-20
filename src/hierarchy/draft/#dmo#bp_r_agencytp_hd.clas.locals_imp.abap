@@ -98,6 +98,9 @@ CLASS lhc_agency DEFINITION INHERITING FROM cl_abap_behavior_handler
       END OF state_areas.
 
     METHODS:
+*      get_global_authorizations FOR GLOBAL AUTHORIZATION
+*        REQUEST requested_authorizations FOR agency
+*        RESULT result,
 
       earlynumbering_create FOR NUMBERING
         IMPORTING new_agencies FOR CREATE agency,
@@ -175,6 +178,9 @@ CLASS lhc_agency DEFINITION INHERITING FROM cl_abap_behavior_handler
 ENDCLASS.
 
 CLASS lhc_agency IMPLEMENTATION.
+
+*  METHOD get_global_authorizations.
+*  ENDMETHOD.
 
   METHOD earlynumbering_create.
 

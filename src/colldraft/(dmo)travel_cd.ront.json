@@ -1,0 +1,9 @@
+{
+  "formatVersion": "1",
+  "header": {
+    "description": "SAP Object Type /DMO/TRAVEL_CD",
+    "originalLanguage": "en"
+  },
+  "typeCategory": "businessObject",
+  "name": "/DMO/TRAVEL_CD"
+}

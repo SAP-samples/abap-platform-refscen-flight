@@ -51,8 +51,6 @@ annotate entity /DMO/C_Booking_A_D with
   @UI: { lineItem:       [ { position: 80, importance: #HIGH } ],
          identification: [ { position: 80 } ] }
   FlightPrice;
-      
-//  CurrencyCode;
 
   @UI: { lineItem:       [ { position: 90, importance: #HIGH } ],
          identification: [ { position: 90 } ],

@@ -1,4 +1,4 @@
-projection implementation in class /DMO/BP_C_TravelTP_CD unique;
+projection implementation in class /dmo/bp_c_traveltp_cd unique;
 strict ( 2 );
 extensible;
 use collaborative draft;

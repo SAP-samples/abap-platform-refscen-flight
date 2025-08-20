@@ -58,8 +58,6 @@ annotate entity /DMO/C_Travel_D_D with
          identification: [ { position: 70 } ] }
   TotalPrice;
 
-  //  CurrencyCode;
-
   @UI: { lineItem:       [ { position: 90, importance: #MEDIUM } ] ,
          identification: [ { position: 90 } ] }
   Description;

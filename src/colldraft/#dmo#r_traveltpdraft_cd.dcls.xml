@@ -5,7 +5,7 @@
    <DCLS>
     <DCLNAME>/DMO/R_TRAVELTPDRAFT_CD</DCLNAME>
     <DCLLANGUAGE>E</DCLLANGUAGE>
-    <DDTEXT>Access Control for Draft Query view on Travel Entity</DDTEXT>
+    <DDTEXT>Access Control for /DMO/R_TRAVELTPDRAFT_CD</DDTEXT>
    </DCLS>
   </asx:values>
  </asx:abap>

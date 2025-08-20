@@ -1,4 +1,4 @@
-@EndUserText.label: 'Access Control for Booking CollDraft'
+@EndUserText.label: 'Mapping role for /DMO/R_BookingTP_CD'
 @MappingRole: true
 define role /DMO/R_BookingTP_CD {
   grant
