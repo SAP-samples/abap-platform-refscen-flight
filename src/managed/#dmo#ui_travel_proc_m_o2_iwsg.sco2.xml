@@ -1,0 +1,17 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_SCO2" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <SCO2>
+    <IBS_ID>/DMO/UI_TRAVEL_PROC_M_O2_IWSG</IBS_ID>
+    <IBS_TYPE>IWSG</IBS_TYPE>
+    <ODATA_SRV_IDENTIFIER>/DMO/UI_TRAVEL_PROC_M_O2_0001</ODATA_SRV_IDENTIFIER>
+    <REL_FOR_CUST_CSCN>X</REL_FOR_CUST_CSCN>
+    <ABAP_LANGUAGE_VERSION>5</ABAP_LANGUAGE_VERSION>
+    <NAME>/DMO/UI_TRAVEL_PROC_M_O2_IWSG</NAME>
+    <DESCRIPTION>/DMO/UI_TRAVEL_PROC_M_O2</DESCRIPTION>
+    <ABAP_LANGU_VERSION>5</ABAP_LANGU_VERSION>
+   </SCO2>
+  </asx:values>
+ </asx:abap>
+</abapGit>

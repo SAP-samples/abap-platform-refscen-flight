@@ -1,15 +1,15 @@
-CLASS lhc_R_TRAVELTP_XBO DEFINITION INHERITING FROM cl_abap_behavior_handler.
+CLASS LHC_R_TRAVELTP_XBO DEFINITION INHERITING FROM cl_abap_behavior_handler.
   PRIVATE SECTION.
     METHODS validatedates FOR VALIDATE ON SAVE
       IMPORTING keys FOR travel~validatedates.
 
 ENDCLASS.
 
-CLASS lhc_R_TRAVELTP_XBO IMPLEMENTATION.
+CLASS LHC_R_TRAVELTP_XBO IMPLEMENTATION.
 
   METHOD validateDates.
 
-    READ ENTITIES OF /DMO/R_TravelTP_XBO IN LOCAL MODE
+    READ ENTITIES OF /dmo/r_traveltp_xbo IN LOCAL MODE
       ENTITY Travel
         FIELDS (  BeginDate EndDate TravelID )
         WITH CORRESPONDING #( keys )

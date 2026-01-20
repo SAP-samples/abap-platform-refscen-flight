@@ -6,7 +6,7 @@
     <CTEXT>Flight Reference Scenario</CTEXT>
     <LANGUAGE>E</LANGUAGE>
     <MASTERLANG>E</MASTERLANG>
-    <SRV_CHECK>X</SRV_CHECK>
+    <RESTRICTED>X</RESTRICTED>
    </DEVC>
   </asx:values>
  </asx:abap>

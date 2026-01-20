@@ -9,6 +9,7 @@
     <CLIDEP>X</CLIDEP>
     <LANGDEP>X</LANGDEP>
     <DDTEXT>Draft table for entity /DMO/ZZ_R_AGENCY_REVIEWTP</DDTEXT>
+    <MASTERLANG>E</MASTERLANG>
     <CONTFLAG>A</CONTFLAG>
     <EXCLASS>4</EXCLASS>
    </DD02V>
@@ -110,12 +111,6 @@
      <GROUPNAME>%ADMIN</GROUPNAME>
     </DD03P>
    </DD03P_TABLE>
-   <TABL_EXTRAS>
-    <TDDAT>
-     <TABNAME>/DMO/ZZ_AGN_REVD</TABNAME>
-     <CCLASS>CUS_DEV_SUP_DA</CCLASS>
-    </TDDAT>
-   </TABL_EXTRAS>
   </asx:values>
  </asx:abap>
 </abapGit>

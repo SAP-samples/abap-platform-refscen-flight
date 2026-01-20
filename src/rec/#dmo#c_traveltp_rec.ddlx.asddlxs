@@ -1,0 +1,40 @@
+@Metadata.layer: #CORE
+
+@UI.headerInfo: { typeName: 'Travel',
+                  typeNamePlural: 'Travels',
+                  title: { type: #STANDARD, value: 'TravelId' } }
+
+@UI.presentationVariant: [ { sortOrder: [ { by: 'TravelId', direction: #DESC } ],
+                             visualizations: [ { type: #AS_LINEITEM } ] } ]
+
+annotate entity /dmo/c_traveltp_rec with
+{
+  @UI.facet: [ { id: 'Travel',
+                 purpose: #STANDARD,
+                 type: #IDENTIFICATION_REFERENCE,
+                 label: 'Travel',
+                 position: 10 } ]
+  @UI.hidden: true
+  TravelUuid;
+
+  @UI.selectionField: [ { position: 10 } ]
+  @UI.lineItem: [ { position: 10, importance: #HIGH } ]
+  @UI.identification: [ { position: 10, label: 'Travel ID' } ]
+  @EndUserText.label: 'Travel ID'
+  TravelId;
+
+  @UI.lineItem: [ { position: 20, importance: #HIGH } ]
+  @UI.identification: [ { position: 11, label: 'Description' } ]
+  @EndUserText.label: 'Description'
+  Description;
+
+  @UI.lineItem: [ { position: 30, importance: #HIGH } ]
+  @UI.identification: [ { position: 20, label: 'Destination' } ]
+  @EndUserText.label: 'Destination'
+  Destination;
+
+  @UI.lineItem: [ { position: 40, importance: #HIGH } ]
+  @UI.identification: [ { position: 21, label: 'Accommodation' } ]
+  @EndUserText.label: 'Accommodation'
+  Accommodation;
+}

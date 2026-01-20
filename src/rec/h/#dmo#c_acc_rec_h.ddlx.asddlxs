@@ -1,0 +1,34 @@
+@Metadata.layer: #CORE
+
+annotate entity /dmo/c_acc_rec_h with
+{
+  @UI.hidden: true
+  AccId;
+
+  @EndUserText.label: 'Accommodation Name'
+  AccName;
+
+  @EndUserText.label: 'Accommodation Type'
+  AccType;
+
+  @EndUserText.label: 'Accommodation Address'
+  AccAddress;
+
+  @EndUserText.label: 'Accommodation Postal Code'
+  AccPostalCode;
+
+  @EndUserText.label: 'Accommodation City'
+  AccCity;
+
+  @EndUserText.label: 'Accommodation Country'
+  AccCountry;
+
+  @EndUserText.label: 'Accommodation Phone'
+  AccPhone;
+
+  @EndUserText.label: 'Accommodation Email'
+  AccEmail;
+
+  @EndUserText.label: 'Accommodation Website'
+  AccWebsite;
+}

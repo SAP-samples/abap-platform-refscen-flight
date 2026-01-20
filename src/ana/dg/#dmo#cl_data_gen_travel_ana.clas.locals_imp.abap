@@ -1,125 +1,108 @@
-
-CLASS lcl_travel_data_generator DEFINITION CREATE PRIVATE.
+CLASS lcl_travel_gen_ana DEFINITION INHERITING FROM /dmo/cl_abstract_data_gen CREATE PRIVATE.
 
   PUBLIC SECTION.
-    INTERFACES /dmo/if_data_generator.
-
-    TYPES: BEGIN OF status_structure,
-    overall_status TYPE c LENGTH 1,
-    END OF status_structure.
-
-    TYPES currency_code_type TYPE STANDARD TABLE OF I_CurrencyStdVH WITH KEY Currency.
-    TYPES country_type       TYPE STANDARD TABLE OF I_CountryText WITH KEY Country.
-    TYPES travel_type        TYPE STANDARD TABLE OF /dmo/a_trvl_ana WITH KEY travel_uuid.
-    TYPES status_type        TYPE STANDARD TABLE OF status_structure WITH KEY overall_status.
-
+    CLASS-METHODS get_instance RETURNING VALUE(instance) TYPE REF TO lcl_travel_gen_ana.
+    METHODS constructor.
 
   PROTECTED SECTION.
+    METHODS build_additional_fields REDEFINITION.
+    METHODS setup_for_building REDEFINITION.
   PRIVATE SECTION.
-    CONSTANTS numberrange_interval TYPE cl_numberrange_runtime=>nr_interval VALUE '01'.
-    CONSTANTS numberrange_object   TYPE cl_numberrange_runtime=>nr_object   VALUE '/DMO/TRAVL' ##NO_TEXT.
+    TYPES: BEGIN OF status_structure,
+             overall_status TYPE c LENGTH 1,
+           END OF status_structure.
 
-    CLASS-DATA ran_agency             TYPE REF TO cl_abap_random_int.
-    CLASS-DATA ran_travel_description TYPE REF TO cl_abap_random_int.
-    CLASS-DATA ran_currency_code      TYPE REF TO cl_abap_random_int.
-    CLASS-DATA ran_total_price_float  TYPE REF TO cl_abap_random_decfloat16.
-    CLASS-DATA ran_total_price_int    TYPE REF TO cl_abap_random_int.
-    CLASS-DATA ran_countryname        TYPE REF TO cl_abap_random_int.
-    CLASS-DATA currency_codes          TYPE currency_code_type.
-    CLASS-DATA countryname            TYPE country_type.
-    CLASS-DATA data                   TYPE travel_type.
-    CLASS-DATA ran_booking_fee_int    TYPE REF TO cl_abap_random_int.
-    CLASS-DATA overall_status TYPE status_type.
-    CLASS-DATA ran_overall_status     TYPE REF TO cl_abap_random_int.
+    TYPES table_of_travels   TYPE STANDARD TABLE OF /dmo/a_trvl_ana WITH DEFAULT KEY.
+    TYPES currency_code_type TYPE STANDARD TABLE OF I_CurrencyStdVH WITH KEY Currency.
+    TYPES country_type       TYPE STANDARD TABLE OF I_CountryText WITH KEY Country.
+    TYPES status_type        TYPE STANDARD TABLE OF status_structure WITH KEY overall_status.
 
-    CLASS-METHODS get_data
-      RETURNING VALUE(result) TYPE travel_type.
+    CLASS-DATA travel_generator_instance TYPE REF TO lcl_travel_gen_ana.
 
-    CLASS-METHODS build_content.
-    CLASS-METHODS build_dependend_content.
-    CLASS-METHODS build_uuid.
-    CLASS-METHODS build_semantic_key.
-    CLASS-METHODS build_misc_fields.
-    CLASS-METHODS build_admin_fields.
+    CLASS-METHODS prepare_skeleton
+      RETURNING VALUE(travels) TYPE table_of_travels.
 
-    CLASS-METHODS set_numberrange.
+    DATA ran_travel_description TYPE REF TO cl_abap_random_int.
+    DATA ran_currency_code      TYPE REF TO cl_abap_random_int.
+    DATA ran_total_price_float  TYPE REF TO cl_abap_random_decfloat16.
+    DATA ran_total_price_int    TYPE REF TO cl_abap_random_int.
+    DATA ran_countryname        TYPE REF TO cl_abap_random_int.
+    DATA ran_booking_fee_int    TYPE REF TO cl_abap_random_int.
+    DATA overall_status         TYPE status_type.
+    DATA ran_overall_status     TYPE REF TO cl_abap_random_int.
+    DATA currency_codes         TYPE currency_code_type.
+    DATA countrynames           TYPE country_type.
 
-    CLASS-METHODS generate_description
+    METHODS generate_description
       RETURNING VALUE(result) TYPE /dmo/a_trvl_ana-description.
 
-    CLASS-METHODS build_currency_code
+    METHODS build_currency_code
       RETURNING VALUE(result) TYPE currency_code_type.
 
-    CLASS-METHODS build_country
+    METHODS build_country
       RETURNING VALUE(result) TYPE country_type.
 
-    CLASS-METHODS delete_content.
-
-    CLASS-METHODS insert_content.
-
-    CLASS-METHODS build_overall_status
+    METHODS build_overall_status
       RETURNING VALUE(result) TYPE status_type.
+
 
 ENDCLASS.
 
+CLASS lcl_travel_gen_ana IMPLEMENTATION.
 
+  METHOD constructor.
 
+    DATA(travel_skeleton) = prepare_skeleton( ).
 
+    DATA(travel_features) = VALUE feature_structure( with_admin_fields = abap_true
+                                                     with_semantic_id  = abap_true
+                                                     with_uuid         = abap_true ).
 
+    DATA(field_mapping) = VALUE field_structure( last_changed_at       = 'last_changed_at'
+                                                 local_created_at      = 'local_created_at'
+                                                 local_created_by      = 'local_created_by'
+                                                 local_last_changed_at = 'local_last_changed_at'
+                                                 local_last_changed_by = 'local_last_changed_by'
+                                                 semantic_id           = 'travel_id'
+                                                 uuid                  = 'travel_uuid' ).
 
-CLASS lcl_travel_data_generator IMPLEMENTATION.
-  METHOD /dmo/if_data_generator~create.
+    super->constructor( skeleton_data        = REF #( travel_skeleton )
+                        scenario_name        = 'Travel ANA' ##NO_TEXT
+                        package_name         = '/DMO/FLIGHT_ANA'
+                        table_name_active    = '/dmo/a_trvl_ana'
+                        nr_minimum           = '000001'
+                        nr_maximum           = '899999'
+                        numberrange_object   = '/DMO/TRAVL'
+                        numberrange_interval = '01'
+                        features             = travel_features
+                        fields               = field_mapping ).
 
-    DATA(text_output) = /dmo/cl_data_gen_util_factory=>/dmo/if_data_gen_util_factory~create_text_output_instance( out ).
-    ##NO_TEXT
-    text_output->print_title( 'Travel ANA' ).
-
-    text_output->print_delete( ).
-    delete_content( ).
-
-    text_output->print_build( ).
-    set_numberrange( ).
-    get_data( ).
-
-    text_output->print_insert( ).
-    insert_content( ).
-
-    text_output->print_done( ).
   ENDMETHOD.
 
-  METHOD delete_content.
+  METHOD get_instance.
 
-    DELETE FROM /dmo/a_trvl_ana.                        "#EC CI_NOWHERE
-
-  ENDMETHOD.
-
-  METHOD set_numberrange.
-    /dmo/cl_flight_data_generator=>reset_numberrange_interval(
-      EXPORTING
-        numberrange_object   = numberrange_object
-        numberrange_interval = numberrange_interval
-        fromnumber           = CONV cl_numberrange_intervals=>nr_nriv_line-fromnumber( '00000001' )
-        tonumber             = CONV cl_numberrange_intervals=>nr_nriv_line-tonumber( CONV /dmo/travel_id( /dmo/if_flight_legacy=>late_numbering_boundary - 1 ) ) ).
-  ENDMETHOD.
-
-  METHOD get_data.
-    IF data IS INITIAL.
-      build_content( ).
+    IF travel_generator_instance IS NOT BOUND.
+      travel_generator_instance = NEW lcl_travel_gen_ana( ).
     ENDIF.
-    RETURN data.
+
+    RETURN travel_generator_instance.
+
   ENDMETHOD.
 
-  METHOD build_content.
-    build_dependend_content( ).
+  METHOD prepare_skeleton.
 
-    build_uuid( ).
-    build_semantic_key( ).
+    CONSTANTS travel_amount TYPE i VALUE 100.
 
-    build_misc_fields( ).
-    build_admin_fields( ).
+    DO travel_amount TIMES.
+      APPEND VALUE /dmo/a_trvl_ana( ) TO travels.
+    ENDDO.
+
+    RETURN travels.
+
   ENDMETHOD.
 
-  METHOD build_dependend_content.
+  METHOD setup_for_building.
+
     CONSTANTS start_at_1      TYPE i VALUE 1.
     CONSTANTS seed            TYPE i VALUE 42.
     CONSTANTS description_max TYPE i VALUE 9.
@@ -134,9 +117,9 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
     ran_currency_code = cl_abap_random_int=>create( min = start_at_1
                                                        max = lines( currency_codes ) ).
 
-    countryname = build_country( ).
+    countrynames = build_country( ).
     ran_countryname = cl_abap_random_int=>create( min = start_at_1
-                                                     max = lines( countryname ) ).
+                                                     max = lines( countrynames ) ).
 
     ran_travel_description = cl_abap_random_int=>create( min = start_at_1
                                                             max = description_max ).
@@ -149,60 +132,41 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
     overall_status = build_overall_status(  ).
     ran_overall_status = cl_abap_random_int=>create( min = start_at_1
                                                        max = lines( overall_status ) ).
-  ENDMETHOD.
-
-  METHOD build_uuid.
-    CONSTANTS travel_amount TYPE i VALUE 100.
-
-    DATA travel_uuid TYPE sysuuid_x16.
-    DATA error       TYPE REF TO cx_uuid_error.
-
-    DO travel_amount TIMES.
-
-      TRY.
-          travel_uuid = cl_system_uuid=>create_uuid_x16_static( ).
-        CATCH cx_uuid_error INTO error.
-          " Should not happen.  If so, something is wrong
-          RAISE SHORTDUMP error.
-      ENDTRY.
-
-      APPEND VALUE /dmo/a_trvl_ana( travel_uuid = travel_uuid ) TO data.
-    ENDDO.
 
   ENDMETHOD.
 
-  METHOD build_semantic_key.
-    DATA data_lines          TYPE i.
-    DATA numberrange_key     TYPE cl_numberrange_runtime=>nr_number.
-    DATA error               TYPE REF TO cx_number_ranges.
-    DATA maximum TYPE i.
-    DATA current TYPE i.
+  METHOD build_currency_code.
+    SELECT Currency FROM I_CurrencyStdVH INTO TABLE @result. "#EC CI_NOWHERE
+  ENDMETHOD.
 
-    data_lines = lines( data ).
+  METHOD build_country.
+    SELECT FROM I_CountryText FIELDS country, countryname WHERE language = 'E' INTO TABLE @result.
+  ENDMETHOD.
 
-    TRY.
-        cl_numberrange_runtime=>number_get(
-          EXPORTING nr_range_nr = numberrange_interval
-                    object      = numberrange_object
-                    quantity    = CONV cl_numberrange_runtime=>nr_quantity( data_lines )
-          IMPORTING number      = numberrange_key ).
-      CATCH cx_number_ranges INTO error.
-        " Should not happen.  If so, something is wrong
-        RAISE SHORTDUMP error.
-    ENDTRY.
+  METHOD build_overall_status.
+    result = VALUE #( ( overall_status = 'A' )
+                      ( overall_status = 'X' )
+                      ( overall_status = 'O' ) ).
+  ENDMETHOD.
 
-    maximum = CONV i( numberrange_key+2 ).
-    current = maximum - data_lines.
+  METHOD build_additional_fields.
+    FIELD-SYMBOLS <travel> TYPE /dmo/a_trvl_ana.
+    ASSIGN entry->* TO <travel>.
 
-    LOOP AT data ASSIGNING FIELD-SYMBOL(<travel>).
-      current += 1.
-      <travel>-travel_id = CONV #( current ).
-    ENDLOOP.
+    DATA(date_generator) = /dmo/cl_data_gen_util_factory=>/dmo/if_data_gen_util_factory~create_date_gen_instance( ).
+
+    <travel>-total_price   = ran_total_price_float->get_next( ) + ran_total_price_int->get_next( ).
+    <travel>-booking_fee   = ran_total_price_float->get_next( ) + ran_booking_fee_int->get_next( ).
+    <travel>-currency_code = currency_codes[ ran_currency_code->get_next( ) ]-Currency. "#EC CI_NOORDER
+    <travel>-begin_date = date_generator->generate_date( ).
+    <travel>-end_date   = date_generator->generate_new_date_with_offset( <travel>-begin_date ).
+    <travel>-description = generate_description( ).
+    <travel>-overall_status = overall_status[ ran_overall_status->get_next(  ) ]-Overall_Status.
   ENDMETHOD.
 
   METHOD generate_description.
     DATA(person) = /dmo/cl_data_gen_util_factory=>/dmo/if_data_gen_util_factory~create_name_gen_instance( )->generate( ).
-    DATA(country) = countryname[ ran_countryname->get_next( ) ]-CountryName. "#EC CI_NOORDER
+    DATA(country) = countrynames[ ran_countryname->get_next( ) ]-CountryName. "#EC CI_NOORDER
 
     result = SWITCH /dmo/a_trvl_ana-description(
                                ran_travel_description->get_next( )
@@ -214,52 +178,6 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
                                WHEN 6 THEN |Business Trip|
                                ELSE        |Vacation| )
                         ##NO_TEXT.
-  ENDMETHOD.
-
-  METHOD build_misc_fields.
-    LOOP AT data ASSIGNING FIELD-SYMBOL(<travel>).
-      DATA(date_generator) = /dmo/cl_data_gen_util_factory=>/dmo/if_data_gen_util_factory~create_date_gen_instance( ).
-
-
-      <travel>-total_price   = ran_total_price_float->get_next( ) + ran_total_price_int->get_next( ).
-      <travel>-booking_fee   = ran_total_price_float->get_next( ) + ran_booking_fee_int->get_next( ).
-      <travel>-currency_code = currency_codes[ ran_currency_code->get_next( ) ]-Currency. "#EC CI_NOORDER
-      <travel>-begin_date = date_generator->generate_date( ).
-      <travel>-end_date   = date_generator->generate_new_date_with_offset( <travel>-begin_date ).
-      <travel>-description = generate_description( ).
-      <travel>-overall_status = overall_status[ ran_overall_status->get_next(  ) ]-Overall_Status.
-    ENDLOOP.
-  ENDMETHOD.
-
-  METHOD build_admin_fields.
-    DATA: admin_field_generator TYPE REF TO /dmo/if_admin_field_generator.
-
-    LOOP AT data ASSIGNING FIELD-SYMBOL(<travel>).
-      admin_field_generator = /dmo/cl_data_gen_util_factory=>/dmo/if_data_gen_util_factory~create_adm_field_gen_instance( <travel>-begin_date ).
-
-      <travel>-local_created_at      = admin_field_generator->generate_local_created_at( ).
-      <travel>-last_changed_at       = admin_field_generator->generate_last_changed_at( ).
-      <travel>-local_last_changed_at = admin_field_generator->generate_local_last_changed_at( ).
-      <travel>-local_created_by      = admin_field_generator->generate_local_created_by( ).
-      <travel>-local_last_changed_by = admin_field_generator->generate_local_last_changed_by( ).
-    ENDLOOP.
-  ENDMETHOD.
-
-  METHOD build_currency_code.
-    SELECT Currency FROM I_CurrencyStdVH INTO TABLE @result. "#EC CI_NOWHERE
-  ENDMETHOD.
-
-  METHOD build_overall_status.
-    result = VALUE #( ( overall_status = 'A' )
-                      ( overall_status = 'X' )
-                      ( overall_status = 'O' ) ).
-  ENDMETHOD.
-  METHOD build_country.
-    SELECT FROM I_CountryText FIELDS country, countryname WHERE language = 'E' INTO TABLE @result.
-  ENDMETHOD.
-
-  METHOD insert_content.
-    INSERT /dmo/a_trvl_ana FROM TABLE @data.
   ENDMETHOD.
 
 ENDCLASS.

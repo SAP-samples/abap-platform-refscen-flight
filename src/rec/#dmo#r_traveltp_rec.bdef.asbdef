@@ -1,0 +1,44 @@
+managed implementation in class /dmo/bp_r_traveltp_rec unique;
+strict ( 2 );
+with draft;
+
+define behavior for /dmo/r_traveltp_rec alias Travel
+persistent table /dmo/a_trvl_rec
+draft table /dmo/d_trvl_rec
+lock master total etag LastChangedAt
+authorization master ( none )
+etag master LocalLastChangedAt
+{
+  create;
+  update;
+  delete;
+  field ( readonly, numbering : managed ) TravelUuid;
+  field ( readonly : update, mandatory : create ) TravelId;
+  field ( recommendations ) Destination, Accommodation;
+  recommendation function GetRecommendedValuesFunction;
+
+  side effects
+  {
+    recommendation function GetRecommendedValuesFunction executed on field Description, field Destination;
+  }
+
+  mapping for /dmo/a_trvl_rec corresponding
+    {
+      TravelUUID         = travel_uuid;
+      TravelId           = travel_id;
+      Description        = description;
+      Destination        = destination;
+      Accommodation      = accommodation;
+      LastChangedAt      = last_changed_at;
+      LocalCreatedAt     = local_created_at;
+      LocalCreatedBy     = local_created_by;
+      LocalLastChangedAt = local_last_changed_at;
+      LocalLastChangedBy = local_last_changed_by;
+    }
+
+  draft action Activate optimized;
+  draft action Discard;
+  draft action Edit;
+  draft action Resume;
+  draft determine action Prepare;
+}

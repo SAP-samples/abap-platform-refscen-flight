@@ -1,0 +1,4 @@
+@EndUserText.label: 'Service Definition for Recommendations'
+define service /DMO/UI_TRAVELTP_O4_REC {
+  expose /dmo/c_traveltp_rec as Travel;
+}
