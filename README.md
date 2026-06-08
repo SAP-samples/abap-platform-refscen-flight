@@ -23,6 +23,7 @@ To import the reference scenario into your ABAP system, follow the steps in the 
 * [README](../ABAP-platform-2021/README.md) of branch <em>ABAP-platform-2021</em> (Application Server ABAP 7.56)
 * [README](../ABAP-platform-2022/README.md) of branch <em>ABAP-platform-2022</em> (Application Server ABAP 7.57)
 * [README](../ABAP-platform-2023/README.md) of branch <em>ABAP-platform-2023</em> (Application Server ABAP 7.58)
+* [README](../ABAP-platform-2025/README.md) of branch <em>ABAP-platform-2025</em> (Application Server ABAP 8.16)
 
 For more information about the ABAP Flight Reference Scenario, see [Downloading the ABAP Flight Reference Scenario](https://help.sap.com/docs/ABAP_PLATFORM_NEW/fc4c71aa50014fd1b43721701471913d/def316685ad14033b051fc4b88db07c8.htmll).
 
@@ -31,4 +32,3 @@ This project is provided "as-is": there is no guarantee that raised issues will 
 
 ## License
 Copyright (c) 2018-2026 SAP SE or an SAP affiliate company. All rights reserved. This project is licensed under the SAP Sample Code License except as noted otherwise in the [LICENSE](LICENSES/Apache-2.0.txt) file.
-
