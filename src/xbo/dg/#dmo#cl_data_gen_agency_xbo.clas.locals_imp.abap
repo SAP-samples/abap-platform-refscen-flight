@@ -19,9 +19,16 @@ class lcl_agency_gen_xbo implementation.
   METHOD constructor.
     DATA(agency_skeleton) = prepare_skeleton( ).
 
-    DATA(features_agency) = VALUE feature_structure( with_admin_fields = abap_true
+    DATA(features_agency) = VALUE feature_structure( with_db           = abap_true
+                                                     with_admin_fields = abap_true
                                                      with_semantic_id  = abap_true
                                                      with_uuid         = abap_true ).
+
+    DATA(semantic_id_config) = VALUE semantic_id_components( numberrange_lenght   = 6
+                                                             numberrange_max      = '079999'
+                                                             numberrange_min      = '070001'
+                                                             numberrange_interval = '01'
+                                                             numberrange_object   = '/DMO/AGNCY' ).
 
     DATA(field_mapping) = VALUE field_structure( last_changed_at       = 'last_changed_at'
                                                  local_created_at      = 'local_created_at'
@@ -31,17 +38,14 @@ class lcl_agency_gen_xbo implementation.
                                                  semantic_id           = 'agency_id'
                                                  uuid                  = 'agency_uuid' ).
 
-    super->constructor( skeleton_data        = REF #( agency_skeleton )
-                        scenario_name        = 'Agency XBO' ##NO_TEXT
-                        package_name         = '/DMO/FLIGHT_XBO'
-                        table_name_active    = '/dmo/a_agncy_xbo'
-                        table_name_draft     = '/dmo/d_agncy_xbo'
-                        nr_minimum           = '00070001'
-                        nr_maximum           = '00079999'
-                        numberrange_object   = '/DMO/AGNCY'
-                        numberrange_interval = '01'
-                        features             = features_agency
-                        fields               = field_mapping ).
+    super->constructor( skeleton_data      = REF #( agency_skeleton )
+                        scenario_name      = 'Agency XBO'
+                        package_name       = '/DMO/FLIGHT_XBO'
+                        table_name_active  = '/dmo/a_agncy_xbo'
+                        table_name_draft   = '/dmo/d_agncy_xbo'
+                        features           = features_agency
+                        fields             = field_mapping
+                        semantic_id_config = semantic_id_config ).
   ENDMETHOD.
 
   METHOD prepare_skeleton.
@@ -108,9 +112,16 @@ CLASS lcl_travel_gen_xbo IMPLEMENTATION.
 
     DATA(travel_skeleton) = prepare_skeleton( ).
 
-    DATA(travel_features) = VALUE feature_structure( with_admin_fields = abap_true
+    DATA(travel_features) = VALUE feature_structure( with_db           = abap_true
+                                                     with_admin_fields = abap_true
                                                      with_semantic_id  = abap_true
                                                      with_uuid         = abap_true ).
+
+    DATA(semantic_id_config) = VALUE semantic_id_components( numberrange_lenght   = 6
+                                                             numberrange_max      = '899999'
+                                                             numberrange_min      = '000001'
+                                                             numberrange_interval = '01'
+                                                             numberrange_object   = '/DMO/TRAVL' ).
 
     DATA(field_mapping) = VALUE field_structure( last_changed_at       = 'last_changed_at'
                                                  local_created_at      = 'local_created_at'
@@ -121,16 +132,13 @@ CLASS lcl_travel_gen_xbo IMPLEMENTATION.
                                                  uuid                  = 'travel_uuid' ).
 
     super->constructor( skeleton_data        = REF #( travel_skeleton )
-                        scenario_name        = 'Travel XBO' ##NO_TEXT
+                        scenario_name        = 'Travel XBO'
                         package_name         = '/DMO/FLIGHT_XBO'
                         table_name_active    = '/dmo/a_trvl_xbo'
                         table_name_draft     = '/dmo/d_trvl_xbo'
-                        nr_minimum           = '000001'
-                        nr_maximum           = '899999'
-                        numberrange_object   = '/DMO/TRAVL'
-                        numberrange_interval = '01'
                         features             = travel_features
-                        fields               = field_mapping ).
+                        fields               = field_mapping
+                        semantic_id_config   = semantic_id_config ).
 
   ENDMETHOD.
 

@@ -32,6 +32,13 @@ define root view entity /DMO/C_Travel_ANA
       @EndUserText.label: 'Different Currencies (#COUNT_DISTINCT)'
       @Aggregation.referenceElement: ['CurrencyCode']
       differentCurrencies,
+      @Consumption: {
+      valueHelpDefinition: [ {
+      entity.element: 'Currency',
+      entity.name: 'I_CurrencyStdVH',
+      useForValidation: true
+      } ]
+      }
       CurrencyCode,
       Description,
       OverallStatus

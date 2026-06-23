@@ -1,24 +1,14 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"/DMO/I_CARRIER",
-"/DMO/I_FLIGHT_R"
-],
-"ASSOCIATED":
-[
-"/DMO/I_CARRIER"
-],
-"BASE":
-[
-"/DMO/I_FLIGHT_R"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "/DMO/I_CARRIER",
+      "/DMO/I_FLIGHT_R"
+    ],
+    "ASSOCIATED": [
+      "/DMO/I_CARRIER"
+    ],
+    "BASE": [
+      "/DMO/I_FLIGHT_R"
+    ]
+  }
 }

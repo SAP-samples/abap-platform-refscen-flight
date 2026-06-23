@@ -1,24 +1,14 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"/DMO/R_AGENCYTP_XBO"
-],
-"ASSOCIATED":
-[
-"/DMO/C_TRAVELTP_XBO_DRAFTDP",
-"/DMO/R_TRAVELTP_XBO"
-],
-"BASE":
-[
-"/DMO/R_AGENCYTP_XBO"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "/DMO/R_AGENCYTP_XBO"
+    ],
+    "ASSOCIATED": [
+      "/DMO/C_TRAVELTP_XBO_DRAFTDP",
+      "/DMO/R_TRAVELTP_XBO"
+    ],
+    "BASE": [
+      "/DMO/R_AGENCYTP_XBO"
+    ]
+  }
 }

@@ -1,21 +1,10 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"/DMO/A_TRVL_XBO"
-],
-"ASSOCIATED":
-[
-"/DMO/R_AGENCYTP_XBO"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "/DMO/A_TRVL_XBO"
+    ],
+    "ASSOCIATED": [
+      "/DMO/R_AGENCYTP_XBO"
+    ]
+  }
 }

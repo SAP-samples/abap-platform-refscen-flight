@@ -1,24 +1,14 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"/DMO/ZZ_R_AGENCY_REVIEWTP"
-],
-"ASSOCIATED":
-[
-"/DMO/I_AGENCYTP",
-"/DMO/R_AGENCYTP"
-],
-"BASE":
-[
-"/DMO/ZZ_R_AGENCY_REVIEWTP"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "/DMO/ZZ_R_AGENCY_REVIEWTP"
+    ],
+    "ASSOCIATED": [
+      "/DMO/I_AGENCYTP",
+      "/DMO/R_AGENCYTP"
+    ],
+    "BASE": [
+      "/DMO/ZZ_R_AGENCY_REVIEWTP"
+    ]
+  }
 }
