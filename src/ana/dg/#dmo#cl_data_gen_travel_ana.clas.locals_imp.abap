@@ -54,9 +54,16 @@ CLASS lcl_travel_gen_ana IMPLEMENTATION.
 
     DATA(travel_skeleton) = prepare_skeleton( ).
 
-    DATA(travel_features) = VALUE feature_structure( with_admin_fields = abap_true
+    DATA(travel_features) = VALUE feature_structure( with_db           = abap_true
+                                                     with_admin_fields = abap_true
                                                      with_semantic_id  = abap_true
                                                      with_uuid         = abap_true ).
+
+    DATA(semantic_id_config) = VALUE semantic_id_components( numberrange_lenght    = 6
+                                                             numberrange_max       = '899999'
+                                                             numberrange_min       = '1'
+                                                             numberrange_interval  = '01'
+                                                             numberrange_object    = '/DMO/TRAVL' ).
 
     DATA(field_mapping) = VALUE field_structure( last_changed_at       = 'last_changed_at'
                                                  local_created_at      = 'local_created_at'
@@ -67,13 +74,10 @@ CLASS lcl_travel_gen_ana IMPLEMENTATION.
                                                  uuid                  = 'travel_uuid' ).
 
     super->constructor( skeleton_data        = REF #( travel_skeleton )
-                        scenario_name        = 'Travel ANA' ##NO_TEXT
+                        scenario_name        = 'Travel ANA'
                         package_name         = '/DMO/FLIGHT_ANA'
                         table_name_active    = '/dmo/a_trvl_ana'
-                        nr_minimum           = '000001'
-                        nr_maximum           = '899999'
-                        numberrange_object   = '/DMO/TRAVL'
-                        numberrange_interval = '01'
+                        semantic_id_config   = semantic_id_config
                         features             = travel_features
                         fields               = field_mapping ).
 
@@ -136,7 +140,8 @@ CLASS lcl_travel_gen_ana IMPLEMENTATION.
   ENDMETHOD.
 
   METHOD build_currency_code.
-    SELECT Currency FROM I_CurrencyStdVH INTO TABLE @result. "#EC CI_NOWHERE
+    result = VALUE #( ( Currency = 'EUR' )
+                      ( Currency = 'USD' ) ).
   ENDMETHOD.
 
   METHOD build_country.

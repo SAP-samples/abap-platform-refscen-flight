@@ -18,13 +18,13 @@ CLASS lhc_Agency DEFINITION INHERITING FROM cl_abap_behavior_handler
   PRIVATE SECTION.
 
     METHODS validateDiallingCode FOR VALIDATE ON SAVE
-      IMPORTING keys FOR /DMO/Agency~/DMO/validateDiallingCode.
+      IMPORTING keys FOR /DMO/Agency~/DMO/zzValidateDiallingCode.
     METHODS determineCountryCode FOR DETERMINE ON MODIFY
-      IMPORTING keys FOR /DMO/Agency~/DMO/determineCountryCode.
+      IMPORTING keys FOR /DMO/Agency~/DMO/zzDetermineCountryCode.
     METHODS determineDiallingCode FOR DETERMINE ON MODIFY
-      IMPORTING keys FOR /DMO/Agency~/DMO/determineDiallingCode.
-    METHODS createFromTemplate FOR MODIFY
-      IMPORTING keys FOR ACTION /DMO/Agency~/DMO/createFromTemplate.
+      IMPORTING keys FOR /DMO/Agency~/DMO/zzDetermineDiallingCode.
+    METHODS changeAddress FOR MODIFY
+      IMPORTING keys FOR ACTION /DMO/Agency~/DMO/zzChangeAddress RESULT result.
 
 ENDCLASS.
 
@@ -145,31 +145,67 @@ CLASS lhc_Agency IMPLEMENTATION.
 
   ENDMETHOD.
 
+  METHOD changeAddress.
+    DATA agencies_to_create TYPE TABLE FOR UPDATE /DMO/I_AgencyTP.
+    DATA(valid_keys) = keys.
 
-  METHOD createFromTemplate.
+    LOOP AT valid_keys ASSIGNING FIELD-SYMBOL(<key>) WHERE    %param-CountryCode IS INITIAL
+                                                           OR %param-PostalCode  IS INITIAL
+                                                           OR %param-City        IS INITIAL
+                                                           OR %param-Street      IS INITIAL.
 
-    READ ENTITIES OF /DMO/I_AgencyTP IN LOCAL MODE
-      ENTITY /DMO/Agency
-        FIELDS ( name EMailAddress CountryCode PostalCode City Street ) WITH CORRESPONDING #( keys )
-      RESULT DATA(agencies).
+      APPEND VALUE #( %tky                       = <key>-%tky
+                      %msg                       = NEW /dmo/cx_agency(
+                                                       textid = /dmo/cx_agency=>no_address_data
+                                                       severity = if_abap_behv_message=>severity-error )
+                      %op-%action-/DMO/zzChangeAddress = if_abap_behv=>mk-on
+                    ) TO reported-/dmo/agency.
 
-    DATA: agencies_to_create TYPE TABLE FOR CREATE /DMO/I_AgencyTP.
-    LOOP AT keys INTO DATA(key).
-      READ TABLE agencies INTO DATA(agency) WITH KEY id COMPONENTS  %tky = key-%tky .
-      IF sy-subrc EQ 0.
-        APPEND CORRESPONDING #( agency EXCEPT agencyid ) TO agencies_to_create ASSIGNING FIELD-SYMBOL(<agency_to_create>).
-        <agency_to_create>-%cid = key-%cid.
-*        <agency_to_create>-%is_draft = if_abap_behv=>mk-on.  "The action always creates draft instances
-      ELSE.
-        APPEND CORRESPONDING #( key MAPPING %fail = DEFAULT VALUE #( cause = if_abap_behv=>cause-not_found ) ) TO failed-/dmo/agency.
-      ENDIF.
+      APPEND VALUE #( %tky = <key>-%tky ) TO failed-/dmo/agency.
+
+      DELETE valid_keys WHERE %tky = <key>-%tky.
     ENDLOOP.
 
-    MODIFY ENTITIES OF /DMO/I_AgencyTP IN LOCAL MODE
-      ENTITY /DMO/Agency
-        CREATE FIELDS (  name EMailAddress CountryCode PostalCode City Street ) WITH agencies_to_create
-      MAPPED mapped.
+    IF valid_keys IS INITIAL.
+      RETURN.
+    ENDIF.
 
+    READ ENTITIES OF /DMO/I_AgencyTP IN LOCAL MODE
+         ENTITY /DMO/Agency
+         FIELDS ( CountryCode PostalCode City Street )
+         WITH CORRESPONDING #( valid_keys )
+         RESULT DATA(agencies)
+         FAILED DATA(failed_agencies).
+
+    LOOP AT failed_agencies-/dmo/agency ASSIGNING FIELD-SYMBOL(<failed>).
+      APPEND VALUE #( %tky = <failed>-%tky ) TO failed-/dmo/agency.
+    ENDLOOP.
+
+    LOOP AT agencies ASSIGNING FIELD-SYMBOL(<agency>).
+      DATA(parameters) = valid_keys[ KEY id
+                                     %tky = <agency>-%tky ]-%param.
+      APPEND VALUE #( %tky        = <agency>-%tky
+                      CountryCode = parameters-CountryCode
+                      PostalCode  = parameters-PostalCode
+                      City        = parameters-City
+                      Street      = parameters-Street ) TO agencies_to_create.
+    ENDLOOP.
+
+    " update the address fields
+    MODIFY ENTITIES OF /DMO/I_AgencyTP IN LOCAL MODE
+           ENTITY /DMO/Agency
+           UPDATE FIELDS ( CountryCode PostalCode City Street ) WITH agencies_to_create.
+
+    " Read changed data for action result
+    READ ENTITIES OF /DMO/I_AgencyTP IN LOCAL MODE
+         ENTITY /DMO/Agency
+         ALL FIELDS WITH
+         CORRESPONDING #( agencies )
+         RESULT DATA(agencies_changed_address).
+
+    result = VALUE #( FOR agency IN agencies_changed_address
+                      ( %tky   = agency-%tky
+                        %param = agency ) ).
   ENDMETHOD.
 
 ENDCLASS.

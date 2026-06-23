@@ -1,17 +1,55 @@
 class /dmo/cl_skeleton_provider definition PUBLIC create private.
 
-  public section.
-    TYPES: tt_agency TYPE STANDARD TABLE OF /dmo/agency WITH KEY agency_id.
-    CLASS-METHODS: get_agencies RETURNING VALUE(result) TYPE tt_agency.
+  PUBLIC SECTION.
+    TYPES agencies                    TYPE STANDARD TABLE OF /dmo/agency WITH KEY agency_id.
+    TYPES supplement_categories_compl TYPE STANDARD TABLE OF /dmo/supplcat_t WITH KEY supplement_category language_code
+      WITH NON-UNIQUE SORTED KEY language COMPONENTS language_code.
+    TYPES BEGIN OF supplement_complete.
+            INCLUDE TYPE /dmo/supplement.
+    TYPES   product_id    TYPE string.
+    TYPES END OF supplement_complete.
+    TYPES BEGIN OF suppl_desc_complete.
+            INCLUDE TYPE /dmo/suppl_text.
+    TYPES   product_id TYPE string.
+    TYPES END OF suppl_desc_complete.
+    TYPES supplements_complete TYPE STANDARD TABLE OF supplement_complete
+      WITH KEY supplement_id
+      WITH NON-UNIQUE SORTED KEY category COMPONENTS supplement_category
+      WITH NON-UNIQUE SORTED KEY p_id COMPONENTS product_id.
+    TYPES suppls_desc_complete TYPE STANDARD TABLE OF suppl_desc_complete
+      WITH KEY supplement_id
+      WITH NON-UNIQUE SORTED KEY language COMPONENTS language_code.
+
+    CONSTANTS:
+      BEGIN OF supplement_category,
+        beverage TYPE /dmo/supplement_category VALUE 'BV',
+        meal     TYPE /dmo/supplement_category VALUE 'ML',
+        luggage  TYPE /dmo/supplement_category VALUE 'LU',
+        extra    TYPE /dmo/supplement_category VALUE 'EX',
+      END OF supplement_category.
+
+    CONSTANTS: BEGIN OF language_enum,
+                 e TYPE spras VALUE 'E',
+                 d TYPE spras VALUE 'D',
+               END OF language_enum.
+
+    CLASS-METHODS get_agencies              RETURNING VALUE(result) TYPE agencies.
+    CLASS-METHODS get_supplcats             RETURNING VALUE(result) TYPE supplement_categories_compl.
+    CLASS-METHODS get_supplements_localized RETURNING VALUE(result) TYPE supplements_complete.
+    CLASS-METHODS get_suppl_desc_localized  RETURNING VALUE(result) TYPE suppls_desc_complete.
+
   protected section.
   private section.
 
-endclass.
+ENDCLASS.
 
-class /dmo/cl_skeleton_provider implementation.
+
+
+CLASS /DMO/CL_SKELETON_PROVIDER IMPLEMENTATION.
+
 
   method get_agencies.
-    RETURN VALUE tt_agency(  ##NO_TEXT
+    RETURN VALUE agencies(  ##NO_TEXT
           ( name      = 'Sunshine Travel'
             street    = '134 West Street          '
             postal_code  = '54323                    '
@@ -464,4 +502,189 @@ class /dmo/cl_skeleton_provider implementation.
    ).
   endmethod.
 
-endclass.
+  METHOD get_supplcats.
+
+    RETURN VALUE supplement_categories_compl( ##NO_TEXT
+        language_code = language_enum-e
+        ( supplement_category = supplement_category-beverage  description = 'Beverage' )
+        ( supplement_category = supplement_category-meal      description = 'Meal'     )
+        ( supplement_category = supplement_category-luggage   description = 'Luggage'  )
+        ( supplement_category = supplement_category-extra     description = 'Extra'    )
+        language_code = language_enum-d
+        ( supplement_category = supplement_category-beverage  description = 'Getränk'      )
+        ( supplement_category = supplement_category-meal      description = 'Mahlzeit'     )
+        ( supplement_category = supplement_category-luggage   description = 'Gepäck'       )
+        ( supplement_category = supplement_category-extra     description = 'Zusätzliches' )
+      ).
+
+  ENDMETHOD.
+  METHOD GET_SUPPLEMENTS_LOCALIZED.
+
+    RETURN VALUE supplements_complete(  ##NO_TEXT
+      currency_code         = 'EUR'
+
+      " Beverages
+      supplement_category = supplement_category-beverage
+      ( price =  '2.30' product_id = 'hot_chocolate' )
+      ( price =  '7.50' product_id = 'alcohol_free_champagne' )
+      ( price =  '3.50' product_id = 'coke' )
+      ( price =  '3.50' product_id = 'orange_lemonade' )
+      ( price =  '3.50' product_id = 'apple_juice' )
+      ( price =  '3.50' product_id = 'pear_juice' )
+      ( price =  '3.50' product_id = 'mango_juice' )
+      ( price =  '3.50' product_id = 'lemon_lemonade' )
+      ( price =  '4.50' product_id = 'tomato_juice' )
+
+      " Meals
+      supplement_category = supplement_category-meal
+      ( price =  '3.00' product_id = 'black_forest_cake' )
+      ( price =  '2.00' product_id = 'chocolate_cake' )
+      ( price =  '1.50' product_id = 'apple_pie' )
+      ( price =  '1.50' product_id = 'pear_pie' )
+      ( price =  '8.00' product_id = 'nice_salad' )
+      ( price =  '9.00' product_id = 'paris_salad' )
+      ( price = '12.00' product_id = 'hamburg_salad_with_eggs' )
+      ( price = '25.00' product_id = 'quail_with_french_salad_and_black_forest_cake' )
+      ( price = '13.00' product_id = 'duck_on_lettuce' )
+      ( price =  '5.00' product_id = 'carpaccio' )
+      ( price =  '7.00' product_id = 'seasonal_salad' )
+      ( price = '16.00' product_id = 'hamburg_salad_with_fresh_shrimps' )
+      ( price = '17.00' product_id = 'quail' )
+      ( price = '14.00' product_id = 'wiener_schnitzel' )
+      ( price = '13.00' product_id = 'pork_schnitzel' )
+      ( price = '14.00' product_id = 'schnitzel_with_pepper_sauce' )
+      ( price = '11.00' product_id = 'chicken_and_french_fries' )
+      ( price = '12.00' product_id = 'turkey_steak' )
+      ( price = '15.00' product_id = 'bavarian_duck' )
+      ( price = '14.00' product_id = 'knuckle_of_pork' )
+      ( price = '22.00' product_id = 'fillet_of_beef' )
+      ( price = '21.00' product_id = 'trout_au_bleu' )
+      ( price = '20.00' product_id = 'trout_meuniere' )
+      ( price = '17.00' product_id = 'monkfish' )
+      ( price = '12.00' product_id = 'sole' )
+      ( price =  '6.00' product_id = 'mini_fried_sole' )
+      ( price = '14.00' product_id = 'salmon_in_a_bearnaise_sauce' )
+      ( price = '15.00' product_id = 'salmon_lasagne' )
+      ( price =  '3.00' product_id = 'chocolate_ice_cream' )
+      ( price =  '2.50' product_id = 'vanilla_ice_cream' )
+      ( price =  '4.50' product_id = 'vanilla_ice_cream_with_hot_cherries' )
+      ( price =  '4.50' product_id = 'vanilla_ice_cream_with_hot_raspberries' )
+      ( price =  '4.00' product_id = 'apple_strudel' )
+      ( price =  '4.00' product_id = 'raspberry_sorbet' )
+      ( price =  '4.00' product_id = 'strawberry_sorbet' )
+      ( price = '40.00' product_id = 'extra_baggage_5_kgs' )
+
+      "Luggage
+      supplement_category = supplement_category-luggage
+      ( price = '15.00' product_id = 'luggage_transfer_from_airport_to_hotel' )
+      ( price = '75.00' product_id = 'luggage_pickup_from_home_and_return' )
+      ( price = '80.00' product_id = 'bulky_goods_like_sports_equipment' )
+    )  .
+
+  ENDMETHOD.
+
+  METHOD get_suppl_desc_localized.
+    RETURN VALUE suppls_desc_complete(
+        ##NO_TEXT
+        language_code = language_enum-e
+        ( product_id = 'hot_chocolate'                                 description = 'Hot Chocolate' )
+        ( product_id = 'alcohol_free_champagne'                        description = 'Alcohol free Champagne' )
+        ( product_id = 'coke'                                          description = 'Coke' )
+        ( product_id = 'orange_lemonade'                               description = 'Orange Lemonade' )
+        ( product_id = 'apple_juice'                                   description = 'Apple Juice' )
+        ( product_id = 'pear_juice'                                    description = 'Pear Juice' )
+        ( product_id = 'mango_juice'                                   description = 'Mango Juice' )
+        ( product_id = 'lemon_lemonade'                                description = 'Lemon Lemonade' )
+        ( product_id = 'tomato_juice'                                  description = 'Tomato Juice' )
+        ( product_id = 'black_forest_cake'                             description = 'Black Forest Cake' )
+        ( product_id = 'chocolate_cake'                                description = 'Chocolate Cake' )
+        ( product_id = 'apple_pie'                                     description = 'Apple Pie' )
+        ( product_id = 'pear_pie'                                      description = 'Pear Pie' )
+        ( product_id = 'nice_salad'                                    description = 'Nice Salad' )
+        ( product_id = 'paris_salad'                                   description = 'Paris Salad' )
+        ( product_id = 'hamburg_salad_with_eggs'                       description = 'Hamburg Salad with Eggs' )
+        ( product_id = 'quail_with_french_salad_and_black_forest_cake' description = 'Quail with French Salad and Black Forest Cake' )
+        ( product_id = 'duck_on_lettuce'                               description = 'Duck on Lettuce' )
+        ( product_id = 'carpaccio'                                     description = 'Carpaccio' )
+        ( product_id = 'seasonal_salad'                                description = 'Seasonal Salad' )
+        ( product_id = 'hamburg_salad_with_fresh_shrimps'              description = 'Hamburg Salad with Fresh Shrimps' )
+        ( product_id = 'quail'                                         description = 'Quail' )
+        ( product_id = 'wiener_schnitzel'                              description = 'Wiener Schnitzel' )
+        ( product_id = 'pork_schnitzel'                                description = 'Pork Schnitzel' )
+        ( product_id = 'schnitzel_with_pepper_sauce'                   description = 'Schnitzel with Pepper Sauce' )
+        ( product_id = 'chicken_and_french_fries'                      description = 'Chicken and French Fries' )
+        ( product_id = 'turkey_steak'                                  description = 'Turkey Steak' )
+        ( product_id = 'bavarian_duck'                                 description = 'Bavarian Duck' )
+        ( product_id = 'knuckle_of_pork'                               description = 'Knuckle of Pork' )
+        ( product_id = 'fillet_of_beef'                                description = 'Fillet of Beef' )
+        ( product_id = 'trout_au_bleu'                                 description = 'Trout Au Bleu' )
+        ( product_id = 'trout_meuniere'                                description = 'Trout Meuniere' )
+        ( product_id = 'monkfish'                                      description = 'Monkfish' )
+        ( product_id = 'sole'                                          description = 'Sole' )
+        ( product_id = 'mini_fried_sole'                               description = 'Mini Fried Sole' )
+        ( product_id = 'salmon_in_a_bearnaise_sauce'                   description = 'Salmon in a Bearnaise Sauce' )
+        ( product_id = 'salmon_lasagne'                                description = 'Salmon Lasagne' )
+        ( product_id = 'chocolate_ice_cream'                           description = 'Chocolate Ice Cream' )
+        ( product_id = 'vanilla_ice_cream'                             description = 'Vanilla Ice Cream' )
+        ( product_id = 'vanilla_ice_cream_with_hot_cherries'           description = 'Vanilla Ice Cream with Hot Cherries' )
+        ( product_id = 'vanilla_ice_cream_with_hot_raspberries'        description = 'Vanilla Ice Cream with Hot Raspberries' )
+        ( product_id = 'apple_strudel'                                 description = 'Apple Strudel' )
+        ( product_id = 'raspberry_sorbet'                              description = 'Raspberry Sorbet' )
+        ( product_id = 'strawberry_sorbet'                             description = 'Strawberry Sorbet' )
+        ( product_id = 'extra_baggage_5_kgs'                           description = 'Extra baggage 5 kgs' )
+        ( product_id = 'luggage_transfer_from_airport_to_hotel'        description = 'Luggage transfer from airport to hotel' )
+        ( product_id = 'luggage_pickup_from_home_and_return'           description = 'Luggage pickup from home and return ' )
+        ( product_id = 'bulky_goods_like_sports_equipment'             description = 'Bulky goods like sports equipment' )
+
+        language_code = language_enum-d
+        ( product_id = 'hot_chocolate'                                 description = 'Heiße Schokolade' )
+        ( product_id = 'alcohol_free_champagne'                        description = 'Alkoholfreier Champagner' )
+        ( product_id = 'coke'                                          description = 'Cola' )
+        ( product_id = 'orange_lemonade'                               description = 'Orangenlimonade' )
+        ( product_id = 'apple_juice'                                   description = 'Apfelsaft' )
+        ( product_id = 'pear_juice'                                    description = 'Birnensaft' )
+        ( product_id = 'mango_juice'                                   description = 'Mangosaft' )
+        ( product_id = 'lemon_lemonade'                                description = 'Zitronenlimonade' )
+        ( product_id = 'tomato_juice'                                  description = 'Tomatensaft' )
+        ( product_id = 'black_forest_cake'                             description = 'Schwarzwälder Kirschtorte' )
+        ( product_id = 'chocolate_cake'                                description = 'Schokoladenkuchen' )
+        ( product_id = 'apple_pie'                                     description = 'Apfelkuchen' )
+        ( product_id = 'pear_pie'                                      description = 'Birnenkuchen' )
+        ( product_id = 'nice_salad'                                    description = 'Nizza Salat' )
+        ( product_id = 'paris_salad'                                   description = 'Pariser Salat' )
+        ( product_id = 'hamburg_salad_with_eggs'                       description = 'Hamburger Salat mit Eiern' )
+        ( product_id = 'quail_with_french_salad_and_black_forest_cake' description = 'Wachtel mit französischem Salat und Schwarzwälder Kirschtorte' )
+        ( product_id = 'duck_on_lettuce'                               description = 'Ente auf Blattsalat' )
+        ( product_id = 'carpaccio'                                     description = 'Carpaccio' )
+        ( product_id = 'seasonal_salad'                                description = 'Saisonaler Salat' )
+        ( product_id = 'hamburg_salad_with_fresh_shrimps'              description = 'Hamburger Salat mit frischen Krabben' )
+        ( product_id = 'quail'                                         description = 'Wachtel' )
+        ( product_id = 'wiener_schnitzel'                              description = 'Wiener Schnitzel' )
+        ( product_id = 'pork_schnitzel'                                description = 'Schweineschnitzel' )
+        ( product_id = 'schnitzel_with_pepper_sauce'                   description = 'Schnitzel mit Pfeffersoße' )
+        ( product_id = 'chicken_and_french_fries'                      description = 'Hähnchen mit Pommes frites' )
+        ( product_id = 'turkey_steak'                                  description = 'Putensteak' )
+        ( product_id = 'bavarian_duck'                                 description = 'Bayerische Ente' )
+        ( product_id = 'knuckle_of_pork'                               description = 'Schweinshaxe' )
+        ( product_id = 'fillet_of_beef'                                description = 'Rinderfilet' )
+        ( product_id = 'trout_au_bleu'                                 description = 'Forelle blau' )
+        ( product_id = 'trout_meuniere'                                description = 'Forelle Müllerin Art' )
+        ( product_id = 'monkfish'                                      description = 'Seeteufel' )
+        ( product_id = 'sole'                                          description = 'Seezunge' )
+        ( product_id = 'mini_fried_sole'                               description = 'Mini-Seezunge gebraten' )
+        ( product_id = 'salmon_in_a_bearnaise_sauce'                   description = 'Lachs in Sauce Béarnaise' )
+        ( product_id = 'salmon_lasagne'                                description = 'Lachs-Lasagne' )
+        ( product_id = 'chocolate_ice_cream'                           description = 'Schokoladeneis' )
+        ( product_id = 'vanilla_ice_cream'                             description = 'Vanilleeis' )
+        ( product_id = 'vanilla_ice_cream_with_hot_cherries'           description = 'Vanilleeis mit heißen Kirschen' )
+        ( product_id = 'vanilla_ice_cream_with_hot_raspberries'        description = 'Vanilleeis mit heißen Himbeeren' )
+        ( product_id = 'apple_strudel'                                 description = 'Apfelstrudel' )
+        ( product_id = 'raspberry_sorbet'                              description = 'Himbeersorbet' )
+        ( product_id = 'strawberry_sorbet'                             description = 'Erdbeersorbet' )
+        ( product_id = 'extra_baggage_5_kgs'                           description = 'Zusätzliches Gepäck 5 kg' )
+        ( product_id = 'luggage_transfer_from_airport_to_hotel'        description = 'Gepäcktransfer vom Flughafen zum Hotel' )
+        ( product_id = 'luggage_pickup_from_home_and_return'           description = 'Gepäckabholung von zu Hause und Rücktransport' )
+        ( product_id = 'bulky_goods_like_sports_equipment'             description = 'Sperrgut wie Sportausrüstung' ) ).
+  ENDMETHOD.
+
+ENDCLASS.
