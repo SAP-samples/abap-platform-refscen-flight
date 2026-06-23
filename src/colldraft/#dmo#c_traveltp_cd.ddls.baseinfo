@@ -1,24 +1,14 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"/DMO/R_TRAVELTP_CD"
-],
-"ASSOCIATED":
-[
-"/DMO/C_BOOKINGTP_CD",
-"/DMO/R_BOOKINGTP_CD"
-],
-"BASE":
-[
-"/DMO/R_TRAVELTP_CD"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "/DMO/R_TRAVELTP_CD"
+    ],
+    "ASSOCIATED": [
+      "/DMO/C_BOOKINGTP_CD",
+      "/DMO/R_BOOKINGTP_CD"
+    ],
+    "BASE": [
+      "/DMO/R_TRAVELTP_CD"
+    ]
+  }
 }

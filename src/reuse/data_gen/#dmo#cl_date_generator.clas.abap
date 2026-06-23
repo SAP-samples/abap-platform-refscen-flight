@@ -76,6 +76,7 @@ CLASS /dmo/cl_date_generator IMPLEMENTATION.
                                                       max  = date_offset_max ).
     ran_travel_change_date = cl_abap_random_int=>create( min = date_min
                                                          max = date_max ).
+    mo_random = cl_abap_random_float=>create( seed = seed ).
   ENDMETHOD.
 
   METHOD set_today.
@@ -131,7 +132,9 @@ CLASS /dmo/cl_date_generator IMPLEMENTATION.
     month_of_date = ran_start_date_month->get_next( ).
     day_of_date = ran_start_date_day->get_next( ).
 
-    RETURN |{ year_of_date }{ month_of_date }{ day_of_date }|.
+    result+0(4) = year_of_date.
+    result+4(2) = month_of_date.
+    result+6(2) = day_of_date.
   ENDMETHOD.
 
   METHOD /dmo/if_date_generator~generate_new_date_with_offset.
@@ -140,6 +143,14 @@ CLASS /dmo/cl_date_generator IMPLEMENTATION.
 
   METHOD /dmo/if_date_generator~get_date_today.
     RETURN date_today.
+  ENDMETHOD.
+
+  METHOD /dmo/if_date_generator~generate_date_in_range.
+    DATA(span) = to_date - from_date.
+    IF span <= 0.
+      RETURN from_date.
+    ENDIF.
+    RETURN from_date + CONV i( floor( mo_random->get_next( ) * ( span + 1 ) ) ).
   ENDMETHOD.
 
 ENDCLASS.

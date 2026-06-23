@@ -11,13 +11,18 @@ INTERFACE /dmo/if_date_generator
     RETURNING VALUE(result) TYPE i.
 
   METHODS generate_date
-    RETURNING VALUE(result) TYPE string.
+    RETURNING VALUE(result) TYPE d.
 
   METHODS generate_new_date_with_offset
     IMPORTING reference_date TYPE d
     RETURNING VALUE(result)  TYPE d.
 
   METHODS get_date_today
+    RETURNING VALUE(result) TYPE d.
+
+  METHODS generate_date_in_range
+    IMPORTING from_date     TYPE d
+              to_date       TYPE d
     RETURNING VALUE(result) TYPE d.
 
   METHODS calc_days_before_ref_or_today

@@ -1547,230 +1547,361 @@ CLASS lcl_customer_data_generator IMPLEMENTATION.
 
 ENDCLASS.
 
-CLASS lcl_supplement_data_generator DEFINITION CREATE PRIVATE.
+class lcl_supplcat_gen_reuse definition INHERITING FROM /dmo/cl_abstract_data_gen create private.
 
   PUBLIC SECTION.
-    INTERFACES: lif_data_generator.
-    TYPES:
-      tt_supplement               TYPE STANDARD TABLE OF /dmo/supplement  WITH KEY supplement_id,
-      tt_supplement_text          TYPE STANDARD TABLE OF /dmo/suppl_text  WITH KEY supplement_id language_code,
-      tt_supplement_category      TYPE STANDARD TABLE OF /dmo/supplcat    WITH KEY supplement_category,
-      tt_supplement_category_text TYPE STANDARD TABLE OF /dmo/supplcat_t  WITH KEY supplement_category language_code.
+    CLASS-METHODS get_instance RETURNING VALUE(instance) TYPE REF TO lcl_supplcat_gen_reuse.
 
-    " Merged types
-    TYPES BEGIN OF ty_supplement_complete.
-    INCLUDE TYPE /dmo/supplement.
-    TYPES language_code TYPE spras.
-    TYPES description   TYPE /dmo/description.
-    TYPES END OF ty_supplement_complete.
+    METHODS constructor.
 
-    TYPES tt_supplement_category_compl TYPE STANDARD TABLE OF /dmo/supplcat_t WITH KEY supplement_category language_code.
+  PRIVATE SECTION.
+    TYPES table_of_suppl_cats TYPE STANDARD TABLE OF /dmo/supplcat WITH DEFAULT KEY.
 
-    TYPES tt_supplement_complete TYPE STANDARD TABLE OF ty_supplement_complete WITH KEY supplement_id WITH NON-UNIQUE SORTED KEY category COMPONENTS supplement_category.
+    CLASS-DATA suppl_cats_generator_instance TYPE REF TO lcl_supplcat_gen_reuse.
 
-    CLASS-METHODS:
-      get_data
-        RETURNING
-          VALUE(rt_data) TYPE tt_supplement_complete.
+    CLASS-METHODS prepare_skeleton
+      RETURNING VALUE(suppl_cats) TYPE table_of_suppl_cats.
+
+endclass.
+
+class lcl_supplcat_gen_reuse implementation.
+  METHOD constructor.
+    DATA field_mapping TYPE field_structure.
+
+    DATA(skeleton_supplcat) = prepare_skeleton( ).
+
+    DATA(features_supplcat) = VALUE feature_structure( with_db           = abap_true
+                                                       with_admin_fields = abap_false
+                                                       with_semantic_id  = abap_false
+                                                       with_uuid         = abap_false ).
+
+    super->constructor( skeleton_data     = REF #( skeleton_supplcat )
+                        scenario_name     = 'Supplement Category Reuse'
+                        package_name      = '/DMO/FLIGHT_REUSE_SUPPLEMENT'
+                        table_name_active = '/dmo/supplcat'
+                        features          = features_supplcat
+                        fields            = field_mapping ).
+  ENDMETHOD.
+
+  METHOD prepare_skeleton.
+    RETURN CORRESPONDING #( FILTER #( /dmo/cl_skeleton_provider=>get_supplcats( ) USING KEY language WHERE language_code = /dmo/cl_skeleton_provider=>language_enum-e ) ).
+  ENDMETHOD.
+
+  METHOD get_instance.
+
+    IF suppl_cats_generator_instance IS NOT BOUND.
+      suppl_cats_generator_instance = NEW lcl_supplcat_gen_reuse( ).
+    ENDIF.
+
+    RETURN suppl_cats_generator_instance.
+
+  ENDMETHOD.
+
+endclass.
+
+class lcl_supplcat_t_gen_reuse definition INHERITING FROM /dmo/cl_abstract_data_gen create private.
+
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance RETURNING VALUE(instance) TYPE REF TO lcl_supplcat_t_gen_reuse.
+
+    METHODS constructor.
+
+  PRIVATE SECTION.
+    TYPES table_of_suppl_cats TYPE STANDARD TABLE OF /dmo/supplcat_t WITH DEFAULT KEY.
+
+    CLASS-DATA suppl_cats_generator_instance TYPE REF TO lcl_supplcat_t_gen_reuse.
+
+    CLASS-METHODS prepare_skeleton
+      RETURNING VALUE(suppl_cats) TYPE table_of_suppl_cats.
+
+endclass.
+
+class lcl_supplcat_t_gen_reuse implementation.
+  METHOD constructor.
+    DATA field_mapping TYPE field_structure.
+
+    DATA(skeleton_supplcat) = prepare_skeleton( ).
+
+    DATA(features_supplcat) = VALUE feature_structure( with_db           = abap_true
+                                                       with_admin_fields = abap_false
+                                                       with_semantic_id  = abap_false
+                                                       with_uuid         = abap_false ).
+
+    super->constructor( skeleton_data     = REF #( skeleton_supplcat )
+                        scenario_name     = 'Supplement Category T Reuse'
+                        package_name      = '/DMO/FLIGHT_REUSE_SUPPLEMENT'
+                        table_name_active = '/dmo/supplcat_t'
+                        features          = features_supplcat
+                        fields            = field_mapping ).
+  ENDMETHOD.
+
+  METHOD prepare_skeleton.
+    RETURN CORRESPONDING #( /dmo/cl_skeleton_provider=>get_supplcats( ) ).
+  ENDMETHOD.
+
+  METHOD get_instance.
+
+    IF suppl_cats_generator_instance IS NOT BOUND.
+      suppl_cats_generator_instance = NEW lcl_supplcat_t_gen_reuse( ).
+    ENDIF.
+
+    RETURN suppl_cats_generator_instance.
+
+  ENDMETHOD.
+
+endclass.
+
+CLASS lcl_supplement_gen_reuse DEFINITION INHERITING FROM /dmo/cl_abstract_data_gen CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance
+      IMPORTING
+        category TYPE /dmo/supplement_category
+      RETURNING VALUE(instance) TYPE REF TO lcl_supplement_gen_reuse.
+
+    METHODS constructor
+      IMPORTING category TYPE /dmo/supplement_category.
+
+  PRIVATE SECTION.
+    CLASS-METHODS prepare_skeleton
+      IMPORTING category TYPE /dmo/supplement_category
+      RETURNING VALUE(result) TYPE /dmo/cl_skeleton_provider=>supplements_complete.
+
+ENDCLASS.
+
+CLASS lcl_supplement_gen_reuse IMPLEMENTATION.
+  METHOD constructor.
+    DATA(supplement_skeleton) = prepare_skeleton( category ).
+
+    DATA(supplement_features) = VALUE feature_structure( with_db           = abap_false
+                                                         with_admin_fields = abap_true
+                                                         with_semantic_id  = abap_true
+                                                         with_uuid         = abap_false ).
+
+    DATA(semantic_id_config) = VALUE semantic_id_components( numberrange_lenght    = 4
+                                                             numberrange_max       = '9999'
+                                                             numberrange_min       = '1'
+                                                             numberrange_interval  = '01'
+                                                             numberrange_object    = '/DMO/SUPPL'
+                                                             numberrange_subobject = CONV #( category )
+                                                             prefix                = |{ category }-| ).
+
+    DATA(field_mapping) = VALUE field_structure( last_changed_at       = 'last_changed_at'
+                                                 local_created_at      = 'local_created_at'
+                                                 local_created_by      = 'local_created_by'
+                                                 local_last_changed_at = 'local_last_changed_at'
+                                                 local_last_changed_by = 'local_last_changed_by'
+                                                 semantic_id           = 'supplement_id' ).
+
+    super->constructor( skeleton_data      = REF #( supplement_skeleton )
+                        scenario_name      = 'Supplement Reuse' ##NO_TEXT
+                        package_name       = '/DMO/FLIGHT_REUSE_SUPPLEMENT'
+                        table_name_active  = '/dmo/supplement'
+                        semantic_id_config = semantic_id_config
+                        features           = supplement_features
+                        fields             = field_mapping ).
+  ENDMETHOD.
+
+  METHOD get_instance.
+    RETURN NEW lcl_supplement_gen_reuse( category ).
+  ENDMETHOD.
+
+  METHOD prepare_skeleton.
+    RETURN FILTER #( /dmo/cl_skeleton_provider=>get_supplements_localized( ) USING KEY category WHERE supplement_category = category ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl_suppl_gen_reuse_wrapper DEFINITION INHERITING FROM /dmo/cl_abstract_data_gen CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance
+      RETURNING VALUE(instance) TYPE REF TO lcl_suppl_gen_reuse_wrapper.
+
+    METHODS constructor.
+
+  PRIVATE SECTION.
+    CLASS-DATA suppl_wrapper_gen_instance TYPE REF TO lcl_suppl_gen_reuse_wrapper.
+
+    DATA supplement_categories TYPE /dmo/cl_skeleton_provider=>supplement_categories_compl.
+
+    CLASS-METHODS prepare_skeleton
+      RETURNING VALUE(result) TYPE /dmo/cl_skeleton_provider=>supplements_complete.
+
+ENDCLASS.
+
+CLASS lcl_suppl_gen_reuse_wrapper IMPLEMENTATION.
+  METHOD constructor.
+    DATA(supplement_skeleton) = prepare_skeleton( ).
+
+    DATA(supplement_features) = VALUE feature_structure( with_db           = abap_true
+                                                         with_admin_fields = abap_false
+                                                         with_semantic_id  = abap_false
+                                                         with_uuid         = abap_false ).
+
+    DATA(field_mapping) = VALUE field_structure(  ).
+
+    super->constructor( skeleton_data      = REF #( supplement_skeleton )
+                        scenario_name      = 'Supplement Reuse Wrapper' ##NO_TEXT
+                        package_name       = '/DMO/FLIGHT_REUSE_SUPPLEMENT'
+                        table_name_active  = '/dmo/supplement'
+                        features           = supplement_features
+                        fields             = field_mapping ).
+  ENDMETHOD.
+
+  METHOD get_instance.
+
+    IF suppl_wrapper_gen_instance IS NOT BOUND.
+      suppl_wrapper_gen_instance = NEW lcl_suppl_gen_reuse_wrapper( ).
+    ENDIF.
+
+    RETURN suppl_wrapper_gen_instance.
+
+  ENDMETHOD.
+
+  METHOD prepare_skeleton.
+    DATA supplement_categories    TYPE STANDARD TABLE OF /dmo/supplcat.
+    DATA supplements_per_category TYPE /dmo/cl_skeleton_provider=>supplements_complete.
+
+    supplement_categories = lcl_supplcat_gen_reuse=>get_instance( )->get_data( )->*.
+
+    LOOP AT supplement_categories INTO DATA(ls_category).
+      supplements_per_category = lcl_supplement_gen_reuse=>get_instance( ls_category-supplement_category )->get_data( )->*.
+      APPEND LINES OF supplements_per_category TO result.
+    ENDLOOP.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl_suppl_text_gen_reuse DEFINITION INHERITING FROM /dmo/cl_abstract_data_gen CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance
+      IMPORTING language_code TYPE spras
+      RETURNING VALUE(instance) TYPE REF TO lcl_suppl_text_gen_reuse.
+
+    METHODS constructor
+      IMPORTING language_code TYPE spras.
 
   PROTECTED SECTION.
+    METHODS build_additional_fields REDEFINITION.
+    METHODS setup_for_building REDEFINITION.
+
   PRIVATE SECTION.
+    CLASS-DATA suppl_text_gen_instance TYPE REF TO lcl_suppl_text_gen_reuse.
 
-    CONSTANTS:
-      BEGIN OF cs_supplement_category,
-        beverage TYPE /dmo/supplement_category VALUE 'BV',
-        meal     TYPE /dmo/supplement_category VALUE 'ML',
-        luggage  TYPE /dmo/supplement_category VALUE 'LU',
-        extra    TYPE /dmo/supplement_category VALUE 'EX',
-      END OF cs_supplement_category.
+    CLASS-METHODS prepare_skeleton
+      IMPORTING language_code TYPE spras
+      RETURNING VALUE(result) TYPE /dmo/cl_skeleton_provider=>suppls_desc_complete.
 
-    CONSTANTS:
-      cv_numberrange_interval TYPE cl_numberrange_runtime=>nr_interval VALUE '01',
-      cv_numberrange_object   TYPE cl_numberrange_runtime=>nr_object   VALUE '/DMO/SUPPL' ##NO_TEXT.
-
-    CLASS-DATA:
-      gt_supplement_category TYPE tt_supplement_category_compl,
-      gt_data                TYPE lcl_supplement_data_generator=>tt_supplement_complete.
-
-    CLASS-METHODS:
-      set_numberrange_intervals,
-
-      get_supplement_category
-        RETURNING
-          VALUE(rt_supplement_category) TYPE tt_supplement_category_compl.
+    DATA supplements TYPE /dmo/cl_skeleton_provider=>supplements_complete.
 
 ENDCLASS.
 
-CLASS lcl_supplement_data_generator IMPLEMENTATION.
+CLASS lcl_suppl_text_gen_reuse IMPLEMENTATION.
+  METHOD constructor.
+    DATA(supplement_skeleton) = prepare_skeleton( language_code ).
 
-  METHOD lif_data_generator~create.
-    IF out IS BOUND.  out->write( '--> Delete Content.' ) ##NO_TEXT.
-    ENDIF.
-    DELETE FROM:
-      /dmo/supplement,                                  "#EC CI_NOWHERE
-      /dmo/suppl_text,                                  "#EC CI_NOWHERE
-      /dmo/supplcat,                                    "#EC CI_NOWHERE
-      /dmo/supplcat_t.                                  "#EC CI_NOWHERE
+    DATA(supplement_features) = VALUE feature_structure( with_db           = abap_false
+                                                         with_admin_fields = abap_false
+                                                         with_semantic_id  = abap_false
+                                                         with_uuid         = abap_false ).
 
-    IF out IS BOUND.  out->write( '--> Defining Supplement Types.' ) ##NO_TEXT.
-    ENDIF.
-    gt_supplement_category = get_supplement_category( ).
+    DATA(field_mapping) = VALUE field_structure( ).
 
-    DATA(lt_type) = get_supplement_category( ).
-    INSERT /dmo/supplcat    FROM TABLE @( CORRESPONDING tt_supplement_category(      lt_type ) ).
-    INSERT /dmo/supplcat_t  FROM TABLE @( CORRESPONDING tt_supplement_category_text( lt_type ) ).
-
-*   The number range has to be set after inserting values into /dmo/supplcat as it reads the data from the table to validate the sub-objects ...
-    IF out IS BOUND.  out->write( '--> Set up Number Range Intervals.' ) ##NO_TEXT.
-    ENDIF.
-    set_numberrange_intervals( ).
-
-    IF out IS BOUND.  out->write( '--> Build Content.' ) ##NO_TEXT.
-    ENDIF.
-    DATA(lt_data) = get_data( ).
-
-    IF out IS BOUND.  out->write( '--> Insert Content.' ) ##NO_TEXT.
-    ENDIF.
-    INSERT /dmo/supplement  FROM TABLE @( CORRESPONDING tt_supplement(               lt_data ) ).
-    INSERT /dmo/suppl_text  FROM TABLE @( CORRESPONDING tt_supplement_text(          lt_data ) ).
-    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
-    ENDIF.
-    IF out IS BOUND.  out->write( '--> Done.' ) ##NO_TEXT.
-    ENDIF.
+    super->constructor( skeleton_data      = REF #( supplement_skeleton )
+                        scenario_name      = 'Supplement Description Reuse' ##NO_TEXT
+                        package_name       = '/DMO/FLIGHT_REUSE_SUPPLEMENT'
+                        table_name_active  = '/dmo/suppl_text'
+                        features           = supplement_features
+                        fields             = field_mapping ).
   ENDMETHOD.
 
-  METHOD get_data.
-    IF gt_data IS INITIAL.
-      GET TIME STAMP FIELD DATA(current_timestamp).
-      gt_data = VALUE tt_supplement_complete(  ##NO_TEXT
-
-        currency_code         = 'EUR'
-        language_code         = 'E'
-        local_created_by      = 'GENERATOR'
-        local_last_changed_by = 'GENERATOR'
-        local_created_at      = current_timestamp
-        local_last_changed_at = current_timestamp
-        last_changed_at       = current_timestamp
-
-        " Beverages
-        supplement_category = cs_supplement_category-beverage
-        ( price =  '2.30'  description = 'Hot Chocolate' )
-        ( price =  '7.50'  description = 'Alcohol free Champagne' )
-        ( price =  '3.50'  description = 'Coke' )
-        ( price =  '3.50'  description = 'Orange Lemonade' )
-        ( price =  '3.50'  description = 'Apple Juice' )
-        ( price =  '3.50'  description = 'Pear Juice' )
-        ( price =  '3.50'  description = 'Mango Juice' )
-        ( price =  '3.50'  description = 'Lemon Lemonade' )
-        ( price =  '4.50'  description = 'Tomato Juice' )
-
-        " Meals
-        supplement_category = cs_supplement_category-meal
-        ( price =  '3.00'  description = 'Black Forest Cake' )
-        ( price =  '2.00'  description = 'Chocolate Cake' )
-        ( price =  '1.50'  description = 'Apple Pie' )
-        ( price =  '1.50'  description = 'Pear Pie' )
-        ( price =  '8.00'  description = 'Nice Salad' )
-        ( price =  '9.00'  description = 'Paris Salad' )
-        ( price = '12.00'  description = 'Hamburg Salad with Eggs' )
-        ( price = '25.00'  description = 'Quail with French Salad and Black Forest Cake' )
-        ( price = '13.00'  description = 'Duck on Lettuce' )
-        ( price =  '5.00'  description = 'Carpaccio' )
-        ( price =  '7.00'  description = 'Seasonal Salad' )
-        ( price = '16.00'  description = 'Hamburg Salad with Fresh Shrimps' )
-        ( price = '17.00'  description = 'Quail' )
-        ( price = '14.00'  description = 'Wiener Schnitzel' )
-        ( price = '13.00'  description = 'Pork Schnitzel' )
-        ( price = '14.00'  description = 'Schnitzel with Pepper Sauce' )
-        ( price = '11.00'  description = 'Chicken and French Fries' )
-        ( price = '12.00'  description = 'Turkey Steak' )
-        ( price = '15.00'  description = 'Bavarian Duck' )
-        ( price = '14.00'  description = 'Knuckle of Pork' )
-        ( price = '22.00'  description = 'Fillet of Beef' )
-        ( price = '21.00'  description = 'Trout Au Bleu' )
-        ( price = '20.00'  description = 'Trout Meuniere' )
-        ( price = '17.00'  description = 'Monkfish' )
-        ( price = '12.00'  description = 'Sole' )
-        ( price =  '6.00'  description = 'Mini Fried Sole' )
-        ( price = '14.00'  description = 'Salmon in a Bearnaise Sauce' )
-        ( price = '15.00'  description = 'Salmon Lasagne' )
-        ( price =  '3.00'  description = 'Chocolate Ice Cream' )
-        ( price =  '2.50'  description = 'Vanilla Ice Cream' )
-        ( price =  '4.50'  description = 'Vanilla Ice Cream with Hot Cherries' )
-        ( price =  '4.50'  description = 'Vanilla Ice Cream with Hot Raspberries' )
-        ( price =  '4.00'  description = 'Apple Strudel' )
-        ( price =  '4.00'  description = 'Raspberry Sorbet' )
-        ( price =  '4.00'  description = 'Strawberry Sorbet' )
-        ( price = '40.00'  description = 'Extra baggage 5 kgs' )
-
-        "Luggage
-        supplement_category = cs_supplement_category-luggage
-        ( price = '15.00'  description = 'Luggage transfer from airport to hotel' )
-        ( price = '75.00'  description = 'Luggage pickup from home and return ' )
-        ( price = '80.00'  description = 'Bulky goods like sports equipment' )
-      )  .
-
-
-      LOOP AT gt_supplement_category INTO DATA(ls_supplement_category) WHERE language_code = 'E'.
-        DATA(lv_lines) = lines( FILTER #( gt_data USING KEY category WHERE supplement_category = ls_supplement_category-supplement_category ) ).
-        CHECK lv_lines > 0.
-        TRY.
-            cl_numberrange_runtime=>number_get(
-              EXPORTING
-                nr_range_nr = cv_numberrange_interval
-                subobject   = CONV #( ls_supplement_category-supplement_category )
-                object      = cv_numberrange_object
-                quantity    = CONV cl_numberrange_runtime=>nr_quantity( lv_lines )
-              IMPORTING
-                number      = DATA(lv_key)
-            ).
-            DATA(lv_maximum) = CONV i( lv_key+2 ).
-            DATA(lv_current) = lv_maximum - lv_lines.
-            LOOP AT gt_data ASSIGNING FIELD-SYMBOL(<data>) USING KEY category WHERE supplement_category = ls_supplement_category-supplement_category.
-              lv_current += 1.
-              <data>-supplement_id = |{ ls_supplement_category-supplement_category }-{ lv_current  ALIGN = RIGHT  PAD = `0`  WIDTH = 4 }|.
-            ENDLOOP.
-          CATCH cx_number_ranges INTO DATA(lx).
-            " Should not happen.  If so, something is wrong
-            RAISE SHORTDUMP lx.
-        ENDTRY.
-      ENDLOOP.
-
-    ENDIF.
-
-    rt_data = gt_data.
+  METHOD get_instance.
+    RETURN NEW lcl_suppl_text_gen_reuse( language_code ).
   ENDMETHOD.
 
-  METHOD set_numberrange_intervals.
+  METHOD prepare_skeleton.
+    RETURN FILTER #( /dmo/cl_skeleton_provider=>get_suppl_desc_localized( ) USING KEY language WHERE language_code = language_code ).
+  ENDMETHOD.
 
-    CONSTANTS:
-      cv_fromnumber TYPE cl_numberrange_intervals=>nr_nriv_line-fromnumber VALUE '0001',
-      cv_tonumber   TYPE cl_numberrange_intervals=>nr_nriv_line-tonumber   VALUE '9999'.
+  METHOD build_additional_fields.
+    FIELD-SYMBOLS <suppl_desc> TYPE /dmo/cl_skeleton_provider=>suppl_desc_complete.
+    ASSIGN entry->* TO <suppl_desc>.
 
-    LOOP AT gt_supplement_category INTO DATA(ls_supplement_category).
-      /dmo/cl_flight_data_generator=>reset_numberrange_interval(
-        EXPORTING
-          numberrange_object   = cv_numberrange_object
-          numberrange_interval = cv_numberrange_interval
-          subobject            = CONV #( ls_supplement_category-supplement_category )
-          fromnumber           = cv_fromnumber
-          tonumber             = cv_tonumber ).
+    DATA(supplement) = supplements[ KEY p_id product_id = <suppl_desc>-product_id ].
+
+    <suppl_desc>-supplement_id = supplement-supplement_id.
+    <suppl_desc>-local_last_changed_at = supplement-local_last_changed_at.
+  ENDMETHOD.
+
+  METHOD setup_for_building.
+    supplements = lcl_suppl_gen_reuse_wrapper=>get_instance( )->get_data( )->*.
+  ENDMETHOD.
+
+ENDCLASS.
+
+CLASS lcl_suppl_txt_gen_reuse_wrppr DEFINITION INHERITING FROM /dmo/cl_abstract_data_gen CREATE PRIVATE.
+
+  PUBLIC SECTION.
+    CLASS-METHODS get_instance
+      RETURNING VALUE(instance) TYPE REF TO lcl_suppl_txt_gen_reuse_wrppr.
+
+    METHODS constructor.
+
+  PRIVATE SECTION.
+    CLASS-DATA suppl_txt_wrppr_gen_instance TYPE REF TO lcl_suppl_txt_gen_reuse_wrppr.
+
+    DATA supplement_categories TYPE /dmo/cl_skeleton_provider=>supplement_categories_compl.
+
+    CLASS-METHODS prepare_skeleton
+      RETURNING VALUE(result) TYPE /dmo/cl_skeleton_provider=>suppls_desc_complete.
+
+ENDCLASS.
+
+CLASS lcl_suppl_txt_gen_reuse_wrppr IMPLEMENTATION.
+  METHOD constructor.
+    DATA(supplement_skeleton) = prepare_skeleton( ).
+
+    DATA(supplement_features) = VALUE feature_structure( with_db           = abap_true
+                                                         with_admin_fields = abap_false
+                                                         with_semantic_id  = abap_false
+                                                         with_uuid         = abap_false ).
+
+    DATA(field_mapping) = VALUE field_structure(  ).
+
+    super->constructor( skeleton_data      = REF #( supplement_skeleton )
+                        scenario_name      = 'Supplement Description Reuse Wrapper' ##NO_TEXT
+                        package_name       = '/DMO/FLIGHT_REUSE_SUPPLEMENT'
+                        table_name_active  = '/dmo/suppl_text'
+                        features           = supplement_features
+                        fields             = field_mapping ).
+  ENDMETHOD.
+
+  METHOD get_instance.
+
+    IF suppl_txt_wrppr_gen_instance IS NOT BOUND.
+      suppl_txt_wrppr_gen_instance = NEW lcl_suppl_txt_gen_reuse_wrppr( ).
+    ENDIF.
+
+    RETURN suppl_txt_wrppr_gen_instance.
+
+  ENDMETHOD.
+
+  METHOD prepare_skeleton.
+    DATA supplement_txts_per_lang TYPE /dmo/cl_skeleton_provider=>suppls_desc_complete.
+    DATA supplement_langs         TYPE STANDARD TABLE OF spras.
+
+    supplement_langs = VALUE #( ( /dmo/cl_skeleton_provider=>language_enum-e )
+                                ( /dmo/cl_skeleton_provider=>language_enum-d ) ).
+
+    LOOP AT supplement_langs INTO DATA(lang).
+      supplement_txts_per_lang = lcl_suppl_text_gen_reuse=>get_instance( lang )->get_data( )->*.
+      APPEND LINES OF supplement_txts_per_lang TO result.
     ENDLOOP.
-
-  ENDMETHOD.
-
-  METHOD get_supplement_category.
-    rt_supplement_category = VALUE tt_supplement_category_compl( ##NO_TEXT
-        language_code = 'E'
-        ( supplement_category = cs_supplement_category-beverage  description = 'Beverage' )
-        ( supplement_category = cs_supplement_category-meal      description = 'Meal'     )
-        ( supplement_category = cs_supplement_category-luggage   description = 'Luggage'  )
-        ( supplement_category = cs_supplement_category-extra     description = 'Extra'    )
-      ).
   ENDMETHOD.
 
 ENDCLASS.
-
 
 CLASS lcl_status_vh_data_generator DEFINITION CREATE PRIVATE.
 
@@ -1927,7 +2058,7 @@ CLASS lcl_travel_data_generator DEFINITION CREATE PRIVATE.
       gt_connections                 TYPE lcl_connection_data_generator=>tt_connection_additional_info,
       go_ran_booking_supplement_id   TYPE REF TO cl_abap_random_int,
       go_ran_booking_supplement_amnt TYPE REF TO cl_abap_random_int,
-      gt_supplements                 TYPE lcl_supplement_data_generator=>tt_supplement_complete,
+      gt_supplements                 TYPE /dmo/cl_skeleton_provider=>supplements_complete,
       go_ran_travel_description      TYPE REF TO cl_abap_random_int,
       go_ran_travel_create_dat_befor TYPE REF TO cl_abap_random_int,
       go_ran_travel_change_date      TYPE REF TO cl_abap_random_int,
@@ -2190,8 +2321,8 @@ CLASS lcl_travel_data_generator IMPLEMENTATION.
     go_ran_travel_create_dat_befor = cl_abap_random_int=>create( min = cv_booking_date_min   max = cv_booking_date_max ).
     go_ran_travel_change_date = cl_abap_random_int=>create( min = cv_booking_date_min   max = cv_booking_date_max ).
 
-    gt_supplements = lcl_supplement_data_generator=>get_data( ).
-    go_ran_booking_supplement_id = cl_abap_random_int=>create( min = 1  max = lines( lcl_supplement_data_generator=>get_data( ) ) ).
+    gt_supplements = lcl_suppl_gen_reuse_wrapper=>get_instance( )->get_data( )->*.
+    go_ran_booking_supplement_id = cl_abap_random_int=>create( min = 1  max = lines( gt_supplements ) ).
     go_ran_booking_supplement_amnt = cl_abap_random_int=>create( min = 0  max = cv_booking_supplement_amount ).
 
     go_ran_status_description = cl_abap_random_int=>create( min = 1  max = 4 ).
