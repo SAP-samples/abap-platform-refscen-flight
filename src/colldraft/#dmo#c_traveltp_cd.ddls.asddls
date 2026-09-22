@@ -30,6 +30,7 @@ define root view entity /DMO/C_TravelTP_CD
       CurrencyCode,
 
       Description,
+      OverallStatus,
 
       @Semantics.systemDateTime.localInstanceLastChangedAt: true
       LocalLastChangedAt,

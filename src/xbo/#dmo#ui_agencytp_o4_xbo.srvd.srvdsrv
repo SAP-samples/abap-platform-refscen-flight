@@ -1,7 +1,6 @@
 @EndUserText.label: 'Service Def. for Entity Agency'
 @ObjectModel.leadingEntity.name: '/DMO/C_AGENCYTP_XBO'
-define service /DMO/UI_AGENCYTP_O4_XBO
-{
+define service /DMO/UI_AGENCYTP_O4_XBO {
   expose /DMO/C_AGENCYTP_XBO         as Agency;
   expose /DMO/C_TRAVELTP_XBO_DRAFTDP as Travel;
 }

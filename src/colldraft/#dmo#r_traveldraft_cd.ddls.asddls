@@ -18,6 +18,7 @@ define root view entity /DMO/R_TravelDraft_CD
       bookingfee                    as BookingFee,
       currencycode                  as CurrencyCode,
       description                   as Description,
+      overallstatus                 as OverallStatus,
       localcreatedby                as LocalCreatedBy,
       localcreatedat                as LocalCreatedAt,
       locallastchangedby            as LocalLastChangedBy,

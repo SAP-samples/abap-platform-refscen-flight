@@ -42,13 +42,14 @@ annotate entity /DMO/C_TravelTP_CD
   @UI.lineItem: [ { position: 40, importance: #MEDIUM } ]
   BookingFee;
 
-//  @UI.identification: [ { position: 50 } ]
-//  @UI.lineItem: [ { position: 50, importance: #MEDIUM } ]
-//  CurrencyCode;
+  @UI.identification: [ { position: 50 } ]
+  @UI.lineItem: [ { position: 50, importance: #MEDIUM } ]
+  Description;
 
   @UI.identification: [ { position: 60 } ]
-  @UI.lineItem: [ { position: 60, importance: #MEDIUM } ]
-  Description;
+  @UI.lineItem: [ { position: 60, importance: #HIGH } ]
+  @UI.textArrangement: #TEXT_ONLY
+  OverallStatus;
 
   @UI.hidden: true
   LocalLastChangedAt;

@@ -1,21 +1,10 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"/DMO/A_BOOK_CD"
-],
-"ASSOCIATED":
-[
-"/DMO/R_TRAVELTP_CD"
-],
-"BASE":
-[],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "/DMO/A_BOOK_CD"
+    ],
+    "ASSOCIATED": [
+      "/DMO/R_TRAVELTP_CD"
+    ]
+  }
 }

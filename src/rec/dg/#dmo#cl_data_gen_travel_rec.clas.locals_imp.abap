@@ -18,17 +18,19 @@ CLASS acc_data_generator IMPLEMENTATION.
   METHOD constructor.
     DATA(acc_skeleton) = prepare_skeleton( ).
 
-    DATA(features_acc) = VALUE feature_structure( with_uuid        = abap_true ).
+    DATA(features_acc) = VALUE feature_structure( with_db           = abap_true
+                                                  with_admin_fields = abap_false
+                                                  with_semantic_id  = abap_false
+                                                  with_uuid         = abap_true ).
 
     DATA(field_mapping) = VALUE field_structure( uuid = 'acc_id' ).
 
-    super->constructor( skeleton_data        = REF #( acc_skeleton )
-                        scenario_name        = 'Accommodations for RAP Recommendations' ##NO_TEXT
-                        package_name         = '/DMO/FLIGHT_REC_H'
-                        table_name_active    = '/DMO/ACC_REC_H'
-                        features             = features_acc
-                        fields               = field_mapping
-                      ).
+    super->constructor( skeleton_data     = REF #( acc_skeleton )
+                        scenario_name     = 'Accommodations for RAP Recommendations' ##NO_TEXT
+                        package_name      = '/DMO/FLIGHT_REC_H'
+                        table_name_active = '/DMO/ACC_REC_H'
+                        features          = features_acc
+                        fields            = field_mapping ).
   ENDMETHOD.
 
   METHOD get_instance.
@@ -462,9 +464,16 @@ CLASS travel_data_generator IMPLEMENTATION.
   METHOD constructor.
     DATA(travel_skeleton) = prepare_skeleton( ).
 
-    DATA(travel_features) = VALUE feature_structure( with_admin_fields = abap_true
+    DATA(travel_features) = VALUE feature_structure( with_db           = abap_true
+                                                     with_admin_fields = abap_true
                                                      with_semantic_id  = abap_true
                                                      with_uuid         = abap_true ).
+
+    DATA(semantic_id_config) = VALUE semantic_id_components( numberrange_lenght   = 6
+                                                             numberrange_max      = '899999'
+                                                             numberrange_min      = '1'
+                                                             numberrange_interval = '01'
+                                                             numberrange_object   = '/DMO/TRAVL' ).
 
     DATA(field_mapping) = VALUE field_structure( last_changed_at       = 'last_changed_at'
                                                  local_created_at      = 'local_created_at'
@@ -474,17 +483,14 @@ CLASS travel_data_generator IMPLEMENTATION.
                                                  semantic_id           = 'travel_id'
                                                  uuid                  = 'travel_uuid' ).
 
-    super->constructor( skeleton_data        = REF #( travel_skeleton )
-                        scenario_name        = 'Travel for RAP Recommendations' ##NO_TEXT
-                        package_name         = '/DMO/FLIGHT_REC'
-                        table_name_active    = '/dmo/a_trvl_rec'
-                        table_name_draft     = '/dmo/d_trvl_rec'
-                        nr_minimum           = '000001'
-                        nr_maximum           = '899999'
-                        numberrange_object   = '/DMO/TRAVL'
-                        numberrange_interval = '01'
-                        features             = travel_features
-                        fields               = field_mapping ).
+    super->constructor( skeleton_data      = REF #( travel_skeleton )
+                        scenario_name      = 'Travel for RAP Recommendations' ##NO_TEXT
+                        package_name       = '/DMO/FLIGHT_REC'
+                        table_name_active  = '/dmo/a_trvl_rec'
+                        table_name_draft   = '/dmo/d_trvl_rec'
+                        features           = travel_features
+                        fields             = field_mapping
+                        semantic_id_config = semantic_id_config ).
   ENDMETHOD.
 
   METHOD get_instance.

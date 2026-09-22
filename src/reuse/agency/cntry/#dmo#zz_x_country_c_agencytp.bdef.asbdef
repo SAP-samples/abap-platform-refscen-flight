@@ -2,5 +2,5 @@ extension for projection;
 
 extend behavior for /DMO/Agency
 {
-  use action /DMO/createFromTemplate;
+  use action /DMO/zzChangeAddress;
 }

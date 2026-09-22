@@ -1,23 +1,13 @@
 {
-"BASEINFO":
-{
-"FROM":
-[
-"/DMO/R_AGENCYTP"
-],
-"ASSOCIATED":
-[
-"I_COUNTRY"
-],
-"BASE":
-[
-"/DMO/R_AGENCYTP"
-],
-"ANNO_REF":
-[],
-"SCALAR_FUNCTION":
-[],
-"VERSION":0,
-"ANNOREF_EVALUATION_ERROR":""
-}
+  "BASEINFO": {
+    "FROM": [
+      "/DMO/R_AGENCYTP"
+    ],
+    "ASSOCIATED": [
+      "I_COUNTRY"
+    ],
+    "BASE": [
+      "/DMO/R_AGENCYTP"
+    ]
+  }
 }

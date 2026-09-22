@@ -6,7 +6,6 @@
     name: '/DMO/C_TRAVEL_ANA'
   }
 }
-define service /DMO/UI_TRAVEL_O4_ANA
-{
+define service /DMO/UI_TRAVEL_O4_ANA {
   expose /DMO/C_Travel_ANA as Travel;
 }

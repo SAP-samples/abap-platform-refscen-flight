@@ -21,6 +21,7 @@ define root view entity /DMO/R_TravelTP_CD
 
       currency_code         as CurrencyCode,
       description           as Description,
+      overall_status        as OverallStatus,
 
       @Semantics.user.createdBy: true
       local_created_by      as LocalCreatedBy,

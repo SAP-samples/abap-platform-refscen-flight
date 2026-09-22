@@ -59,8 +59,10 @@ CLASS /dmo/cl_flight_data_generator IMPLEMENTATION.
     out->write( 'Generate Data: Customer      /DMO/CUSTOMER' ) ##NO_TEXT.
     lcl_customer_data_generator=>lif_data_generator~create( out ).
 
-    out->write( 'Generate Data: Supplement      /DMO/SUPPLEMENT' ) ##NO_TEXT.
-    lcl_supplement_data_generator=>lif_data_generator~create( out ).
+    lcl_supplcat_t_gen_reuse=>get_instance( )->create( out ).
+    lcl_supplcat_gen_reuse=>get_instance( )->create( out ).
+    lcl_suppl_gen_reuse_wrapper=>get_instance( )->create( out ).
+    lcl_suppl_txt_gen_reuse_wrppr=>get_instance( )->create( out ).
 
     out->write( 'Generate Data: Travel      /DMO/TRAVEL' ) ##NO_TEXT.
     out->write( 'Generate Data: Booking      /DMO/BOOKING' ) ##NO_TEXT.

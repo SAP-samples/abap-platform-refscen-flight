@@ -142,5 +142,10 @@ annotate entity /DMO/C_Travel_ANA with
     position: 110
   } ]
   Description;
+  @EndUserText.label: 'CurrencyCode'
+  @UI.selectionField: [ {
+   position: 120
+ } ]
+  CurrencyCode;
 
 }
