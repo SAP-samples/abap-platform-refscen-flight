@@ -3,6 +3,11 @@ strict ( 2 );
 with collaborative draft;
 extensible;
 
+define own authorization context
+{
+  '/DMO/TR_CD';
+}
+
 define behavior for /DMO/R_TravelTP_CD alias Travel
 persistent table /dmo/a_travel_cd
 extensible
@@ -50,6 +55,7 @@ authorization master ( instance, global )
       LocalCreatedBy     = local_created_by;
       LocalLastChangedAt = local_last_changed_at;
       LocalLastChangedBy = local_last_changed_by;
+      OverallStatus      = overall_status;
       TravelId           = travel_id;
       TravelUUID         = travel_uuid;
     }

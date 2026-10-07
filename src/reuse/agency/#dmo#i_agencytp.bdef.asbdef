@@ -1,6 +1,7 @@
 interface;
 use draft;
 extensible;
+use side effects;
 
 define behavior for /DMO/I_AgencyTP alias /DMO/Agency
 {
